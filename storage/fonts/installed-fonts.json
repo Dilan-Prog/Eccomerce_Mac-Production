@@ -1,0 +1,21 @@
+{
+    "font awesome 5 brands": {
+        "normal": "font_awesome_5_brands_normal_838c0f47d71f5caf69103ca5f822468e"
+    },
+    "font awesome 5 free": {
+        "normal": "C:\\laragon\\www\\SystemPaymentMac\\storage\\fonts\/font_awesome_5_free_normal_632f0ffbefa3afb23cbcb4260afb9b64",
+        "900": "font_awesome_5_free_900_1e9fe18aa34aa3ca00fef448bee5fb9f"
+    },
+    "weathericons": {
+        "normal": "weathericons_normal_f80e4c63dbe685488e14a10e366602cc"
+    },
+    "summernote": {
+        "normal": "summernote_normal_f84273f684e538e8b2dae18d6e0b7720"
+    },
+    "nunito": {
+        "normal": "C:\\laragon\\www\\SystemPaymentMac\\storage\\fonts\/nunito_normal_f30a1b0b31bbdb5cc46d4717c294821f",
+        "600": "C:\\laragon\\www\\SystemPaymentMac\\storage\\fonts\/nunito_600_974f4bb9c37a52ef6d35b99e970b6af4",
+        "bold": "C:\\laragon\\www\\SystemPaymentMac\\storage\\fonts\/nunito_bold_0f22befb16b468fe94ce91c1b27a9ee6",
+        "800": "nunito_800_13b114672186ec92fde21b4bc8e686bf"
+    }
+}
