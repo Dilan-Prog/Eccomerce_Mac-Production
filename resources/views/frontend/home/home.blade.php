@@ -31,41 +31,50 @@
        MONTHLY TOP PRODUCT END
     ==============================-->
 
-     <!--============================
-       MONTHLY TOP PRODUCT START
-    ==============================-->
-    @include('frontend.home.sections.video-eccomerce')
     <!--============================
-       MONTHLY TOP PRODUCT END
-    ==============================-->
-   
-
-
-
-
-
- 
-
-
-  
-
-    <!--============================
-        Instrument PART START
-    ==============================-->
-    {{-- @include('frontend.home.sections.category-product-slider-one') --}}
-    <!--============================
-        Instrument PART END
-    ==============================-->
-
-
-{{--
-    <!--============================
-        ELECTRONIC PART START
+    LIMIT-SWITCH, MICRO-SWITCH,SENSOR CNTD
     ==============================-->
     @include('frontend.home.sections.category-product-slider-two')
     <!--============================
         ELECTRONIC PART END
     ==============================-->
+
+     <!--============================
+        Instrument PART START
+    ==============================-->
+    @include('frontend.home.sections.category-product-slider-one') 
+    <!--============================
+        Instrument PART END
+    ==============================-->
+
+
+
+    <!--============================
+    ELECTRONIC PART START
+    ==============================-->
+    @include('frontend.home.sections.category-product-slider-three')
+    <!--============================
+        ELECTRONIC PART END
+    ==============================-->
+
+
+     <!--============================
+       HOW BUY TO MAC DEL NORTE
+    ==============================-->
+    @include('frontend.home.sections.video-eccomerce')
+    <!--============================
+       HOW BUY TO MAC DEL NORTE END
+    ==============================-->
+    @include('frontend.home.sections.chat-personal')
+
+
+
+
+   
+
+
+{{--
+   
 
 {{--
     <!--============================

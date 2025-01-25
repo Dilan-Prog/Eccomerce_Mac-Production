@@ -26,27 +26,7 @@
             </div>
             <div class="col-xl-6 col-md-12">
                 <div class="iframe-video-eccomerce" >
-                    <!-- Marcador de Posición -->
-                    <div class="video-placeholder" onclick="loadVideo()">
-                        <div class="play-button">
-                            <i class="fa fa-play-circle-o"></i>
-                        </div>
-                        <img src="{{asset('frontend/images/logo/img-comocomprar.webp')}}" alt="Video Thumbnail" />
-                    </div>
-                    <!-- Contenedor para el Video (inicialmente oculto) -->
-                    <div id="video-container" style="display: none">
-                        <iframe 
-                            id="video-frame"
-                            src="" 
-                            title="¿Cómo comprar en Mac del Norte?" 
-                            frameborder="0"
-                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                            referrerpolicy="no-referrer-when-downgrade" 
-                            allowfullscreen 
-                            loading="lazy"
-                            sandbox="allow-same-origin allow-scripts allow-forms allow-presentation"
-                        ></iframe>
-                    </div>
+                    <lite-youtube videoid="3w3xq8VJQSc"></lite-youtube>
                 </div>
             </div>
         </div>

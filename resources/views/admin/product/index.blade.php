@@ -20,7 +20,7 @@
           <div class="col-12">
             <div class="card">
               <div class="card-header">
-                <h4>Todos Los Productos</h4>
+                <h4>Todos Los Producto</h4>
                 <div class="card-header-action">
                     <a href="{{route('admin.products.create')}}" class="btn btn-primary">+ Crear Nuevo</a>
                 </div>
@@ -69,6 +69,14 @@
         })
 
             })
+
+    //         $('#product-table').DataTable({
+    //     dom: 'Bfrtip', // Configuración de DOM
+    //     buttons: [
+    //         'excel', 'csv', 'pdf', 'print' // Botones de exportación
+    //     ]
+    // });
+    
     })
   </script>
   

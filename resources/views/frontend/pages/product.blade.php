@@ -16,7 +16,7 @@
                 </div>
                 <div class="col-xl-3 col-lg-4">
                     <div class="wsus__sidebar_filter ">
-                        <p>filter</p>
+                        <p>filtros</p>
                         <span class="wsus__filter_icon">
                             <i class="far fa-minus" id="minus"></i>
                             <i class="far fa-plus" id="plus"></i>
@@ -101,16 +101,16 @@
                                 <div class="wsus__product_topbar_left">
                                     <div class="nav nav-pills" id="v-pills-tab" role="tablist"
                                         aria-orientation="vertical">
-                                        <button class="nav-link {{session()->has('product_list_style') && session()->get('product_list_style') == 'grid' ? 'active' : ''}} {{!session()->has('product_list_style') ? 'active' : ''}} list-view" data-id="grid" id="v-pills-home-tab" data-bs-toggle="pill"
+                                        <button class="nav-link active: {{session()->has('product_list_style') && session()->get('product_list_style') == 'grid' ? 'active' : ''}} {{!session()->has('product_list_style') ? 'active' : ''}} list-view" data-id="grid" id="v-pills-home-tab" data-bs-toggle="pill"
                                             data-bs-target="#v-pills-home" type="button" role="tab"
                                             aria-controls="v-pills-home" aria-selected="true">
                                             <i class="fas fa-th"></i>
-                                        </button>
+                                        {{-- </button>
                                         <button class="nav-link list-view {{session()->has('product_list_style') && session()->get('product_list_style') == 'list' ? 'active' : ''}}" data-id="list" id="v-pills-profile-tab" data-bs-toggle="pill"
                                             data-bs-target="#v-pills-profile" type="button" role="tab"
                                             aria-controls="v-pills-profile" aria-selected="false">
                                             <i class="fas fa-list-ul"></i>
-                                        </button>
+                                        </button> --}}
                                     </div>
 
                                 </div>
@@ -171,8 +171,30 @@
 
                                         <div class="wsus__product_item" itemscope itemtype="http://schema.org/Product">
 
-
-                                            <span class="wsus__new">{{productType($product->product_type)}}</span>
+                                            @switch($product->product_type)
+                                                    @case('new_arrival')
+                                                        <span class="wsus__new wsus__new--new-arrival" style="background: #00468c">Nuevo
+                                                            
+                                                        </span>
+                                                        @break
+                                                    @case('featured_product')
+                                                        <span class="wsus__new" style="display: none">  
+                                                            
+                                                        </span>
+                                                        @break                           
+                                                    @case('top_product')
+                                                        <span class="wsus__new" style="display: none">
+                                                            
+                                                        </span>
+                                                        @break
+                                                    @case('best_product')
+                                                        <span class="wsus__new wsus__new--best-product" style="background: #fa7c04">Más Vendido  
+                                                            
+                                                        </span>
+                                                        @break
+                                                    @default
+                                                    
+                                            @endswitch
                                             @if (checkDiscount($product))
 
                                             <span class="wsus__minus">-{{calculatedDiscountPercent($product->price, $product->offert_price)}}%</span>
@@ -197,37 +219,65 @@
                                                 @if ($product->price)
 
 
-                                                @if ($product->qty > 0)
-                                                    <p class="wsus__stock_area"><span class="in_stock" itemprop="offers" itemtype="http://schema.org/Offer"><meta itemprop="availability" content="http://schema.org/InStock">Disponibles</span></p>
-                                                @elseif ($product->qty === 0)
-                                                    <p class="wsus__stock_area"><span class="in_stock" itemprop="offers" itemtype="http://schema.org/Offer"><meta itemprop="availability" content="http://schema.org/OutOfStock">Agotado</span></p>
-                                                @endif
+                                                    @if ($product->qty > 0)
+                                                        <p class="wsus__stock_area"><span class="in_stock" itemprop="offers" itemtype="http://schema.org/Offer"><meta itemprop="availability" content="http://schema.org/InStock">Disponibles</span></p>
+                                                    @elseif ($product->qty === 0)
+                                                        <p class="wsus__stock_area"><span class="in_stock" itemprop="offers" itemtype="http://schema.org/Offer"><meta itemprop="availability" content="http://schema.org/OutOfStock">Agotado</span></p>
+                                                    @endif
+
+                                                    <p class="wsus__pro_rating">
+                                                        @php
+                                                            $averageRating = $product->reviews->avg('rating'); // Promedio de las calificaciones
+                                                            $reviewCount = $product->reviews->count(); // Número total de reviews
+                                                        @endphp
+                                                    
+                                                        @if ($reviewCount > 0)
+                                                            @for ($i = 1; $i <= 5; $i++)
+                                                                <i class="fas fa-star{{ $i <= $averageRating ? '' : '-half-alt' }}" aria-hidden="true"></i>
+                                                            @endfor
+                                                            <span>({{ $reviewCount }} Opinion)</span>
+                                                        @else
+                                                            @for ($i = 1; $i <= 5; $i++)
+                                                                <i class="far fa-star" aria-hidden="true"></i> <!-- Estrellas vacías -->
+                                                            @endfor
+                                                        @endif
+                                                    </p>
 
 
                                                     <a class="wsus__pro_name" href="{{route('product-detail', $product->slug)}}" itemprop="name" content="{{$product->name}}">{{$product->name}}</a>
 
 
-                                                @if (checkDiscount($product))
-                                                <p itemscope itemtype="http://schema.org/Offer">
-                                                    <meta itemprop="priceCurrency" content="MXN">
-                                                    <span class="wsus__price" itemprop="price" content="{{$product->offert_price}}">
-                                                    {{$settings->currency_icon}}{{ number_format($product->offert_price, 2, ',', '.') }} MXN <del>{{$settings->currency_icon}}{{ number_format($product->price, 2, '.', ',') }} MXN</del>
-                                                    </span>
-                                                </p>
-                                                @else
-                                                <p itemscope itemtype="http://schema.org/Offer">
-                                                    <meta itemprop="priceCurrency" content="MXN">
-                                                    <span class="wsus__price" itemprop="price" content="{{$product->price}}">
-                                                        {{$settings->currency_icon}}{{ number_format($product->price, 2, '.', ',') }} 
-                                                    </span>
-                                                </p>
-                                                @endif
+                                                    @if (checkDiscount($product))
+                                                    <p itemscope itemtype="http://schema.org/Offer">
+                                                        <meta itemprop="priceCurrency" content="MXN">
+                                                        <span class="wsus__price" itemprop="price" content="{{$product->offert_price}}">
+                                                        {{$settings->currency_icon}}{{ number_format($product->offert_price, 2, ',', '.') }} MXN <del>{{$settings->currency_icon}}{{ number_format($product->price, 2, '.', ',') }} MXN</del>
+                                                        </span>
+                                                    </p>
+                                                    <p>
+                                                        @if ($product->offert_price >= $shippingRules->min_cost)
+                                                            <span class="free-shipping-text"><i class="fas fa-shipping-fast"> Envío Gratis </span>
+                                                        @endif
+                                                    </p>
+                                                    @else
+                                                    <p itemscope itemtype="http://schema.org/Offer">
+                                                        <meta itemprop="priceCurrency" content="MXN">
+                                                        <span class="wsus__price" itemprop="price" content="{{$product->price}}">
+                                                            {{$settings->currency_icon}}{{ number_format($product->price, 2, '.', ',') }} 
+                                                        </span>
+                                                    </p>
+                                                    <p>
+                                                        @if ($product->price >= $shippingRules->min_cost)
+                                                            <span class="free-shipping-text"><i class="fas fa-shipping-fast"></i> Envío Gratis </span>
+                                                        @endif
+                                                    </p>
+                                                    @endif
 
 
 
 
                                                 @else
-                                                <p class="wsus__stock_area"><span class="in_stock" itemprop="availability" content="http://schema.org/InStock" >Disponible</span></p>
+                                                <p class="wsus__stock_area"><span class="in_stock" itemprop="availability" content="http://schema.org/InStock" >Requiere Asesoria</span></p>
                                                 <a class="wsus__pro_name" href="{{route('product-detail', $product->slug)}}">{{$product->name}}</a>
 
                                                 <p class="wsus__price">N/A +<small> Requiere Asesoria</small> </p>
@@ -237,6 +287,8 @@
                                                 <form class="shopping-cart-form">
                                                     <input type="hidden" name="product_id" value="{{$product->id}}">
                                                     <input type="hidden" name="brand_name" itemprop="brand" content="{{$product->brand->name}}" value="{{ $product->brand->name }}">
+                                                    <input type="hidden" name="sku" value="{{$product->sku}}">
+                                                    <input type="hidden" name="productModel" value="{{$product->productModel}}">
                                                     @if ($product->price)
                                                         <button type="submit" class="add_cart" href="#">Agregar al Carrito</button>
                                                     @else
@@ -254,7 +306,7 @@
                                 </div>
                             </div>
                             {{-- list view --}}
-                            <div class="tab-pane fade {{session()->has('product_list_style') && session()->get('product_list_style') == 'list' ? 'show active' : ''}}" id="v-pills-profile" role="tabpanel"
+                            {{-- <div class="tab-pane fade {{session()->has('product_list_style') && session()->get('product_list_style') == 'list' ? 'show active' : ''}}" id="v-pills-profile" role="tabpanel"
                                 aria-labelledby="v-pills-profile-tab">
                                 <div class="row">
                                     @foreach ($products as $product )
@@ -321,10 +373,12 @@
                                                     <form class="shopping-cart-form">
                                                         <input type="hidden" name="product_id" value="{{$product->id}}">
                                                         <input type="hidden" name="brand_name" value="{{ $product->brand->name }}">
+                                                        <input type="hidden" name="sku" value="{{$product->sku}}">
+                                                        <input type="hidden" name="model" value="{{$product->model}}">
                                                         @if ($product->price)
                                                         <button type="submit" class="add_cart" href="#">Agregar al Carrito</button>
                                                         @else
-                                                        <button type="submit" class="add_cart2" href="{{route('contact')}}">Requiere Asesoria</button>
+                                                        <a type="submit" class="add_cart2" href="{{route('contact')}}">Requiere Asesoria</a>
                                                         @endif
                                                         <input name="qty" type="hidden" min="1" max="100" value="1" />
                                                     </form>
@@ -333,7 +387,7 @@
                                     </div>
                                     @endforeach
                                 </div>
-                            </div>
+                            </div> --}}
                         </div>
                     </div>
                     @if (count($products) === 0)

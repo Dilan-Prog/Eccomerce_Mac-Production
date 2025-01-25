@@ -18,7 +18,9 @@ class RoleMiddleware
         if($request->user()->role !== $role){
             if($request->user()->role == 'admin'){
                 return redirect()->route('admin.dashbaord');
-            }else {
+            }elseif($request->user()->role == 'associate'){
+                return redirect()->route('associate.dashboard');
+            }elseif($request->user()->role == 'user') {
                 return redirect()->route('user.dashboard');
             }
         }

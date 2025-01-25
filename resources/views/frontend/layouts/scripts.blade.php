@@ -64,7 +64,7 @@
                                 <a class="wsus__cart_title" href="{{url('product-detail/')}}${product.options.slug}">${product.name}</a>
                                 <h6>"modelo"</h6>
                                 <p>{{$settings->currency_icon}}${formattedPrice}</p>
-                                <small>Modelo:<br> ${product.options.sku}</small>
+                                <small>Modelo:<br> ${product.options.productModel}</small>
                                 <br>
                                 <small>Cantidad:${product.qty}</small>
                             </div>

@@ -61,7 +61,7 @@
                         <a class="wsus__cart_title" href="{{ route('product-detail', $sidebarProduct->options->slug) }}">{{ $sidebarProduct->name }}</a>
 
                         <p>{{ $settings->currency_icon }}{{ formatCurrency($sidebarProduct->price) }}</p>
-                        <small>Modelo: <br> {{$sidebarProduct->options->sku}}</small>
+                        <small>Modelo: <br> {{$sidebarProduct->options->productModel}}</small>
                         <br>
                         <small>Cantidad: {{ $sidebarProduct->qty }}</small>
                     </div>

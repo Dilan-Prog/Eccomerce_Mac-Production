@@ -10,8 +10,10 @@ use App\Models\Category;
 use App\Models\Subcategory;
 use App\Models\ChildCategory;
 use App\Models\Brand;
+use App\Models\ProductReview;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Cache;
+use App\Models\ShippingRule;
 
 use Illuminate\Http\Request;
 
@@ -126,8 +128,10 @@ class FrontendProductController extends Controller
                 return Brand::where(['status' => 1])->get();
             });
 
+            $shippingRules = ShippingRule::where('type', 'min_cost')->first();
+
         
-        return view('frontend.pages.product', compact('products', 'categories', 'brands'));
+        return view('frontend.pages.product', compact('products', 'categories', 'brands','shippingRules'));
     }
 
 public function chageListView(Request $request)
@@ -139,6 +143,22 @@ public function chageListView(Request $request)
     public function showProduct(string $slug){
 
         $product = Product::with(['category','productImageGalleries','brand'])->where('slug', $slug)->where('status', 1)->first();
-        return view('frontend.pages.product-detail', compact('product'));
+        $reviews = ProductReview::where('product_id', $product->id)->where('status', 1)->paginate(6);
+
+        // Contar cuántas reseñas tienen cada calificación
+        $ratingCounts = [
+            5 => $reviews->where('rating', 5)->count(),
+            4 => $reviews->where('rating', 4)->count(),
+            3 => $reviews->where('rating', 3)->count(),
+            2 => $reviews->where('rating', 2)->count(),
+            1 => $reviews->where('rating', 1)->count(),
+        ];
+
+        
+        // Calcular el promedio de las calificaciones
+        $averageRating = $reviews->avg('rating');
+
+        return view('frontend.pages.product-detail', compact('product', 'reviews', 'ratingCounts', 'averageRating'));
+
     }
 }

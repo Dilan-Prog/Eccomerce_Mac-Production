@@ -74,6 +74,16 @@
                 </div>
             </div>
         </div>
+        <div class="wsus_logos-parther_footer">
+            <img src="{{asset('frontend/images/iconos-empresas/mastercard-logo_with_bgc.webp')}}" alt="">
+            <img src="{{asset('frontend/images/iconos-empresas/Visa_logo_with_bgc.webp')}}" alt="">
+            <img src="{{asset('frontend/images/iconos-empresas/bank_BBVA-logo_with_bgc.webp')}}" alt="">
+            <img src="{{asset('frontend/images/iconos-empresas/Paypal-logo_with_bgc.webp')}}" alt="">
+            <img src="{{asset('frontend/images/iconos-empresas/delivery_DHL-logo_with_bgc.webp')}}" alt="">
+            <img src="{{asset('frontend/images/iconos-empresas/delivery_Estafeta-logo_with_bgc.webp')}}" alt="">
+            <img src="{{asset('frontend/images/iconos-empresas/delivery_paquete_express-logo.webp')}}" alt="">
+        </div>
+
 
         <div class="wsus__footer_bottom">
             <div class="container">

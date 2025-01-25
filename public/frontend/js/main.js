@@ -159,7 +159,143 @@ $(function () {
             }
         ]
     });
+
+    // Category Products Section One
+    $('#wsus__electronic2_slider-one').slick({
+        slidesToShow: 4,
+        slidesToScroll: 1,
+        autoplay: true,
+        autoplaySpeed: 6000,
+        dots: false,
+        arrows: true,
+        accessibility: true,
+        nextArrow: '<i class="fas fa-chevron-right nxt_arr"></i>',
+        prevArrow: '<i class="fas fa-chevron-left prv_arr"></i>',
+
+        responsive: [
+            {
+                breakpoint: 1200,
+                settings: {
+                    slidesToShow: 4,
+                    slidesToScroll: 1,
+                }
+            },
+            {
+                breakpoint: 992,
+                settings: {
+                    slidesToShow: 3,
+                    slidesToScroll: 1,
+                }
+            },
+            {
+                breakpoint: 768,
+                settings: {
+                    slidesToShow: 2,
+                    slidesToScroll: 1,
+                }
+            },
+            {
+                breakpoint: 576,
+                settings: {
+                    slidesToShow: 1,
+                    slidesToScroll: 1,
+                }
+            }
+        ]
+    });
+
+
+    // Category Products Section Two
+    $('#wsus__electronic2_slider-two').slick({
+        slidesToShow: 4,
+        slidesToScroll: 1,
+        autoplay: true,
+        autoplaySpeed: 6500,
+        dots: false,
+        arrows: true,
+        accessibility: true,
+        nextArrow: '<i class="fas fa-chevron-right nxt_arr"></i>',
+        prevArrow: '<i class="fas fa-chevron-left prv_arr"></i>',
+
+        responsive: [
+            {
+                breakpoint: 1200,
+                settings: {
+                    slidesToShow: 4,
+                    slidesToScroll: 1,
+                }
+            },
+            {
+                breakpoint: 992,
+                settings: {
+                    slidesToShow: 3,
+                    slidesToScroll: 1,
+                }
+            },
+            {
+                breakpoint: 768,
+                settings: {
+                    slidesToShow: 2,
+                    slidesToScroll: 1,
+                }
+            },
+            {
+                breakpoint: 576,
+                settings: {
+                    slidesToShow: 1,
+                    slidesToScroll: 1,
+                }
+            }
+        ]
+    });
+
+    // Category Products Section Two
+    $('#wsus__slider-three').slick({
+        slidesToShow: 4,
+        slidesToScroll: 1,
+        autoplay: true,
+        autoplaySpeed: 6500,
+        dots: false,
+        arrows: true,
+        accessibility: true,
+        nextArrow: '<i class="fas fa-chevron-right nxt_arr"></i>',
+        prevArrow: '<i class="fas fa-chevron-left prv_arr"></i>',
+
+        responsive: [
+            {
+                breakpoint: 1200,
+                settings: {
+                    slidesToShow: 4,
+                    slidesToScroll: 1,
+                }
+            },
+            {
+                breakpoint: 992,
+                settings: {
+                    slidesToShow: 3,
+                    slidesToScroll: 1,
+                }
+            },
+            {
+                breakpoint: 768,
+                settings: {
+                    slidesToShow: 2,
+                    slidesToScroll: 1,
+                }
+            },
+            {
+                breakpoint: 576,
+                settings: {
+                    slidesToShow: 1,
+                    slidesToScroll: 1,
+                }
+            }
+        ]
+    });
+
+
     
+
     //*==========BRAND MARK SLIDER=========
     $('#brand_mark_slider').slick({
         slidesToShow: 4,

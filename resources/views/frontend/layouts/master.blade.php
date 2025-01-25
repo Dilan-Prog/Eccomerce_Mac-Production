@@ -10,19 +10,35 @@
     <meta name="author" content="Mac Del Norte">
     <meta name="keywords" content="automatizacion, instrumentación, ingenieria, honeywell, transmisores de presion, transmisores de temperatura, medidores de flujo, altech méxico, distribuidor honeywell, videoregistradores, fotoceldas, amplificadores de flama, control de flama, controladores y programadores, control de temperatura, dc1010, dc2800, modutroles, distribuidor certificado honeywell ">
     <meta name="robots" content="all">
+    
+    
+    <meta name="currency" content="MXN">
+
     <link rel="icon" type="image/png" href="{{asset("frontend/images/logo/AVIAzul-Celeste.png")}}" sizes="16x16">
     <link rel="icon" type="image/png" href="{{asset("frontend/images/logo/AVIAzul-Celeste.png")}}" sizes="32x32">
+    
+    <meta name="twitter:card" content="{{asset("frontend/images/logo/AVIAzul-Celeste.png")}}">
+    <meta name="twitter:site" content="@MacdelNorte">
+    <meta name="twitter:title" content="Mac Del Norte: Comercializadoras de Productos Industriales y Especialistas en Instrumentacion">
+    <meta name="twitter:description" content="Soluciones innovadoras en instrumentacion, automatización, medición y control con el mejor precio de la industria">
+    <meta name="twitter:image" content="{{asset("frontend/images/logo/AVIAzul-Celeste.png")}}">
 
-    <!-- Open Graph -->
+    
     <meta property="og:title" content="Mac Del Norte: Comercializadoras de Productos Industriales de Clase Mundial">
     <meta property="og:description" content="Soluciones innovadoras en instrumentacion, automatización, medición y control con el mejor precio de la industria">
     <meta property="og:image" content="{{asset('frontend/images/logo/AVIAzul-Marino.png')}}">
     <meta property="og:url" content="https://www.macdelnorte.com/">
+    <meta property="og:site_name" content="Mac Del Norte">
     <meta property="og:type" content="website">
+    <meta property="article:author" content="https://www.facebook.com/macdelnorteofficial">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap">
     <title>
         @yield('title')
     </title>
+    
+    @yield('canonical_URL')
+    
+    
     <link rel="stylesheet" href="{{asset('frontend/css/bootstrap.min.css')}}" >
     <link rel="stylesheet" href="{{asset('frontend/css/all.min.css')}}" >
     <link rel="stylesheet" href="{{asset('frontend/css/select2.min.css')}}" >
@@ -40,7 +56,7 @@
     
     <link rel="stylesheet" href="{{asset('frontend/css/style.css')}}">
     <link rel="stylesheet" href="{{asset('frontend/css/responsive.css')}}">
-    
+    <script type="module" src="https://cdn.jsdelivr.net/npm/@justinribeiro/lite-youtube@1/lite-youtube.min.js"></script>
 
     <!-- <link rel="stylesheet" href="css/rtl.css"> -->
 </head>

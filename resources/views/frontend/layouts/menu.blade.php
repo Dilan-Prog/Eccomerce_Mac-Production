@@ -97,15 +97,22 @@
                                     <li><a href="{{ route('calibracion-puesta') }}">Calibración y Puesta en Marcha</a></li>
                                 </ul>
                             </li>
-    
                             <li><a href="{{ route('contact') }}">Contacto</a></li>
-                            
-    
+                            <li><a href="{{ route('associate') }}">Asociados y Revendedores</a></li>
+                            <li>
+                                
+                                    <div class="wsus_logos-parther">
+                                        <img src="{{asset('frontend/images/iconos-empresas/mastercard-logo_with_bgc.webp')}}" alt="">
+                                        <img src="{{asset('frontend/images/iconos-empresas/Visa_logo_with_bgc.webp')}}" alt="">
+                                        <img src="{{asset('frontend/images/iconos-empresas/bank_BBVA-logo_with_bgc.webp')}}" alt="">
+                                        <img src="{{asset('frontend/images/iconos-empresas/Paypal-logo_with_bgc.webp')}}" alt="">
+                                        <img src="{{asset('frontend/images/iconos-empresas/delivery_DHL-logo_with_bgc.webp')}}" alt="">
+                                        <img src="{{asset('frontend/images/iconos-empresas/delivery_Estafeta-logo_with_bgc.webp')}}" alt="">
+                                        <img src="{{asset('frontend/images/iconos-empresas/delivery_paquete_express-logo.webp')}}" alt="">
+                                    </div>
+                                
+                            </li>
                         </ul>
-                       
-    
-    
-                        
                     </div>
                 </div>
                 
@@ -193,6 +200,8 @@
                                     <li><a href="{{ route('user.profile') }}" style="color: white">Mi Cuenta</a></li>
                                 @elseif (@auth()->user()->role == 'admin')
                                     <li><a href="{{ route('admin.dashboard') }}" style="color: white">Mi Cuenta</a></li>
+                                @elseif (@auth()->user()->role == 'associate')
+                                    <li><a href="{{ route('associate.dashboard') }}" style="color: white">Mi Cuenta</a></li>
                                 @endif
                             @else
                                 <li><a href="{{ route('login') }}" style="color: white" >Iniciar Sesion</a></li>
@@ -260,6 +269,8 @@
                         </li>
                         
                         <li><a href="{{ route('contact') }}">Contacto</a></li>
+                        <li><a href="{{ route('associate') }}">Asociados y Revendedores</a></li>
+                        
                     </ul>
                     <ul>
                         @if (@auth()->check())
@@ -272,7 +283,17 @@
                             <li><a href="{{ route('login') }}">Iniciar Sesion</a></li>
                             <li><a href="{{ route('login-register') }}" style="color: white">Registrarse</a></li>
                         @endif
-
+                        <li>
+                            <div class="wsus_logos-parther">
+                                <img src="{{asset('frontend/images/iconos-empresas/mastercard-logo_with_bgc.webp')}}" alt="">
+                                <img src="{{asset('frontend/images/iconos-empresas/Visa_logo_with_bgc.webp')}}" alt="">
+                                <img src="{{asset('frontend/images/iconos-empresas/bank_BBVA-logo_with_bgc.webp')}}" alt="">
+                                <img src="{{asset('frontend/images/iconos-empresas/Paypal-logo_with_bgc.webp')}}" alt="">
+                                <img src="{{asset('frontend/images/iconos-empresas/delivery_DHL-logo_with_bgc.webp')}}" alt="">
+                                <img src="{{asset('frontend/images/iconos-empresas/delivery_Estafeta-logo_with_bgc.webp')}}" alt="">
+                                <img src="{{asset('frontend/images/iconos-empresas/delivery_paquete_express-logo.webp')}}" alt="">
+                            </div>
+                        </li>
                     </ul>
                 </div>
             </div>

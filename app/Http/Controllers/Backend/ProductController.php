@@ -56,8 +56,9 @@ class ProductController extends Controller
             'seo_title' => ['nullable','max:200'],
             'sep_description' => ['nullable','max:250'],
             'status' => ['required'],
-            'url_PDF' => ['nullable']
-
+            'url_PDF' => ['nullable'],
+            'canonical_url' => ['nullable', 'url'],
+            'is_canonical' => ['nullable', 'boolean'],
         ]);
 
         /**Handle the image upload */
@@ -78,6 +79,7 @@ class ProductController extends Controller
         $product->video_link = $request->video_link;
         $product->url_PDF = $request->url_PDF;
         $product->sku = $request->sku;
+        $product->productModel = $request->productModel;
         $product->price = $request->price;
         $product->offert_price = $request->offert_price;
         $product->offer_start_date = $request->offer_start_date;
@@ -87,6 +89,8 @@ class ProductController extends Controller
         $product->is_approved = 1;
         $product->seo_title = $request->seo_title;
         $product->seo_description = $request->seo_description;
+        $product->canonical_url = $request->canonical_url;
+        $product->is_canonical = $request->is_canonical;
         $product->save();
 
         toastr('Producto Creado Con exito');
@@ -135,7 +139,9 @@ class ProductController extends Controller
             'seo_title' => ['nullable','max:200'],
             'sep_description' => ['nullable','max:250'],
             'status' => ['required'],
-            'url_PDF' => ['nullable']
+            'url_PDF' => ['nullable'],
+            'canonical_url' => ['nullable', 'url'],
+            'is_canonical' => ['nullable', 'boolean'],
 
         ]);
         $product = Product::findOrFail($id);
@@ -157,6 +163,7 @@ class ProductController extends Controller
         $product->video_link = $request->video_link;
         $product->url_PDF = $request->url_PDF;
         $product->sku = $request->sku;
+        $product->productModel = $request->productModel;
         $product->price = $request->price;
         $product->offert_price = $request->offert_price;
         $product->offer_start_date = $request->offer_start_date;
@@ -166,6 +173,9 @@ class ProductController extends Controller
         $product->is_approved = 1;
         $product->seo_title = $request->seo_title;
         $product->seo_description = $request->seo_description;
+        $product->canonical_url = $request->canonical_url;
+        $product->is_canonical = $request->is_canonical;
+        
         $product->save();
 
         toastr('Producto Actualizado Con exito');
@@ -228,5 +238,26 @@ class ProductController extends Controller
         return $childCategories;
     }
 
+
+    // Base Search Canonical URL
+    
+    //     public function searchProducts(Request $request){
+    //         $query = $request->get('query');
+    //     $products = Product::where('name', 'like', "%$query%")
+    //                         ->orWhere('productModel', 'like', "%$query%")
+    //                         ->orWhere('sku', 'like', "%$query%")
+    //                         ->get(['id', 'name', 'slug']);
+
+    //     return response()->json([
+    //         'results' => $products->map(function($product) {
+    //             return [
+    //                 'id' => $product->id,
+    //                 'text' => $product->name
+    //             ];
+    //         })
+    //     ]);
+    // }
+
+    // End Base Search Canonical URL
 
 }

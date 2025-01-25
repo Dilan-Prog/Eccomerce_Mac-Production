@@ -1,48 +1,95 @@
 @extends('frontend.layouts.master')
 
 @section('title')
-{{$settings->site_name}} || Pagar
+    {{ $settings->site_name }} || Pagar
 @endsection
 
 @section('content')
-
     <!--============================
-        PAYMENT PAGE START
-    ==============================-->
+            PAYMENT PAGE START
+        ==============================-->
     <section id="wsus__cart_view">
         <div class="container">
             <div class="wsus__pay_info_area">
                 <div class="row">
-                    <div class="col-xl-3 col-lg-3">
+                    <div class="col-xl-4 col-lg-4" id="pay-buttons">
+                        <div class="how-topay_payment">
+                            <h5 style="font-weight: 600"> Elige Como Quieres Pagar</h5>
+                        </div>
                         <div class="wsus__payment_menu" id="sticky_sidebar">
                             <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist"
                                 aria-orientation="vertical">
-                                <button class="nav-link common_btn active" id="v-pills-stripe-tab" data-bs-toggle="pill" data-bs-target="#v-pills-stripe" type="button" role="tab" aria-controls="v-pills-stripe" aria-selected="true">Tarjeta de Débito/Crédito</button>
-                                <button class="nav-link common_btn" id="v-pills-paypal-tab" data-bs-toggle="pill" data-bs-target="#v-pills-paypal" type="button" role="tab" aria-controls="v-pills-paypal" aria-selected="false">Paypal</button>
-                                <button class="nav-link common_btn" id="v-pills-transfer-tab" data-bs-toggle="pill" data-bs-target="#v-pills-transfer" type="button" role="tab" aria-controls="v-pills-transfer" aria-selected="false">Pago Por Transferencia</button>
+                                <button class="nav-link" id="v-pills-stripe-tab" data-bs-toggle="pill" data-bs-target="#v-pills-stripe" type="button" role="tab" aria-controls="v-pills-stripe" aria-selected="true">
+                                    <div class="payment-option">
+                                      <div class="image-mask-payment-gift">
+                                        <img src="{{asset('frontend/images/iconos-empresas-sin-fondo/GIFT_debit-credit_card.gif')}}" alt="Tarjeta Debito/Credito" class="payment-icon-gift">
+                                      </div>
+                                      <div class="payment-text">
+                                        <h5>Tarjeta de Débito/Crédito</h5>
+                                        <p>Realice sus pagos con Mastercard, Visa y American Express.</p>
+                                      </div>
+                                    </div>
+                                  </button>
+                                <button class="nav-link" id="v-pills-paypal-tab" data-bs-toggle="pill"
+                                    data-bs-target="#v-pills-paypal" type="button" role="tab"
+                                    aria-controls="v-pills-paypal" aria-selected="false">
+                                    <div class="payment-option">
+                                        <div class="image-mask-payment">
+                                            <img src="{{asset('frontend/images/iconos-empresas-sin-fondo/Paypal-logo-uniform.png')}}" alt="Paypal" class="payment-icon">
+                                        </div>
+                                        <div class="payment-text">
+                                            <h5>Paypal</h5>
+                                            <p>Paga sin compartir tu información bancaria directamente.</p>
+                                        </div>
+                                    </div>
+                                    
+                                </button>
+                                <button class="nav-link active" id="v-pills-transfer-tab" data-bs-toggle="pill" data-bs-target="#v-pills-transfer" type="button" role="tab" aria-controls="v-pills-transfer" aria-selected="false">
+                                    <div class="discount-banner">
+                                        2% desc. adicional
+                                    </div>
+                                    <div class="payment-option">
+                                        <div class="image-mask-payment">
+                                            <img src="{{asset('frontend/images/iconos-empresas-sin-fondo/Transferencia-logo.png')}}" alt="Transferencia" class="payment-icon">
+                                        </div>
+                                        <div class="payment-text">
+                                            <h5>Transferencia SPEI</h5>
+                                            <p>Tiempo Maximo de Aprobacion de Pedido 24Hrs</p>
+                                        </div>
+                                    </div>
+                                </button>
                             </div>
                         </div>
                     </div>
                     <div class="col-xl-5 col-lg-5">
                         <div class="tab-content" id="v-pills-tabContent" id="sticky_sidebar">
-                            <div class="tab-pane fade show active " id="v-pills-stripe" role="tabpanel" aria-labelledby="v-pills-home-tab">
-                            @include('frontend.pages.payment-gateway.stripe')
+
+                            <div class="tab-pane fade show  " id="v-pills-stripe" role="tabpanel"
+                                aria-labelledby="v-pills-home-tab">
+                                @include('frontend.pages.payment-gateway.stripe')
                             </div>
-                            <div class="tab-pane fade show" id="v-pills-paypal" role="tabpanel" aria-labelledby="v-pills-home-tab">
+                            <div class="tab-pane fade show" id="v-pills-paypal" role="tabpanel"
+                                aria-labelledby="v-pills-home-tab">
                                 <div class="row">
                                     <div class="col-xl-12 m-auto">
                                         <div class="wsus__payment_area">
-                                            <a class="nav-link common_btn text-center" href="{{route('user.paypal.payment')}}">Pagar con Paypal</a>
+                                            <a class="nav-link common_btn text-center"
+                                                href="{{ route('user.paypal.payment') }}">Pagar con Paypal</a>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-
-                            <div class="tab-pane fade show" id="v-pills-transfer" role="tabpanel" aria-labelledby="v-pills-home-tab">
+                            
+                            <div class="tab-pane fade show active" id="v-pills-transfer" role="tabpanel"
+                                arialabelledby="v-pills-home-tab">
+                                
+                                
                                 <div class="row text-center">
-                                    <h5 class="common_btn" >Información Bancaria</h5>
+                                    
+                                    <h5 class="common_btn">Información Bancaria</h5>
                                     <form action="{{ route('user.payment.transfer') }}" method="POST">
                                         @csrf
+                                        
                                         <div class="container mt-2 text-center">
                                             <h6>Entidad Bancaria:</h6>
                                             <p>{{ $transferInfo->nameBank }}</p>
@@ -56,27 +103,40 @@
                                             <p>{{ $transferInfo->accountClabe }}</p>
 
                                             <h6>Numero de Orden (Referencia Bancaria):</h6>
-                                            <input class="form-control m-1 text-center" style="font-size: 22px;  transition: none;  " name="refBank" value="{{ rand(100000, 999999) }}" readonly></input>
+                                            <input class="form-control m-1 text-center"
+                                                style="font-size: 22px;  transition: none;  " name="refBank"
+                                                value="{{ rand(100000, 999999) }}" readonly></input>
 
                                         </div>
-                                        <button class="w-100 mt-2" style="background-color: #00468c ; color: white; font-size: 15px;
-                                        text-transform: capitalize; padding: 10px 0px; font-weight: 600; " type="submit" >Hacer Pedido</button>
+                                        <button class="w-100 mt-2"
+                                            style="background-color: #00468c ; color: white; font-size: 15px;
+                                        text-transform: capitalize; padding: 10px 0px; font-weight: 600; "
+                                            type="submit">Hacer Pedido</button>
                                     </form>
                                 </div>
+                                <div class="container text-center" id="discount-transfer">
+                                    <p>Disfruta de un 2% de descuento al hacer tu pago via Transferencia</p>
+                                </div>
                                 <div class="text-center mt-3">
-                                    <small>Al momento de hacer el Pedido se le hara llegar un correo electronico con indicaciones adicionales de pedido.</small>
+                                    <small>Al momento de hacer el Pedido se le hara llegar un correo electronico con
+                                        indicaciones adicionales de pedido.</small>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="col-xl-4 col-lg-4">
+                    <div class="col-xl-3 col-lg-3">
                         <div class="wsus__pay_booking_summary" id="sticky_sidebar2">
                             <h5>Resumen De Compra</h5>
-                            <p>subtotal: <span>{{ $settings->currency_icon }}{{ formatCurrency(getCartTotal()) }}</span></p>
-                            <p>Env&iacute;o: <span>{{ $settings->currency_icon }}{{ formatCurrency(getShppingFee()) }}</span></p>
-                            <p>Descuento de Cupon:<span>{{ $settings->currency_icon }}{{ formatCurrency(getCartDiscount()) }} </span></p>
+                            <p>subtotal: <span>{{ $settings->currency_icon }}{{ formatCurrency(getCartTotal()) }}</span>
+                            </p>
+                            <p>Env&iacute;o:
+                                <span>{{ $settings->currency_icon }}{{ formatCurrency(getShppingFee()) }}</span></p>
+                            <p>Descuento de
+                                Cupon:<span>{{ $settings->currency_icon }}{{ formatCurrency(getCartDiscount()) }} </span>
+                            </p>
 
-                            <h6>total <span>{{ $settings->currency_icon }}{{ formatCurrency(getFinalPayableAmount()) }} Mxn</span></h6>
+                            <h6>total <span id="total">{{ $settings->currency_icon }}{{ formatCurrency(getFinalPayableAmount()) }}
+                                    Mxn</span></h6>
 
                         </div>
                     </div>
@@ -85,12 +145,30 @@
         </div>
     </section>
     <!--============================
-        PAYMENT PAGE END
-    ==============================-->
-
-
-
-
-
+            PAYMENT PAGE END
+        ==============================-->
 @endsection
 
+@push('scripts')
+<script>
+    // Variables para descuento y elementos
+    const discountRate = 0.02; // Descuento del 2%
+    const transferButton = document.getElementById('v-pills-transfer-tab');
+    const stripeButton = document.getElementById('v-pills-stripe-tab');
+    const paypalButton = document.getElementById('v-pills-paypal-tab');
+    const totalElement = document.getElementById('total');
+
+    // Función para calcular el nuevo total con descuento
+    function applyDiscount(isTransferSelected) {
+        const originalTotal = {{ getFinalPayableAmount() }};
+        const newTotal = isTransferSelected ? originalTotal * (1 - discountRate) : originalTotal;
+        totalElement.textContent = `{{ $settings->currency_icon }}${newTotal.toFixed(2)} Mxn`;
+    }
+
+    // Eventos de cambio de método de pago
+    transferButton.addEventListener('click', () => applyDiscount(true));
+    stripeButton.addEventListener('click', () => applyDiscount(false));
+    paypalButton.addEventListener('click', () => applyDiscount(false));
+</script>
+    
+@endpush

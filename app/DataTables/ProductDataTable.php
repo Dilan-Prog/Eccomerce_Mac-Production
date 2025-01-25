@@ -12,6 +12,7 @@ use Yajra\DataTables\Html\Editor\Editor;
 use Yajra\DataTables\Html\Editor\Fields;
 use Yajra\DataTables\Services\DataTable;
 
+
 class ProductDataTable extends DataTable
 {
     /**
@@ -20,6 +21,7 @@ class ProductDataTable extends DataTable
      * @param QueryBuilder $query Results from query() method.
      */
     public function dataTable(QueryBuilder $query): EloquentDataTable
+    // //   <a class="dropdown-item has-icon" href="'.route('admin.products-links.index', ['productId' => $query->id]).'"><i class="fas fa-link"></i> Manage Links</a>
     {
         return (new EloquentDataTable($query))
             ->addColumn('action', function($query){
@@ -31,8 +33,9 @@ class ProductDataTable extends DataTable
                   <i class="fa fa-cog"></i>
                 </button>
                 <div class="dropdown-menu">
-                  <a class="dropdown-item has-icon" href="'.route('admin.products-image-gallery.index', ['product' => $query->id]).'"><i class="far fa-heart"></i> Image Gallery </a>
-                  <a class="dropdown-item has-icon" href="'.route('admin.products-variant.index', ['product' => $query->id]).'"><i class="far fa-file"></i> Product Variant</a>
+                  <a class="dropdown-item has-icon" href="'.route('admin.products-image-gallery.index', ['product' => $query->id]).'"><i class="far fa-images"></i> Image Gallery </a>
+                  <a class="dropdown-item has-icon" href="'.route('admin.products-variant.index', ['product' => $query->id]).'"><i class="fas fa-boxes"></i> Product Variant</a>
+                
 
                 </div>
               </div>';
@@ -79,6 +82,33 @@ class ProductDataTable extends DataTable
                 }
                 return $button;
             })
+            ->addColumn('category', function($query) {
+                return $query->category ? $query->category->name : 'N/A';  // Retrieve category name
+            })
+            ->addColumn('brand', function($query) {
+                return $query->brand ? $query->brand->name : 'N/A';  // Retrieve brand name
+            })
+            ->addColumn('qty', function($query) {
+                return $query->qty;
+            })
+            ->addColumn('short_description', function($query) {
+                return $query->short_description;
+            })
+            ->addColumn('long_description', function($query) {
+                return $query->long_description;
+            })
+            ->addColumn('video_link', function($query) {
+                return $query->video_link;
+            })
+            ->addColumn('url_PDF', function($query) {
+                return $query->url_PDF;
+            })
+            ->addColumn('canonical_url', function($query) {
+                return $query->canonical_url;
+            })
+            ->addColumn('is_canonical', function($query) {
+                return $query->is_canonical ? 'Yes' : 'No';
+            })
             ->rawColumns(['image','type', 'action' , 'status'])
             ->setRowId('id');
     }
@@ -94,23 +124,50 @@ class ProductDataTable extends DataTable
     /**
      * Optional method if you want to use the html builder.
      */
-    public function html(): HtmlBuilder
+    public function html()
     {
         return $this->builder()
                     ->setTableId('product-table')
-                    ->columns($this->getColumns())
                     ->minifiedAjax()
-                    //->dom('Bfrtip')
+                    ->lengthMenu([
+                        [10, 25, 50, -1],
+                        ['10', '25', '50', 'All']   // Configuración de las opciones de cantidad de registros
+                    ])->language('spanish')
+                    ->lengthChange(true) 
                     ->orderBy(0)
-                    ->selectStyleSingle()
-                    ->buttons([
-                        Button::make('excel'),
-                        Button::make('csv'),
-                        Button::make('pdf'),
-                        Button::make('print'),
-                        Button::make('reset'),
-                        Button::make('reload')
-                    ]);
+                    ->columns($this->getColumns())
+                    ->parameters([
+                        'dom'     => 'lBfrtip',
+                        'buttons' => [
+                            [
+                                'extend'   => 'excel',
+                                'text'     => 'Exportar a Excel',
+                                // 'title'    => 'Productos Exportados',  // Título personalizado del archivo Excel
+                                // 'filename' => 'productos_exportados_mac-del-norte',  // Nombre del archivo Excel
+                                
+                            ],
+                            'csv',
+                            'pdf',
+                            'print',
+                            'reset',
+                            'reload',
+                        ],
+                        
+                    'language' => [
+                        'sLengthMenu' => 'Mostrar _MENU_ registros por página',
+                        'sZeroRecords' => 'No se encontraron resultados',
+                        'sInfo' => 'Mostrando _START_ a _END_ de _TOTAL_ registros',
+                        'sInfoEmpty' => 'Mostrando 0 a 0 de 0 registros',
+                        'sInfoFiltered' => '(filtrado de _MAX_ registros en total)',
+                        'sSearch' => 'Buscar:',
+                        'oPaginate' => [
+                            'sFirst' => 'Primera',
+                            'sPrevious' => 'Anterior',
+                            'sNext' => 'Siguiente',
+                            'sLast' => 'Última'
+                        ]
+                    ]
+                ]);
     }
 
     /**
@@ -119,19 +176,57 @@ class ProductDataTable extends DataTable
     public function getColumns(): array
     {
         return [
-            Column::make('id')->width(50),
-            Column::make('name'),
-            Column::make('sku'),
-            Column::make('price')->width(120),
-            Column::make('image'),
-            Column::make('type')->width(100),
-            Column::make('status')->width(100),
+            'id',
+            'name',
+            'sku',
+            'productModel',
+            'price',
+            'image', // Aquí agregamos la columna de imagen
+            'type',  // Aquí agregamos la columna 'type'
+            'status', // Aquí agregamos la columna 'status'
+
+            // Columnas adicionales que no se mostrarán, pero se exportarán
+        Column::make('category')   // Agregamos la columna 'category'
+        ->exportable(true)  // Hacemos que sea exportable
+        ->visible(false),   // No la mostramos en el DataTable
+
+        Column::make('brand')      // Agregamos la columna 'brand'
+                ->exportable(true)  // Hacemos que sea exportable
+                ->visible(false),   // No la mostramos en el DataTable
+
+        Column::make('qty')        // Agregamos la columna 'qty'
+                ->exportable(true)  // Hacemos que sea exportable
+                ->visible(false),   // No la mostramos en el DataTable
+
+        Column::make('short_description') // Agregamos la columna 'short_description'
+                ->exportable(true)  // Hacemos que sea exportable
+                ->visible(false),   // No la mostramos en el DataTable
+
+        Column::make('long_description')  // Agregamos la columna 'long_description'
+                ->exportable(true)  // Hacemos que sea exportable
+                ->visible(false),   // No la mostramos en el DataTable
+
+        Column::make('video_link') // Agregamos la columna 'video_link'
+                ->exportable(true)  // Hacemos que sea exportable
+                ->visible(false),   // No la mostramos en el DataTable
+
+        Column::make('url_PDF')    // Agregamos la columna 'url_PDF'
+                ->exportable(true)  // Hacemos que sea exportable
+                ->visible(false),   // No la mostramos en el DataTable
+
+        Column::make('canonical_url') // Agregamos la columna 'canonical_url'
+                ->exportable(true)  // Hacemos que sea exportable
+                ->visible(false),   // No la mostramos en el DataTable
+
+        Column::make('is_canonical')  // Agregamos la columna 'is_canonical'
+                ->exportable(true)  // Hacemos que sea exportable
+                ->visible(false),   // No la mostramos en el DataTable
 
             Column::computed('action')
                   ->exportable(false)
                   ->printable(false)
                   ->width(300)
-                  ->addClass('text-center')
+                  ->addClass('text-center'),
         ];
     }
 

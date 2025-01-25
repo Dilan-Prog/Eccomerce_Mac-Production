@@ -92,6 +92,10 @@
                       <input type="text" class="form-control" name="sku" value="{{$product->sku}}">
                   </div>
                   <div class="form-group">
+                    <label>Modelo</label>
+                    <input type="text" class="form-control" name="productModel" value="{{$product->productModel}}">
+                  </div>
+                  <div class="form-group">
                       <label>Precio</label>
                       <input type="text" class="form-control" name="price" value="{{$product->price}}">
                   </div>
@@ -128,7 +132,7 @@
                         <input type="text" class="form-control" name="url_PDF" value="{{ $product->url_PDF }}">
                     </div>
                   <div class="form-group">
-                      <label>Descripción Peque&ntilde;a</label>
+                      <label>Garantia</label>
                       <textarea type="text" name="short_description" class="form-control">{!! $product->short_description!!}</textarea>
                   </div>
                   <div class="form-group">
@@ -141,10 +145,10 @@
                       <label for="inputState">Tipo De Producto</label>
                         <select id="inputState" class="form-control" name="product_type">
                           <option value="">Seleccionar...</option>
-                          <option {{$product->product_type == 'new_arrival' ? 'selected' : ''}} value="new_arrival">Producto Nuevo</option>
-                          <option {{$product->product_type == 'featured_product' ? 'selected' : ''}} value="featured_product">Producto Destacado</option>
-                          <option {{$product->product_type == 'top_product' ? 'selected' : ''}} value="top_product">Producto Top</option>
-                          <option {{$product->product_type == 'best_product' ? 'selected' : ''}} value="best_product">Mejor Producto</option>
+                          <option {{$product->product_type == 'new_arrival' ? 'selected' : ''}} value="new_arrival">Nuevo</option>
+                          <option {{$product->product_type == 'featured_product' ? 'selected' : ''}} value="featured_product" disabled>Producto Destacado</option>
+                          <option {{$product->product_type == 'top_product' ? 'selected' : ''}} value="top_product">Más Buscado</option>
+                          <option {{$product->product_type == 'best_product' ? 'selected' : ''}} value="best_product">Más Vendido</option>
                         </select>
                   </div>
 
@@ -165,6 +169,22 @@
                             <option {{$product->status == 0 ? 'selected' : ''}} value="0">Inactivo</option>
                           </select>
                     </div>
+                    <div class="form-group">
+                      <label>Es Url Canonica</label>
+                      <select class="form-control" name="is_canonical">
+                        <option selected="">Seleccionar</option>
+                        <option {{$product->is_canonical == 1 ? 'selected' : ''}} value="1">Si</option>
+                        <option {{$product->is_canonical == 0 ? 'selected' : ''}} value="0">No</option>
+                      </select>
+                    </div>
+                    <div class="form-group">
+                      <label>Url Canonica Personalizada</label>
+                      <div class="wsus__topbar_select">
+                          <input class="form-control" name="canonical_url" value="{{$product->canonical_url}}" placeholder="Poner URL Canonical en caso de no tener una afiliacion y ser unica dejar el campo vacio y posteriormente rellenarlo">
+                      </div>
+                    </div>
+                    
+
                     <button type="submit" class="btn btn-primary">Actualizar</button>
                 </form>
               </div>

@@ -1,2 +1,109 @@
+# Permitir todos los rastreadores de Google
+User-agent: Googlebot
+Allow: /
+
+# Permitir imágenes para Google Imágenes
+User-agent: Googlebot-Image
+Allow: /
+
+# Permitir videos para Google Video
+User-agent: Googlebot-Video
+Allow: /
+
+# Permitir rastreo de productos y páginas clave de e-commerce
+User-agent: Storebot-Google
+Allow: /
+
+# Permitir AdsBot (para anuncios de Google Ads)
+User-agent: AdsBot-Google
+Allow: /
+
+# Bloquear páginas específicas si no quieres que se indexen
 User-agent: *
-Disallow:
+Disallow: /cart/
+Disallow: /checkout/
+Disallow: /account/
+Disallow: /user/payment/
+Disallow: /user/payment-success
+Disallow: /user/payment-transfer-success
+Disallow: /products?subcategory=
+Disallow: /products?category=
+Disallow: /public/products?
+Disallow: /am-Flama
+Disallow: /productos
+Disallow: /Marcha
+Disallow: /Sistemas
+Disallow: /Privacidad
+Disallow: /radar-onda-g
+Disallow: /dc1010
+Disallow: /Smartline-T
+Disallow: /master-logic
+Disallow: /7777-7777d-inmersion
+Disallow: /rental-services
+Disallow: /entradas-multiples
+Disallow: /sistema-e
+Disallow: /socio
+Disallow: /vortex
+Disallow: /sonda-equilibrio
+Disallow: /fotocelda
+Disallow: /Dc-1000
+Disallow: /minitrend
+Disallow: /7774-7774d-valvula
+Disallow: /mvx800
+Disallow: /honeywell
+Disallow: /Din-udc3200
+Disallow: /celdas-dl4000
+Disallow: /Udi-1700
+Disallow: /dl2000
+Disallow: /ST700
+Disallow: /radar-sin-c
+Disallow: /dr-graphic
+Disallow: /sensor-Conductividad
+Disallow: /ina-samr
+Disallow: /Dcp-250
+Disallow: /control-edge-rtu
+Disallow: /eztrend
+Disallow: /multitrend
+Disallow: /accesorios-P
+Disallow: /Din-udc2500
+Disallow: /coriolis
+Disallow: /smv800
+Disallow: /4905-montaje
+Disallow: /4909-valvula
+Disallow: /contacto
+Disallow: /hc900-control
+Disallow: /magnetico
+Disallow: /hc900
+Disallow: /STT3000
+Disallow: /Din-udc3500
+Disallow: /trend-server
+Disallow: /7866-analizador
+Disallow: /ultrasonico
+Disallow: /dl1000-durafet
+Disallow: /servicios
+Disallow: /Renta-equipo
+Disallow: /products?category=controladores
+Disallow: /nosotros
+Disallow: /check_out.html
+Disallow: /product-detail
+Disallow: /login.html
+Disallow: /Din-udc2800
+Disallow: /Gas
+Disallow: /detectorFlama
+
+
+
+# Bloquear archivos sensibles
+Disallow: /admin/
+Disallow: /login/
+Disallow: /register/
+Disallow: /user/password/
+Disallow: /user/payment/
+Disallow: /user/payment-success
+Disallow: /user/payment-transfer-success
+
+# Instrucción para evitar indexar parámetros de búsqueda
+Disallow: /*?*
+
+# Sitemap
+Sitemap: https://www.macdelnorte.com/sitemap.xml

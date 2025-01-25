@@ -1,7 +1,7 @@
     @extends('frontend.layouts.master')
 
     @section('title')
-    {{$settings->site_name}} || Iniciar Seci&oacute;n
+    {{$settings->site_name}} || Iniciar Sesi&oacute;n
 
     @endsection
 

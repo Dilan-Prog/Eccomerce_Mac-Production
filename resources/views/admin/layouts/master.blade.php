@@ -8,6 +8,10 @@
   
   <meta name="csrf-token" id="csrf-token" content="{{ csrf_token() }}">
   <title>Administracion General Mac Del Norte</title>
+  
+
+
+
 
   <!-- General CSS Files -->
   <link rel="stylesheet" href="{{asset('backend/assets/modules/bootstrap/css/bootstrap.min.css') }}">
@@ -20,8 +24,12 @@
   <link rel="stylesheet" href="{{asset('backend/assets/modules/select2/dist/css/select2.min.css')}}" media="print" onload="this.media='all'">
   <link rel="stylesheet" href="{{asset('backend/assets/modules/summernote/summernote-bs4.css')}}" media="print" onload="this.media='all'">
   <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+  {{-- DataTables CSS --}}
   <link rel="stylesheet" href="//cdn.datatables.net/2.0.5/css/dataTables.dataTables.min.css">
   <link rel="stylesheet" href="https://cdn.datatables.net/2.0.5/css/dataTables.bootstrap5.css">
+  <link rel="stylesheet" href="https://cdn.datatables.net/buttons/1.0.3/css/buttons.dataTables.min.css">
+  
+  {{-- End DataTables CSS --}}
   <link rel="stylesheet" href="{{asset('backend/assets/css/bootstrap-iconpicker.min.css')}}" media="print" onload="this.media='all'">
   <link rel="stylesheet" href="{{asset('backend/assets/modules/bootstrap-daterangepicker/daterangepicker.css')}}">
    {{-- Pdf Cdnjs --}}
@@ -39,7 +47,8 @@
 
   gtag('config', 'UA-94034622-3');
 </script>
-<!-- /END GA --></head>
+<!-- /END GA -->
+</head>
 
 <body>
   <div id="app">
@@ -88,8 +97,17 @@
   <script src="{{asset('backend/assets/js/scripts.js')}}"></script>
   <script src="{{asset('backend/assets/js/custom.js')}}"></script>
   <script src="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+  {{-- DataTables JS --}}
+
   <script src="//cdn.datatables.net/2.0.5/js/dataTables.min.js"></script>
   <script src="https://cdn.datatables.net/2.0.5/js/dataTables.bootstrap5.js"></script>
+  <script src="https://cdn.datatables.net/buttons/1.0.3/js/dataTables.buttons.min.js"></script>
+  <script src="/vendor/datatables/buttons.server-side.js"></script>
+
+
+
+
+  {{-- End DataTables JS --}}
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script src="{{asset('backend/assets/js/bootstrap-iconpicker.bundle.min.js')}}"></script>
 

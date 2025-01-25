@@ -29,6 +29,7 @@ return new class extends Migration
             $table->text('video_link')->nullable();
             $table->text('url_PDF')->nullable();
             $table->string('sku')->nullable();
+            $table->string('productModel')->nullable();
             $table->double('price')->nullable();
             $table->double('offert_price')->nullable();
             $table->date('offer_start_date')->nullable();

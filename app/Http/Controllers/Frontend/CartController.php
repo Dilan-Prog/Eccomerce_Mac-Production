@@ -58,6 +58,7 @@ class CartController extends Controller
         $cartData['price'] = $productPrice;
         $cartData['weight'] = 10;
         $cartData['options']['sku'] = $product->sku;
+        $cartData['options']['productModel'] = $product->productModel;
         $cartData['options']['image'] = $product->thumb_image;
         $cartData['options']['slug'] = $product->slug;
         $cartData['options']['brand_name'] = $request->brand_name;

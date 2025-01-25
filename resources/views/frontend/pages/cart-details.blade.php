@@ -50,9 +50,7 @@
                                         <td class="wsus__pro_name text-center">
                                             <p>{!!$item->name!!}</p>
                                             <small>Marca:{{$item->options->brand_name}}</small>
-                                            <br>
-                                            <small>Modelo:{{ $item->options->sku }}</small>
-
+                                            <small>Modelo:{{ $item->options->productModel }}</small>
                                         </td>
 
 

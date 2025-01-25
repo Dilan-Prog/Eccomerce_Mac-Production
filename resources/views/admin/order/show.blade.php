@@ -75,6 +75,7 @@
                         <tr>
                             <th data-width="40">#</th>
                             <th>Artículo</th>
+                            <th>Clave</th>
                             <th>Modelo</th>
                             <th class="text-center">Precio</th>
                             <th class="text-center">Cantidad</th>
@@ -85,6 +86,7 @@
                             <td>{{ ++$loop->index }}</td>
                             <td>{{ $product->product_name }}</td>
                             <td>{{ $product->sku }}</td>
+                            <td>{{$product->productModel}}</td>
                             <td class="text-center">{{ $settings->currency_icon }}{{ formatCurrency($product->unit_price) }}</td>
                             <td class="text-center">{{ $product->qty }}</td>
                             <td class="text-right">{{ $settings->currency_icon }}{{ formatCurrency($product->unit_price * $product->qty) }}</td>

@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\Brand;
 use App\Models\FlashSale;
 use App\Models\FlashSaleItem;
+use App\Models\Product;
+use App\Models\ShippingRule;
 use Illuminate\Http\Request;
 use App\Models\Slider;
 use Illuminate\Support\Facades\Cache;
@@ -34,16 +36,57 @@ class HomeController extends Controller
 
         // Caché para los artículos de la venta flash
         $flashSaleItems = Cache::rememberForever('flash_sale_items', function() {
-            return FlashSaleItem::with(['product', 'product.productImageGalleries', 'product.category'])
+            return FlashSaleItem::with(['product', 'product.productImageGalleries', 'product.category','product.reviews'])
                 ->where('show_at_home', 1)
                 ->where('status', 1)
                 ->get();
         });
+
+        $shippingRules = ShippingRule::where('type', 'min_cost')->first();
+
+        //Carrusel Category One
+        Cache::forget('category_product_section_one');
+        $categoryProductsSectionsOne = Cache::remember('category_product_section_one', 600, function() {
+            return Product::with(['productImageGalleries', 'category','reviews']) // Corrige aquí las relaciones
+                ->where('status', 1)
+                ->whereIn('category_id', [ 2, 4, 12, 9]) // Categorías específicas
+                ->inRandomOrder() // Ordenar de forma aleatoria
+                ->take(12)
+                ->get();
+        });
+
+        //Carrusel Category two
+        Cache::forget('category_product_section_two');
+        $categoryProductsSectionsTwo = Cache::remember('category_product_section_two', 600, function() {
+            return Product::with(['productImageGalleries', 'category','reviews']) // Corrige aquí las relaciones
+                ->where('status', 1)
+                ->whereIn('category_id', [20, 5, 6, 7]) // Categorías específicas
+                ->inRandomOrder() // Ordenar de forma aleatoria
+                ->take(12)
+                ->get();
+        });
+
+
+        // Carrusel Category Three
+        Cache::forget('category_product_section_three');
+        $categoryProductsSectionsThree = Cache::remember('category_product_section_three', 600, function() {
+            return Product::with(['productImageGalleries', 'category','reviews']) // Corrige aquí las relaciones
+                ->where('status', 1)
+                ->whereIn('category_id', [ 2, 4]) // Categorías específicas
+                ->inRandomOrder() // Ordenar de forma aleatoria
+                ->take(12)
+                ->get();
+        });
+
         return view('frontend.home.home', compact(
             'sliders',
             'flashSaleDate',
             'flashSaleItems',
-            'brands'
+            'brands',
+            'categoryProductsSectionsOne',
+            'categoryProductsSectionsTwo',
+            'categoryProductsSectionsThree',
+            'shippingRules'
         ));
     }
 
@@ -71,4 +114,8 @@ class HomeController extends Controller
         return view('frontend.pages.medicion');
     }
     
+    public function  associatePage(){
+        return view('frontend.pages.associate_page');
+    }
+
 }

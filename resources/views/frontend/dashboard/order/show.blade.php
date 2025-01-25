@@ -88,11 +88,14 @@
                                                                 Producto
                                                             </th>
                                                             <th class="name">
+                                                                Clave
+                                                            </th>
+                                                            <th class="name">
                                                                 Modelo
                                                             </th>
 
                                                             <th class="amount">
-                                                                Total
+                                                                Precio x Unidad
                                                             </th>
 
                                                             <th class="quentity">
@@ -111,6 +114,10 @@
                                                                     <td class="name">
                                                                         <p>{{ $product->sku }}</p>
                                                                     </td>
+                                                                    <td class="name">
+                                                                        <p>{{ $product->productModel }}</p>
+                                                                    </td>
+
                                                                     <td class="amount">
                                                                         {{ $settings->currency_icon }}{{ formatCurrency($product->unit_price) }}Mxn
                                                                     </td>

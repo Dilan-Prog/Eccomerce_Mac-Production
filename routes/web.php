@@ -13,6 +13,7 @@ use App\Http\Controllers\Frontend\UserDashboardController;
 use App\Http\Controllers\Frontend\UserProfileController;
 use App\Http\Controllers\Frontend\CheckOutController;
 use App\Http\Controllers\Frontend\PaymentController;
+use App\Http\Controllers\Frontend\ReviewController;
 use App\Http\Controllers\Frontend\UserOrderController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
@@ -32,6 +33,7 @@ Route::get('/', [HomeController::class, 'index'])->name('index');
 Route::get('price', [HomeController::class, 'price'])->name('price');
 Route::get('contact', [HomeController::class, 'contact'])->name('contact');
 Route::get('about', [HomeController::class, 'about'])->name('about');
+Route::get('associate',[HomeController::class, 'associatePage'])->name('associate');
 Route::get('calibracion-puesta', [HomeController::class, 'servicesCalibration'])->name('calibracion-puesta');
 Route::get('sistemas', [HomeController::class, 'servicesSistemas'])->name('sistemas');
 Route::get('medicion', [HomeController::class, 'servicesMedicion'])->name('medicion');
@@ -85,6 +87,12 @@ Route::group(['middleware' => ['auth','verified'], 'prefix' => 'user', 'as' => '
     /**User Order */
     Route::get('orders', [UserOrderController::class, 'index'])->name('orders.index');
     Route::get('orders/show/{id}', [UserOrderController::class, 'show'])->name('orders.show');
+
+
+     /**Product Reviews routes */
+     Route::post('review', [ReviewController::class, 'create'])->name('review.create');
+
+
 
     /**Checkout route */
     Route::get('checkout',[CheckOutController::class, 'index'])->name('checkout');

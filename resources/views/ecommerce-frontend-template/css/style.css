@@ -1600,6 +1600,7 @@ PRODUCT MODAL VIEW END
 }
 
 .wsus__product_item {
+  height: 510px;
   margin-top: 25px;
   position: relative;
   overflow: hidden;
@@ -1614,6 +1615,7 @@ PRODUCT MODAL VIEW END
   /* border: 1px solid #eee; */
   background: #fff;
   box-shadow: rgb(50 50 93 / 15%) 0px 0px 5px 0px;
+  
 }
 
 .wsus__new {

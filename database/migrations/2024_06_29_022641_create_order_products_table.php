@@ -17,6 +17,7 @@ return new class extends Migration
             $table->integer('product_id');
             $table->string('product_name');
             $table->string('sku');
+            $table->string('productModel');
             $table->string('unit_price');
             $table->integer('qty');
 

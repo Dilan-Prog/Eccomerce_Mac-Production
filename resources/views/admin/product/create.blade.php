@@ -77,9 +77,14 @@
                       </div>
 
                     <div class="form-group">
-                      <label>Sku/Modelo(Codigo identificador)</label>
+                      <label>Sku</label>
                       <input type="text" class="form-control" name="sku" value="{{old('sku')}}">
                   </div>
+                  <div class="form-group">
+                    <label>Modelo</label>
+                    <input type="text" class="form-control" name="productModel" value="{{old('productModel')}}">
+                  </div>
+                
                   <div class="form-group">
                       <label>Precio</label>
                       <input type="text" class="form-control" name="price" value="{{old('price')}}">
@@ -88,6 +93,7 @@
                       <label>Precio De Oferta</label>
                       <input type="text" class="form-control" name="offert_price" value="{{old('offert_price')}}">
                   </div>
+                  
                   <div class="row">
 
                     <div class="col-md-6">
@@ -117,7 +123,7 @@
                     <input type="text" class="form-control" name="url_PDF" value="{{old('url_PDF')}}">
                   </div>
                   <div class="form-group">
-                      <label>Descripción Pequeña</label>
+                      <label>Garantia</label>
                       <textarea type="text" name="short_description"  class="form-control"></textarea>
                   </div>
                   <div class="form-group">
@@ -130,10 +136,10 @@
                       <label for="inputState">Tipo De Producto</label>
                         <select id="inputState" class="form-control" name="product_type">
                           <option value="0">Seleccionar...</option>
-                          <option value="new_arrival">Producto Nuevo</option>
-                          <option value="featured_product">Producto Destacado</option>
-                          <option value="top_product">Producto Top</option>
-                          <option value="best_product">Mejor producto</option>
+                          <option value="new_arrival">Nuevo</option>
+                          <option value="featured_product" disabled>Producto Destacado</option>
+                          <option value="top_product">Más Buscado</option>
+                          <option value="best_product">Más Vendido</option>
 
                         </select>
                   </div>
@@ -150,11 +156,45 @@
                     <div class="form-group">
                         <label for="inputState">Estado</label>
                           <select id="inputState" class="form-control" name="status">
-                            <option selected="">Seleccionar...</option>
+                            <option value="none">Seleccionar...</option>
                             <option value="1">Activo</option>
                             <option value="0">Inactivo</option>
                           </select>
                     </div>
+
+                  <div class="form-group">
+                    <label>Es Url Canonica (Solo Marketing)</label>
+                    <select class="form-control" name="is_canonical">
+                      <option value="">Seleccionar</option>
+                      <option value="1">Si</option>
+                      <option value="0">No</option>
+                    </select>
+                  </div>
+                  
+                  <div class="form-group">
+                    <label>Url Canonica Personalizada (Solo Marketing)</label>
+                    <div class="wsus__topbar_select">
+                        <input class="form-control" name="canonical_url" value="{{old('canonical_url')}}" placeholder="Poner URL Canonical en caso de no tener una afiliacion y ser unica dejar el campo vacio y posteriormente rellenarlo">
+                    </div>
+                  </div>
+                
+
+                {{-- Base Search Canonical URL --}}
+
+                  {{-- <div class="form-group">
+                    <label>Url Canonica Personalizada</label>
+                    <div class="wsus__topbar_select">
+                        <select class="form-control" name="canonical_url" id="product-search">
+                            
+                            
+                        </select>
+                    </div>
+                </div>
+                 --}}
+
+                 {{-- End Base Search Canonical URL --}}
+                
+
                     <button type="submit" class="btn btn-primary">Crear</button>
                 </form>
               </div>
@@ -174,6 +214,47 @@
 @push('scripts')
 <script>
   $(document).ready(function(){
+
+
+
+    // Base Search Canonical URL
+
+    // $('#product-search').select2({
+    //     placeholder: 'Buscar...',
+    //     ajax: {
+    //         url: "{{ route('admin.products.search') }}", // RUTA DE LA BÚSQUEDA
+    //         dataType: 'json',
+    //         delay: 250, // Retardo para evitar peticiones excesivas
+    //         data: function (params) {
+    //             return {
+    //                 query: params.term // El término que el usuario ingresa
+    //             };
+    //         },
+    //         success: function (data) {
+    //         console.log('Success:', data); // Verifica los datos recibidos en la consola
+    //         },
+    //         error: function (xhr, status, error) {
+    //             console.error('Error:', error); // Muestra el error si algo sale mal
+    //             alert('Hubo un problema al cargar los productos. Por favor, intenta de nuevo más tarde.');
+    //         },
+    //         processResults: function (data) {
+    //           console.log(data); // Verifica los datos recibidos
+    //           return {
+    //               results: $.map(data.results, function (product) {
+    //                   return {
+    //                       id: product.id,
+    //                       text: product.text
+    //                   };
+    //               })
+    //           };
+    //       },
+            
+    //     },
+    //     minimumInputLength: 2 // Mínimo de caracteres para comenzar la búsqueda
+    // });
+
+    // End Base Search Canonical URL
+
     $('body').on('change', '.main-category',function(e){
       let id = $(this).val();
       $.ajax({
@@ -223,6 +304,11 @@
       })
 
     })
+
+    
+
+
+
 
   })
 </script>

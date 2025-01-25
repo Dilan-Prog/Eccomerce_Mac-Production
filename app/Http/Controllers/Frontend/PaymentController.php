@@ -43,8 +43,10 @@ class PaymentController extends Controller
     public function paymentTransferSuccess(Request $request){
 
         if (!$request->hasValidSignature()) {
-            return Redirect::route('index')->with('error', 'La URL de pago ha caducado.');
+            // Si la firma no es válida, redirigir al index con un mensaje de error
+            return redirect()->route('index')->with('error', 'La URL de pago ha caducado.');
         }
+
         $order = Order::where('payment_method', 'transfer')->latest()->first();
 
         return view('frontend.pages.payment-transfer-success', compact('order'));
@@ -84,14 +86,20 @@ class PaymentController extends Controller
 
         if ($paymentMethod === 'transfer') {
             $order->invocie_id = $refBank; // Si es transferencia, usar el valor de refBank como invocie_id
+    
+            // Aplicar el descuento si es pago por transferencia
+            $discount = 0.02; // por ejemplo, 10% de descuento
+            $finalPayableAmount = getFinalPayableAmount() * (1 - $discount);
+            $order->amount = $finalPayableAmount;
         } else {
             $order->invocie_id = rand(1, 999999); // Generar aleatoriamente si no es transferencia
+            $order->amount = getFinalPayableAmount();
         }
 
 
         $order->user_id = Auth::user()->id;
         $order->sub_total = getCartTotal();
-        $order->amount = getFinalPayableAmount();
+        
         $order->currency_name = $setting->currency_name;
         $order->currency_icon = $setting->currency_icon;
         $order->product_qty =\Cart::content()->count();
@@ -113,6 +121,7 @@ class PaymentController extends Controller
             // $orderProduct->vendor_id = $product->vendor_id;
             $orderProduct->product_name = $product->name;
             $orderProduct->sku = $product->sku;
+            $orderProduct->productModel = $product->productModel;
             $orderProduct->unit_price = $item->price;
             $orderProduct->qty = $item->qty;
             $orderProduct->save();
@@ -309,7 +318,7 @@ class PaymentController extends Controller
 
 
         $signedUrl = URL::temporarySignedRoute(
-            'user.payment-transfer.success', now()->addSeconds(30)
+            'user.payment-transfer.success', now()->addMinutes(1)
         );
         // Disparar la notificación
         $this->notifyPaymentProcessed($order);

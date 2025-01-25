@@ -71,6 +71,7 @@ Route::put('product/change-status', [ProductController::class, 'changeStatus'])-
 Route::get('products/get-subcategories',[ ProductController::class, 'getSubCategories'])->name('product.get-subcategories');
 Route::get('products/get-child-categories',[ ProductController::class, 'getChildCategories'])->name('product.get-child-categories');
 Route::resource('products',ProductController::class);
+Route::get('products/search', [ProductController::class, 'searchProducts'])->name('products.search');
 
 /**ProductImageGallery route */
 Route::get('products-image-gallery/{productId}', [ProductImageGalleryController::class, 'index'])->name('admin.products-image-gallery.index');

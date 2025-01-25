@@ -524,10 +524,61 @@
     margin-top: 40px;
     margin-bottom: 40px;
   }
+  .shopping-cart-form-cotize .common_btn{
+    font-size: 10px;
+  }
+  .associate-start-text h1{
+    font-size: 4.5rem;
+    line-height: 80px;
+  }
+  .associate-start-text h1::after{
+    height: 9.3rem;
+  }
+  .associate-start-text p{
+    margin-top: 20px;
+    font-size: 0.8rem;
+    line-height: 20px;
+  }
+  .associate-content-card .card{
+    width: 250px;
+    height: 400px;
+  }
+  .associate-content-card .card .card-body img{
+    padding: 26px 5px;
+    width: 100px;
+  }
+  .associate-content-card .card .card-body p{
+   font-size: 14px;
+   line-height: 25px;
+  }
+  .wsus_logos-parther img{
+    width: 22px;
+  }
+  #wsus__flash_sell .wsus__product_item {
+    margin: 25px 12px 0px 12px;
+    width: 270px;
+    height: 510px;
+  }
 
-  
-  
+  #wsus__electronic2 .wsus__product_item,
+  #wsus__electronic .wsus__product_item {
+    margin: 25px 12px 0px 12px;
+    width: 270px;
+    height: 510px;
+  }
+  .wsus__product_item{
+    width: 270px;
+    height: 510px;
+  }
 
+  #sticky_sidebar h5 {
+    font-size: 15px;
+  }
+  
+  #sticky_sidebar div button p {
+    font-size: 13px;
+  }
+  
 }
 
 /* Tablet landspace */
@@ -1233,8 +1284,81 @@
     line-height: 16px;
   }
 
+  .shopping-cart-form-cotize .common_btn{
+    font-size: 10px;
+  }
+  .associate-start-text h1{
+    font-size: 4.5rem;
+    line-height: 80px;
+  }
+  .associate-start-text h1::after{
+    height: 9.3rem;
+  }
+  .associate-start-text p{
+    margin-top: 20px;
+    font-size: 0.8rem;
+    line-height: 20px;
+  }
+  .associate-content-card .card{
+    width: 220px;
+    height: 350px;
+  }
+  .associate-content-card .card .card-body img{
+    padding: 26px 5px;
+    width: 90px;
+  }
+  .associate-content-card .card .card-body p{
+   font-size: 10px;
+   line-height: 18px;
+  }
+  .wsus_logos-parther img{
+    width: 20px;
+  }
 
+  #wsus__flash_sell .wsus__product_item {
+    margin: 25px 12px 0px 12px;
+    width: 225px;
+    height: 510px;
+  }
+  #wsus__electronic2 .wsus__product_item,
+  #wsus__electronic .wsus__product_item {
+    margin: 25px 12px 0px 12px;
+    width: 225px;
+    height: 510px;
+  }
+  .wsus__product_item{
+    width: 205px;
+    height: 520px;
+  }
+
+
+  #sticky_sidebar h5 {
+    font-size: 14px;
+  }
   
+  #sticky_sidebar div button p {
+    font-size: 11px;
+    line-height: 15px;
+  }
+
+  .payment-icon-gift{
+    
+    width: 35px; 
+    height: auto; 
+    
+  
+  }
+  .payment-icon {
+    width: 35px; /* Ajusta el tamaño de la imagen */
+    height: auto; /* Mantiene la proporción de la imagen */
+  }
+
+  .iframe-video-eccomerce #video-container iframe,
+.iframe-video-eccomerce .video-placeholder img {
+  height: 500px; /* Ajusta esta altura según lo necesites */
+  
+} 
+
 
 }
 /* Tablet not Landspace */
@@ -1967,17 +2091,22 @@
 
   /* PAYMENT PAGE START */
   #v-pills-tab {
-    flex-direction: inherit !important;
-    justify-content: space-between;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
   }
 
   .wsus__pay_info_area .nav-pills .nav-link {
-    width: 24%;
+    width: 100%;
     font-size: 12px;
   }
 
   #v-pills-tabContent {
     margin-bottom: 30px;
+  }
+  .wsus__pay_info_area #pay-buttons{
+    margin-bottom: 12px;
   }
 
   /* TEAM DETAILS START */
@@ -2455,6 +2584,86 @@
   #info-payment-sucess .info-payment-sucess-advert .container{
     margin-top: 10px;
   }
+  .wsus__stock_area .in_stock {
+    font-size: 14px;
+  }
+  .shopping-cart-form-cotize .common_btn{
+    font-size: 10px;
+  }
+  .associate-start-text .container{
+    margin-right: 39px;
+  }
+  .associate-start-text .associate-text-eslogan {
+    font-size: 0.7rem;
+  }
+  .associate-start-text h1{
+    font-size: 3.0rem;
+    line-height: 50px;
+  }
+  .associate-start-text h1::after{
+    height: 8.0rem;
+  }
+  .associate-start-text p{
+    margin-top: 20px;
+    font-size: 0.57rem;
+    line-height: 15px;
+  }
+  .associate-content-card .card{
+    width: 170px;
+    height: 300px;
+  }
+  .associate-content-card .card .card-body img{
+    padding: 26px 5px;
+    width: 85px;
+  }
+  .associate-content-card .card .card-body p{
+   font-size: 8px;
+   line-height: 14px;
+  }
+
+
+  .wsus_logos-parther{
+    margin-top: 8px;
+    display: flex;
+    justify-content: space-around;
+  }
+
+  .wsus_logos-parther img{
+    width: 35px;
+    
+  }
+
+  #wsus__flash_sell .wsus__product_item {
+    margin: 25px 12px 0px 12px;
+    width: 215px;
+    height: 510px;
+  }
+  
+
+  #wsus__electronic2 .wsus__product_item,
+  #wsus__electronic .wsus__product_item {
+    margin: 25px 12px 0px 12px;
+    width: 215px;
+    height: 510px;
+  }
+
+  .wsus__product_item{
+    width: 330px;
+    height: 510px;
+  }
+
+  .wsus__product_details .wsus__category {
+    
+    font-size: 10px;
+   
+  }
+
+  .iframe-video-eccomerce #video-container iframe,
+.iframe-video-eccomerce .video-placeholder img {
+  width: 100%;
+  height: 425px; /* Ajusta esta altura según lo necesites */
+  max-height: 100%;
+} 
 
 
 }
@@ -2949,7 +3158,7 @@
   /* PRODUCT DETAILS PAGE START */
   .wsus__pro_details_text .title {
     font-size: 20px;
-    margin-top: 25px;
+    
   }
 
   .wsus__pro_report {
@@ -3380,15 +3589,22 @@
 
   /* PAYMENT PAGE START */
   #v-pills-tab {
-    flex-direction: inherit !important;
-    justify-content: space-between;
-    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
   }
 
   .wsus__pay_info_area .nav-pills .nav-link {
-    width: 49%;
-    padding: 10px 0px;
+    width: 100%;
     font-size: 12px;
+  }
+
+  #v-pills-tabContent {
+    margin-bottom: 30px;
+  }
+  .wsus__pay_info_area #pay-buttons{
+    margin-bottom: 12px;
   }
 
   .wsus__pay_info_area .tab-pane {
@@ -4029,6 +4245,122 @@
   #info-payment-sucess .info-payment-sucess-advert .container small{
     font-size: 8px;
   }
+  .wsus__stock_area .in_stock {
+    font-size: 10px;
+  }
+  .shopping-cart-form-cotize .common_btn{
+    font-size: 9px;
+  }
+  /*associate text*/
+  .associate-start-text .container{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin: 0px;
+    max-width: 90vw;
+  }  
+
+  .associate-start-text .associate-text-eslogan {
+    font-size: 0.55rem;
+    text-align: center;
+    margin-bottom: 0.35rem;
+    text-shadow: 2px 2px 6px rgba(0, 0, 0, 100);
+  }
+  .associate-start-text h1{
+    font-size: 1.95rem;
+    text-align: center;
+    line-height: 32px;
+    text-shadow: 3px 3px 8px rgba(0, 0, 0, 100);
+    margin-left: 0px;
+  }
+  
+  
+  .associate-start-text h1::after{
+
+    box-sizing: border-box;
+    background-color:white;
+    position:absolute;
+    width: 0px;
+    height: 0rem;
+    left: none;
+    
+    transform: none;
+    
+  }
+  
+  
+  .associate-start-text p{
+    margin-top: 8px;
+    font-size: 0.45rem;
+    line-height: 15px;
+    text-align: center;
+    text-shadow: 3px 3px 2px rgba(0, 0, 0, 100);
+  }
+/*Display associates config*/
+  .associate-content-card .card-start-end{
+    transform: none;
+  }
+  
+  .associate-content-card .container{
+    transform: none;
+  }
+  .associate-content-card .container .row{
+    margin-bottom: 25px;
+  }
+
+  .associate-content-card .col-sm-12{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 5px 5px;
+  }
+  .wsus_logos-parther{
+    margin-top: 8px;
+    display: flex;
+    justify-content: space-around;
+  }
+
+  .wsus_logos-parther img{
+    width: 35px;
+    
+  }
+  #wsus__flash_sell .wsus__product_item {
+    margin: 25px 12px 0px 12px;
+    width: auto;
+    
+  }
+  #wsus__electronic2 .wsus__product_item,
+  #wsus__electronic .wsus__product_item {
+    margin: 25px 12px 0px 12px;
+    width: auto;
+   
+  }
+  .wsus__product_item{
+    width: auto;
+    
+  }
+
+  #sticky_sidebar h5 {
+    text-align: start;
+    margin-left: 20px;
+    font-size: 16px;
+  }
+
+  
+  #sticky_sidebar div button p {
+    font-size: 14px;
+    line-height: 20px;
+  }
+
+  .iframe-video-eccomerce #video-container iframe,
+.iframe-video-eccomerce .video-placeholder img {
+  width: 100%;
+  height: 300px; /* Ajusta esta altura según lo necesites */
+  max-height: 100%;
+} 
+
+  
 }
 
 @media (max-width: 575.99px)  {
@@ -4521,7 +4853,7 @@
 
   .wsus__pro_details_text .title {
     font-size: 20px;
-    margin-top: 25px;
+    
   }
 
   .wsus__pro_details_text h4 {
@@ -5155,15 +5487,23 @@
 
   /* PAYMENT PAGE START */
   #v-pills-tab {
-    flex-direction: inherit !important;
-    justify-content: space-between;
-    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
   }
 
   .wsus__pay_info_area .nav-pills .nav-link {
-    width: 49%;
-    padding: 10px 0px;
+    width: 100%;
     font-size: 12px;
+  }
+
+  
+  #v-pills-tabContent {
+    margin-bottom: 30px;
+  }
+  .wsus__pay_info_area #pay-buttons{
+    margin-bottom: 12px;
   }
 
   .wsus__pay_info_area .tab-pane {
@@ -5900,6 +6240,128 @@
   #info-payment-sucess .info-payment-sucess-advert .container small{
     font-size: 8px;
   }
+  .wsus__stock_area .in_stock {
+    font-size: 10px;
+  }
+  .shopping-cart-form-cotize .common_btn{
+    font-size: 9px;
+    text-shadow: 3px 3px 8px rgba(0, 0, 0, 100);
+  }
+/*associate text*/
+  .associate-start-text .container{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin: 0px;
+    max-width: 90vw;
+  }  
+
+  .associate-start-text .associate-text-eslogan {
+    font-size: 0.55rem;
+    text-align: center;
+    margin-bottom: 0.35rem;
+    text-shadow: 2px 2px 6px rgba(0, 0, 0, 100);
+  }
+  .associate-start-text h1{
+    font-size: 1.95rem;
+    text-align: center;
+    line-height: 32px;
+    text-shadow: 3px 3px 8px rgba(0, 0, 0, 100);
+    margin-left: 0px;
+  }
+  
+  
+  .associate-start-text h1::after{
+
+    box-sizing: border-box;
+    background-color:white;
+    position:absolute;
+    width: 0px;
+    height: 0rem;
+    left: none;
+    
+    transform: none;
+    
+  }
+  
+  
+  .associate-start-text p{
+    margin-top: 8px;
+    font-size: 0.45rem;
+    line-height: 15px;
+    text-align: center;
+    text-shadow: 3px 3px 2px rgba(0, 0, 0, 100);
+  }
+/*Display associates config*/
+  .associate-content-card .card-start-end{
+    transform: none;
+  }
+  
+  .associate-content-card .container{
+    transform: none;
+  }
+  .associate-content-card .container .row{
+    margin-bottom: 25px;
+  }
+
+  .associate-content-card .col-sm-12{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 5px 0px;
+  }
+
+  .wsus_logos-parther{
+    margin-top: 8px;
+    display: flex;
+    justify-content: space-around;
+  }
+
+  .wsus_logos-parther img{
+    width: 35px;
+    
+  }
+  #wsus__flash_sell .wsus__product_item {
+    margin: 25px 12px 0px 12px;
+    width: auto;
+    
+  }
+  #wsus__electronic2 .wsus__product_item,
+  #wsus__electronic .wsus__product_item {
+    margin: 25px 12px 0px 12px;
+    width: auto;
+   
+  }
+  .wsus__product_item{
+    width: auto;
+    
+  }
+
+  .wsus_logos-parther_footer img{
+    width: 50px;
+  }
+
+  /* Payment adjust */
+
+  #sticky_sidebar h5 {
+    text-align: start;
+    margin-left: 20px;
+    font-size: 16px;
+  }
+
+  
+  #sticky_sidebar div button p {
+    font-size: 14px;
+    line-height: 20px;
+  }
+
+  .iframe-video-eccomerce #video-container iframe,
+.iframe-video-eccomerce .video-placeholder img {
+  width: 100%;
+  height: 300px; /* Ajusta esta altura según lo necesites */
+  max-height: 100%;
+} 
 
   /* extra css start here */
 

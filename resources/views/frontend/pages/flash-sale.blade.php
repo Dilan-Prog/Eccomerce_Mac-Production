@@ -21,11 +21,11 @@
                     <div class="col-xl-12">
                         <div class="wsus__section_header rounded-0">
                             <h3>Lo mas vendido</h3>
-                            <div class="wsus__offer_countdown">
+                            {{-- <div class="wsus__offer_countdown">
                                 <span class="end_text">ends time :</span>
                                 <div class="simply-countdown simply-countdown-one"></div>
                             </div>
-                        </div>
+                        </div> --}}
                     </div>
                 </div>
 
@@ -87,8 +87,13 @@
                                 <form class="shopping-cart-form">
                                     <input type="hidden" name="product_id" value="{{$product->id}}">
                                     <input type="hidden" name="brand_name" value="{{ $product->brand->name }}">
+                                    <input type="hidden" name="sku" value="{{$product->sku}}">
+                                    <input type="hidden" name="productModel" value="{{$product->productModel}}">
+                                    @if ($product->price)
                                     <button type="submit" class="add_cart" href="#">Agregar al Carrito</button>
-
+                                    @else
+                                    <a type="submit" class="add_cart2" href="{{route('contact')}}">Requiere Asesoria</a>
+                                    @endif
                                     <input name="qty" type="hidden" min="1" max="100" value="1" />
                                 </form>
                             </div>

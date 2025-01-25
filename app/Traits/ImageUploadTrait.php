@@ -31,6 +31,28 @@ trait ImageUploadTrait{
 
 
     }
+    public function uploadMultiImageReview(Request $request, $inputName, $path)
+    {
+        $imagePaths = [];
+        
+        if($request->hasFile($inputName)){
+
+            $images = $request->{$inputName};
+
+            foreach($images as $image){
+
+                $ext = $image->getClientOriginalExtension();
+                $imageName = 'media_'.uniqid().'.'.$ext;
+
+                $image->move(public_path($path), $imageName);
+
+                $imagePaths[] =  $path.'/'.$imageName;
+            }
+
+            return $imagePaths;
+       }
+    }
+
     /*One image*/
     public function uploadImage(Request $request,$inputName,$path){
 
