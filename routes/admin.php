@@ -18,6 +18,7 @@ use App\Http\Controllers\Backend\PaymentSettingController;
 use App\Http\Controllers\Backend\PaypalSettingController;
 use App\Http\Controllers\Backend\ProductController;
 use App\Http\Controllers\Backend\ProductImageGalleryController;
+use App\Http\Controllers\Backend\ProductMoreEccomerceController;
 use App\Http\Controllers\Backend\ProductVariantController;
 use App\Http\Controllers\Backend\ProductVariantItemController;
 use App\Http\Controllers\Backend\SettingController;
@@ -90,6 +91,13 @@ Route::get('products-variant-item-edit/{variantItemId}' , [ProductVariantItemCon
 Route::put('products-variant-item-update/{variantItemId}' , [ProductVariantItemController::class, 'update'])->name('products-variant-item.update');
 Route::delete('products-variant-item/{variantItemId}' , [ProductVariantItemController::class, 'destroy'])->name('products-variant-item.destroy');
 Route::put('products-variant-item-status' , [ProductVariantItemController::class, 'changeStatus'])->name('products-variant-item.change-status');
+
+
+/**Producto More Eccomerce */
+// Route::resource('product-more-eccomerce',[ProductMoreEccomerceController::class]);
+// Route::get('products-more-eccomerce/{productId}', [ProductMoreEccomerceController::class, 'index'])->name('product-more-eccomerce.index');
+// Route::get('product-more-eccomerce/create/{productId}/',[ProductMoreEccomerceController::class, 'create'])->name('product-more-eccomerce.create');
+// Route::get('product-more-eccomerce-edit/{productId}',[ProductMoreEccomerceController::class, 'edit'])->name('product-more-eccomerce.edit');
 
 /**Flash Sale Routes */
 Route::get('flash-sale', [FlashSaleController::class, 'index'])->name('flash-sale.index');

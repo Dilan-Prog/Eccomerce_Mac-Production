@@ -35,7 +35,9 @@ class ProductDataTable extends DataTable
                 <div class="dropdown-menu">
                   <a class="dropdown-item has-icon" href="'.route('admin.products-image-gallery.index', ['product' => $query->id]).'"><i class="far fa-images"></i> Image Gallery </a>
                   <a class="dropdown-item has-icon" href="'.route('admin.products-variant.index', ['product' => $query->id]).'"><i class="fas fa-boxes"></i> Product Variant</a>
-                
+                  <a class="dropdown-item has-icon" href="'.route('admin.products-variant.index', ['product' => $query->id]).'"><i class="fas fa-boxes"></i> Plataformas De Comercio</a>
+
+
 
                 </div>
               </div>';
@@ -133,7 +135,7 @@ class ProductDataTable extends DataTable
                         [10, 25, 50, -1],
                         ['10', '25', '50', 'All']   // Configuración de las opciones de cantidad de registros
                     ])->language('spanish')
-                    ->lengthChange(true) 
+                    ->lengthChange(true)
                     ->orderBy(0)
                     ->columns($this->getColumns())
                     ->parameters([
@@ -144,7 +146,7 @@ class ProductDataTable extends DataTable
                                 'text'     => 'Exportar a Excel',
                                 // 'title'    => 'Productos Exportados',  // Título personalizado del archivo Excel
                                 // 'filename' => 'productos_exportados_mac-del-norte',  // Nombre del archivo Excel
-                                
+
                             ],
                             'csv',
                             'pdf',
@@ -152,7 +154,7 @@ class ProductDataTable extends DataTable
                             'reset',
                             'reload',
                         ],
-                        
+
                     'language' => [
                         'sLengthMenu' => 'Mostrar _MENU_ registros por página',
                         'sZeroRecords' => 'No se encontraron resultados',

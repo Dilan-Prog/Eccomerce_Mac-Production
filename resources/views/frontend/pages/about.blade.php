@@ -7,7 +7,7 @@
 @section('content')
     <section class="about">
         <div class="container">
-            
+
                 <div class="row mt-5 mb-4" id="text-about" >
                     <div class="col-md-6 col-12 mt-3 mb-3 text-start " >
                         <div class="container">
@@ -67,7 +67,8 @@
                         </div>
                     </div>
                 </div>
-            
+
         </div>
     </section>
+    
 @endsection
