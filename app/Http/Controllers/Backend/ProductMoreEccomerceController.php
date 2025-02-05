@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Backend;
 
+use App\DataTables\ProductMoreEccomerceDataTable;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
@@ -10,17 +11,18 @@ class ProductMoreEccomerceController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request, ProductMoreEccomerceDataTable $dataTable)
     {
-        //
+        
+        return $dataTable->render('admin.product.more-eccomerce.index' );
+
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
+
     public function create()
     {
-        //
+        
+        return view('admin.product.more-eccomerce.create');
     }
 
     /**
@@ -28,7 +30,7 @@ class ProductMoreEccomerceController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        dd($request->all());
     }
 
     /**

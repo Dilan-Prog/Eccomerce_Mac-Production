@@ -19,9 +19,9 @@
           <div class="col-12">
             <div class="card">
               <div class="card-header">
-                <h4>Product: {{$product->name}} </h4>
+                {{-- <h4>Product: {{$product->name}} </h4> --}}
                 <div class="card-header-action">
-                    {{-- <a href="{{route('admin.products-variant.create', ['product' => $product->id])}}" class="btn btn-primary">+ Crear Nuevo</a> --}}
+                    <a href="{{route('admin.products-more-eccomerce.create')}}" class="btn btn-primary">+ Crear Nuevo</a>
                 </div>
               </div>
               <div class="card-body">
