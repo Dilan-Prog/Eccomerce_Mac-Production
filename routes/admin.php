@@ -94,9 +94,7 @@ Route::put('products-variant-item-status' , [ProductVariantItemController::class
 
 
 /**Producto More Eccomerce */
-Route::get('products-more-eccomerce/{productId}', [ProductMoreEccomerceController::class, 'index'])->name('products-more-eccomerce.index');
-Route::get('products-more-eccomerce/create/{productId}', [ProductMoreEccomerceController::class, 'create'])->name('products-more-eccomerce.create');
-Route::get('products-more-eccomerce/', [ProductMoreEccomerceController::class, 'store'])->name('products-more-eccomerce.store');
+Route::put('products-more-eccomerce/change-status', [ProductMoreEccomerceController::class, 'changeStatus'])->name('products-more-eccomerce.change-status');
 Route::resource('products-more-eccomerce',ProductMoreEccomerceController::class);
 // Route::get('product-more-eccomerce-edit/{productId}',[ProductMoreEccomerceController::class, 'edit'])->name('product-more-eccomerce.edit');
 

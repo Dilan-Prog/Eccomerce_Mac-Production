@@ -219,15 +219,25 @@
                                         
                                     </ul>
                                 </div>
+                                @if ($product->moreEccomerce)
+                                    {{-- Disponibilidad de Comercio o de mas comercios --}}
                                 <div class="wsus__more_eccomerce" style="margin: 5px 0px">
-                                    <p>Disponible en:</p>
-                                    {{-- hreft product->url-mercado libre --}}
-                                    <a href="https://www.mercadolibre.com.mx" target="_blank" rel="noopener noreferrer">
-                                        <img src="https://http2.mlstatic.com/frontend-assets/ml-web-navigation/ui-navigation/5.20.4/mercadolibre/logo__large_plus.png" 
-                                             alt="{{$product->name}} disponible en Mercado Libre" 
-                                             style="width: 100px; height: auto;">
-                                    </a>
+                                    <p><b>Disponible en:</b></p>
+                                    @foreach ($product->moreEccomerce as $moreEccomerce)
+                                        @if ($moreEccomerce->nameEccomerce == 'Mercado Libre')
+                                            <a href="{{ $moreEccomerce->linkProduct }}" target="_blank" style="text-decoration: none; color: #333;">
+                                                <img src="{{ asset('frontend/images/iconos-empresas/MercadoLibre_Logo.webp') }}" alt="{{ $product->name . ' ' . $moreEccomerce->nameEccomerce }}" style="width: 125px; ">
+                                            </a>
+                                        @endif
+                                        @if ($moreEccomerce->nameEccomerce == 'Amazon')
+                                            <a href="{{ $moreEccomerce->linkProduct }}" target="_blank" style="text-decoration: none; color: #333;">
+                                                <img src="{{ asset('frontend/images/iconos-empresas/Amazon_logo.png') }}" alt="{{ $product->name . ' ' . $moreEccomerce->nameEccomerce }}" style="width: 125px; ">
+                                            </a>
+                                        @endif
+                                    @endforeach
                                 </div>
+                                @endif
+                                
 
                         </div>
                     </div>

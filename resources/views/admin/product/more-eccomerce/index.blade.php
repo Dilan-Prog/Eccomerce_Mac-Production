@@ -19,9 +19,9 @@
           <div class="col-12">
             <div class="card">
               <div class="card-header">
-                {{-- <h4>Product: {{$product->name}} </h4> --}}
+                <h4>Producto: {{$product->name}} </h4>
                 <div class="card-header-action">
-                    <a href="{{route('admin.products-more-eccomerce.create')}}" class="btn btn-primary">+ Crear Nuevo</a>
+                    <a href="{{route('admin.products-more-eccomerce.create',['product' => $product->id])}}" class="btn btn-primary">+ Crear Nuevo</a>
                 </div>
               </div>
               <div class="card-body">
@@ -43,18 +43,18 @@
 
 @push('scripts')
   {{$dataTable->scripts(attributes:['type' => 'module'])}}
-
-  {{-- <script>
+  
+  <script>
     $(document).ready(function(){
       $('body').on('click', '.change-status',function(){
         let isChecked = $(this).is(':checked');
         console.log(isChecked);
         let id = $(this).data('id');
         $.ajax({
-          url:"{{route('admin.products-variant.change-status')}}",
+          url:"{{route('admin.products-more-eccomerce.change-status')}}",
           method:'PUT',
           data:{
-
+            
             status:isChecked,
             id:id
           },
@@ -62,15 +62,15 @@
               toastr.success(data.message);
           },
           error:function(xhr,status,error){
-
+            
                }
 
         })
 
             })
     })
-  </script> --}}
-
+  </script>
+  
 @endpush
 
 

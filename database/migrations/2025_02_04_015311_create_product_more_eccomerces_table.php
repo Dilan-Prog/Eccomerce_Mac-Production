@@ -13,7 +13,8 @@ return new class extends Migration
     {
         Schema::create('product_more_eccomerces', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
+            $table->string('nameEccomerce');
+            $table->string('linkProduct');
             $table->text('image');
             $table->integer('product_id');
             $table->boolean('status');

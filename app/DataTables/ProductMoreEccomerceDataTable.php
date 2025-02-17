@@ -23,7 +23,29 @@ class ProductMoreEccomerceDataTable extends DataTable
     public function dataTable(QueryBuilder $query): EloquentDataTable
     {
         return (new EloquentDataTable($query))
-            ->addColumn('action', 'productmoreeccomerce.action')
+            ->addColumn('action', function($query){
+                
+                $deleteBtn = "<a href='".route('admin.products-more-eccomerce.destroy',$query->id)."' class='btn btn-danger m-2 delete-item'>Borrar</a>";
+                $editBtn = "<a href='".route('admin.products-more-eccomerce.edit', $query->id)."' class='btn btn-primary'>Editar</a>";
+                return $deleteBtn.$editBtn;
+            })
+            ->addColumn('status', function($query){
+                if($query->status == 1){
+                    
+                                    $button = '<label class="custom-switch mt-2">
+                                    <input type="checkbox"checked name="custom-switch-checkbox" data-id="'.$query->id.'" class="custom-switch-input change-status">
+                                    <span class="custom-switch-indicator"></span>
+                                    </label>';
+
+                }else if($query->status == 0){
+                    $button = '<label class="custom-switch mt-2">
+                                    <input type="checkbox" name="custom-switch-checkbox" data-id="'.$query->id.'" class="custom-switch-input change-status">
+                                    <span class="custom-switch-indicator"></span>
+                                    </label>';
+                }
+                return $button;
+            })
+            ->rawColumns(['action', 'status'])
             ->setRowId('id');
     }
 
@@ -70,15 +92,25 @@ class ProductMoreEccomerceDataTable extends DataTable
     public function getColumns(): array
     {
         return [
+            [
+                'data' => 'nameEccomerce',
+                'title' => 'Nombre del Comercio',
+            ],
+            [
+                'data' => 'linkProduct',
+                'title' => 'Link del Producto',
+                'width' => '40%',
+            ],
+            [
+                'data' => 'status',
+                'title' => 'Estado',
+            ],
             Column::computed('action')
+                  ->title('Acciones')
                   ->exportable(false)
                   ->printable(false)
-                  ->width(60)
+                  ->width(150)
                   ->addClass('text-center'),
-            Column::make('id'),
-            Column::make('add your columns'),
-            Column::make('created_at'),
-            Column::make('updated_at'),
         ];
     }
 
