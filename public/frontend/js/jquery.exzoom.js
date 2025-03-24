@@ -108,6 +108,7 @@
 
 
     function init() {
+        // let productName = document.querySelector('.wsus__details_bg').getAttribute('data-name');
         exzoom_img_box.append("<div class='exzoom_img_ul_outer'></div>");
         exzoom_nav.append("<p class='exzoom_nav_inner'></p>");
         exzoom_img_ul_outer = exzoom_img_box.find(".exzoom_img_ul_outer");
@@ -124,6 +125,10 @@
                 "margin-top": imgArr[i][5],
                 "width": imgArr[i][3]
             });
+            // let altText = `${productName} - Imagen ${i + 1}`;
+            // imgElement.attr("alt", altText);
+
+            
         }
 
         exzoom_navSpan = exzoom_nav.find("span");

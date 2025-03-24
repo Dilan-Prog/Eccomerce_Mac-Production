@@ -4359,6 +4359,11 @@
   height: 300px; /* Ajusta esta altura según lo necesites */
   max-height: 100%;
 } 
+#whastapp-image {
+  bottom: 55px;
+  width: 55px;
+  height: 55px;
+}
 
   
 }
@@ -6362,6 +6367,12 @@
   height: 300px; /* Ajusta esta altura según lo necesites */
   max-height: 100%;
 } 
+
+#whastapp-image {
+  bottom: 55px;
+  width: 55px;
+  height: 55px;
+}
 
   /* extra css start here */
 

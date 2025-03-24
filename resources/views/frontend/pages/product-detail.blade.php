@@ -29,7 +29,7 @@
                         </div>
                     </div>
             </section>
-            <div class="wsus__details_bg">  
+            <div class="wsus__details_bg" data-name="{{$product->name}}">  
                 <div class="row">
                     <div class="col-xl-8 ">
                         <div id="sticky_pro_zoom">
@@ -42,12 +42,12 @@
                                             <img class="zoom ing-fluid w-100" itemprop="image" src="{{asset($product->thumb_image)}}" alt="{{$product->name}}"></li>
                                         @foreach($product->productImageGalleries as $productImage)
                                         <li><div rel="schema:additionalImage" resource="{{asset($productImage->image)}}"></div>
-                                            <img class="zoom ing-fluid w-100" itemprop="additionalImage" src="{{asset($productImage->image)}}" alt="{{$product->name}}"></li>
+                                            <img class="zoom ing-fluid w-100" itemprop="additionalImage" src="{{asset($productImage->image)}}" alt="{{$product->name}}" ></li>
                                         @endforeach
 
                                     </ul>
                                 </div>
-                                <div class="exzoom_nav"></div>
+                                <div class="exzoom_nav" ></div>
                                 <p class="exzoom_btn">
                                     <a href="javascript:void(0);" class="exzoom_prev_btn"> <i
                                             class="far fa-chevron-left"></i> </a>
@@ -161,10 +161,17 @@
                             <p class="mpn"><span itemprop="mpn"content="{!! $product->productModel !!}" style="display: none; visibility: hidden;">{{$product->productModel}}</span></p>
                             
                             {{-- <p class="description" itemprop="sku">Clave: <span>{!! $product->sku !!}</span></p> --}}
+                            <p class="brand_model" itemprop="brand" itemscope itemtype="http://schema.org/Brand">
+                                Marca:<span itemprop="name" content="{{$product->brand->name}}">{{$product->brand->name}}</span>
+                            </p>
+                            <br>
+                            <p class="brand_model" itemprop="model">Modelo :{{$product->productModel}}</p>
                             <div class="wsus__shipping">
                                 <p class="wsus__shipping-text-one"><i class="fas fa-shipping-fast" aria-hidden="true" style="color: #00a650;"></i><span > Env&iacute;o gratis</span> a partir de $2,299.00</p>
                                 <p>La entrega se realiza en un plazo de 1 a 3 d&iacute;as h&aacute;biles. Envio a todo el pais.</p>
+
                             </div>
+                            
                             <form class="shopping-cart-form">
                                 <div class="wsus__quentity">
                                     <input type="hidden" name="product_id" value="{{$product->id}}">
@@ -184,17 +191,25 @@
                                         </div>
                                     @endif
                                 </div>
-                                    @if ($product->price)
-                                    <ul class="wsus__button_area">
-                                        <li><button type="submit" class="add_cart" href="#">Agregar al Carrito</button></li>
-                                    </ul>
-                                    @endif
+                                @if ($product->price)
+                                <div class="shopping_buttons">
+                                    <div class="button_container">
+                                        <ul class="wsus__button_area">
+                                            <li><button type="submit" class="add_cart"><i class="fas fa-shopping-cart"></i> Agregar al Carrito</button></li>
+                                        </ul>
+                                        <ul class="wsus__button_area">
+                                            <li><button type="submit" class="whastapp_cart_cotize"><i class="fa fa-whatsapp" aria-hidden="true"></i> ¡Cotizar Ahora!</button></li>
+                                        </ul>
+                                        <ul class="wsus__button_area">
+                                            <li><button type="submit" class="phone_number_cart_cotize"><i class="fa fa-phone-alt" aria-hidden="true"></i> ¡Atencion Inmediata!</button></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                @endif
                             </form>
-                            <p class="brand_model" itemprop="brand" itemscope itemtype="http://schema.org/Brand">
-                                Marca:<span itemprop="name" content="{{$product->brand->name}}">{{$product->brand->name}}</span>
-                            </p>
-                            <br>
-                            <p class="brand_model" itemprop="model">Modelo :{{$product->productModel}}
+
+
+                            
                             </p>
                                 <div class="wsus__assurance">
                                     <ul>

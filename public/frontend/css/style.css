@@ -190,7 +190,10 @@ p {
 }
 /**/
 
+
+
 .add_cart {
+  width: 100%;
   text-transform: uppercase;
   font-size: 12px;
   font-weight: 600;
@@ -209,6 +212,44 @@ p {
   -o-border-radius: 3px;
 }
 
+.whastapp_cart_cotize{
+  width: 100%;
+  text-transform: uppercase;
+  font-size: 12px;
+  font-weight: 600;
+  color: #fff;
+  padding: 10px 15px;
+  background: #00a650;
+  border-radius: 3px;
+  transition: all linear 0.3s;
+  -webkit-transition: all linear 0.3s ease;
+  -moz-transition: all linear 0.3s ease;
+  -ms-transition: all linear 0.3s ease;
+  -o-transition: all linear 0.3s ease;
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
+  -ms-border-radius: 3px;
+  -o-border-radius: 3px;
+}
+.phone_number_cart_cotize{
+  width: 100%;
+  text-transform: uppercase;
+  font-size: 12px;
+  font-weight: 600;
+  color: #fff;
+  padding: 10px 15px;
+  background: #E53935;
+  border-radius: 3px;
+  transition: all linear 0.3s;
+  -webkit-transition: all linear 0.3s ease;
+  -moz-transition: all linear 0.3s ease;
+  -ms-transition: all linear 0.3s ease;
+  -o-transition: all linear 0.3s ease;
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
+  -ms-border-radius: 3px;
+  -o-border-radius: 3px;
+}
 .add_cart:hover {
   color: #fff;
   background: rgb(2, 82, 122);
@@ -491,7 +532,7 @@ header {
   color: #fff;
 }
 
-.wsus__call_text a {
+/* .wsus__call_text a {
   color: #0b2c3d;
   font-size: 17px;
   font-weight: 700;
@@ -504,7 +545,7 @@ header {
 
 .wsus__call_text a:hover {
   color: #007aff;
-}
+} */
 
 .wsus__icon_area {
   display: flex;
@@ -603,7 +644,7 @@ header {
   display: block;
   overflow-y: auto !important;
   scrollbar-width: thin;
-  scrollbar-color: #00468c #0b172d;
+  /* scrollbar-color: #00468c #0b172d; */
   transition: all linear 0.3s;
   -webkit-transition: all linear 0.3s ease;
   -moz-transition: all linear 0.3s ease;
@@ -1782,7 +1823,7 @@ PRODUCT MODAL VIEW END
   top: 0;
   left: 0;
   opacity: 0;
-  visibility: hidden;
+  /* visibility: hidden; */
   transition: all linear 1s;
   -webkit-transition: all 1s ease;
   -moz-transition: all 1s ease;
@@ -1792,12 +1833,12 @@ PRODUCT MODAL VIEW END
 
 .wsus__product_item:hover .wsus__pro_link .img_1 {
   opacity: 0;
-  visibility: hidden;
+  /* visibility: hidden; */
 }
 
 .wsus__product_item:hover .wsus__pro_link .img_2 {
   opacity: 1;
-  visibility: visible;
+  /* visibility: visible; */
   transform: scale(1.1);
 }
 
@@ -3723,9 +3764,10 @@ PRODUCT DETAILS START
 .wsus__pro_det_share,
 .wsus__selectbox {
   display: flex;
-  margin: 20px 0px;
+  margin: 5px 0px;
   align-items: center;
   flex-wrap: wrap;
+  width: 100%;
 }
 
 .wsus_pro_det_color h5,
@@ -3855,13 +3897,29 @@ PRODUCT DETAILS START
 .wsus__selectbox .select2-container--default .select2-selection--single .select2-selection__arrow {
   top: -7px;
 }
+.shopping_buttons {
+  display: flex;
+  align-items: center;
+}
+.button_container{
+  width: 100%;
+}
+.wsus__button_area li {
+ width: 100%;
+}
 
 .wsus__button_area li .add_cart {
-  padding: 10px 20px;
   font-size: 14px;
-  margin-right: 10px;
   border: none;
-  border-radius: 30px;
+}
+.wsus__button_area li .whastapp_cart_cotize {
+  font-size: 14px;
+  border: none; 
+}
+
+.wsus__button_area li .phone_number_cart_cotize {
+  font-size: 14px;
+  border: none; 
 }
 .wsus__button_area li .add_cart2 {
     padding: 10px 20px;
@@ -6874,7 +6932,7 @@ WISHLIST PAGE START
   height: 500px;
   overflow-y: auto;
   scrollbar-width: thin;
-  scrollbar-color: #00468c #0b172d;
+  /* scrollbar-color: #00468c #0b172d; */
 }
 
 .dashboard_link li a {
@@ -8809,9 +8867,9 @@ header .wsus__search button:hover {
   
 }
 
-header .wsus__call_text a:hover {
+/* header .wsus__call_text a:hover {
   color: #316089 !important;
-}
+} */
 
 
 .wsus__menu_item li a:hover {
@@ -8908,7 +8966,7 @@ header .wsus__call_text a:hover {
 
 .wsus__product_item:hover .wsus__product_details .wsus__price {
   opacity: 1;
-  visibility: visible;
+  /* visibility: visible; */
 }
 
 .wsus__product_details .wsus__price {
@@ -9345,7 +9403,7 @@ DASHBOARD CHAT START
   max-height: 645px;
   overflow-y: auto;
   scrollbar-width: thin;
-  scrollbar-color: #00468c #0b172d;
+  /* scrollbar-color: #00468c #0b172d; */
   width: 100%;
 }
 
@@ -9473,7 +9531,7 @@ DASHBOARD CHAT START
   max-height: 591px;
   overflow-y: auto;
   scrollbar-width: thin;
-  scrollbar-color: #00468c #0b172d;
+  /* scrollbar-color: #00468c #0b172d; */
 }
 
 .wsus__chat_single {
@@ -10853,5 +10911,33 @@ a:not([href]):not([class]):hover {
 
 
 
+/*Estilos para whastapp*/
+#whastapp-image {
+  position: fixed;
+  bottom: 80px;
+  right: 20px;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  overflow: hidden;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Imagen dentro del contenedor */
+#whastapp-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Efecto hover para el contenedor */
+#whastapp-image:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 10px rgba(0, 0, 0, 0.2);
+}
+/*Fin Estilos para whastapp*/
 
 /* extra css end here */

@@ -14,6 +14,13 @@ use Yajra\DataTables\Services\DataTable;
 
 class ProductMoreEccomerceDataTable extends DataTable
 {
+
+    protected $productId;
+
+    public function setProductId($productId)
+    {
+        $this->productId = $productId;
+    }
     /**
      * Build DataTable class.
      *
@@ -57,7 +64,7 @@ class ProductMoreEccomerceDataTable extends DataTable
      */
     public function query(ProductMoreEccomerce $model): QueryBuilder
     {
-        return $model->newQuery();
+        return $model->where('product_id', request()->product)->newQuery();
     }
 
     /**

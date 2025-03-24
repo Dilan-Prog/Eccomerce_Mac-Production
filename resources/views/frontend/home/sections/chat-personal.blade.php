@@ -1,4 +1,4 @@
-<div id="floating-image">
+{{-- <div id="floating-image">
     <img src="{{ asset('frontend/images/logo/AVIAzul-Marino.png') }}" alt="Chatbot" />
 </div>
 <div id="help-alert">
@@ -80,4 +80,4 @@
             chatWindow.style.display = "none";
         });
     });
-</script>
+</script> --}}

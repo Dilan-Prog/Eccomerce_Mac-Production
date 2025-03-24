@@ -31,8 +31,8 @@
                                 <i class="fas fa-user-headset"></i>
                             </div>
                             <div class="wsus__call_text">
-                                <p>contacto@macdelnorte.com</p>
-                                <p><i class="fa fa-whatsapp" aria-hidden="true"></i> +81-35825559</p>
+                                <p style="line-height: 22px;text-transform: none;">contacto@macdelnorte.com</p>
+                                <p><a style="color: #fff;" target="_blank" href="https://wa.link/f28njw" onclick="dataLayer.push({'event': 'whatsapp_conversion', 'action': 'click', 'label': 'whatsapp-icon'});"><i class="fa fa-whatsapp" aria-hidden="true"></i> +81-35825559</a></p>
                             </div>
                         </div>
                         <ul class="wsus__icon_area">

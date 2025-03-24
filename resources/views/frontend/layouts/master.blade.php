@@ -77,7 +77,7 @@
         <!--menu-->
         @include('frontend.layouts.menu')
 
-        
+        @include('frontend.layouts.whastapp-chat')
 
         <!--content-->
         @yield('content')
