@@ -197,16 +197,25 @@
                                         <ul class="wsus__button_area">
                                             <li><button type="submit" class="add_cart"><i class="fas fa-shopping-cart"></i> Agregar al Carrito</button></li>
                                         </ul>
-                                        <ul class="wsus__button_area">
-                                            <li><button type="submit" class="whastapp_cart_cotize"><i class="fa fa-whatsapp" aria-hidden="true"></i> ¡Cotizar Ahora!</button></li>
-                                        </ul>
-                                        <ul class="wsus__button_area">
-                                            <li><button type="submit" class="phone_number_cart_cotize"><i class="fa fa-phone-alt" aria-hidden="true"></i> ¡Atencion Inmediata!</button></li>
-                                        </ul>
+                                        
                                     </div>
                                 </div>
+                                
                                 @endif
                             </form>
+                            
+                            <div class="button_container">
+                                <a href="https://wa.link/f28njw" target="_blank" style="width: 100%;" onclick="dataLayer.push({'event': 'whatsapp_conversion', 'action': 'click', 'label': 'whatsapp-icon'});" >
+                                    <ul class="wsus__button_area">
+                                        <li><button type="button" class="whastapp_cart_cotize"><i class="fa fa-whatsapp" aria-hidden="true"></i> ¡Cotizar Ahora!</button></li>
+                                    </ul>
+                                </a>
+                                <a href="tel:8124738768" target="_blank" style="width: 100%;" onclick="dataLayer.push({'event': 'Telefono_Conversion', 'telefono': '8124738768'});">
+                                    <ul class="wsus__button_area">
+                                        <li><button type="button" class="phone_number_cart_cotize"><i class="fa fa-phone-alt" aria-hidden="true"></i> ¡Atencion Inmediata!</button></li>
+                                    </ul>
+                                </a>
+                            </div>
 
 
                             
@@ -508,7 +517,7 @@
 
 @push('scripts')
 <script>
-   // Obtener el input de tipo file, el contenedor de vista previa y el icono de carga
+   
 const fileInput = document.getElementById('file-input');
 const imagePreviewContainer = document.getElementById('image-preview');
 const uploadIcon = document.getElementById('upload-icon');

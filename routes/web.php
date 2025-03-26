@@ -1,7 +1,7 @@
 <?php
 
 use App\Http\Controllers\Backend\AdminController;
-
+use App\Http\Controllers\Backend\ProductController;
 use App\Http\Controllers\Frontend\FlashSaleController;
 use App\Http\Controllers\Backend\VendorController;
 use App\Http\Controllers\Frontend\BrandsMarkController;
@@ -37,7 +37,7 @@ Route::get('associate',[HomeController::class, 'associatePage'])->name('associat
 Route::get('calibracion-puesta', [HomeController::class, 'servicesCalibration'])->name('calibracion-puesta');
 Route::get('sistemas', [HomeController::class, 'servicesSistemas'])->name('sistemas');
 Route::get('medicion', [HomeController::class, 'servicesMedicion'])->name('medicion');
-
+Route::get('/googgle-feed_macdelnorte$product-merchant-center',[ProductController::class, 'generateFeedProduct']);
 
 
 Route::middleware('auth')->group(function () {

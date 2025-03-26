@@ -168,7 +168,7 @@ p {
 }
 
 /*shop_btn no se ocupa*/
-.shop_btn {
+/* .shop_btn {
   color: #fff;
   text-transform: uppercase;
   font-size: 14px;
@@ -187,7 +187,7 @@ p {
   color: #fff;
   background: #00468c;
   border-color: #00468c;
-}
+} */
 /**/
 
 
@@ -292,6 +292,8 @@ p {
   background: #00468c;
 }
 
+
+/* No se ocupa */
 .wsus__topbar_left {
   display: flex;
   line-height: 45px;
@@ -327,6 +329,7 @@ p {
 .wsus__topbar_left li:hover a {
   color: #0b2c3d;
 }
+
 
 .wsus__topbar_dropdown {
   background: #fff;
@@ -383,6 +386,7 @@ p {
   -o-transform: scaleY(1);
 }
 
+
 .wsus__topbar_right {
   display: flex;
   justify-content: end;
@@ -413,6 +417,7 @@ p {
 .wsus__topbar_right li .active {
   color: #0b2c3d;
 }
+/*No se ocupa final */
 
 /*======================
 	TOPBAR END
@@ -1012,7 +1017,7 @@ margin-left: 10px;
   margin-right: 0;
   margin-left: 25px;
 }
-
+/*No de utiliza*/
 .menu_fix {
   position: fixed;
   width: 100%;
@@ -1132,6 +1137,7 @@ margin-left: 10px;
   font-size: 15px;
   font-weight: 400;
 }
+/* No se utiliza fin */
 
 .wsus__menu_item li:hover .wsus__mega_menu {
   opacity: 1;
@@ -1218,7 +1224,7 @@ margin-left: 10px;
   -ms-transform: scaleY(1);
   -o-transform: scaleY(1);
 }
-
+/* No se ocupa */
 .wsus__menu_droapdown2 {
   width: 220px;
   position: absolute;
@@ -1259,6 +1265,7 @@ margin-left: 10px;
   color: #007aff;
 }
 
+/* no se ocupa fin */
 .wsus__menu_droapdown>li:hover .wsus__menu_droapdown2 {
   opacity: 1;
   transform: scaleY(1);
@@ -1275,6 +1282,7 @@ margin-left: 10px;
 /*=========================
 		POP UP START
 ==========================*/
+/* no se ocupa */
 #wsus__pop_up {
   background: rgba(0, 0, 0, 0.6);
   width: 100%;
@@ -1395,6 +1403,7 @@ margin-left: 10px;
   background: red;
 }
 
+/* no se ocupa fin */
 /*=========================
 		POP UP END
 ===========================*/
@@ -1423,6 +1432,7 @@ PRODUCT MODAL VIEW START
   padding-left: 25px;
 }
 
+/* no se ocupa */
 .modal_slider_img {
   margin-right: 10px;
 }
@@ -1430,6 +1440,8 @@ PRODUCT MODAL VIEW START
 .product_popup_modal .display {
   margin-top: 0 !important;
 }
+
+/* no se ocupa fin*/
 
 .product_popup_modal .btn-close {
   position: absolute;
@@ -1468,6 +1480,7 @@ PRODUCT MODAL VIEW START
   position: relative;
 }
 
+/* no se ocupa */
 .wsus__quick_view_img .modal-body {
   padding: 25px;
 }
@@ -1476,6 +1489,7 @@ PRODUCT MODAL VIEW START
   border-radius: 5px;
   object-fit: cover;
 }
+
 
 .modal_slider .prv_arr,
 .modal_slider .nxt_arr {
@@ -1504,7 +1518,7 @@ PRODUCT MODAL VIEW START
   left: auto;
   right: 15px;
 }
-
+/* no se ocupa fin*/
 /*=========================
 PRODUCT MODAL VIEW END
 ===========================*/
@@ -1558,6 +1572,7 @@ PRODUCT MODAL VIEW END
 /*======================
 	BRAND SLIDER START
 ========================*/
+/* no se ocupa */
 #wsus__brand_sleder {
   margin-top: 70px;
   border: 1px solid #e5e4e4;
@@ -1606,7 +1621,7 @@ PRODUCT MODAL VIEW END
   background: #00468c;
   opacity: 1;
 }
-
+/* no se ocupa fin*/
 /*======================
 	BRAND SLIDER END
 ========================*/
@@ -1641,7 +1656,7 @@ PRODUCT MODAL VIEW END
 
 
 
-
+/* no se ocupa */
 .wsus__offer_countdown {
   overflow: hidden;
   display: flex;
@@ -1659,7 +1674,7 @@ PRODUCT MODAL VIEW END
 .simply-countdown {
   display: flex;
 }
-
+/* no se ocupa fin*/
 .wsus__section_header .simply-amount {
   display: block;
   color: #fff;
@@ -1687,7 +1702,7 @@ PRODUCT MODAL VIEW END
   border-radius: 3px;
   padding-top: 2px;
 }
-
+/* no se ocupa */
 .wsus__flash_coundown {
   display: flex;
   justify-content: space-between;

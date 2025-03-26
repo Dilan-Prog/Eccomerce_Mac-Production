@@ -238,26 +238,77 @@ class ProductController extends Controller
         return $childCategories;
     }
 
-
-    // Base Search Canonical URL
     
-    //     public function searchProducts(Request $request){
-    //         $query = $request->get('query');
-    //     $products = Product::where('name', 'like', "%$query%")
-    //                         ->orWhere('productModel', 'like', "%$query%")
-    //                         ->orWhere('sku', 'like', "%$query%")
-    //                         ->get(['id', 'name', 'slug']);
+    /**
+     * Generate feed for Google Merchant Center
+     */
 
-    //     return response()->json([
-    //         'results' => $products->map(function($product) {
-    //             return [
-    //                 'id' => $product->id,
-    //                 'text' => $product->name
-    //             ];
-    //         })
-    //     ]);
-    // }
+    public function generateFeedProduct()  {
+        $products = Product::with(['category', 'brand'])
+        ->where('status', 1)
+        ->where('is_approved', 1)
+        ->get();
 
-    // End Base Search Canonical URL
+    $xml = new \SimpleXMLElement('<rss/>');
+    $xml->addAttribute('version', '2.0');
+    $channel = $xml->addChild('channel');
+
+    $channel->addChild('title', 'Feed de productos de Laravel');
+    $channel->addChild('link', url('/'));
+    $channel->addChild('description', 'Feed de productos para Google Merchant Center');
+
+    foreach ($products as $product) {
+        $item = $channel->addChild('item');
+
+        // ID, título y descripción
+        $item->addChild('g:id', $product->sku);
+        $item->addChild('g:title', htmlspecialchars($product->name));
+        $item->addChild('g:description', htmlspecialchars($product->long_description));
+
+        // Enlace al producto
+        $item->addChild('g:link', url("/product/{$product->slug}"));
+
+        // Imagen principal
+        $item->addChild('g:image_link', url('uploads/' . $product->thumb_image));
+
+        foreach ($product->productImageGalleries as $galleryImage) {
+            $item->addChild('g:additional_image_link', url('uploads/' . $galleryImage->image));
+        }
+
+
+
+        // Disponibilidad
+        $availability = $product->qty > 0 ? 'in stock' : 'out of stock';
+        $item->addChild('g:availability', $availability);
+
+        // Precios (precio regular y oferta si aplica)
+        $item->addChild('g:price', $product->price . ' MXN');
+
+        // Marca
+        if ($product->brand) {
+            $item->addChild('g:brand', $product->brand->name);
+        }
+
+        // GTIN y MPN
+        if ($product->sku) {
+            $item->addChild('g:gtin', $product->sku);
+        }
+
+        if ($product->productModel) {
+            $item->addChild('g:mpn', $product->productModel);
+        }
+
+        // Categoría de Google (personalizable)
+        $item->addChild('g:google_product_category', $product->category_id);
+
+        // URL canónica si existe
+        if ($product->canonical_Url) {
+            $item->addChild('g:canonical_link', $product->canonical_Url);
+        }
+    }
+
+    return response($xml->asXML(), 200)
+        ->header('Content-Type', 'text/xml');
+}
 
 }
