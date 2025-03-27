@@ -294,7 +294,7 @@ p {
 
 
 /* No se ocupa */
-.wsus__topbar_left {
+/* .wsus__topbar_left {
   display: flex;
   line-height: 45px;
   align-items: center;
@@ -416,7 +416,7 @@ p {
 .wsus__topbar_right li a:hover,
 .wsus__topbar_right li .active {
   color: #0b2c3d;
-}
+} */
 /*No se ocupa final */
 
 /*======================
@@ -1018,14 +1018,14 @@ margin-left: 10px;
   margin-left: 25px;
 }
 /*No de utiliza*/
-.menu_fix {
+/* .menu_fix {
   position: fixed;
   width: 100%;
   left: 0px;
   top: 0;
   z-index: 999;
   animation: menu_animate 1s;
-  /* background: #0b2c3d; */
+  
   height: 100px;
 }
 
@@ -1045,8 +1045,9 @@ margin-left: 10px;
     -ms-transform: translateY(0%);
     -o-transform: translateY(0%);
   }
-}
+} */
 /*wsus__mega_menu  no se utiliza*/
+/* 
 .wsus__mega_menu {
   position: absolute;
   background: #fff;
@@ -1136,7 +1137,7 @@ margin-left: 10px;
   -o-transition: all linear 0.3s ease;
   font-size: 15px;
   font-weight: 400;
-}
+} */
 /* No se utiliza fin */
 
 .wsus__menu_item li:hover .wsus__mega_menu {
@@ -1225,7 +1226,7 @@ margin-left: 10px;
   -o-transform: scaleY(1);
 }
 /* No se ocupa */
-.wsus__menu_droapdown2 {
+/* .wsus__menu_droapdown2 {
   width: 220px;
   position: absolute;
   top: -20px;
@@ -1263,7 +1264,7 @@ margin-left: 10px;
 
 .wsus__menu_droapdown2>li>a:hover {
   color: #007aff;
-}
+} */
 
 /* no se ocupa fin */
 .wsus__menu_droapdown>li:hover .wsus__menu_droapdown2 {
@@ -1283,7 +1284,7 @@ margin-left: 10px;
 		POP UP START
 ==========================*/
 /* no se ocupa */
-#wsus__pop_up {
+/* #wsus__pop_up {
   background: rgba(0, 0, 0, 0.6);
   width: 100%;
   height: 100%;
@@ -1401,7 +1402,7 @@ margin-left: 10px;
 
 .wsus__pop_up_text #cross:hover {
   background: red;
-}
+} */
 
 /* no se ocupa fin */
 /*=========================
@@ -1433,13 +1434,13 @@ PRODUCT MODAL VIEW START
 }
 
 /* no se ocupa */
-.modal_slider_img {
+/* .modal_slider_img {
   margin-right: 10px;
 }
 
 .product_popup_modal .display {
   margin-top: 0 !important;
-}
+} */
 
 /* no se ocupa fin*/
 
@@ -1481,7 +1482,7 @@ PRODUCT MODAL VIEW START
 }
 
 /* no se ocupa */
-.wsus__quick_view_img .modal-body {
+/* .wsus__quick_view_img .modal-body {
   padding: 25px;
 }
 
@@ -1517,7 +1518,7 @@ PRODUCT MODAL VIEW START
 .modal_slider .nxt_arr {
   left: auto;
   right: 15px;
-}
+} */
 /* no se ocupa fin*/
 /*=========================
 PRODUCT MODAL VIEW END
@@ -1573,13 +1574,13 @@ PRODUCT MODAL VIEW END
 	BRAND SLIDER START
 ========================*/
 /* no se ocupa */
-#wsus__brand_sleder {
+/* #wsus__brand_sleder {
   margin-top: 70px;
   border: 1px solid #e5e4e4;
   border-left: 0;
   border-right: 0;
   background: #fff;
-  /* box-shadow: rgb(50 50 93 / 15%) 0px 0px 5px 0px; */
+  
 }
 
 .wsus__brand_logo {
@@ -1620,7 +1621,7 @@ PRODUCT MODAL VIEW END
 #wsus__brand_sleder .prv_arr:hover {
   background: #00468c;
   opacity: 1;
-}
+} */
 /* no se ocupa fin*/
 /*======================
 	BRAND SLIDER END
@@ -1657,7 +1658,9 @@ PRODUCT MODAL VIEW END
 
 
 /* no se ocupa */
-.wsus__offer_countdown {
+
+
+/* .wsus__offer_countdown {
   overflow: hidden;
   display: flex;
   align-items: center;
@@ -1673,7 +1676,7 @@ PRODUCT MODAL VIEW END
 
 .simply-countdown {
   display: flex;
-}
+} */
 /* no se ocupa fin*/
 .wsus__section_header .simply-amount {
   display: block;
@@ -1703,7 +1706,7 @@ PRODUCT MODAL VIEW END
   padding-top: 2px;
 }
 /* no se ocupa */
-.wsus__flash_coundown {
+/* .wsus__flash_coundown {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -1722,7 +1725,9 @@ PRODUCT MODAL VIEW END
 
 .wsus__flash_coundown .common_btn i {
   margin-left: 5px;
-}
+} */
+/* no se ocupa */
+
 
 .wsus__product_item {
   position: relative;
@@ -1857,6 +1862,8 @@ PRODUCT MODAL VIEW END
   transform: scale(1.1);
 }
 
+/* no se ocupa */
+/* 
 .wsus__single_pro_icon {
   position: absolute;
   top: 50px;
@@ -1895,8 +1902,8 @@ PRODUCT MODAL VIEW END
   color: #fff !important;
   border-color: #00468c;
   background: #00468c;
-}
-
+} */
+/* no se ocupa  fin*/
 .wsus__product_details {
   padding: 10px 10px 5px 15px;
   position: relative;
@@ -2066,8 +2073,8 @@ MONTHLY TOP PRODUCT START
   margin-top: 60px;
   margin-bottom: -5px;
 }
-
-#wsus__monthly_top .wsus__section_header {
+/* no se ocupa */
+/* #wsus__monthly_top .wsus__section_header {
   border-bottom-right-radius: 0;
 }
 
@@ -2223,8 +2230,8 @@ MONTHLY TOP PRODUCT START
 #wsus__hot_deals .nxt_arr:hover,
 #wsus__hot_deals .prv_arr:hover {
   background: #045c9f;
-}
-
+} */
+/* no se ocupa fin*/
 /*======================
 MONTHLY TOP PRODUCT END
 ========================*/
@@ -2251,9 +2258,11 @@ ELECTRONIC PART  END
 /*======================
 HOME BLOGS START
 ========================*/
+/* no se ocupa */
 .home_blogs {
   margin-top: 20px;
 }
+/* no se ocupa fin*/
 
 /*======================
 HOME BLOGS END
@@ -2262,6 +2271,7 @@ HOME BLOGS END
 /*======================
 	SINGLE BANNER START
 ========================*/
+/* no se ocupa
 #wsus__single_banner {
   padding-top: 70px;
 }
@@ -2321,8 +2331,8 @@ HOME BLOGS END
   color: #fff;
   background: #00468c;
   border-color: #00468c;
-}
-
+} */
+/* no se ocupa  fin*/
 /*======================
 	SINGLE BANNER END
 ========================*/
@@ -2330,6 +2340,8 @@ HOME BLOGS END
 /*======================
 	HOT DEALS START
 ========================*/
+/* no se ocupa  */
+/* 
 #wsus__hot_deals {
   padding-top: 66px;
 }
@@ -2471,12 +2483,12 @@ HOME BLOGS END
 }
 
 .wsus__hot_deals__single {
-  /* border: 1px solid #eee; */
+  
   overflow: hidden;
   margin-top: 20px;
   padding: 10px;
   border-radius: 5px;
-  /* margin: 25px 12px 0px 12px; */
+  
   background: #fff;
   box-shadow: rgb(50 50 93 / 15%) 0px 0px 5px 0px;
 }
@@ -2536,8 +2548,8 @@ HOME BLOGS END
 
 .wsus__hot_small_item {
   margin-top: 50px;
-}
-
+} */
+/* no se ocupa fin */
 /*======================
 	HOT DEALS END
 ========================*/
@@ -2545,7 +2557,9 @@ HOME BLOGS END
 /*======================
 	LARGE BANNER START
 ========================*/
-#wsus__large_banner {
+/* no se ocupa  */
+
+/* #wsus__large_banner {
   padding-top: 65px;
 }
 
@@ -2595,8 +2609,9 @@ HOME BLOGS END
   text-transform: uppercase;
   font-weight: 700;
   font-size: 25px;
-}
+} */
 
+/* no se ocupa fin */
 /*======================
 	LARGE BANNER  END
 ========================*/
@@ -2604,7 +2619,9 @@ HOME BLOGS END
 /*======================
 WEEKLY BEST ITEM START
 ========================*/
-#wsus__weekly_best {
+/* no se ocupa  */
+
+/* #wsus__weekly_best {
   margin-top: 67px;
 }
 
@@ -2638,7 +2655,7 @@ WEEKLY BEST ITEM START
   -moz-transition: all linear 0.3s ease;
   -ms-transition: all linear 0.3s ease;
   -o-transition: all linear 0.3s ease;
-  /* -webkit-border-radius: 3px; */
+  
   -moz-border-radius: 3px;
   -ms-border-radius: 3px;
   -o-border-radius: 3px;
@@ -2658,7 +2675,9 @@ WEEKLY BEST ITEM START
 
 .weekly_best .wsus__hot_deals__single {
   margin: 20px 12px 0px 12px;
-}
+} */
+
+/* no se ocupa fin */
 
 /*======================
 WEEKLY BEST ITEM END
@@ -2667,7 +2686,9 @@ WEEKLY BEST ITEM END
 /*======================
 HOME SERVOCES START
 ========================*/
-#wsus__home_services {
+/* no se ocupa  */
+
+/* #wsus__home_services {
   margin-top: 65px;
 }
 
@@ -2703,8 +2724,9 @@ HOME SERVOCES START
 
 .wsus__home_services_single:hover i {
   color: #353535;
-}
+} */
 
+/* no se ocupa fin */
 /*======================
 	HOME SERVOCES  END
 ========================*/
@@ -2758,6 +2780,8 @@ HOME SERVOCES START
 /*======================
 	SUBSCRIBE PART START
 ========================*/
+/* no se ocupa*/
+/* 
 #wsus__subscribe {
   margin-top: 70px;
   background: #0b2c3d;
@@ -2812,8 +2836,8 @@ HOME SERVOCES START
   height: 100%;
   border-top-left-radius: 0;
   border-bottom-left-radius: 0;
-}
-
+} */
+/* no se ocupa fin */
 /*======================
 	SUBSCRIBE PART END
 ========================*/
@@ -3083,6 +3107,7 @@ BREADCRUMB END
 /*======================
 PPRODUCT PAGE START
 ========================*/
+
 #wsus__product_page {
   padding-top: 70px;
 }
