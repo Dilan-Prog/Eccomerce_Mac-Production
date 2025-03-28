@@ -777,14 +777,14 @@ header {
 }
 .wsus__main_menu2{
   width: 100%;
-  
+
   background: #121212;
   box-shadow: rgb(100 100 111 / 20%) 0px 3px 15px 0;
 }
 
 
 .wsus_menu_category_bar {
-  
+
   align-items: center;
   justify-content: space-between;
   cursor: pointer;
@@ -796,7 +796,7 @@ header {
   line-height: 48px;
   display: block;
   font-size: 15px;
-  
+
   position: relative;
   transition: all linear 0.3s;
   -webkit-transition: all linear 0.3s ease;
@@ -844,7 +844,7 @@ header {
   position: absolute;
   content: "\f105";
   padding: 0px 0px;
-  
+
   right: 30px;
   font-size: 14px;
   border: none;
@@ -987,7 +987,7 @@ margin-left: 10px;
 #social-menu li a{
   padding-left: 8px;
   padding-right: 8px;
-  
+
 }
 
 
@@ -1005,7 +1005,7 @@ margin-left: 10px;
 
 .wsus__menu_item li a i p{
   margin-left: 5px;
-  
+
 }
 
 .wsus__menu_item>li:hover>a,
@@ -1025,7 +1025,7 @@ margin-left: 10px;
   top: 0;
   z-index: 999;
   animation: menu_animate 1s;
-  
+
   height: 100px;
 }
 
@@ -1047,7 +1047,7 @@ margin-left: 10px;
   }
 } */
 /*wsus__mega_menu  no se utiliza*/
-/* 
+/*
 .wsus__mega_menu {
   position: absolute;
   background: #fff;
@@ -1580,7 +1580,7 @@ PRODUCT MODAL VIEW END
   border-left: 0;
   border-right: 0;
   background: #fff;
-  
+
 }
 
 .wsus__brand_logo {
@@ -1769,13 +1769,13 @@ PRODUCT MODAL VIEW END
   /* top: 10px; */
   /* left: 10px; */
   color: #fff;
-  
+
   font-size: 14px;
   font-weight: 600;
   /* border-radius: 3px; */
   z-index: 1;
   padding: 0px 3px 0px 16px; /* Espacio interno ajustado */
-  
+
 }
 .wsus__new::before {
   content: "";
@@ -1863,7 +1863,7 @@ PRODUCT MODAL VIEW END
 }
 
 /* no se ocupa */
-/* 
+/*
 .wsus__single_pro_icon {
   position: absolute;
   top: 50px;
@@ -2341,7 +2341,7 @@ HOME BLOGS END
 	HOT DEALS START
 ========================*/
 /* no se ocupa  */
-/* 
+/*
 #wsus__hot_deals {
   padding-top: 66px;
 }
@@ -2483,12 +2483,12 @@ HOME BLOGS END
 }
 
 .wsus__hot_deals__single {
-  
+
   overflow: hidden;
   margin-top: 20px;
   padding: 10px;
   border-radius: 5px;
-  
+
   background: #fff;
   box-shadow: rgb(50 50 93 / 15%) 0px 0px 5px 0px;
 }
@@ -2655,7 +2655,7 @@ WEEKLY BEST ITEM START
   -moz-transition: all linear 0.3s ease;
   -ms-transition: all linear 0.3s ease;
   -o-transition: all linear 0.3s ease;
-  
+
   -moz-border-radius: 3px;
   -ms-border-radius: 3px;
   -o-border-radius: 3px;
@@ -2781,7 +2781,7 @@ HOME SERVOCES START
 	SUBSCRIBE PART START
 ========================*/
 /* no se ocupa*/
-/* 
+/*
 #wsus__subscribe {
   margin-top: 70px;
   background: #0b2c3d;
@@ -2857,7 +2857,7 @@ footer {
 
 .wsus__footer_content img {
   width: 100px;
-  
+
 }
 
 .wsus__footer_content .action,
@@ -3081,7 +3081,7 @@ BREADCRUMB START
 
 #wsus__breadcrumb ul li:last-child a {
   margin: 0;
-  
+
 }
 
 #wsus__breadcrumb ul li:last-child a::after {
@@ -3111,7 +3111,7 @@ PPRODUCT PAGE START
 #wsus__product_page {
   padding-top: 70px;
 }
-
+/* No se utiliza */
 .wsus__pro_page_bammer {
   position: relative;
   border-radius: 5px;
@@ -3178,6 +3178,7 @@ PPRODUCT PAGE START
   padding: 15px 20px;
   font-size: 15px;
 }
+/* No se utiliza fin */
 
 .wsus__sidebar_filter {
   background: #00468c;
@@ -3224,6 +3225,7 @@ PPRODUCT PAGE START
   opacity: 1;
 }
 
+/* Comprobar si se utiliza */
 .wsus__product_sidebar.show_filter {
   height: auto;
   transition: all linear 0.3s;
@@ -3233,7 +3235,9 @@ PPRODUCT PAGE START
   -o-transition: all linear 0.3s ease;
   opacity: 1;
 }
+/* fin de comprobacion si se utiliza  */
 
+/* No se utiliza */
 .show_plus {
   opacity: 0 !important;
   transition: all linear 0.3s;
@@ -3242,7 +3246,7 @@ PPRODUCT PAGE START
   -ms-transition: all linear 0.3s ease;
   -o-transition: all linear 0.3s ease;
 }
-
+/* No se utiliza  fin*/
 .wsus__product_sidebar .accordion-item {
   /* margin-top: 0; */
   /* margin-bottom: 20px; */
@@ -3268,6 +3272,7 @@ PPRODUCT PAGE START
 .accordion-item {
   margin-top: 15px;
 }
+
 
 .accordion-button:not(.collapsed) {
   color: #353535;
@@ -3379,7 +3384,7 @@ PPRODUCT PAGE START
 .price_ranger .price_ranger_tk output {
   color: #353535;
 }
-
+/* Comprobar si se utiliza */
 .wsus__coustom_price .add_cart {
   border: none;
   outline: none;
@@ -3390,7 +3395,7 @@ PPRODUCT PAGE START
     outline: none;
     font-size: 16px;
   }
-
+/* Comprobar si se utiliza fin */
 
 .accordion-item:last-of-type .accordion-button.collapsed {
   border-radius: 0;
@@ -3444,6 +3449,7 @@ PPRODUCT PAGE START
   display: flex;
 }
 
+/* No se utiliza */
 #pagination,
 #pagination2 {
   margin-top: 30px;
@@ -3490,6 +3496,8 @@ PPRODUCT PAGE START
   box-shadow: none;
 }
 
+/* No se utiliza fin  */
+
 .wsus__list_view .wsus__pro_link {
   width: 40%;
   height: 343px;
@@ -3534,7 +3542,7 @@ PPRODUCT PAGE START
 
 .wsus__list_view .wsus__product_details .add_cart2 {
     position: static;
-    
+
     font-size: 16px;
     width: auto;
     height: 40px;
@@ -3585,6 +3593,7 @@ PPRODUCT PAGE START
   top: 45px;
 }
 
+/* No se utiliza */
 .preloader {
   width: 100%;
   height: 80vh;
@@ -3613,7 +3622,7 @@ PPRODUCT PAGE START
   -o-transform: translate(-50%, -50%);
 }
 
-
+/* No se utiliza fin*/
 
 
 
@@ -3635,6 +3644,7 @@ PRODUCT DETAILS START
   border-radius: 5px;
 }
 
+/* Nose utiliza */
 .wsus__pro_det_video {
   position: absolute;
   top: 5px;
@@ -3659,6 +3669,7 @@ PRODUCT DETAILS START
   background: #2a9df5cb;
   color: #fff;
 }
+/* Nose utiliza  fin*/
 
 .wsus__pro_details_text .title {
   font-size: 25px;
@@ -3752,7 +3763,7 @@ PRODUCT DETAILS START
   font-size: 18px;
   margin-left: 10px;
 }
-
+/* No se utiliza */
 .wsus_pro_hot_deals {
   border-radius: 5px;
   display: flex;
@@ -3795,7 +3806,7 @@ PRODUCT DETAILS START
 .wsus_pro_hot_deals .simply-word {
   display: none;
 }
-
+/* No se utiliza fin*/
 .wsus_pro_det_color,
 .wsus_pro__det_size,
 .share_link,
@@ -3824,6 +3835,17 @@ PRODUCT DETAILS START
   font-size: 16px;
 }
 
+/*
+ COMPROBAR SI SIRVEN ESTAS CLASES DENTRO DE LAS DEMAS CLASES , JS Y BLADE
+    wsus_pro_det_color
+    wsus_pro__det_size
+    share_link
+    wsus__pro_det_share
+
+
+*/
+
+
 .wsus_pro_det_color ul,
 .wsus_pro__det_size ul,
 .share_link ul {
@@ -3832,6 +3854,8 @@ PRODUCT DETAILS START
   flex-wrap: wrap;
 }
 
+
+
 .wsus__selectbox {
   display: block;
 }
@@ -3839,7 +3863,7 @@ PRODUCT DETAILS START
 .report_modal .modal-body {
   height: auto !important;
 }
-
+/* No se utiliza */
 .wsus_pro_det_color ul li a {
   margin-right: 7px;
   display: block;
@@ -3918,6 +3942,8 @@ PRODUCT DETAILS START
   margin-right: 0;
 }
 
+/* No se utiliza fin*/
+
 .wsus__pro_details_text .title:hover {
   color: #00468c;
 }
@@ -3954,12 +3980,12 @@ PRODUCT DETAILS START
 }
 .wsus__button_area li .whastapp_cart_cotize {
   font-size: 14px;
-  border: none; 
+  border: none;
 }
 
 .wsus__button_area li .phone_number_cart_cotize {
   font-size: 14px;
-  border: none; 
+  border: none;
 }
 .wsus__button_area li .add_cart2 {
     padding: 10px 20px;
@@ -3968,6 +3994,11 @@ PRODUCT DETAILS START
     border: none;
     border-radius: 30px;
   }
+
+/*
+Revisar si se utiliza
+wsus__ofer_det_footer_btn
+ */
 
 .wsus__button_area li .buy_now,
 .wsus__ofer_det_footer_btn .buy_now {
@@ -4015,6 +4046,7 @@ PRODUCT DETAILS START
   background: #00468c;
 }
 
+/* No se utiliza */
 .wsus__pro_det_share ul li a {
   width: 30px;
   height: 30px;
@@ -4052,6 +4084,7 @@ PRODUCT DETAILS START
 .wsus__pro_report:hover {
   color: #045c9f;
 }
+/* No se utiliza  fin*/
 
 .report_modal .modal-dialog {
   min-width: 600px;
@@ -4075,7 +4108,7 @@ PRODUCT DETAILS START
   resize: none;
   border: 1px solid #eee;
 }
-
+/* No se utiliza */
 .wsus_pro_det_wholesell {
   border-radius: 4px;
   background: #e9f1f7;
@@ -4107,6 +4140,8 @@ PRODUCT DETAILS START
   text-transform: capitalize;
   color: #525252;
 }
+
+
 
 .wsus_pro_det_sidebar {
   border: 1px dashed #ddd;
@@ -4207,6 +4242,7 @@ PRODUCT DETAILS START
   font-weight: 900;
   margin: 13px 0px 18px 0px;
 }
+/* No se utiliza fin*/
 
 .wsus__pro_det_description {
   padding-top: 70px;
@@ -4268,9 +4304,12 @@ PRODUCT DETAILS START
   margin-top: 15px !important;
 }
 
+
+/* No se utiliza */
 .wsus__vebdor_img {
   height: 100%;
 }
+/* No se utiliza fin*/
 
 .wsus__pro_det_description img {
   border: 1px solid #ddd !important;
@@ -4285,6 +4324,8 @@ PRODUCT DETAILS START
   -o-border-radius: 5px !important;
 }
 
+
+/* No se utiliza */
 .description_single {
   border: 1px solid #eee;
   padding: 30px;
@@ -4316,6 +4357,8 @@ PRODUCT DETAILS START
 .description_single p {
   font-size: 15px;
 }
+
+
 
 .wsus__pro_det_info {
   border: 1px solid #ddd;
@@ -4350,6 +4393,7 @@ PRODUCT DETAILS START
 .wsus__pro_det_info p span {
   width: 55%;
 }
+
 
 .wsus__pro_det_review .wsus__main_comment {
   overflow: hidden;
@@ -4423,6 +4467,8 @@ PRODUCT DETAILS START
   color: #0b2c3d;
   margin-top: 0 !important;
 }
+
+
 
 .wsus__comment_area h4 span {
   display: inline-block;
@@ -4518,6 +4564,7 @@ PRODUCT DETAILS START
   margin-top: 0 !important;
 }
 
+/* No se utiliza fin */
 
 
 
@@ -4591,6 +4638,7 @@ CART VIEW PAGE START
   width: 170px;
 }
 
+/* No se utiliza */
 .wsus__pro_status p {
   text-transform: capitalize;
   color: #00468c !important;
@@ -4601,6 +4649,7 @@ CART VIEW PAGE START
   color: #dc3545 !important;
   display: inline-block;
 }
+/* No se utiliza fin */
 
 .wsus__cart_list .wsus__pro_select {
   width: 150px;
@@ -4679,6 +4728,7 @@ CART VIEW PAGE START
   color: #0b2c3d;
   font-size: 14px;
 }
+/* No se utiliza */
 
 .cart_summery {
   padding: 0 !important;
@@ -4733,15 +4783,18 @@ CART VIEW PAGE START
   color: #0b2c3d;
 }
 
+
 .cart_page_rel_product {
   margin-top: 67px !important;
 }
+/* No se utiliza Fin */
 
 .wsus__cart_list_footer {
   border-radius: 5px;
   background: #def0ff;
 }
 
+/* No se utiliza */
 .wsus__cart_list_footer_top {
   display: flex;
   align-items: stretch;
@@ -4749,6 +4802,7 @@ CART VIEW PAGE START
   height: 100%;
   justify-content: center;
 }
+/* No se utiliza Fin */
 
 .wsus__cart_list_footer_button form {
   display: flex;
@@ -4817,12 +4871,13 @@ CART VIEW PAGE START
 .wsus__cart_list_footer_button .total span {
   font-weight: 600;
 }
-
+/* No se utiliza */
 .cart_empty p {
   text-transform: capitalize;
   font-size: 25px;
   color: #353535;
 }
+/* No se utiliza fin*/
 
 /*======================
 CART VIEW PAGE END
@@ -4838,7 +4893,7 @@ CHECKOUT PAGE START
   box-shadow: rgb(50 50 93 / 15%) 0px 0px 5px 0px;
 }
 
-
+/* No se utiliza PERO REVISAR BIEN */
 .wsus__checkout_form h5 {
   font-size: 18px;
   font-weight: 600;
@@ -4849,6 +4904,7 @@ CHECKOUT PAGE START
   justify-content: space-between;
   align-items: center;
 }
+
 
 .wsus__checkout_form h5 a {
   color: #00468c;
@@ -4864,11 +4920,13 @@ CHECKOUT PAGE START
   background: #00468c;
   color: #fff;
 }
+/* No se utiliza PERO REVISAR BIEN  FINAL*/
 
 .wsus__popup_address .modal-dialog {
   max-width: 800px;
 }
 
+/* No se utiliza */
 .wsus__check_single_form .form-check {
   margin: 0;
 }
@@ -4879,6 +4937,7 @@ CHECKOUT PAGE START
   border-color: #00468c;
   border-radius: 3px !important;
 }
+
 
 .checkout_accordian .accordion-button::after {
   display: none;
@@ -4915,7 +4974,7 @@ CHECKOUT PAGE START
 .wsus__check_single_form h5 {
   margin-top: 5px;
 }
-
+/* No se utiliza fin*/
 .wsus__order_details {
   background: #f3faffc2;
   overflow: hidden;
@@ -4992,6 +5051,7 @@ CHECKOUT PAGE START
   text-align: center;
 }
 
+
 .wsus__checkout_single_address {
   border: 1px solid #eee;
   border-radius: 5px;
@@ -5037,6 +5097,7 @@ CHECKOUT PAGE END
 /*======================
 INVOICE PAGE SATAR
 ========================*/
+/* No se utiliza */
 .wsus__invoice_top {
   padding: 20px;
   box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.2);
@@ -5069,6 +5130,8 @@ INVOICE PAGE SATAR
   font-weight: 400;
   margin-top: 10px;
 }
+
+/* No se utiliza */
 
 .wsus__invoice_area {
   background: #fff;
@@ -5204,6 +5267,8 @@ INVOICE PAGE END
 /*======================
 WISHLIST PAGE START
 ========================*/
+/* No se utiliza */
+
 .wishlist .wsus__pro_img {
   position: relative;
   width: 180px;
@@ -5268,6 +5333,7 @@ WISHLIST PAGE START
   color: #fff;
 }
 
+/* No se utiliza Fin*/
 /*======================
 	WISHLIST PAGE END
 ========================*/
@@ -5275,6 +5341,7 @@ WISHLIST PAGE START
 /*========================
 	COMPARE START
 =========================*/
+/* No se utiliza */
 #wsus__compare {
   padding-top: 70px;
 }
@@ -5411,6 +5478,7 @@ WISHLIST PAGE START
   color: red;
 }
 
+/* No se utiliza Fin */
 /*========================
 		COMPARE END
 =========================*/
@@ -5418,6 +5486,7 @@ WISHLIST PAGE START
 /*========================
 	CONTACT START
 =========================*/
+/* No se utiliza */
 #wsus__contact {
   padding-top: 70px;
 }
@@ -5530,6 +5599,7 @@ WISHLIST PAGE START
   width: 100%;
   height: 100%;
 }
+/* No se utiliza Fin */
 
 /*========================
 	CONTACT END
@@ -5711,6 +5781,7 @@ WISHLIST PAGE START
 /*========================
 	ABOUT US START
 =========================*/
+/* No se utiliza */
 .wsus__about_accordian {
   margin-top: 70px;
 }
@@ -5726,11 +5797,12 @@ WISHLIST PAGE START
   font-weight: 600;
   margin-bottom: 20px;
 }
+/* No se utiliza Fin*/
 
 .accordion-button:focus {
   box-shadow: none;
 }
-
+/* No se utiliza */
 .wsus__about_accordian .accordion-item:first-of-type .accordion-button {
   border-radius: 0 !important;
 }
@@ -5756,6 +5828,7 @@ WISHLIST PAGE START
   border-radius: 5px;
   overflow: hidden;
 }
+
 
 .wsus__about_counter_area {
   margin-top: 70px;
@@ -5957,6 +6030,7 @@ WISHLIST PAGE START
   bottom: 20px;
 }
 
+/* No se utiliza Fin */
 /*========================
 	ABOUT US END
 =========================*/
@@ -5964,6 +6038,7 @@ WISHLIST PAGE START
 /*========================
 	TEAM DETAILS START
 =========================*/
+/* No se ocupa */
 .wsus__team_details {
   margin-top: 70px;
 }
@@ -6207,7 +6282,7 @@ WISHLIST PAGE START
   -o-transform: translateY(-50%);
   z-index: -1;
 }
-
+/* No se ocupa Final */
 /*========================
 	TEAM DETAILS END
 =========================*/
@@ -6215,6 +6290,7 @@ WISHLIST PAGE START
 /*========================
 	404  START
 =========================*/
+/* No se ocupa */
 #wsus__404 {
   margin-bottom: 125px;
   margin-top: 40px;
@@ -6249,7 +6325,7 @@ WISHLIST PAGE START
 .wsus__404_text p {
   margin: 10px 0px 45px 0px;
 }
-
+/* No se ocupa fin */
 /*========================
 	404  END
 =========================*/
@@ -6259,6 +6335,7 @@ WISHLIST PAGE START
 /*========================
 	BLOGS PAGE START
 =========================*/
+/* No se ocupa */
 #wsus__blogs {
   padding-top: 45px;
 }
@@ -6288,10 +6365,7 @@ WISHLIST PAGE START
   left: 0;
   width: 100%;
   height: 100%;
-  /* background: rgb(11, 44, 61); */
-  /* background: linear-gradient(0deg,
-      rgba(11, 44, 61, 0.68) 20%,
-      transparent 100%); */
+
 }
 
 .wsus__blog_text_center {
@@ -6370,6 +6444,7 @@ WISHLIST PAGE START
 .wsus__blog_text_center a:hover {
   color: #00468c;
 }
+/* No se ocupa Final*/
 
 /*========================
 	BLOGS PAGE END
@@ -6378,6 +6453,8 @@ WISHLIST PAGE START
 /*========================
 	BLOGS DETAILS START
 =========================*/
+/* No se ocupa */
+
 #wsus__blog_details {
   padding-top: 70px;
 }
@@ -6835,6 +6912,7 @@ WISHLIST PAGE START
   border-color: #00468c;
 }
 
+/* No se ocupa final */
 /*========================
 	BLOGS DETAILS END
 =========================*/
@@ -6842,6 +6920,7 @@ WISHLIST PAGE START
 /*========================
 	FAQ START
 =========================*/
+/* no se ocupa */
 #wsus__faq {
   padding-top: 65px;
 }
@@ -6850,6 +6929,7 @@ WISHLIST PAGE START
   font-size: 30px;
   margin-bottom: 10px;
 }
+/* no se ocupa Fin */
 
 .accordion-item:first-of-type .accordion-button {
   border-radius: 0 !important;
@@ -6859,15 +6939,18 @@ WISHLIST PAGE START
   border-top: 1px solid #fff;
 }
 
+
 .accordion-collapse {
   border: none;
 }
+
 
 #wsus__faq .accordion-body {
   padding: 1rem 1.25rem;
   border: none !important;
 }
 
+/* No se ocupa */
 .wsus__faq_text {
   padding: 30px;
   background: rgba(0, 136, 204, 0.08) !important;
@@ -6901,7 +6984,7 @@ WISHLIST PAGE START
 .wsus__faq_text .call:hover {
   color: #00468c;
 }
-
+/* No se ocupa fin */
 /*========================
 	FAQ END
 =========================*/
@@ -7082,6 +7165,7 @@ WISHLIST PAGE START
   -ms-transform: scale(1.03);
   -o-transform: scale(1.03);
 }
+/* No se ocupa */
 
 .wsus__message {
   padding: 20px;
@@ -7427,7 +7511,7 @@ WISHLIST PAGE START
   color: #63696c;
   font-size: 14px;
 }
-
+/* No se ocupa Fin */
 .wsus__dash_pro_area,
 .wsus__dashboard_add {
   background: #fff;
@@ -7461,6 +7545,11 @@ WISHLIST PAGE START
   border: 1px solid #eee;
 }
 
+/*
+
+Analizar medicine_row_input si es que se ocupa
+
+*/
 .wsus__dash_pro_single input,
 .wsus__dash_pro_single textarea,
 .medicine_row_input input {
@@ -7473,7 +7562,7 @@ WISHLIST PAGE START
   resize: none;
   border: 1px solid #eee;
 }
-
+/* No se ocupa */
 .wsus__dash_pro_img {
   border-radius: 5px;
   border: 1px solid #eee;
@@ -7494,6 +7583,7 @@ WISHLIST PAGE START
   -ms-border-radius: 5px;
   -o-border-radius: 5px;
 }
+/* No se ocupa Fin*/
 
 .wsus__dash_add_single {
   border: 1px solid #eee;
@@ -7667,6 +7757,8 @@ WISHLIST PAGE START
 /*======================
 TERMS & CONDITION START
 ========================*/
+/* No se ocupa */
+
 #wsus__terms_condition {
   margin-top: 67px;
 }
@@ -7712,6 +7804,7 @@ TERMS & CONDITION START
   color: #00468c;
 }
 
+/* No se ocupa fin */
 /*======================
 TERMS & CONDITION END
 ========================*/
@@ -7719,6 +7812,8 @@ TERMS & CONDITION END
 /*======================
 FORGET PASSWORD START
 ========================*/
+
+
 .wsus__forget_area {
   border: 1px solid #eee;
   padding: 30px;
@@ -7832,13 +7927,13 @@ PAYMENT PAGE  START
   transition: background-color 0.3s ease;
   position: relative;
   display: flex;
-  
+
 }
 
 #sticky_sidebar .nav-link {
   border: none;
   background: none;
-  transition: background-color 0.3s ease, color 0.3s ease; 
+  transition: background-color 0.3s ease, color 0.3s ease;
   position: relative;
 }
 
@@ -7848,7 +7943,7 @@ PAYMENT PAGE  START
   bottom: 0;
   left: 0;
   width: 100%;
-  height: 1px; 
+  height: 1px;
   background-color: lightgrey;
 }
 
@@ -7882,9 +7977,9 @@ PAYMENT PAGE  START
   align-items: center;
   justify-content: center;
   background-color: white;
-  border: 2px solid lightgrey; 
-  border-radius: 50%; 
-  padding: 12px; 
+  border: 2px solid lightgrey;
+  border-radius: 50%;
+  padding: 12px;
   margin-left: 10px;
 }
 
@@ -7901,16 +7996,16 @@ PAYMENT PAGE  START
   align-items: center;
   justify-content: center;
   background-color: white;
-  border: 2px solid lightgrey; 
-  border-radius: 50%; 
-  padding: 12px; 
+  border: 2px solid lightgrey;
+  border-radius: 50%;
+  padding: 12px;
   margin-left: 10px;
 }
 
 .payment-icon-gift{
   position: relative; /* Añadir posición relativa si es necesario */
-  width: 50px; 
-  height: auto; 
+  width: 50px;
+  height: auto;
   z-index: 1; /* Este z-index sólo tendrá efecto si se establece la posición */
 
 }
@@ -7922,7 +8017,7 @@ PAYMENT PAGE  START
 .wsus__pay_info_area .nav-pills .nav-link.active,
 .wsus__pay_info_area .nav-pills .nav-link:hover {
   background: grey;
-  
+
 }
 
 .wsus__pay_info_area .tab-pane {
@@ -7935,6 +8030,7 @@ PAYMENT PAGE  START
   background: #fff;
   box-shadow: rgb(50 50 93 / 15%) 0px 0px 5px 0px;
 }
+/* No se ocupa */
 
 .wsus__pay_caed_header {
   display: flex;
@@ -7953,6 +8049,7 @@ PAYMENT PAGE  START
   width: 80px;
   border-radius: 5px;
 }
+/* No se ocupa fin */
 
 .wsus__payment_area .input {
   color: #353535;
@@ -7972,6 +8069,7 @@ PAYMENT PAGE  START
   opacity: .3;
 }
 
+/* No se ocupa */
 .wsus__save_payment {
   display: flex;
   align-items: center;
@@ -8003,6 +8101,7 @@ PAYMENT PAGE  START
   font-weight: 400;
   font-size: 14px;
 }
+/* No se ocupa Fin */
 
 .wsus__payment_area button {
   font-weight: 600;
@@ -8106,6 +8205,8 @@ PAYMENT PAGE  END
 /*======================
 TRACKING ORDER START
 ========================*/
+/* Posiblemente esto se ocupe EN EL FUTURO */
+
 .tack_form {
   background: #fff;
   padding: 40px;
@@ -8317,6 +8418,8 @@ TRACKING ORDER END
 /*======================
 VENDORS PAGE START
 ========================*/
+/* No se ocupa */
+
 .wsus__vendor_sidebar {
   padding: 20px;
 }
@@ -8428,7 +8531,7 @@ VENDORS PAGE START
   display: inline-block;
   margin: 14px 0px 0px 0px;
 }
-
+/* No se ocupa fin */
 /*======================
 VENDORS PAGE END
 ========================*/
@@ -8436,6 +8539,7 @@ VENDORS PAGE END
 /*======================
 VENDORS DETAILA START
 ========================*/
+/* No se ocupa */
 .wsus__vendor_det_banner_text {
   background: linear-gradient(90deg,
       rgba(11, 44, 61, 1) 0%,
@@ -8478,6 +8582,7 @@ VENDORS DETAILA START
   -ms-transition: all linear 0.3s ease;
   -o-transition: all linear 0.3s ease;
 }
+/* No se ocupa fin */
 
 .modal-title {
   text-transform: capitalize;
@@ -8487,6 +8592,7 @@ VENDORS DETAILA START
   margin-bottom: 15px;
 }
 
+
 /*======================
 VENDORS DETAILA END
 ========================*/
@@ -8494,9 +8600,11 @@ VENDORS DETAILA END
 /*======================
 CATEGORY PAGE START
 ========================*/
+/* No se ocupa */
 .wsus__category_topbar .select2-container--default .select2-selection--single {
   width: 100%;
 }
+/* No se ocupa Fin */
 
 .wsus__category_topbar .wsus__topbar_select {
   border-radius: 5px;
@@ -8520,6 +8628,7 @@ CATEGORY PAGE END
 /*======================
 CUSTOM PAGE START
 ========================*/
+/* No se ocupa */
 .wsus__custom_pages p {
   margin-top: -7px;
 }
@@ -8528,6 +8637,7 @@ CUSTOM PAGE START
   display: block;
   margin-top: 20px;
 }
+/* No se ocupa fin*/
 
 /*======================
 CUSTOM PAGE END
@@ -8536,10 +8646,12 @@ CUSTOM PAGE END
 /*======================
 	DAILY DEALS START
 ========================*/
+
 #wsus__daily_deals {
   margin-top: 43px;
 }
 
+/* No se utiliza */
 .wsus__daily_deals_single {
   border: 1px solid #eee;
   overflow: hidden;
@@ -8640,7 +8752,7 @@ CUSTOM PAGE END
 .wsus__daily_deals_text .deals_title:hover {
   color: #00468c;
 }
-
+/* No se utiliza fin */
 /*======================
 	DAILY DEALS END
 ========================*/
@@ -8648,6 +8760,7 @@ CUSTOM PAGE END
 /*======================
 DAILY DEALS DETAILS START
 ========================*/
+/* No se utiliza */
 .wsus__offer_details_banner {
   border-radius: 5px;
   overflow: hidden;
@@ -8737,6 +8850,7 @@ DAILY DEALS DETAILS START
 .wsus__offer_progress .progress-bar {
   background-color: #00468c;
 }
+/* No se utiliza fin */
 
 /*======================
 DAILY DEALS DETAILS END
@@ -8904,7 +9018,7 @@ header .wsus__search button:hover {
 }
 .relative_contect2 {
   position: relative;
-  
+
 }
 
 /* header .wsus__call_text a:hover {
@@ -9822,7 +9936,7 @@ a:not([href]):not([class]):hover {
   justify-content: center;
   align-items: center;
   background: #ffffff;
-  
+
 }
 
 
@@ -9841,7 +9955,7 @@ a:not([href]):not([class]):hover {
   width: 100%; /* Asegura que ocupe el 100% del ancho de la columna */
 }
 
-.iframe-video-eccomerce #video-container, 
+.iframe-video-eccomerce #video-container,
 .iframe-video-eccomerce .video-placeholder {
   width: 100%;
 }
@@ -9851,7 +9965,7 @@ a:not([href]):not([class]):hover {
   width: 100%;
   height: 400px; /* Ajusta esta altura según lo necesites */
   max-height: 100%;
-} 
+}
 
 .video-placeholder {
   position: relative;
@@ -10071,7 +10185,7 @@ a:not([href]):not([class]):hover {
 
 .wsus__shipping .wsus__shipping-text-one{
   font-size: 14px;
-  
+
 }
 .wsus__shipping p{
   font-size: 12px;
@@ -10088,7 +10202,7 @@ a:not([href]):not([class]):hover {
   margin-top: 8px;
 }
 .wsus__assurance ul li div{
-  display: flex; 
+  display: flex;
   align-items: center;
   margin-top: 8px;
 }
@@ -10189,7 +10303,7 @@ a:not([href]):not([class]):hover {
   width: 100%;
   height: 100%;
   background: #00468c;
-  border: none; 
+  border: none;
 }
 .product-solicited-site .row .col-xl-3 button:hover{
   background-color: #005fb8; /* Color ligeramente más claro */
@@ -10240,7 +10354,7 @@ a:not([href]):not([class]):hover {
   width: 100%;
   height: 100%;
   background: #00468c;
-  border: none; 
+  border: none;
 }
 .product-solicited-site .row .col-4 button:hover{
   background-color: #005fb8; /* Color ligeramente más claro */
@@ -10265,7 +10379,7 @@ a:not([href]):not([class]):hover {
   align-items: center;
   justify-content: center;
   padding: 12px 0px;
-  
+
 }
 .order-confimation-date img{
   width: 50px;
@@ -10342,8 +10456,8 @@ a:not([href]):not([class]):hover {
   display: flex; /* Flexbox para centrar el contenido */
   align-items: center; /* Centrar verticalmente */
   justify-content: center; /* Centrar horizontalmente */
-  
-  
+
+
 }
 
 .associate-start-text::before {
@@ -10353,7 +10467,7 @@ a:not([href]):not([class]):hover {
   left: 0; /* Cubrir desde la parte izquierda */
   width: 100%; /* Ancho completo */
   height: 100%; /* Alto completo */
-  
+
   z-index: 1; /* Asegura que esté por encima de la imagen */
 }
 
@@ -10373,7 +10487,7 @@ a:not([href]):not([class]):hover {
   margin-left: auto; /* Empuja el contenedor hacia la derecha */
   margin-right: 10px; /* Ajusta según el espacio que desees a la derecha */
   max-width: 55vw; /* Limita el ancho del contenido */
-  
+
   z-index: 2;
 }
 .associate-start-text .associate-text-eslogan {
@@ -10387,7 +10501,7 @@ a:not([href]):not([class]):hover {
   font-size: 6.5rem;
   color: #fff;
   line-height: 95px;
-  
+
   position: relative;
   margin-left: 31px;
 }
@@ -10401,7 +10515,7 @@ a:not([href]):not([class]):hover {
   left: -30px;
   /* top: 50%; */
   transform: translateY(-50%);
-  
+
 }
 
 .associate-start-text p{
@@ -10470,14 +10584,14 @@ a:not([href]):not([class]):hover {
 }
 
 .wsus_logos-parther {
-  margin: auto 0; 
+  margin: auto 0;
 }
 .wsus_logos-parther img{
   width: 50px;
 }
 
 .wsus_logos-parther_footer {
-  
+
   display: flex;
   justify-content: center;
   align-items: center;
@@ -10510,7 +10624,7 @@ a:not([href]):not([class]):hover {
 #discount-transfer {
   background-color:#bdeadb ;
   margin-top: 2px;
-  
+
 }
 
 #discount-transfer p{
@@ -10805,8 +10919,8 @@ a:not([href]):not([class]):hover {
 }
 
 .bar-medition div{
-  
-  
+
+
   border-radius: 10px;
   height: 100%;
 }
@@ -10928,7 +11042,7 @@ a:not([href]):not([class]):hover {
 /* Estilo de vista previa de las imágenes */
 .image-preview {
   display: flex;
-  
+
   gap: 5px;
 }
 
