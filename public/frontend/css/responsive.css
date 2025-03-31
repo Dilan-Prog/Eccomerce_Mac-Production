@@ -57,6 +57,7 @@
 
   .wsus__call_text a {
     font-size: 14px;
+    
   }
 
   .wsus__monthly_top_left {
@@ -1375,14 +1376,6 @@
     z-index: 999;
   }
 
-  .wsus__topbar_right li {
-    margin: 0px 10px;
-  }
-
-  .wsus__topbar_left li {
-    margin-right: 15px;
-  }
-
   /* HEADER SRART */
   header {
     height: 60px;
@@ -2157,10 +2150,6 @@
     flex-wrap: wrap;
   }
 
-  .wsus__topbar_right {
-    justify-content: center;
-  }
-
   .wsus__track_area .common_btn {
     width: 100%;
     text-align: center;
@@ -2678,14 +2667,6 @@
     z-index: 999;
   }
 
-  .wsus__topbar_right {
-    justify-content: center;
-  }
-
-  .wsus__topbar_right li a i {
-    margin-right: 2px;
-  }
-
   /* HEADER SRART */
   header {
     height: 60px;
@@ -3087,10 +3068,6 @@
   .wsus__copyright p img {
     margin-left: 0;
     margin-top: 10px;
-  }
-
-  .wsus__topbar_left li a {
-    font-size: 12px;
   }
 
   .product_popup_modal .modal-dialog {
@@ -4377,24 +4354,6 @@
     left: 0;
     z-index: 999;
   }
-
-  .wsus__topbar_right {
-    justify-content: center;
-  }
-
-  .wsus__topbar_right li {
-    margin-left: 0;
-    margin-right: 10px;
-  }
-
-  .wsus__topbar_right li a i {
-    margin-right: 2px;
-  }
-
-  .wsus__topbar_right li a {
-    font-size: 12px;
-  }
-
   /* HEADER SRART */
   header {
     height: 60px;
@@ -5836,10 +5795,6 @@
 
   .wsus__chat_single_text p {
     font-size: 13px;
-  }
-
-  .wsus__topbar_right li {
-    margin: 0px 15px;
   }
 
   .wsus__chat_main_area {
