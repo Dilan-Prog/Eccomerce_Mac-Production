@@ -339,43 +339,6 @@
 	margin-left: 0;
 	margin-right: 5px;
 }
-
-.wsus__pop_up_text {
-	float: right;
-}
-
-.home_2 .wsus__pop_up_text form .news_input {
-	border-radius: 30px;
-}
-
-.home_2 .wsus__pop_up_text form .common_btn {
-	border-top-left-radius: 30px;
-	border-bottom-left-radius: 30px;
-}
-
-.wsus__pop_up_text form .common_btn {
-	right: auto;
-	border-top-left-radius: 5px;
-	border-bottom-left-radius: 5px;
-	left: 0;
-	border-bottom-right-radius: 0;
-	border-top-right-radius: 0;
-}
-
-.wsus__pop_up_text .form-check .form-check-input {
-	float: right;
-}
-
-.wsus__pop_up_text .form-check label {
-	color: #797979;
-	margin-right: 25px;
-}
-
-.wsus__pop_up_text #cross {
-	padding: 5px 12px 0px 0px;
-	text-align: center;
-}
-
 .wsus__single_banner_text h6 span {
 	margin-left: 0;
 	margin-right: 10px;

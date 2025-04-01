@@ -1349,9 +1349,12 @@
 }
 /* Tablet not Landspace */
 @media (min-width: 768px) and (max-width: 991.99px) {
+<<<<<<< HEAD
   /* .wsus__pop_up_text form .common_btn {
     right: 0px;
   } */
+=======
+>>>>>>> dd36f9f (optimizacione y borrar lineas)
 
   /* TOPBAR START */
   #wsus__topbar {
@@ -1608,6 +1611,7 @@
     margin-left: 10px;
   }
 
+<<<<<<< HEAD
   /* .wsus__pop_up_center {
     width: 90%;
     padding: 55px;
@@ -1617,6 +1621,8 @@
     width: 65%;
   } */
 
+=======
+>>>>>>> dd36f9f (optimizacione y borrar lineas)
   .wsus__subs_form form {
     top: 0;
     transform: translate(0);
@@ -2726,8 +2732,13 @@
     margin-top: 5px;
   }
 
+<<<<<<< HEAD
   /* POPUP START */
 /*
+=======
+  
+
+>>>>>>> dd36f9f (optimizacione y borrar lineas)
   /* BANNER START */
   #wsus__banner {
     margin-top: 105px;
@@ -4390,33 +4401,7 @@
     font-size: 13px;
   }
 
-  /* POPUP START */
-  .wsus__pop_up_center {
-    width: 90%;
-    padding: 15px;
-  }
 
-  .wsus__pop_up_text {
-    width: 100%;
-  }
-
-  .wsus__pop_up_text h5 {
-    font-size: 16px;
-  }
-
-  .wsus__pop_up_text h5 span {
-    font-size: 20px;
-  }
-
-  .wsus__pop_up_text h2 {
-    font-size: 22px;
-    margin-bottom: 10px;
-  }
-
-  .wsus__pop_up_text p {
-    margin-bottom: 10px;
-    font-size: 14px;
-  }
 
   /* BANNER START */
   #wsus__banner {
