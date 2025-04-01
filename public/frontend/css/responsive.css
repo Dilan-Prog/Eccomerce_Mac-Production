@@ -8,21 +8,6 @@
   .monthly_top_filter2 {
     margin-bottom: 20px;
   }
-
-  /* 404 PAGE START */
-  #wsus__404 {
-    margin-bottom: 105px;
-    margin-top: 25px;
-  }
-
-  .wsus__404_text h2 {
-    font-size: 100px;
-  }
-
-  .wsus__404_text h4 {
-    font-size: 25px;
-  }
-
   .dashboard_content .wsus__invoice_description .name {
     width: 40%;
   }
@@ -57,7 +42,7 @@
 
   .wsus__call_text a {
     font-size: 14px;
-    
+
   }
 
   .wsus__monthly_top_left {
@@ -508,11 +493,11 @@
   #video_product iframe{
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     border-radius: 8px;
- 
+
     width:610px;
     height: 360px;
-    
-  
+
+
   }
   #contact-section {
     margin-top: 50px;
@@ -575,11 +560,11 @@
   #sticky_sidebar h5 {
     font-size: 15px;
   }
-  
+
   #sticky_sidebar div button p {
     font-size: 13px;
   }
-  
+
 }
 
 /* Tablet landspace */
@@ -689,7 +674,7 @@
   .wsus__footer_content a{
     font-size: 15px;
    }
-  
+
 
 
   .wsus__section_header h3 {
@@ -1233,11 +1218,11 @@
   #video_product iframe{
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     border-radius: 8px;
- 
+
     width:510px;
     height: 310px;
-    
-  
+
+
   }
   #contact-section {
     margin-top: 50px;
@@ -1259,14 +1244,14 @@
   .content-eccomerce-information a{
     font-size: 13px;
   }
-  
+
   .iframe-video-eccomerce{
     display: flex;
     justify-content: center;
     align-items: center;
     margin: 10px 0px;
   }
-  
+
   .iframe-video-eccomerce iframe{
     width: 100%;
     height: 500px;
@@ -1336,18 +1321,18 @@
   #sticky_sidebar h5 {
     font-size: 14px;
   }
-  
+
   #sticky_sidebar div button p {
     font-size: 11px;
     line-height: 15px;
   }
 
   .payment-icon-gift{
-    
-    width: 35px; 
-    height: auto; 
-    
-  
+
+    width: 35px;
+    height: auto;
+
+
   }
   .payment-icon {
     width: 35px; /* Ajusta el tamaño de la imagen */
@@ -1357,16 +1342,16 @@
   .iframe-video-eccomerce #video-container iframe,
 .iframe-video-eccomerce .video-placeholder img {
   height: 500px; /* Ajusta esta altura según lo necesites */
-  
-} 
+
+}
 
 
 }
 /* Tablet not Landspace */
 @media (min-width: 768px) and (max-width: 991.99px) {
-  .wsus__pop_up_text form .common_btn {
+  /* .wsus__pop_up_text form .common_btn {
     right: 0px;
-  }
+  } */
 
   /* TOPBAR START */
   #wsus__topbar {
@@ -1623,14 +1608,14 @@
     margin-left: 10px;
   }
 
-  .wsus__pop_up_center {
+  /* .wsus__pop_up_center {
     width: 90%;
     padding: 55px;
   }
 
   .wsus__pop_up_text {
     width: 65%;
-  }
+  } */
 
   .wsus__subs_form form {
     top: 0;
@@ -2520,8 +2505,8 @@
     margin-top: 15px;
     width:360px;
     height: 230px;
-    
-  
+
+
   }
   #contact-section {
     margin-top: 100px;
@@ -2542,19 +2527,19 @@
   .content-eccomerce-information a{
     font-size: 13px;
   }
-  
+
   .iframe-video-eccomerce{
     display: flex;
     justify-content: center;
     align-items: center;
     margin: 10px 0px;
   }
-  
+
   .iframe-video-eccomerce iframe{
     width: 100%;
     height: 400px;
   }
-  
+
   .shopping-info-home img{
     width: 80px;
     height: 80px;
@@ -2619,7 +2604,7 @@
 
   .wsus_logos-parther img{
     width: 35px;
-    
+
   }
 
   #wsus__flash_sell .wsus__product_item {
@@ -2627,7 +2612,7 @@
     width: 215px;
     height: 510px;
   }
-  
+
 
   #wsus__electronic2 .wsus__product_item,
   #wsus__electronic .wsus__product_item {
@@ -2642,9 +2627,9 @@
   }
 
   .wsus__product_details .wsus__category {
-    
+
     font-size: 10px;
-   
+
   }
 
   .iframe-video-eccomerce #video-container iframe,
@@ -2652,7 +2637,7 @@
   width: 100%;
   height: 425px; /* Ajusta esta altura según lo necesites */
   max-height: 100%;
-} 
+}
 
 
 }
@@ -2742,40 +2727,13 @@
   }
 
   /* POPUP START */
-  .wsus__pop_up_center {
-    width: 90%;
-    padding: 30px;
-  }
-
-  .wsus__pop_up_text p {
-    margin-bottom: 10px;
-    font-size: 14px;
-    width: 70%;
-  }
-
-  .wsus__pop_up_text {
-    width: 100%;
-  }
-
-  .wsus__pop_up_text h5 {
-    font-size: 16px;
-  }
-
-  .wsus__pop_up_text h5 span {
-    font-size: 20px;
-  }
-
-  .wsus__pop_up_text h2 {
-    font-size: 22px;
-    margin-bottom: 10px;
-  }
-
+/*
   /* BANNER START */
   #wsus__banner {
     margin-top: 105px;
   }
 
- 
+
 
 
   .wsus__flash_coundown {
@@ -3135,7 +3093,7 @@
   /* PRODUCT DETAILS PAGE START */
   .wsus__pro_details_text .title {
     font-size: 20px;
-    
+
   }
 
   .wsus__pro_report {
@@ -4103,7 +4061,7 @@
     margin-top: 15px;
     width:320px;
     height: 210px;
-  
+
   }
 
   #contact-section {
@@ -4126,14 +4084,14 @@
   .content-eccomerce-information a{
     font-size: 10px;
   }
-  
+
   .iframe-video-eccomerce{
     display: flex;
     justify-content: center;
     align-items: center;
     margin: 10px 0px;
   }
-  
+
   .iframe-video-eccomerce iframe{
     width: 100%;
     height: 225px;
@@ -4151,7 +4109,7 @@
     font-size: 8px;
     line-height: 12px;
   }
-  
+
 
   #wsus__banner .slick-dots {
     position: absolute;
@@ -4213,7 +4171,7 @@
     font-size: 6px;
     color: #000;
     padding: 0px 4px;
-  
+
   }
 
   #info-payment-sucess .info-payment-sucess-advert .container{
@@ -4236,7 +4194,7 @@
     align-items: center;
     margin: 0px;
     max-width: 90vw;
-  }  
+  }
 
   .associate-start-text .associate-text-eslogan {
     font-size: 0.55rem;
@@ -4251,8 +4209,8 @@
     text-shadow: 3px 3px 8px rgba(0, 0, 0, 100);
     margin-left: 0px;
   }
-  
-  
+
+
   .associate-start-text h1::after{
 
     box-sizing: border-box;
@@ -4261,12 +4219,12 @@
     width: 0px;
     height: 0rem;
     left: none;
-    
+
     transform: none;
-    
+
   }
-  
-  
+
+
   .associate-start-text p{
     margin-top: 8px;
     font-size: 0.45rem;
@@ -4278,7 +4236,7 @@
   .associate-content-card .card-start-end{
     transform: none;
   }
-  
+
   .associate-content-card .container{
     transform: none;
   }
@@ -4300,22 +4258,22 @@
 
   .wsus_logos-parther img{
     width: 35px;
-    
+
   }
   #wsus__flash_sell .wsus__product_item {
     margin: 25px 12px 0px 12px;
     width: auto;
-    
+
   }
   #wsus__electronic2 .wsus__product_item,
   #wsus__electronic .wsus__product_item {
     margin: 25px 12px 0px 12px;
     width: auto;
-   
+
   }
   .wsus__product_item{
     width: auto;
-    
+
   }
 
   #sticky_sidebar h5 {
@@ -4324,7 +4282,7 @@
     font-size: 16px;
   }
 
-  
+
   #sticky_sidebar div button p {
     font-size: 14px;
     line-height: 20px;
@@ -4335,14 +4293,14 @@
   width: 100%;
   height: 300px; /* Ajusta esta altura según lo necesites */
   max-height: 100%;
-} 
+}
 #whastapp-image {
   bottom: 55px;
   width: 55px;
   height: 55px;
 }
 
-  
+
 }
 
 @media (max-width: 575.99px)  {
@@ -4464,7 +4422,7 @@
   #wsus__banner {
     margin-top: 60px;
   }
-/* 
+/*
   .wsus__single_slider {
     padding: 75px 200px;
     /* height: 300px; */
@@ -4476,7 +4434,7 @@
 /*  */
   /* .wsus__single_slider_text h1 {
     font-size: 30px;
-  } */ 
+  } */
 
   /* .wsus__single_slider_text h6 {
     margin-bottom: 15px;
@@ -4817,7 +4775,7 @@
 
   .wsus__pro_details_text .title {
     font-size: 20px;
-    
+
   }
 
   .wsus__pro_details_text h4 {
@@ -5462,7 +5420,7 @@
     font-size: 12px;
   }
 
-  
+
   #v-pills-tabContent {
     margin-bottom: 30px;
   }
@@ -6056,8 +6014,8 @@
     margin-top: 15px;
     width:305px;
     height: 210px;
-    
-  
+
+
   }
   #contact-section {
     margin-top: 100px;
@@ -6079,14 +6037,14 @@
   .content-eccomerce-information a{
     font-size: 10px;
   }
-  
+
   .iframe-video-eccomerce{
     display: flex;
     justify-content: center;
     align-items: center;
     margin: 10px 0px;
   }
-  
+
   .iframe-video-eccomerce iframe{
     width: 100%;
     height: 225px;
@@ -6111,7 +6069,7 @@
   }
 
   .shopping-info-home .row .col-4:not(:last-child)::after {
-   
+
     right: 2px; /* Posición de la línea */
     margin: 0;
   }
@@ -6125,7 +6083,7 @@
     color: #ffffff;
     font-weight: 600;
     font-size: 12px;
-    
+
   }
   .wsus__banner_content {
     padding: 5px 10px;
@@ -6191,7 +6149,7 @@
     font-size: 6px;
     color: #000;
     padding: 0px 4px;
-  
+
   }
 
   #info-payment-sucess .info-payment-sucess-advert .container{
@@ -6215,7 +6173,7 @@
     align-items: center;
     margin: 0px;
     max-width: 90vw;
-  }  
+  }
 
   .associate-start-text .associate-text-eslogan {
     font-size: 0.55rem;
@@ -6230,8 +6188,8 @@
     text-shadow: 3px 3px 8px rgba(0, 0, 0, 100);
     margin-left: 0px;
   }
-  
-  
+
+
   .associate-start-text h1::after{
 
     box-sizing: border-box;
@@ -6240,12 +6198,12 @@
     width: 0px;
     height: 0rem;
     left: none;
-    
+
     transform: none;
-    
+
   }
-  
-  
+
+
   .associate-start-text p{
     margin-top: 8px;
     font-size: 0.45rem;
@@ -6257,7 +6215,7 @@
   .associate-content-card .card-start-end{
     transform: none;
   }
-  
+
   .associate-content-card .container{
     transform: none;
   }
@@ -6280,22 +6238,22 @@
 
   .wsus_logos-parther img{
     width: 35px;
-    
+
   }
   #wsus__flash_sell .wsus__product_item {
     margin: 25px 12px 0px 12px;
     width: auto;
-    
+
   }
   #wsus__electronic2 .wsus__product_item,
   #wsus__electronic .wsus__product_item {
     margin: 25px 12px 0px 12px;
     width: auto;
-   
+
   }
   .wsus__product_item{
     width: auto;
-    
+
   }
 
   .wsus_logos-parther_footer img{
@@ -6310,7 +6268,7 @@
     font-size: 16px;
   }
 
-  
+
   #sticky_sidebar div button p {
     font-size: 14px;
     line-height: 20px;
@@ -6321,7 +6279,7 @@
   width: 100%;
   height: 300px; /* Ajusta esta altura según lo necesites */
   max-height: 100%;
-} 
+}
 
 #whastapp-image {
   bottom: 55px;
