@@ -2449,10 +2449,6 @@ CART VIEW PAGE START
   flex-direction: column;
 }
 
-.wsus__cart_list .wsus__pro_status {
-  width: 170px;
-}
-
 .wsus__cart_list .wsus__pro_select {
   width: 150px;
 }
@@ -2681,9 +2677,6 @@ CHECKOUT PAGE START
   color: #00468c;
 }
 
-.wsus__checkout_form .select2-container--default .select2-selection--single {
-  border-radius: 5px;
-}
 
 .wsus__order_details .form-check-input[type="radio"] {
   border-radius: 50% !important;
@@ -3470,9 +3463,10 @@ Analizar medicine_row_input si es que se ocupa
   width: 170px;
 }
 
+/* 
 #wsus__dashboard .wishlist .wsus__pro_select {
   width: 210px;
-}
+} */
 
 #wsus__dashboard .wsus__pro_icon {
   width: 160px;

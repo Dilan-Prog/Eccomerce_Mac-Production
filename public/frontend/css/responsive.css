@@ -42,47 +42,6 @@
 
   }
 
-  .wsus__hot_deals_text {
-    padding-left: 15px;
-    padding-top: 5px;
-  }
-
-  .wsus__hot_deals_proce {
-    margin: 10px 0px 5px 0px;
-  }
-
-  .wsus__footer_social {
-    margin-top: 15px;
-  }
-
-  .grid .wsus__hot_deals__single_img {
-    width: 30%;
-  }
-
-  .grid .wsus__hot_deals__single_text {
-    width: 70%;
-  }
-
-  .wsus__hot_deals__single_text {
-    margin-top: 0px;
-  }
-
-  .wsus__hot_deals__single_text h5 {
-    font-size: 14px;
-  }
-
-  .wsus__hot_deals__single_text .wsus__tk {
-    font-size: 14px;
-  }
-
-  .wsus__home_services_single h5 {
-    font-size: 15px;
-  }
-
-  .wsus__home_services_single {
-    padding: 25px;
-  }
-
   .wsus__blog_img {
     height: 230px;
   }
@@ -93,9 +52,6 @@
 
   /* PRODUCT DETAILS START */
 
-  .wsus_pro_hot_deals h5 {
-    font-size: 18px;
-  }
 
   .wsus_pro_det_sidebar_single i {
     font-size: 20px;
@@ -108,34 +64,13 @@
   .wsus_pro_det_sidebar {
     padding: 10px;
   }
-
-  .wsus__pro_det_vendor_text p span {
-    width: 18%;
-    font-size: 14px;
-  }
-
-  .wsus__pro_det_vendor_text p {
-    font-size: 14px;
-  }
-
-  .wsus__pro_det_vendor_text .rating {
-    margin: 5px 0px 15px 0px;
-  }
-
   /* VENDOR DETAILS START */
-  .wsus__pro_page_bammer.vendor_det_banner {
-    height: 350px;
-  }
 
   .wsus__vendor_det_banner_text {
     background: linear-gradient(90deg,
         rgba(11, 44, 61, 1) 0%,
         rgba(6, 120, 148, 0) 60%,
         rgba(11, 44, 61, 0) 100%);
-  }
-
-  .wsus__vendor_det_banner_text .wsus__vendor_text_center {
-    width: 40%;
   }
 
   /* ABOUT PAGE START */
@@ -216,29 +151,6 @@
     height: 55px;
   }
 
-  /* COMPARE PAGE START */
-  .wsus__compare_img p {
-    font-size: 14px;
-  }
-
-  .wsus__compare_list table tbody tr td {
-    width: 278.6px;
-  }
-
-  .wsus__compare_text p,
-  .wsus__compare_size,
-  .wsus__compare_stock,
-  .wsus__compare_text i,
-  .wsus__compare_text span,
-  .wsus__compare_text .wsus__n_a {
-    font-size: 14px !important;
-  }
-
-  .wsus__compare_text .common_btn {
-    font-size: 13px;
-    padding: 10px 15px;
-  }
-
   /* DAILE DEALS DETAILS */
   .wsus__offer_time .simply-days-section,
   .wsus__offer_time .simply-hours-section,
@@ -258,10 +170,6 @@
 
   .wsus__daily_deals_text .deals_title {
     font-size: 16px;
-  }
-
-  .wsus__hot_deals_text .wsus__details {
-    font-size: 14px;
   }
 
   /* FAQ PAGE START */
@@ -292,14 +200,6 @@
     margin-bottom: 50px;
   }
 
-  /* WISHLIST PAGE START */
-  .wishlist .common_btn {
-    font-size: 14px;
-  }
-
-  .wishlist .wsus__pro_icon {
-    width: 169px !important;
-  }
 
   /* DASHBOARD START */
   .dashboard_sidebar {
@@ -345,16 +245,8 @@
     width: 120px;
   }
 
-  #wsus__dashboard .wsus__pro_status {
-    width: 120px;
-  }
-
   #wsus__dashboard .wsus__pro_tk {
     width: 100px;
-  }
-
-  #wsus__dashboard .wsus__pro_status {
-    width: 140px;
   }
 
   #wsus__dashboard .wsus__pro_name {
@@ -384,12 +276,6 @@
   .wsus__chat_single_text {
     width: 72%;
   }
-
-  .wsus__hot_deals_text .wsus__hot_title {
-    font-size: 19px;
-  }
-
-
 
 
 
@@ -437,10 +323,6 @@
 
   .home_2 header .wsus__call_area {
     margin-right: 5px;
-  }
-
-  .wsus__hot_deals_2 .wsus__hot_deals_offer {
-    height: 370px;
   }
 
   .home_service_single_2 {
@@ -593,37 +475,6 @@
     padding: 0px 13px;
   }
 
-  .wsus__single_banner_text h3 {
-    font-size: 25px;
-    margin: 2px 0px 10px 0px;
-  }
-
-  .wsus__hot_deals_img {
-    width: 100%;
-  }
-
-  .wsus__hot_deals_text {
-    width: 100%;
-    padding-left: 5px;
-    padding-top: 29px;
-  }
-
-  .wsus__large_banner_text h3 {
-    font-size: 25px;
-  }
-
-  .wsus__large_banner_text h5 {
-    font-size: 25px;
-  }
-
-  .wsus__subd_text h4 {
-    font-size: 25px;
-  }
-
-  .wsus__subd_text p {
-    font-size: 12px;
-  }
-
   .wsus__footer_call a {
     margin-left: 0;
   }
@@ -648,30 +499,6 @@
   .wsus_menu_category_bar p {
     font-size: 13px;
   }
-
-  .wsus__hot_deals__single_text {
-    width: 70% !important;
-    padding-left: 15px !important;
-    margin-top: 0;
-  }
-
-  .wsus__hot_deals__single_text .wsus__tk {
-    font-size: 15px;
-  }
-
-  .wsus__hot_deals__single_img {
-    width: 30%;
-    float: left;
-  }
-
-  .wsus__home_services_single {
-    padding: 20px 10px 10px 10px;
-  }
-
-  .wsus__home_services_single h5 {
-    font-size: 15px;
-  }
-
   .wsus__blog_img {
     height: 210px;
   }
@@ -682,10 +509,6 @@
 
   .product_popup_modal .modal-body {
     height: 460px;
-  }
-
-  .wsus_pro_hot_deals h5 {
-    font-size: 15px;
   }
 
   .wsus__pro_details_text .description {
@@ -711,38 +534,6 @@
     float: left;
     padding-right: 25px;
   }
-
-  .wsus_pro_det_wholesell {
-    width: 50%;
-    float: left;
-  }
-
-  .description_single {
-    padding: 20px;
-  }
-
-  .description_single p {
-    font-size: 16px;
-  }
-
-  .wsus__pro_det_vendor_text .rating {
-    margin: 5px 0px 15px 0px;
-  }
-
-  .wsus__pro_det_vendor_text p {
-    margin-bottom: 10px;
-    font-size: 13px;
-  }
-
-  .wsus__pro_det_vendor_text p span {
-    width: 19%;
-    font-size: 13px;
-  }
-
-  .wsus__pro_det_vendor_text .rating span {
-    font-size: 13px;
-  }
-
   .wsus__comment_img {
     width: 15% !important;
   }
@@ -752,19 +543,6 @@
   }
 
   /* PRODUCT GRID VIEW START */
-  .wsus__pro_page_bammer_text_center p span {
-    font-size: 25px;
-  }
-
-  .wsus__pro_page_bammer_text_center h5 {
-    font-size: 16px;
-  }
-
-  .wsus__pro_page_bammer_text_center h3 {
-    font-size: 25px;
-    margin: 5px 0px 10px 0px;
-  }
-
   .wsus__list_view .wsus__product_details {
     width: 55%;
   }
@@ -782,19 +560,12 @@
   }
 
   /* VENDOR DETAILS START */
-  .wsus__pro_page_bammer.vendor_det_banner {
-    height: 370px;
-  }
-
+  
   .wsus__vendor_det_banner_text {
     background: linear-gradient(90deg,
         rgba(11, 44, 61, 1) 0%,
         rgba(6, 120, 148, 0) 60%,
         rgba(11, 44, 61, 0) 100%);
-  }
-
-  .wsus__vendor_det_banner_text .wsus__vendor_text_center {
-    width: 50%;
   }
 
   /* ABOUT PAGE START */
@@ -907,29 +678,6 @@
     height: 60px;
   }
 
-  /* COMPARE PAGE START */
-  .wsus__compare_img p {
-    font-size: 14px;
-  }
-
-  .wsus__compare_list table tbody tr td {
-    width: 233.6px;
-  }
-
-  .wsus__compare_text p,
-  .wsus__compare_size,
-  .wsus__compare_stock,
-  .wsus__compare_text i,
-  .wsus__compare_text span,
-  .wsus__compare_text .wsus__n_a {
-    font-size: 13px !important;
-  }
-
-  .wsus__compare_text .common_btn {
-    font-size: 13px;
-    padding: 10px 15px;
-  }
-
   /* DAILY DEALS DETAILS START */
   .wsus__offer_details_banner_text {
     width: 60%;
@@ -1012,18 +760,6 @@
   /* VENDOR PAGE START */
   .wsus__vendor_single {
     height: 250px;
-  }
-
-  /* WISHLIST PAGE START */
-  .wishlist .wsus__pro_img a {
-    width: 20px;
-    height: 20px;
-    line-height: 20px;
-    font-size: 14px;
-  }
-
-  .wishlist .common_btn {
-    font-size: 12px;
   }
 
   /* DASHBOARD START */
@@ -1120,22 +856,6 @@
 
   .home_2 header .wsus__call_area {
     padding-left: 0;
-  }
-
-  .wsus__hot_deals_2 .wsus__hot_deals_offer .simply-days-section,
-  .wsus__hot_deals_2 .wsus__hot_deals_offer .simply-hours-section,
-  .wsus__hot_deals_2 .wsus__hot_deals_offer .simply-minutes-section,
-  .wsus__hot_deals_2 .wsus__hot_deals_offer .simply-seconds-section {
-    width: 60px;
-    padding: 0;
-  }
-
-  .wsus__hot_deals_2 .wsus__hot_deals_offer {
-    height: 370px;
-  }
-
-  .banner_1 .wsus__single_banner_text h3 {
-    font-size: 45px;
   }
 
   .home_service_single_2 {
@@ -1372,34 +1092,6 @@
     margin-top: 50px;
   }
 
-  #wsus__single_banner {
-    padding-top: 40px;
-  }
-
-  .wsus__single_banner_content {
-    margin-top: 30px;
-  }
-
-  .wsus__hot_deals_text {
-    width: 100%;
-    padding-left: 5px;
-    padding-top: 20px;
-  }
-
-  .wsus__section_header h3 {
-    font-size: 20px;
-  }
-
-  .wsus__hot_deals__single_img {
-    width: 30% !important;
-  }
-
-  .wsus__hot_deals__single_text {
-    width: 70% !important;
-    float: left;
-    padding-left: 15px !important;
-  }
-
   .wsus__blog_img {
     height: 220px;
   }
@@ -1410,27 +1102,6 @@
 
   .wsus__section_header ul li {
     margin-left: 15px;
-  }
-
-  .wsus__hot_deals_img {
-    width: 100%;
-  }
-
-  .wsus__large_banner_text p {
-    font-size: 15px;
-  }
-
-  .wsus__large_banner_text h3 {
-    font-size: 25px;
-  }
-
-  .wsus__large_banner_img {
-    height: 250px;
-  }
-
-  .wsus__large_banner_img img {
-    height: 100%;
-    object-fit: cover;
   }
 
   .for_md {
@@ -1451,32 +1122,8 @@
     font-size: 14px;
   }
 
-  .wsus__large_banner_content_overlay {
-    padding: 30px;
-  }
-
   #countdown17 {
     margin-bottom: 10px;
-  }
-
-  #wsus__weekly_best {
-    margin-top: 0;
-  }
-
-  #wsus__weekly_best .wsus__section_header {
-    margin-top: 65px;
-  }
-
-  .wsus__home_services_single {
-    margin-bottom: 25px;
-  }
-
-  .home_blogs {
-    margin-top: 0;
-  }
-
-  .wsus__subd_text p {
-    margin: 5px 0px 12px 0px;
   }
 
   .wsus__footer_content img {
@@ -1572,53 +1219,6 @@
     font-size: 14px;
   }
 
-  .wsus_pro_hot_deals {
-    flex-wrap: wrap;
-  }
-
-  .wsus_pro_hot_deals h5 {
-    margin-bottom: 10px;
-  }
-
-  .wsus_pro_hot_deals .simply-days-section,
-  .wsus_pro_hot_deals .simply-hours-section,
-  .wsus_pro_hot_deals .simply-minutes-section,
-  .wsus_pro_hot_deals .simply-seconds-section {
-    margin-left: 0;
-    margin-right: 10px;
-  }
-
-  .description_single {
-    padding: 10px;
-  }
-
-  .description_single p {
-    font-size: 13px;
-  }
-
-  .description_single h6 {
-    font-size: 14px;
-  }
-
-  .wsus__pro_det_vendor_text p span {
-    width: auto;
-    font-size: 13px;
-    margin-right: 5px;
-  }
-
-  .wsus__pro_det_vendor_text p {
-    margin-bottom: 5px;
-    font-size: 14px;
-  }
-
-  .wsus__pro_det_vendor_text .rating {
-    margin: 0px 0px 5px 0px;
-  }
-
-  .wsus__pro_det_vendor_text h4 {
-    margin-bottom: 10px;
-  }
-
   .wsus_pro_det_sidebar {
     margin-top: 25px;
     overflow: hidden;
@@ -1627,11 +1227,6 @@
   .lg_area {
     width: 50%;
     padding-right: 25px;
-    float: left;
-  }
-
-  .wsus_pro_det_wholesell {
-    width: 50%;
     float: left;
   }
 
@@ -1654,33 +1249,6 @@
     opacity: 0;
   }
 
-  .wsus__pro_page_bammer {
-    height: 200px;
-  }
-
-  .wsus__pro_page_bammer_text_center p {
-    font-size: 20px;
-    padding: 7px 15px;
-  }
-
-  .wsus__pro_page_bammer_text_center p span {
-    font-size: 25px;
-  }
-
-  .wsus__pro_page_bammer_text_center h5 {
-    font-size: 16px;
-  }
-
-  .wsus__pro_page_bammer_text_center h3 {
-    font-size: 20px;
-    margin: 5px 0px 10px 0px;
-  }
-
-  .wsus__pro_page_bammer_text_center .add_cart {
-    padding: 10px 15px;
-    font-size: 12px;
-  }
-
   .wsus__list_view .wsus__product_details .wsus__pro_name {
     font-size: 20px;
   }
@@ -1688,10 +1256,6 @@
   /* VENDOR DETAILS START */
   .vendor_det_banner {
     height: 370px !important;
-  }
-
-  .wsus__vendor_det_banner_text .wsus__vendor_text_center {
-    width: 50%;
   }
 
   .wsus__vendor_det_banner_text {
@@ -1827,10 +1391,6 @@
     font-size: 15px;
   }
 
-  .wsus__cart_list .wsus__pro_status {
-    width: 180px;
-  }
-
   .wsus__cart_list .wsus__pro_select {
     width: 180px;
   }
@@ -1850,33 +1410,6 @@
   /* CHECK-OUT PAGE START */
   .wsus__order_details_img {
     height: 90px;
-  }
-
-  /* COMPARE PAGE START */
-  .wsus__compare_img p {
-    font-size: 14px;
-  }
-
-  .wsus__compare_list table tbody tr td {
-    width: 175px;
-  }
-
-  .wsus__compare_des p span {
-    width: 100%;
-  }
-
-  .wsus__compare_text p,
-  .wsus__compare_size,
-  .wsus__compare_stock,
-  .wsus__compare_text i,
-  .wsus__compare_text span,
-  .wsus__compare_text .wsus__n_a {
-    font-size: 13px !important;
-  }
-
-  .wsus__compare_text .common_btn {
-    font-size: 13px;
-    padding: 10px 15px;
   }
 
   /* CONTACT PAGE START */
@@ -2051,18 +1584,6 @@
     padding: 20px;
   }
 
-  /* WISHLIST PAGE START */
-  .wishlist .wsus__pro_img a {
-    width: 20px;
-    height: 20px;
-    line-height: 20px;
-    font-size: 14px;
-  }
-
-  .wishlist .common_btn {
-    font-size: 12px;
-  }
-
   /* DASHBOARD PAGE START */
   .dashboard_sidebar {
     width: 270px;
@@ -2205,11 +1726,6 @@
     width: 20%;
   }
 
-  .preloader {
-    height: 65vh;
-    ;
-  }
-
   .wsus__chatlist .wsus_chat_list_text {
     width: 200px;
   }
@@ -2246,10 +1762,6 @@
     margin-top: 60px;
   }
 
-  .home_2 .wsus__single_banner_content {
-    margin-bottom: 0;
-  }
-
   .home_2 #wsus__banner .col-xl-5.ps-lg-0 .col-xl-12.col-sm-6 {
     padding: 0;
   }
@@ -2260,53 +1772,12 @@
     margin-bottom: 15px;
   }
 
-  #wsus__single_banner {
-    padding-top: 65px;
-  }
-
-  .home_2 #wsus__hot_deals .nxt_arr,
-  .home_2 #wsus__hot_deals .prv_arr {
-    top: -1px;
-  }
-
-  .wsus__hot_deals_2 .wsus__hot_deals_offer {
-    margin-top: 45px;
-    height: 400px;
-  }
-
-  .wsus__hot_deals_2 .wsus__hot_deals_offer .simply-days-section,
-  .wsus__hot_deals_2 .wsus__hot_deals_offer .simply-hours-section,
-  .wsus__hot_deals_2 .wsus__hot_deals_offer .simply-minutes-section,
-  .wsus__hot_deals_2 .wsus__hot_deals_offer .simply-seconds-section {
-    height: auto;
-  }
-
-  .wsus__hot_deals_2 .simply-word {
-    font-size: 10px;
-    margin-top: 5px;
-    display: block;
-  }
-
   .wsus__single_blog_2 .wsus__blog_text_center a {
     color: #353535;
     font-size: 20px;
   }
-
-  .banner_1 .wsus__single_banner_text h3 {
-    font-size: 35px;
-  }
-
   .home_2_single_banner .banner_1 {
     height: 350px;
-  }
-
-  .home_2 #wsus__weekly_best .nxt_arr,
-  .home_2 #wsus__weekly_best .prv_arr {
-    top: -21px;
-  }
-
-  .home2_wsus__weekly_best_2 .wsus__section_header {
-    margin-bottom: 20px;
   }
 
   .home_service_single_2 {
@@ -2318,14 +1789,6 @@
   .home_service_single_2.border_left {
     border: none;
     border-top: 1px solid #b0d8ff;
-  }
-
-  .home_service_single_2 .wsus__home_services_single h5 {
-    margin-top: 25px;
-  }
-
-  .home_2 .home_blogs {
-    padding-top: 8px !important;
   }
 
   .home_2 header .dropdown .nav-link {
@@ -2586,10 +2049,6 @@
     margin-top: 105px;
   }
 
-  .wsus__hot_deals__single_text h5 {
-    font-size: 14px;
-  }
-
   .wsus__product_details .wsus__pro_name {
     font-size: 15px;
   }
@@ -2610,10 +2069,6 @@
   .wsus__section_header h3 {
     font-size: 20px;
     margin-bottom: 15px;
-  }
-
-  #wsus__weekly_best .wsus__section_header h3 {
-    font-size: 16px;
   }
 
   .see_btn {
@@ -2641,140 +2096,20 @@
     font-size: 12px;
     line-height: 15px;
   }
-  .wsus__hot_deals_text .wsus__hot_title {
-    font-size: 18px;
-    margin-top: 10px;
-  }
-
-  .wsus__hot_deals_offer .simply-days-section,
-  .wsus__hot_deals_offer .simply-hours-section,
-  .wsus__hot_deals_offer .simply-minutes-section,
-  .wsus__hot_deals_offer .simply-seconds-section {
-    padding: 0px 7px;
-  }
-
-  .wsus__hot_deals_img {
-    width: 100%;
-  }
-
-  .wsus__hot_deals_text {
-    width: 100%;
-    padding-left: 0;
-  }
-
-  .wsus__single_banner_img {
-    width: 100%;
-    height: 100%;
-  }
-
-  .wsus__single_banner_img img {
-    height: 100% !important;
-    object-fit: cover !important;
-  }
-
-  .wsus__single_banner_content {
-    height: 150px;
-    margin-bottom: 30px;
-  }
-
-  .wsus__single_banner_text {
-    position: absolute;
-    top: 20px;
-    left: 10px;
-    transform: translateY(0);
-    -webkit-transform: translateY(0);
-    -moz-transform: translateY(0);
-    -ms-transform: translateY(0);
-    -o-transform: translateY(0);
-  }
-
   .wsus__pro_name {
     margin-bottom: 5px;
   }
-
-  .wsus__single_banner_text h3 {
-    font-size: 25px;
-    margin: 2px 0px 10px 0px;
-  }
-
-  .single_banner_2 {
-    margin-bottom: 0;
-  }
-
-  .wsus__hot_deals__single_img {
-    width: 30% !important;
-  }
-
-  .wsus__hot_deals__single_text .wsus__tk {
-    font-size: 13px;
-  }
-
-  #wsus__hot_deals .nxt_arr,
-  #wsus__hot_deals .prv_arr {
-    top: -21px;
-  }
-
+  
   .hot_deals_slider {
     margin-top: 20px;
-  }
-
-  .wsus__hot_deals__single_text {
-    width: 70% !important;
-    margin-top: 0px;
-    padding-left: 15px !important;
-  }
-
-  .wsus__hot_deals__single_text .wsus__rating {
-    font-size: 12px;
-    margin: 0;
-  }
-
-  .wsus__home_services_single {
-    padding: 30px 15px;
-    margin-bottom: 25px;
-  }
-
-  .home_blogs {
-    margin-top: 0;
-  }
-
-  .wsus__large_banner_text_right {
-    text-align: left !important;
-    margin-top: 40px;
-  }
-
-  .wsus__large_banner_text h3 {
-    font-size: 20px;
-  }
-
-  .wsus__large_banner_content_overlay {
-    padding: 20px;
-  }
-
-  #wsus__weekly_best {
-    margin-top: 0;
   }
 
   .weekly_best {
     margin-top: 24px;
   }
 
-  #wsus__weekly_best .wsus__section_header {
-    margin-top: 60px;
-  }
-
   .wsus__recent_item {
     height: 130px;
-  }
-
-  .wsus__subd_text h4 {
-    font-size: 19px;
-  }
-
-  .wsus__subd_text p {
-    line-height: 23px;
-    font-size: 14px;
-    margin: 10px 0px 33px 0px;
   }
 
   .wsus__subs_form form input {
@@ -2840,10 +2175,6 @@
   .product_popup_modal .modal-body {
     height: 550px;
     padding-left: 20px;
-  }
-
-  .wsus_pro_hot_deals h5 {
-    font-size: 18px;
   }
 
   .wsus__quick_view_img {
@@ -2917,10 +2248,6 @@
     margin-top: 30px;
   }
 
-  .wsus__vendor_details {
-    margin-top: 0;
-  }
-
   /* PRODUCT GRID VIEW START */
   .wsus__sidebar_filter {
     display: flex;
@@ -2935,37 +2262,7 @@
     opacity: 0;
   }
 
-  .wsus__pro_page_bammer {
-    height: 200px;
-  }
-
-  .wsus__pro_page_bammer_text_center p {
-    font-size: 20px;
-    padding: 7px 15px;
-  }
-
-  .wsus__pro_page_bammer_text_center p span {
-    font-size: 25px;
-  }
-
-  .wsus__pro_page_bammer_text_center h5 {
-    font-size: 16px;
-  }
-
-  .wsus__pro_page_bammer_text_center h3 {
-    font-size: 20px;
-    margin: 5px 0px 10px 0px;
-  }
-
-  .wsus__pro_page_bammer_text_center .add_cart {
-    padding: 10px 15px;
-    font-size: 12px;
-  }
-
   /* VENDOR DETAILS */
-  .wsus__vendor_det_banner_text .wsus__vendor_text_center {
-    width: 100%;
-  }
 
   .vendor_det_banner {
     height: 350px !important;
@@ -3055,7 +2352,6 @@
 
   .wsus__main_blog h5,
   .wsus__related_post h5,
-  .wsus__comment_area h4,
   .wsus__post_comment h4,
   .wsus__blog_search h4,
   .wsus__blog_category h4,
@@ -3136,10 +2432,7 @@
   }
 
   /* CART EMPTY PAGE START */
-  .cart_empty p {
-    text-transform: capitalize;
-    font-size: 22px;
-  }
+
 
   /* CART VIEW PAGE START */
   .wsus__cart_tab li a {
@@ -3169,11 +2462,6 @@
   .wsus__cart_list table tbody tr td p {
     font-size: 15px;
   }
-
-  .wsus__cart_list .wsus__pro_status {
-    width: 140px;
-  }
-
   .wsus__cart_list .wsus__pro_select {
     width: 150px;
   }
@@ -3193,33 +2481,6 @@
   /* CHECK-OUT PAGE START */
   .wsus__order_details .form-check label {
     font-size: 14px;
-  }
-
-  /* COMPARE PAGE START */
-  .wsus__compare_img p {
-    font-size: 13px;
-  }
-
-  .wsus__compare_list table tbody tr td {
-    width: 170px;
-  }
-
-  .wsus__compare_text p,
-  .wsus__compare_size,
-  .wsus__compare_stock,
-  .wsus__compare_text i,
-  .wsus__compare_text span,
-  .wsus__compare_text .wsus__n_a {
-    font-size: 13px !important;
-  }
-
-  .wsus__compare_des p span {
-    width: 100%;
-  }
-
-  .wsus__compare_text .common_btn {
-    font-size: 12px;
-    padding: 10px 13px;
   }
 
   /* CONTACT PAGE START */
@@ -3475,18 +2736,6 @@
     padding: 20px;
   }
 
-  /* WISHLIST PAGE START */
-  .wishlist .wsus__pro_img a {
-    width: 20px;
-    height: 20px;
-    line-height: 20px;
-    font-size: 14px;
-  }
-
-  .wishlist .common_btn {
-    font-size: 12px;
-  }
-
   /* DASHBOARD PAGE START */
   .dashboard_sidebar {
     width: 270px;
@@ -3615,11 +2864,6 @@
     width: 30%;
   }
 
-  .preloader {
-    height: 65vh;
-    ;
-  }
-
   .wsus__chatlist .wsus_chat_list_text {
     width: 200px;
   }
@@ -3669,88 +2913,17 @@
     margin-top: 60px;
   }
 
-  .home_2 .wsus__single_banner_content {
-    margin-bottom: 0;
-  }
-
   .home_2 #wsus__banner .col-xl-5.ps-lg-0 .col-xl-12.col-sm-6 {
     padding: 0;
   }
-
-  .home_2 .wsus__single_banner_text {
-    top: 50% !important;
-    transform: translateY(-50%) !important;
-    -webkit-transform: translateY(-50%) !important;
-    -moz-transform: translateY(-50%) !important;
-    -ms-transform: translateY(-50%) !important;
-    -o-transform: translateY(-50%) !important;
-  }
-
   .wsus__flash_sell_2 .simply-section.simply-days-section,
   .wsus__flash_sell_2 .simply-section.simply-hours-section,
   .wsus__flash_sell_2 .simply-section.simply-minutes-section,
   .wsus__flash_sell_2 .simply-section.simply-seconds-section {
     margin-bottom: 15px;
   }
-
-  #wsus__single_banner {
-    padding-top: 65px;
-  }
-
-  .home_2 #wsus__hot_deals .nxt_arr,
-  .home_2 #wsus__hot_deals .prv_arr {
-    top: -1px;
-  }
-
-  .wsus__hot_deals_2 .wsus__hot_deals_offer {
-    margin-top: 45px;
-  }
-
-  .wsus__hot_deals_2 .wsus__hot_deals_offer .simply-days-section,
-  .wsus__hot_deals_2 .wsus__hot_deals_offer .simply-hours-section,
-  .wsus__hot_deals_2 .wsus__hot_deals_offer .simply-minutes-section,
-  .wsus__hot_deals_2 .wsus__hot_deals_offer .simply-seconds-section {
-    width: 50px;
-    height: auto;
-    padding: 0;
-    padding-top: 8px;
-  }
-
-  .wsus__hot_deals_2 .wsus__hot_deals_text .wsus__hot_title,
-  .wsus__hot_deals_2 .wsus__hot_deals_text .wsus__rating span {
-    font-size: 18px;
-  }
-
-  .wsus__hot_deals_2 .simply-word {
-    font-size: 10px;
-    margin-top: 5px;
-    display: block;
-  }
-
-  .banner_1 .wsus__single_banner_text h6 span {
-    font-size: 55px;
-    margin: 13px 0px 13px 5px;
-  }
-
-  .banner_1 .wsus__single_banner_text h3 {
-    font-size: 35px;
-  }
-
   .home_2_single_banner .banner_1 {
     height: 350px;
-  }
-
-  .home_2 #wsus__weekly_best .nxt_arr,
-  .home_2 #wsus__weekly_best .prv_arr {
-    top: -21px;
-  }
-
-  .home2_wsus__weekly_best_2 .wsus__section_header {
-    margin-bottom: 20px;
-  }
-
-  .wsus__home_services_single h5 {
-    margin-top: 10px;
   }
 
   .home_service_single_2 {
@@ -3761,14 +2934,6 @@
   .home_service_single_2.border_left {
     border: none;
     border-top: 1px solid #b0d8ff;
-  }
-
-  .home_service_single_2 .wsus__home_services_single h5 {
-    margin-top: 25px;
-  }
-
-  .home_2 .home_blogs {
-    padding-top: 8px !important;
   }
 
   .home_2 header .dropdown .nav-link {
@@ -3804,9 +2969,6 @@
   =========================*/
 
   /* extra css start here */
-  #wsus__hot_deals {
-    padding-top: 36px;
-  }
 
   .wsus__order_details {
     margin-top: 25px;
@@ -4223,128 +3385,20 @@
     padding: 0px 5px;
   }
 
-  .wsus__hot_deals_img {
-    width: 100%;
-  }
-
-  .wsus__hot_deals_text {
-    width: 100%;
-    padding-left: 0;
-  }
-
-  .wsus__single_banner_img {
-    width: 100%;
-    height: 100%;
-  }
-
-  .wsus__single_banner_img img {
-    height: 100% !important;
-    object-fit: cover !important;
-  }
-
-  .wsus__single_banner_content {
-    height: 150px !important;
-    margin-bottom: 30px;
-  }
-
-  .wsus__single_banner_text {
-    position: absolute;
-    top: 20px;
-    left: 10px;
-    transform: translateY(0);
-    -webkit-transform: translateY(0);
-    -moz-transform: translateY(0);
-    -ms-transform: translateY(0);
-    -o-transform: translateY(0);
-  }
-
   .wsus__pro_name {
     margin-bottom: 5px;
-  }
-
-  .wsus__single_banner_text h3 {
-    font-size: 25px;
-    margin: 2px 0px 10px 0px;
-  }
-
-  .single_banner_2 {
-    margin-bottom: 0;
-  }
-
-  .wsus__hot_deals__single_img {
-    width: 30% !important;
-  }
-
-  .wsus__hot_deals__single_text .wsus__tk {
-    font-size: 13px;
-  }
-
-  #wsus__hot_deals .nxt_arr,
-  #wsus__hot_deals .prv_arr {
-    top: -21px;
   }
 
   .hot_deals_slider {
     margin-top: 20px;
   }
 
-  .wsus__hot_deals__single_text {
-    width: 70% !important;
-    margin-top: 0px;
-    padding-left: 15px !important;
-  }
-
-  .wsus__hot_deals__single_text .wsus__rating {
-    font-size: 12px;
-    margin: 0;
-  }
-
-  .wsus__home_services_single {
-    padding: 30px 10px;
-    margin-bottom: 25px;
-  }
-
-  .home_blogs {
-    margin-top: 0;
-  }
-
-  .wsus__large_banner_text_right {
-    text-align: left !important;
-    margin-top: 40px;
-  }
-
-  .wsus__large_banner_text h3 {
-    font-size: 20px;
-  }
-
-  .wsus__large_banner_content_overlay {
-    padding: 20px;
-  }
-
-  #wsus__weekly_best {
-    margin-top: 10px;
-  }
-
   .weekly_best {
     margin-top: 24px;
   }
 
-  #wsus__weekly_best .wsus__section_header {
-    margin-top: 60px;
-  }
-
   .wsus__recent_item {
     height: 130px;
-  }
-
-  .wsus__subd_text h4 {
-    font-size: 19px;
-  }
-
-  .wsus__subd_text p {
-    line-height: 23px;
-    font-size: 14px;
-    margin: 10px 0px 13px 0px;
   }
 
   .wsus__subs_form form input {
@@ -4450,14 +3504,6 @@
     font-size: 16px;
   }
 
-  .wsus_pro_hot_deals .simply-days-section,
-  .wsus_pro_hot_deals .simply-hours-section,
-  .wsus_pro_hot_deals .simply-minutes-section,
-  .wsus_pro_hot_deals .simply-seconds-section {
-    margin-left: 0;
-    margin-right: 10px;
-  }
-
   .wsus__pro_details_text .title {
     font-size: 20px;
 
@@ -4465,11 +3511,6 @@
 
   .wsus__pro_details_text h4 {
     font-size: 25px;
-  }
-
-  .wsus_pro_hot_deals {
-    flex-wrap: wrap;
-    align-items: center;
   }
 
   .wsus__button_area li .add_cart {
@@ -4506,11 +3547,6 @@
     font-size: 11px;
   }
 
-  .wsus_pro_hot_deals h5 {
-    font-size: 16px;
-    margin-bottom: 10px;
-  }
-
   .product_popup_modal .display {
     display: none;
   }
@@ -4539,38 +3575,6 @@
 
   #wsus__breadcrumb ul li a {
     font-size: 14px;
-  }
-
-  .wsus__pro_page_bammer {
-    height: 200px;
-  }
-
-  .wsus__pro_page_bammer_text_center {
-    left: 20px;
-  }
-
-  .wsus__pro_page_bammer_text_center h5 {
-    font-size: 16px;
-  }
-
-  .wsus__pro_page_bammer_text_center h3 {
-    font-size: 20px;
-    margin: 5px 0px 10px 0px;
-  }
-
-  .wsus__pro_page_bammer_text_center p {
-    font-size: 20px;
-    background: none;
-    padding: 0;
-  }
-
-  .wsus__pro_page_bammer_text_center .add_cart {
-    padding: 10px 15px;
-    font-size: 12px;
-  }
-
-  .wsus__pro_page_bammer_text_center p span {
-    font-size: 25px;
   }
 
   .wsus__sidebar_filter {
@@ -4605,40 +3609,8 @@
     width: 50%;
   }
 
-  .wsus__pro_det_review .wsus__comment_img img {
-    height: 55px;
-  }
-
-  .wsus__pro_det_review .wsus__comment_text ul li {
-    margin-bottom: 10px;
-  }
-
-  .wsus__pro_det_info p {
-    font-size: 13px;
-  }
-
-  .wsus__pro_det_info p span {
-    font-size: 13px;
-  }
-
-  .wsus__pro_det_vendor_text p span {
-    width: auto;
-  }
-
-  .wsus__vendor_details {
-    margin-top: 0;
-  }
-
-  .wsus__pro_det_review .wsus__main_comment {
-    padding: 10px 10px 10px 10px;
-  }
-
   .wsus__comment_text a {
     margin-top: 0;
-  }
-
-  .wsus__post_comment button {
-    padding: 10px;
   }
 
   .accordion-button {
@@ -4647,9 +3619,6 @@
   }
 
   /* VENDOR DETAILS */
-  .wsus__vendor_det_banner_text .wsus__vendor_text_center {
-    width: 100%;
-  }
 
   .vendor_det_banner {
     height: 400px !important;
@@ -4826,10 +3795,7 @@
   }
 
   /* CART EMPTY PAGE START */
-  .cart_empty p {
-    text-transform: capitalize;
-    font-size: 22px;
-  }
+
 
   /* CART VIEW PAGE START */
   .wsus__cart_tab li a {
@@ -4855,10 +3821,6 @@
 
   .wsus__cart_list table tbody tr td p {
     font-size: 15px;
-  }
-
-  .wsus__cart_list .wsus__pro_status {
-    width: 140px !important;
   }
 
   .wsus__cart_list .wsus__pro_select {
@@ -4918,34 +3880,6 @@
 
   .wsus__order_details .form-check label {
     font-size: 13px;
-  }
-
-  /* COMPARE PAGE START */
-  .wsus__compare_img p {
-    font-size: 13px;
-  }
-
-  .wsus__compare_list table tbody tr td {
-    width: 165px;
-  }
-
-  .wsus__compare_text p,
-  .wsus__compare_size,
-  .wsus__compare_stock,
-  .wsus__compare_text i,
-  .wsus__compare_text span,
-  .wsus__compare_text .wsus__n_a {
-    font-size: 12px !important;
-  }
-
-  .wsus__compare_des p span {
-    width: 100%;
-  }
-
-
-  .wsus__compare_text .common_btn {
-    font-size: 12px;
-    padding: 10px 10px;
   }
 
   /* CONTACT PAGE START */
@@ -5041,20 +3975,6 @@
   .wsus__invoice_footer p span {
     font-size: 14px;
     width: 115px;
-  }
-
-  .wsus__invoice_top {
-    padding: 10px;
-    width: 290px;
-  }
-
-  .wsus__invoice_top i {
-    margin-right: 10px;
-  }
-
-  .wsus__invoice_top_text p {
-    font-size: 14px;
-    margin-top: 0;
   }
 
   /* LOGIN PAGE START */
@@ -5232,18 +4152,6 @@
     padding: 20px;
   }
 
-  /* WISHLIST PAGE START */
-  .wishlist .wsus__pro_img a {
-    width: 20px;
-    height: 20px;
-    line-height: 20px;
-    font-size: 14px;
-  }
-
-  .wishlist .common_btn {
-    font-size: 12px;
-  }
-
   /* DASHBOARD PAGE START */
   .dashboard_sidebar {
     width: 270px;
@@ -5330,10 +4238,6 @@
 
   .wsus__dashboard_order table tr td {
     font-size: 13px;
-  }
-
-  .description_single {
-    padding: 10px;
   }
 
   .wsus__dashboard_order .p_date,
@@ -5450,15 +4354,6 @@
     margin: 0;
   }
 
-  .preloader img {
-    height: 290px !important;
-  }
-
-  .preloader {
-    height: 60vh;
-    ;
-  }
-
   /*========================
     HOME PAGE 2 START
   =========================*/
@@ -5478,15 +4373,6 @@
     margin-top: 60px;
   }
 
-  .home_2 .wsus__single_banner_content {
-    margin-bottom: 0;
-  }
-
-  .home_2 .wsus__single_banner_text {
-    top: 50% !important;
-    transform: translateY(-50%) !important;
-  }
-
   .wsus__flash_sell_2 .simply-section.simply-days-section,
   .wsus__flash_sell_2 .simply-section.simply-hours-section,
   .wsus__flash_sell_2 .simply-section.simply-minutes-section,
@@ -5494,55 +4380,8 @@
     margin-bottom: 15px;
   }
 
-  #wsus__single_banner {
-    padding-top: 65px;
-  }
-
-  .home_2 #wsus__hot_deals .nxt_arr,
-  .home_2 #wsus__hot_deals .prv_arr {
-    top: -1px;
-  }
-
-  .wsus__hot_deals_2 .wsus__hot_deals_offer {
-    margin-top: 45px;
-    height: 390px;
-  }
-
-  .wsus__hot_deals_2 .wsus__hot_deals_offer .simply-days-section,
-  .wsus__hot_deals_2 .wsus__hot_deals_offer .simply-hours-section,
-  .wsus__hot_deals_2 .wsus__hot_deals_offer .simply-minutes-section,
-  .wsus__hot_deals_2 .wsus__hot_deals_offer .simply-seconds-section {
-    width: 60px;
-    height: auto;
-    padding-top: 8px;
-  }
-
-  .wsus__hot_deals_2 .simply-word {
-    font-size: 10px;
-    margin-top: 5px;
-    display: block;
-  }
-
-  .banner_1 .wsus__single_banner_text h6 span {
-    font-size: 55px;
-    margin: 13px 0px;
-  }
-
-  .banner_1 .wsus__single_banner_text h3 {
-    font-size: 35px;
-  }
-
   .home_2_single_banner .banner_1 {
     height: 350px !important;
-  }
-
-  .home_2 #wsus__weekly_best .nxt_arr,
-  .home_2 #wsus__weekly_best .prv_arr {
-    top: -21px;
-  }
-
-  .home2_wsus__weekly_best_2 .wsus__section_header {
-    margin-bottom: 20px;
   }
 
   .home_service_single_2 {
@@ -5555,14 +4394,6 @@
   .home_service_single_2.border_left {
     border: none;
     border-top: 1px solid #b0d8ff;
-  }
-
-  .home_service_single_2 .wsus__home_services_single h5 {
-    margin-top: 25px;
-  }
-
-  .home_2 .home_blogs {
-    padding-top: 8px !important;
   }
 
   .home_2 header .dropdown .nav-link {
@@ -5596,15 +4427,6 @@
 
   /* extra css start here */
 
-  .wsus__hot_deals_text .wsus__hot_title {
-    font-size: 18px;
-    margin-top: 15px;
-  }
-
-  #wsus__hot_deals {
-    padding-top: 36px;
-  }
-
   .wsus__product_details .wsus__pro_name {
     font-size: 15px;
   }
@@ -5613,15 +4435,6 @@
     height: 200px;
   }
 
-
-  .wsus__checkout_form h5 {
-    font-size: 16px;
-  }
-
-  .wsus__checkout_form h5 a {
-    font-size: 12px;
-    padding: 5px 5px 3px 5px;
-  }
 
   .wsus__checkout_single_address ul li span {
     width: 100%;
