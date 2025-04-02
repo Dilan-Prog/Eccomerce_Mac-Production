@@ -1978,18 +1978,6 @@ PPRODUCT PAGE START
   visibility: visible;
 }
 
-.wsus__list_view .wsus__single_pro_icon {
-  opacity: 1;
-  visibility: visible;
-  position: static;
-  display: flex;
-}
-
-.wsus__list_view:hover .wsus__single_pro_icon {
-  right: 0;
-  opacity: 1;
-}
-
 .wsus__list_view .wsus__product_details .add_cart {
   position: static;
   padding: 0px 19px;
@@ -2011,17 +1999,6 @@ PPRODUCT PAGE START
     /* border: none; */
     /* background: #00468c; */
   }
-
-.wsus__list_view .wsus__single_pro_icon li a {
-  width: 40px;
-  height: 40px;
-  line-height: 40px;
-  margin-bottom: 0px;
-  border-radius: 3px;
-  font-size: 16px;
-  margin-right: 10px;
-  text-align: center;
-}
 
 .wsus__list_view .wsus__product_details .wsus__pro_rating {
   font-size: 16px;

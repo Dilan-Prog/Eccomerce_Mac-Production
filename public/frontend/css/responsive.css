@@ -5,9 +5,6 @@
 
       }
 
-  .monthly_top_filter2 {
-    margin-bottom: 20px;
-  }
   .dashboard_content .wsus__invoice_description .name {
     width: 40%;
   }
@@ -45,14 +42,6 @@
 
   }
 
-  .wsus__monthly_top_left {
-    width: 60%;
-  }
-
-  .wsus__monthly_top_item .wsus__monthly_top_left:last-child {
-    width: 40%;
-  }
-
   .wsus__hot_deals_text {
     padding-left: 15px;
     padding-top: 5px;
@@ -60,18 +49,6 @@
 
   .wsus__hot_deals_proce {
     margin: 10px 0px 5px 0px;
-  }
-
-  .wsus__monthly_top_banner_img {
-    height: 92%;
-  }
-
-  .monthly_top_filter button:last-child {
-    margin-right: 0;
-  }
-
-  .monthly_top_filter2 {
-    margin-bottom: 20px;
   }
 
   .wsus__footer_social {
@@ -96,14 +73,6 @@
 
   .wsus__hot_deals__single_text .wsus__tk {
     font-size: 14px;
-  }
-
-  .monthly_top_filter2 {
-    margin-bottom: 20px;
-  }
-
-  .monthly_top_filter button:last-child {
-    margin-right: 0;
   }
 
   .wsus__home_services_single h5 {
@@ -624,11 +593,6 @@
     padding: 0px 13px;
   }
 
-  .wsus__monthly_top_banner_text {
-    left: 30px;
-    transform: translate(0%, -50%);
-  }
-
   .wsus__single_banner_text h3 {
     font-size: 25px;
     margin: 2px 0px 10px 0px;
@@ -706,28 +670,6 @@
 
   .wsus__home_services_single h5 {
     font-size: 15px;
-  }
-
-  .wsus__monthly_top_banner {
-    height: 96%;
-  }
-
-  .monthly_top_filter button,
-  .monthly_top_filter2 button {
-    margin: 0px 7px;
-  }
-
-  .monthly_top_filter button:last-child {
-    margin-right: 0;
-  }
-
-  .grid .wsus__hot_deals__single_img {
-    width: 30%;
-  }
-
-  .monthly_top_filter,
-  .monthly_top_filter2 {
-    margin-bottom: 20px;
   }
 
   .wsus__blog_img {
@@ -993,9 +935,6 @@
     width: 60%;
   }
 
-  .wsus__offer_countdown {
-    padding-bottom: 3px;
-  }
 
   .wsus__offer_time .simply-days-section,
   .wsus__offer_time .simply-hours-section,
@@ -1349,12 +1288,6 @@
 }
 /* Tablet not Landspace */
 @media (min-width: 768px) and (max-width: 991.99px) {
-<<<<<<< HEAD
-  /* .wsus__pop_up_text form .common_btn {
-    right: 0px;
-  } */
-=======
->>>>>>> dd36f9f (optimizacione y borrar lineas)
 
   /* TOPBAR START */
   #wsus__topbar {
@@ -1443,16 +1376,6 @@
     padding-top: 40px;
   }
 
-  .wsus__monthly_top_banner {
-    height: 240px;
-    overflow: hidden;
-    border-radius: 5px;
-  }
-
-  .wsus__monthly_top_banner_text {
-    text-align: center;
-  }
-
   .wsus__single_banner_content {
     margin-top: 30px;
   }
@@ -1465,14 +1388,6 @@
 
   .wsus__section_header h3 {
     font-size: 20px;
-  }
-
-  .monthly_top_filter,
-  .monthly_top_filter2 {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    margin-bottom: 20px;
   }
 
   .wsus__hot_deals__single_img {
@@ -1540,17 +1455,6 @@
     padding: 30px;
   }
 
-  .wsus__flash_coundown {
-    justify-content: center;
-    padding: 20px 10px;
-    flex-direction: column;
-  }
-
-  .wsus__flash_coundown .end_text {
-    margin-right: 0;
-    margin-bottom: 15px;
-  }
-
   #countdown17 {
     margin-bottom: 10px;
   }
@@ -1611,18 +1515,7 @@
     margin-left: 10px;
   }
 
-<<<<<<< HEAD
-  /* .wsus__pop_up_center {
-    width: 90%;
-    padding: 55px;
-  }
 
-  .wsus__pop_up_text {
-    width: 65%;
-  } */
-
-=======
->>>>>>> dd36f9f (optimizacione y borrar lineas)
   .wsus__subs_form form {
     top: 0;
     transform: translate(0);
@@ -2004,15 +1897,6 @@
     width: 70%;
   }
 
-  .wsus__offer_countdown {
-    padding-bottom: 5px;
-  }
-
-  .wsus__offer_countdown .simply-amount {
-    font-size: 12px;
-    line-height: 27px;
-  }
-
   .wsus__offer_time .simply-amount {
     font-size: 20px;
   }
@@ -2321,10 +2205,6 @@
     width: 20%;
   }
 
-  .monthly_top_filter button:last-child {
-    margin-right: 10px;
-  }
-
   .preloader {
     height: 65vh;
     ;
@@ -2373,41 +2253,11 @@
   .home_2 #wsus__banner .col-xl-5.ps-lg-0 .col-xl-12.col-sm-6 {
     padding: 0;
   }
-
-  .home_2 .simply-countdown {
-    flex-wrap: wrap;
-    justify-content: center;
-  }
-
   .wsus__flash_sell_2 .simply-section.simply-days-section,
   .wsus__flash_sell_2 .simply-section.simply-hours-section,
   .wsus__flash_sell_2 .simply-section.simply-minutes-section,
   .wsus__flash_sell_2 .simply-section.simply-seconds-section {
     margin-bottom: 15px;
-  }
-
-  .wsus__monthly_top_2 .wsus__monthly_top_banner_text h3 span {
-    font-size: 30px;
-  }
-
-  .wsus__monthly_top_2 .wsus__monthly_top_banner_text h3 {
-    font-size: 22px;
-    margin: 10px 0px;
-  }
-
-  .wsus__monthly_top_2 .wsus__monthly_top_banner_text {
-    left: 50%;
-    transform: translate(-50%, -50%);
-    flex-direction: column;
-  }
-
-  .wsus__monthly_top_2 .wsus__monthly_top_banner_text h6 {
-    margin-bottom: 10px;
-    margin-right: 0;
-  }
-
-  .wsus__monthly_top_2 .wsus__monthly_top_banner {
-    height: 200px;
   }
 
   #wsus__single_banner {
@@ -2731,26 +2581,9 @@
   .wsus__mini_cart .wsus__cart_text p {
     margin-top: 5px;
   }
-
-<<<<<<< HEAD
-  /* POPUP START */
-/*
-=======
-  
-
->>>>>>> dd36f9f (optimizacione y borrar lineas)
   /* BANNER START */
   #wsus__banner {
     margin-top: 105px;
-  }
-
-
-
-
-  .wsus__flash_coundown {
-    justify-content: center;
-    padding: 20px 10px;
-    flex-direction: column;
   }
 
   .wsus__hot_deals__single_text h5 {
@@ -2764,27 +2597,8 @@
   .ClassyCountdown-value {
     font-size: 25px !important;
   }
-
-  .wsus__flash_coundown .end_text {
-    margin-right: 0;
-    margin-bottom: 15px;
-  }
-
   #countdown17 {
     margin-bottom: 10px;
-  }
-
-  .monthly_top_filter button,
-  .monthly_top_filter2 button {
-    font-size: 13px;
-  }
-
-  .monthly_top_filter,
-  .monthly_top_filter2 {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    margin-bottom: 20px;
   }
 
   .wsus__section_header {
@@ -2827,18 +2641,6 @@
     font-size: 12px;
     line-height: 15px;
   }
-
-  .wsus__monthly_top_item h4 {
-    font-size: 16px;
-  }
-
-  .wsus__monthly_top_banner {
-    width: 100%;
-    height: 300px;
-    overflow: hidden;
-    border-radius: 5px;
-  }
-
   .wsus__hot_deals_text .wsus__hot_title {
     font-size: 18px;
     margin-top: 10px;
@@ -2849,14 +2651,6 @@
   .wsus__hot_deals_offer .simply-minutes-section,
   .wsus__hot_deals_offer .simply-seconds-section {
     padding: 0px 7px;
-  }
-
-  .wsus__monthly_top_banner_text {
-    text-align: center;
-  }
-
-  .wsus__monthly_top_banner_text h6 {
-    margin-bottom: 20px;
   }
 
   .wsus__hot_deals_img {
@@ -3446,15 +3240,6 @@
     width: 60%;
   }
 
-  .wsus__offer_countdown {
-    flex-wrap: wrap;
-    padding-bottom: 10px;
-  }
-
-  .wsus__offer_countdown .simply-amount {
-    font-size: 12px;
-    line-height: 27px;
-  }
 
   .wsus__offer_time .simply-amount {
     font-size: 16px;
@@ -3830,10 +3615,6 @@
     width: 30%;
   }
 
-  .monthly_top_filter button:last-child {
-    margin-right: 10px;
-  }
-
   .preloader {
     height: 65vh;
     ;
@@ -3905,46 +3686,11 @@
     -o-transform: translateY(-50%) !important;
   }
 
-  .home_2 .simply-countdown {
-    flex-wrap: wrap;
-    justify-content: center;
-  }
-
   .wsus__flash_sell_2 .simply-section.simply-days-section,
   .wsus__flash_sell_2 .simply-section.simply-hours-section,
   .wsus__flash_sell_2 .simply-section.simply-minutes-section,
   .wsus__flash_sell_2 .simply-section.simply-seconds-section {
     margin-bottom: 15px;
-  }
-
-  .home_2 .monthly_top_filter button,
-  .home_2 .monthly_top_filter2 button {
-    margin: 4px 5px;
-    font-size: 13px;
-  }
-
-  .wsus__monthly_top_2 .wsus__monthly_top_banner_text h3 span {
-    font-size: 30px;
-  }
-
-  .wsus__monthly_top_2 .wsus__monthly_top_banner_text h3 {
-    font-size: 22px;
-    margin: 10px 0px;
-  }
-
-  .wsus__monthly_top_2 .wsus__monthly_top_banner_text {
-    left: 50%;
-    transform: translate(-50%, -50%);
-    flex-direction: column;
-  }
-
-  .wsus__monthly_top_2 .wsus__monthly_top_banner_text h6 {
-    margin-bottom: 10px;
-    margin-right: 0;
-  }
-
-  .wsus__monthly_top_2 .wsus__monthly_top_banner {
-    height: 200px;
   }
 
   #wsus__single_banner {
@@ -4425,37 +4171,12 @@
     margin-bottom: 15px;
   }  */
 
-  .wsus__flash_coundown {
-    justify-content: center;
-    padding: 20px;
-    flex-direction: column;
-  }
-
   .ClassyCountdown-value {
     font-size: 23px !important;
   }
 
-  .wsus__flash_coundown .end_text {
-    margin-right: 0;
-    margin-bottom: 15px;
-    font-size: 25px;
-  }
-
   #countdown17 {
     margin-bottom: 10px;
-  }
-
-  .monthly_top_filter button,
-  .monthly_top_filter2 button {
-    font-size: 13px;
-  }
-
-  .monthly_top_filter,
-  .monthly_top_filter2 {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    margin-bottom: 20px;
   }
 
   .wsus__section_header {
@@ -4500,27 +4221,6 @@
   .simply-minutes-section,
   .simply-seconds-section {
     padding: 0px 5px;
-  }
-
-  .wsus__monthly_top_item h4 {
-    font-size: 16px;
-  }
-
-  .wsus__monthly_top_banner {
-    width: 100%;
-    height: 300px;
-    overflow: hidden;
-    border-radius: 5px;
-  }
-
-  .wsus__monthly_top_banner_text {
-    top: 50%;
-    transform: translate(0%, -50%);
-    width: 100%;
-  }
-
-  .wsus__monthly_top_banner_text h6 {
-    margin-bottom: 20px;
   }
 
   .wsus__hot_deals_img {
@@ -5270,27 +4970,6 @@
     width: 100%;
   }
 
-  .wsus__offer_countdown {
-    flex-wrap: wrap;
-    padding-bottom: 10px;
-  }
-
-  .wsus__offer_countdown .simply-amount {
-    font-size: 12px;
-    line-height: 27px;
-  }
-
-  .wsus__offer_countdown .simply-days-section,
-  .wsus__offer_countdown .simply-hours-section,
-  .wsus__offer_countdown .simply-minutes-section,
-  .wsus__offer_countdown .simply-seconds-section {
-    margin-left: 0;
-  }
-
-  .wsus__offer_countdown .end_text {
-    margin-bottom: 5px;
-  }
-
   .wsus__offer_time .simply-amount {
     font-size: 18px;
   }
@@ -5771,10 +5450,6 @@
     margin: 0;
   }
 
-  .monthly_top_filter button:last-child {
-    margin-right: 10px;
-  }
-
   .preloader img {
     height: 290px !important;
   }
@@ -5812,45 +5487,11 @@
     transform: translateY(-50%) !important;
   }
 
-  .home_2 .simply-countdown {
-    flex-wrap: wrap;
-    justify-content: center;
-  }
-
   .wsus__flash_sell_2 .simply-section.simply-days-section,
   .wsus__flash_sell_2 .simply-section.simply-hours-section,
   .wsus__flash_sell_2 .simply-section.simply-minutes-section,
   .wsus__flash_sell_2 .simply-section.simply-seconds-section {
     margin-bottom: 15px;
-  }
-
-  .home_2 .monthly_top_filter button,
-  .home_2 .monthly_top_filter2 button {
-    margin: 4px 5px;
-  }
-
-  .wsus__monthly_top_2 .wsus__monthly_top_banner_text h3 span {
-    font-size: 30px;
-  }
-
-  .wsus__monthly_top_2 .wsus__monthly_top_banner_text h3 {
-    font-size: 22px;
-    margin: 10px 0px;
-  }
-
-  .wsus__monthly_top_2 .wsus__monthly_top_banner_text {
-    left: 50%;
-    transform: translate(-50%, -50%);
-    flex-direction: column;
-  }
-
-  .wsus__monthly_top_2 .wsus__monthly_top_banner_text h6 {
-    margin-bottom: 10px;
-    margin-right: 0;
-  }
-
-  .wsus__monthly_top_2 .wsus__monthly_top_banner {
-    height: 200px;
   }
 
   #wsus__single_banner {
@@ -5954,13 +5595,6 @@
 
 
   /* extra css start here */
-  #wsus__brand_sleder .nxt_arr {
-    right: 7px;
-  }
-
-  #wsus__brand_sleder .prv_arr {
-    left: 7px;
-  }
 
   .wsus__hot_deals_text .wsus__hot_title {
     font-size: 18px;

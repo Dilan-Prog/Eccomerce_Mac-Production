@@ -148,15 +148,6 @@
 	right: 20px;
 }
 
-.wsus__flash_coundown .common_btn i {
-	margin-left: 0;
-	margin-right: 5px;
-	transform: rotateY(180deg);
-}
-
-.monthly_top_filter button:last-child {
-	margin-left: 0;
-}
 
 #wsus__hot_deals .prv_arr {
 	right: auto;
@@ -214,10 +205,7 @@
 	right: 10px;
 }
 
-.wsus__single_pro_icon {
-	right: auto;
-	left: 10px;
-}
+
 
 .wsus__hot_deals__single_text .wsus__tk del {
 	margin-left: 0;
@@ -929,10 +917,6 @@
 	margin-right: 0 !important;
 }
 
-.wsus__monthly_top_2 .wsus__monthly_top_banner_text h6 {
-	margin-right: 0;
-	margin-left: 25px;
-}
 
 .wsus__mobile_menu_icon {
 	float: right;
@@ -950,14 +934,6 @@
 	padding-right: 0;
 }
 
-.home_2 .monthly_top_filter button, .home_2 .monthly_top_filter2 button {
-	margin: 0px 0px 0px 5px;
-}
-
-#wsus__monthly_top .wsus__section_header {
-	border-bottom-left-radius: 0;
-}
-
 .home_service_single_2 {
 	border-left: 0;
 	border-right: 1px solid #b0d8ff;
@@ -966,10 +942,6 @@
 .banner_1 .wsus__single_banner_text {
 	right: 0px;
 }
-
-/* .home_service_single_2.border_left {
-	border: none;
-} */
 
 .wsus__footer_content_2 p {
 	padding-right: 0 !important;

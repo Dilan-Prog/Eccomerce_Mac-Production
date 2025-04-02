@@ -1144,9 +1144,6 @@
 }
 
 @media (min-width: 768px) and (max-width: 991.99px) {
-  .wsus__pop_up_text form .common_btn {
-    right: 0px;
-  }
 
   /* TOPBAR START */
   #wsus__topbar {
@@ -1399,15 +1396,6 @@
   .wsus__copyright p img {
     width: 120px;
     margin-left: 10px;
-  }
-
-  .wsus__pop_up_center {
-    width: 90%;
-    padding: 55px;
-  }
-
-  .wsus__pop_up_text {
-    width: 65%;
   }
 
   .wsus__subs_form form {
@@ -2382,34 +2370,6 @@
     margin-top: 5px;
   }
 
-  /* POPUP START */
-  .wsus__pop_up_center {
-    width: 90%;
-    padding: 30px;
-  }
-
-  .wsus__pop_up_text p {
-    margin-bottom: 10px;
-    font-size: 14px;
-    width: 70%;
-  }
-
-  .wsus__pop_up_text {
-    width: 100%;
-  }
-
-  .wsus__pop_up_text h5 {
-    font-size: 16px;
-  }
-
-  .wsus__pop_up_text h5 span {
-    font-size: 20px;
-  }
-
-  .wsus__pop_up_text h2 {
-    font-size: 22px;
-    margin-bottom: 10px;
-  }
 
   /* BANNER START */
   #wsus__banner {
@@ -5412,13 +5372,6 @@
 
 
   /* extra css start here */
-  #wsus__brand_sleder .nxt_arr {
-    right: 7px;
-  }
-
-  #wsus__brand_sleder .prv_arr {
-    left: 7px;
-  }
 
   .wsus__hot_deals_text .wsus__hot_title {
     font-size: 18px;
