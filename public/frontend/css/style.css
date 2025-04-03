@@ -4017,47 +4017,17 @@ TRACKING ORDER START
 /*======================
 TRACKING ORDER END
 ========================*/
-
-
 .modal-title {
   text-transform: capitalize;
 }
-
-.vendor_review_modal .rating {
-  margin-bottom: 15px;
-}
-
 
 /*======================
 CATEGORY PAGE START
 ========================*/
 
-.wsus__category_topbar .wsus__topbar_select {
-  border-radius: 5px;
-  overflow: hidden;
-  width: 32%;
-}
-
-.wsus__category_topbar .wsus__topbar_select2 {
-  border-right: 1px solid #eee;
-}
-
-.wsus__category_topbar button {
-  width: 32%;
-  border: none;
-}
-
 /*======================
 CATEGORY PAGE END
 ========================*/
-
-/*======================
-	DAILY DEALS START
-========================*/
-
-#wsus__daily_deals {
-  margin-top: 43px;
-}
 
 /*======================
 	HOME PAGE 2 START

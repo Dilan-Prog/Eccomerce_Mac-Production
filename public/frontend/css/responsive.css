@@ -42,10 +42,6 @@
 
   }
 
-  .wsus__blog_img {
-    height: 230px;
-  }
-
   .product_popup_modal .display {
     margin-top: 0px !important;
   }
@@ -63,62 +59,6 @@
 
   .wsus_pro_det_sidebar {
     padding: 10px;
-  }
-  /* VENDOR DETAILS START */
-
-  .wsus__vendor_det_banner_text {
-    background: linear-gradient(90deg,
-        rgba(11, 44, 61, 1) 0%,
-        rgba(6, 120, 148, 0) 60%,
-        rgba(11, 44, 61, 0) 100%);
-  }
-
-  /* ABOUT PAGE START */
-  .wsus__about_accordian img {
-    margin-top: 50px;
-  }
-
-  .wsus__about_counter_single {
-    padding: 50px 35px 35px 35px;
-  }
-
-  .wsus__about_counter_single h2 {
-    font-size: 22px;
-  }
-
-  .wsus__about_accordian h4,
-  .wsus__about_client_boost h4,
-  .wsus__about_award h4,
-  .wsus__about_team h4,
-  .wsus__faq_heading h4 {
-    font-size: 25px;
-  }
-
-  .wsus__why_shop_single {
-    padding: 30px;
-  }
-
-  /* 404 PAGE START */
-  #wsus__404 {
-    margin-bottom: 0;
-    margin-top: 0;
-  }
-
-  .wsus__404_text h2 {
-    font-size: 80px;
-    margin-bottom: 27px;
-  }
-
-  .wsus__404_text h4 {
-    font-size: 25px;
-  }
-
-  .wsus__404_text h4 span {
-    font-size: 30px;
-  }
-
-  .wsus__404_text {
-    margin-top: 50px;
   }
 
   /* CART VIEW PAGE START */
@@ -151,32 +91,6 @@
     height: 55px;
   }
 
-  /* DAILE DEALS DETAILS */
-  .wsus__offer_time .simply-days-section,
-  .wsus__offer_time .simply-hours-section,
-  .wsus__offer_time .simply-minutes-section,
-  .wsus__offer_time .simply-seconds-section {
-    width: 75px;
-  }
-
-  .wsus__offer_details_banner_text {
-    width: 60%;
-  }
-
-  /* DAILE DEALS DETAILS */
-  .wsus__daily_deals_single_img .link_img {
-    height: 200px;
-  }
-
-  .wsus__daily_deals_text .deals_title {
-    font-size: 16px;
-  }
-
-  /* FAQ PAGE START */
-  .wsus__faq_text h3 {
-    font-size: 25px;
-  }
-
   /* INVOICE PAGE START */
   .wsus__invoice_description .amount,
   .wsus__invoice_description .quentity,
@@ -184,10 +98,6 @@
     width: 15% !important;
   }
 
-  /* TEAM DETAILS START */
-  .wsus__team_service_single {
-    padding: 35px;
-  }
 
   /* TRACK ORDER START */
   .progtrckr {
@@ -264,56 +174,6 @@
   .wsus__dash_add_single ul li span {
     width: 35%;
   }
-
-  .wsus__chatlist .wsus_chat_list_text {
-    width: 172px;
-  }
-
-  .wsus__chat_single {
-    width: 100%;
-  }
-
-  .wsus__chat_single_text {
-    width: 72%;
-  }
-
-
-
-  .wsus__dashboard_order .package {
-    width: 120px;
-  }
-
-  .wsus__dashboard_order .price {
-    width: 100px;
-  }
-
-  .wsus__dashboard_order .status {
-    width: 100px;
-  }
-
-  .wsus__dashboard_order table thead tr th {
-    font-size: 14px;
-  }
-
-  .wsus__dashboard_order table tr td {
-    font-size: 14px;
-  }
-
-  .wsus__dashboard_order .status a {
-    font-size: 14px;
-  }
-
-
-
-
-
-
-
-
-
-
-
-
   /*========================
     HOME PAGE 2 START
   =========================*/
@@ -331,10 +191,6 @@
 
   .home_service_single_2 p {
     font-size: 16px;
-  }
-
-  .wsus__single_blog_2 .wsus__blog_text_center a {
-    font-size: 21px;
   }
 
   /*========================
@@ -499,9 +355,6 @@
   .wsus_menu_category_bar p {
     font-size: 13px;
   }
-  .wsus__blog_img {
-    height: 210px;
-  }
 
   .product_popup_modal .modal-dialog {
     min-width: 900px;
@@ -559,48 +412,6 @@
     font-size: 14px;
   }
 
-  /* VENDOR DETAILS START */
-  
-  .wsus__vendor_det_banner_text {
-    background: linear-gradient(90deg,
-        rgba(11, 44, 61, 1) 0%,
-        rgba(6, 120, 148, 0) 60%,
-        rgba(11, 44, 61, 0) 100%);
-  }
-
-  /* ABOUT PAGE START */
-  .wsus__about_top h3 {
-    width: 80%;
-  }
-
-  .wsus__about_accordian h4,
-  .wsus__about_client_boost h4,
-  .wsus__about_award h4,
-  .wsus__about_team h4,
-  .wsus__faq_heading h4 {
-    font-size: 20px;
-  }
-
-  .wsus__about_accordian img {
-    margin-top: 80px;
-  }
-
-  .wsus__about_counter_single {
-    padding: 35px 20px 20px 20px;
-  }
-
-  .wsus__about_counter_single h2 {
-    font-size: 18px;
-  }
-
-  .wsus__why_shop_single {
-    padding: 25px;
-  }
-
-  .wsus__about_accordian img {
-    margin-top: 45px;
-  }
-
   .wsus__team_det_rev_single {
     padding: 30px 20px 20px 20px;
   }
@@ -611,29 +422,6 @@
 
   .wsus__team_text p {
     font-size: 14px;
-  }
-
-  /* 404 PAGE START */
-  #wsus__404 {
-    margin-bottom: 0;
-    margin-top: 0;
-  }
-
-  .wsus__404_text h2 {
-    font-size: 80px;
-    margin-bottom: 27px;
-  }
-
-  .wsus__404_text h4 {
-    font-size: 25px;
-  }
-
-  .wsus__404_text h4 span {
-    font-size: 30px;
-  }
-
-  .wsus__404_text {
-    margin-top: 50px;
   }
 
   /* CART VIEW PAGE START */
@@ -678,12 +466,6 @@
     height: 60px;
   }
 
-  /* DAILY DEALS DETAILS START */
-  .wsus__offer_details_banner_text {
-    width: 60%;
-  }
-
-
   .wsus__offer_time .simply-days-section,
   .wsus__offer_time .simply-hours-section,
   .wsus__offer_time .simply-minutes-section,
@@ -693,20 +475,6 @@
 
   .wsus__offer_time .simply-amount {
     font-size: 20px;
-  }
-
-  /* DAILY DEALS START */
-  .wsus__daily_deals_single_img .link_img {
-    height: 220px;
-  }
-
-  /* FAQ PAGE START */
-  .wsus__faq_text h3 {
-    font-size: 25px;
-  }
-
-  .wsus__faq_text .call {
-    font-size: 25px;
   }
 
   /* FORGET PASSWORD START */
@@ -756,12 +524,6 @@
   .wsus__track_area .common_btn {
     margin-top: 15px;
   }
-
-  /* VENDOR PAGE START */
-  .wsus__vendor_single {
-    height: 250px;
-  }
-
   /* DASHBOARD START */
   .dashboard_sidebar {
     width: 22%;
@@ -790,63 +552,6 @@
   .add_address_btn {
     margin-top: 0;
   }
-
-  .wsus__chatlist .wsus_chat_list_text {
-    width: 180px;
-  }
-
-  .wsus__chat_single {
-    width: 100%;
-  }
-
-  .wsus__chat_single_text {
-    width: 60%;
-  }
-
-
-
-
-  .wsus__dashboard_order .package,
-  .wsus__dashboard_order .price {
-    width: 120px;
-  }
-
-  .wsus__dashboard_order .p_date,
-  .wsus__dashboard_order .e_date,
-  .wsus__dashboard_order .method {
-    width: 135px;
-  }
-
-  .wsus__dashboard_order .package,
-  .wsus__dashboard_order .price,
-  .wsus__dashboard_order .status {
-    width: 100px;
-  }
-
-  .wsus__dashboard_order .tr_id {
-    width: 280px;
-  }
-
-  .wsus__dashboard_order table thead tr th {
-    font-size: 13px;
-  }
-
-  .wsus__dashboard_order table tr td {
-    font-size: 13px;
-  }
-
-
-
-
-
-
-
-
-
-
-
-
-
   /*========================
     HOME PAGE 2 START
   =========================*/
@@ -1092,10 +797,6 @@
     margin-top: 50px;
   }
 
-  .wsus__blog_img {
-    height: 220px;
-  }
-
   .wsus__section_header ul li a {
     font-size: 14px;
   }
@@ -1252,67 +953,7 @@
   .wsus__list_view .wsus__product_details .wsus__pro_name {
     font-size: 20px;
   }
-
-  /* VENDOR DETAILS START */
-  .vendor_det_banner {
-    height: 370px !important;
-  }
-
-  .wsus__vendor_det_banner_text {
-    background: linear-gradient(90deg,
-        rgba(11, 44, 61, 1) 0%,
-        rgba(6, 120, 148, 0) 100%,
-        rgba(11, 44, 61, 0) 100%);
-  }
-
-  /* ABOUT PAGE START */
-  .wsus__about_top_text h2 {
-    font-size: 41px;
-    margin-bottom: 30px;
-  }
-
-  .wsus__about_top h3 {
-    font-size: 25px;
-    width: 100%;
-  }
-
-  .wsus__about_top p {
-    width: 100%;
-    font-size: 15px;
-  }
-
-  .wsus__about_accordian h4,
-  .wsus__about_client_boost h4,
-  .wsus__about_award h4,
-  .wsus__about_team h4,
-  .wsus__faq_heading h4 {
-    font-size: 20px;
-    margin-bottom: 20px;
-  }
-
-  .wsus__about_accordian img {
-    margin-top: 30px;
-  }
-
-  .wsus__about_client_boost img {
-    margin-bottom: 25px;
-  }
-
   .wsus__team_text h5 {
-    font-size: 20px;
-  }
-
-  .wsus__about_counter_single {
-    margin-bottom: 30px;
-    padding: 45px 25px 29px 25px;
-  }
-
-  .wsus__about_counter_area,
-  .wsus__about_award {
-    padding-bottom: 80px;
-  }
-
-  .wsus__about_counter_single h2 {
     font-size: 20px;
   }
 
@@ -1331,45 +972,6 @@
   .wsus__team_det_rev_single {
     padding: 30px 15px 15px 15px;
   }
-
-  /* BLOG DETAILS START */
-  .wsus__blog_sidebar {
-    margin-top: 30px;
-  }
-
-  .wsus__blog_post_img {
-    width: 15%;
-  }
-
-  .wsus__blog_post_text {
-    width: 85%;
-    padding-left: 10px;
-    margin-top: 25px;
-  }
-
-  .calendar header {
-    top: 0;
-  }
-
-  /* 404 PAGE START */
-  #wsus__404 {
-    margin-bottom: 120px;
-    margin-top: 147px;
-  }
-
-  .wsus__404_text h2 {
-    font-size: 80px;
-    margin-bottom: 27px;
-  }
-
-  .wsus__404_text h4 {
-    font-size: 25px;
-  }
-
-  .wsus__404_text h4 span {
-    font-size: 30px;
-  }
-
   /* CART VIEW PAGE START */
   .wsus__cart_tab li a::after {
     font-size: 12px;
@@ -1411,41 +1013,6 @@
   .wsus__order_details_img {
     height: 90px;
   }
-
-  /* CONTACT PAGE START */
-  .wsus__contact_single h5 {
-    font-size: 16px;
-  }
-
-  .wsus__contact_single {
-    margin-bottom: 5px;
-  }
-
-  #wsus__contact hr {
-    margin: 50px 0px 57px 0px;
-  }
-
-  /* DAILE DEALS DETAILS */
-  .wsus__offer_details_banner_text {
-    width: 70%;
-  }
-
-  .wsus__offer_time .simply-amount {
-    font-size: 20px;
-  }
-
-  .wsus__offer_time .simply-days-section,
-  .wsus__offer_time .simply-hours-section,
-  .wsus__offer_time .simply-minutes-section,
-  .wsus__offer_time .simply-seconds-section {
-    width: 70px;
-  }
-
-  /* FAQ PAGE START */
-  .wsus__faq_text h3 {
-    font-size: 25px;
-  }
-
   /* FORGET PASSWORD START */
   .wsus__forget_area {
     padding: 15px;
@@ -1510,10 +1077,6 @@
     margin-bottom: 12px;
   }
 
-  /* TEAM DETAILS START */
-  .wsus__team_details_top {
-    padding: 10px;
-  }
 
   .wsus__team_det_text_center {
     left: 15px;
@@ -1570,20 +1133,6 @@
   .wsus__track_header_single p {
     font-size: 14px;
   }
-
-  /* VENDOR PAGE START */
-  .wsus__vendor_single {
-    height: 250px;
-  }
-
-  .wsus__vendor_sidebar {
-    padding: 0;
-  }
-
-  .wsus__vendor_sidebar.show_filter {
-    padding: 20px;
-  }
-
   /* DASHBOARD PAGE START */
   .dashboard_sidebar {
     width: 270px;
@@ -1643,14 +1192,6 @@
     height: 50px;
   }
 
-  .wsus__message_text span {
-    font-size: 14px;
-  }
-
-  .wsus__message_text p {
-    font-size: 14px;
-  }
-
   .wsus__message_icon {
     width: 5%;
   }
@@ -1683,66 +1224,9 @@
     margin: 0;
   }
 
-  .wsus__dashboard_order .package,
-  .wsus__dashboard_order .price {
-    width: 120px;
-  }
-
-  .wsus__dashboard_order .p_date,
-  .wsus__dashboard_order .e_date,
-  .wsus__dashboard_order .method {
-    width: 135px;
-  }
-
-  .wsus__dashboard_order .package,
-  .wsus__dashboard_order .price {
-    width: 120px;
-  }
-
-  .wsus__dashboard_order .tr_id {
-    width: 280px;
-  }
-
-  .wsus__dashboard_order table thead tr th {
-    font-size: 13px;
-  }
-
-  .wsus__dashboard_order table tr td {
-    font-size: 13px;
-  }
-
-
-
-
-
-
-
-
-
-
-
-
   .wsus__dash_add_single ul li span {
     width: 20%;
   }
-
-  .wsus__chatlist .wsus_chat_list_text {
-    width: 200px;
-  }
-
-  .wsus__chat_single {
-    width: 100%;
-  }
-
-  .wsus__chat_single_text {
-    width: 62%;
-  }
-
-  .wsus__chatlist,
-  .wsus__chat_main_area {
-    margin-bottom: 10px;
-  }
-
   /*========================
     HOME PAGE 2 START
   =========================*/
@@ -1772,10 +1256,6 @@
     margin-bottom: 15px;
   }
 
-  .wsus__single_blog_2 .wsus__blog_text_center a {
-    color: #353535;
-    font-size: 20px;
-  }
   .home_2_single_banner .banner_1 {
     height: 350px;
   }
@@ -2261,53 +1741,8 @@
     height: 0;
     opacity: 0;
   }
-
-  /* VENDOR DETAILS */
-
-  .vendor_det_banner {
-    height: 350px !important;
-  }
-
-  .wsus__vendor_det_banner_text {
-    background: linear-gradient(90deg,
-        rgba(11, 44, 61, 1) 0%,
-        rgba(6, 120, 148, 0) 100%,
-        rgba(11, 44, 61, 0) 100%);
-  }
-
-  /* ABOUT PAGE START */
-  .wsus__about_top p {
-    width: 100%;
-    font-size: 15px;
-  }
-
-  .wsus__about_top_text h2 {
-    font-size: 35px;
-  }
-
-  .wsus__about_accordian h4,
-  .wsus__about_client_boost h4,
-  .wsus__about_award h4,
-  .wsus__about_team h4,
-  .wsus__faq_heading h4 {
-    font-size: 20px;
-    margin-bottom: 20px;
-  }
-
-  .wsus__about_accordian img {
-    margin-top: 30px;
-  }
-
-  .wsus__about_client_boost img {
-    margin-bottom: 25px;
-  }
-
   .wsus__team_text h5 {
     font-size: 20px;
-  }
-
-  .wsus__about_counter_single {
-    margin-bottom: 30px;
   }
 
   .wsus__why_shop {
@@ -2318,118 +1753,6 @@
     padding: 30px;
   }
 
-  /* BLOG DETAILS START */
-  .wsus__main_blog_header span {
-    margin: 5px;
-    display: inline-block;
-    font-size: 14px;
-  }
-
-  .wsus__main_blog h2 {
-    font-size: 20px;
-    margin: 15px 0px 15px 0px;
-  }
-
-  .wsus__blog_quot_area {
-    padding: 25px;
-  }
-
-  .wsus__blog_img {
-    height: 180px;
-  }
-
-  .wsus__blog_quot_area i {
-    font-size: 30px;
-  }
-
-  .wsus__blog_quot_area p {
-    font-size: 18px;
-  }
-
-  .wsus__blog_quot_area span {
-    font-size: 13px;
-  }
-
-  .wsus__main_blog h5,
-  .wsus__related_post h5,
-  .wsus__post_comment h4,
-  .wsus__blog_search h4,
-  .wsus__blog_category h4,
-  .wsus__blog_post h4,
-  .wsus__popular_tag h4,
-  .wsus_blog_calender h4,
-  #wsus__faq h4,
-  .wsus__forget_area h4,
-  .wsus__change_password h4 {
-    font-size: 20px;
-  }
-
-  .wsus__comment_img {
-    width: 15% !important;
-  }
-
-  .wsus__comment_text {
-    width: 85% !important;
-    padding-left: 15px;
-  }
-
-  .wsus__comment_img img {
-    width: 75px !important;
-    height: 75px !important;
-  }
-
-  .wsus__comment_text h6 {
-    font-size: 15px;
-  }
-
-  .wsus__comment_text p {
-    font-size: 14px;
-  }
-
-  .wsus__com_replay {
-    margin-left: 0;
-  }
-
-  .wsus__blog_sidebar {
-    margin-top: 30px;
-  }
-
-  .calendar header {
-    top: 0;
-  }
-
-  .wsus__blog_post_img {
-    width: 20%;
-  }
-
-  .wsus__blog_post_text {
-    width: 80%;
-    padding-left: 20px;
-    margin-top: 25px;
-  }
-
-  .wsus__blog_text_center a {
-    font-size: 14px;
-  }
-
-  /* 404 PAGE START */
-  #wsus__404 {
-    margin-bottom: 120px;
-    margin-top: 147px;
-  }
-
-  .wsus__404_text h2 {
-    font-size: 80px;
-    margin-bottom: 27px;
-  }
-
-  .wsus__404_text h4 {
-    font-size: 25px;
-  }
-
-  .wsus__404_text h4 span {
-    font-size: 30px;
-  }
 
   /* CART EMPTY PAGE START */
 
@@ -2482,63 +1805,6 @@
   .wsus__order_details .form-check label {
     font-size: 14px;
   }
-
-  /* CONTACT PAGE START */
-  .wsus__contact_single h5 {
-    font-size: 16px;
-  }
-
-  .wsus__contact_single {
-    margin-bottom: 5px;
-  }
-
-  #wsus__contact hr {
-    margin: 50px 0px 57px 0px;
-  }
-
-  /* DAILE DEALS DETAILS */
-  .wsus__offer_details_banner_text {
-    width: 60%;
-  }
-
-
-  .wsus__offer_time .simply-amount {
-    font-size: 16px;
-  }
-
-  .wsus__offer_time .simply-days-section,
-  .wsus__offer_time .simply-hours-section,
-  .wsus__offer_time .simply-minutes-section,
-  .wsus__offer_time .simply-seconds-section {
-    width: 50px;
-  }
-
-  /* DAILE DEALS DETAILS */
-  .wsus__daily_deals_text {
-    padding: 15px;
-  }
-
-  .wsus__daily_deals_text .deals_title {
-    font-size: 16px;
-  }
-
-  .wsus__daily_deals_single_img .link_img {
-    height: 200px;
-  }
-
-  .wsus__daily_deals_text p {
-    font-size: 13px;
-  }
-
-  /* FAQ PAGE START */
-  .wsus__faq_text h3 {
-    font-size: 20px;
-  }
-
-  .wsus__faq_text .call {
-    font-size: 20px;
-  }
-
   /* FORGET PASSWORD START */
   .wsus__forget_area {
     margin-bottom: 30px;
@@ -2603,14 +1869,6 @@
     margin-bottom: 30px;
   }
 
-  .wsus__pay_caed_header h5 {
-    font-size: 14px;
-  }
-
-  .wsus__pay_caed_header img {
-    width: 50px;
-  }
-
   .wsus__pay_info_area p {
     font-size: 13px;
   }
@@ -2619,74 +1877,10 @@
     font-size: 13px;
   }
 
-  /* PRIVACY POLICY START */
-  #wsus__terms_condition h2 {
-    font-size: 25px;
-  }
-
-  .wsus__terms_text h4 {
-    font-size: 16px;
-  }
-
   /* PRODUCT CATEGORY START */
   .wsus__product_topbar {
     flex-direction: column;
   }
-
-  .wsus__category_topbar .wsus__topbar_select {
-    width: 100%;
-    margin-bottom: 15px;
-  }
-
-  .wsus__category_topbar button {
-    width: 100%;
-    padding: 15px 25px;
-  }
-
-  /* TEAM DTAILS START */
-  .wsus__team_details_top {
-    padding: 10px;
-  }
-
-  .wsus__team_details_img {
-    margin-bottom: 30px;
-  }
-
-  .wsus__team_det_text_center {
-    position: static;
-    transform: translate(0);
-    padding: 20px;
-  }
-
-  .wsus__team_details_text h4 {
-    font-size: 23px;
-  }
-
-  .wsus__team_details_text h6 {
-    font-size: 14px;
-  }
-
-  .wsus__team_det_rev_single img {
-    width: 100px !important;
-    height: 100px;
-    margin: -75px auto 0 auto;
-  }
-
-  .wsus__team_det_rev_single span i {
-    width: 60px;
-    height: 60px;
-    font-size: 25px;
-    line-height: 60px;
-  }
-
-  .wsus__team_address {
-    margin: 20px 0px;
-  }
-
-  .wsus__team_det_rev_single {
-    margin: 80px 15px 0px 15px;
-  }
-
   /* TRACK ORDER START */
   .tack_form {
     margin-bottom: 20px;
@@ -2722,20 +1916,6 @@
   .wsus__track_header_single p {
     font-size: 14px;
   }
-
-  /* VENDOR PAGE START */
-  .wsus__vendor_single {
-    height: 250px;
-  }
-
-  .wsus__vendor_sidebar {
-    padding: 0;
-  }
-
-  .wsus__vendor_sidebar.show_filter {
-    padding: 20px;
-  }
-
   /* DASHBOARD PAGE START */
   .dashboard_sidebar {
     width: 270px;
@@ -2795,39 +1975,8 @@
     height: 50px;
   }
 
-  .wsus__message_text span {
-    font-size: 14px;
-  }
-
-  .wsus__message_text p {
-    font-size: 14px;
-  }
-
   .wsus__message_icon {
     width: 10%;
-  }
-
-  .wsus__dashboard_order table thead tr th {
-    font-size: 13px;
-  }
-
-  .wsus__dashboard_order .package,
-  .wsus__dashboard_order .price {
-    width: 120px;
-  }
-
-  .wsus__dashboard_order table tr td {
-    font-size: 13px;
-  }
-
-  .wsus__dashboard_order .p_date,
-  .wsus__dashboard_order .e_date,
-  .wsus__dashboard_order .method {
-    width: 135px;
-  }
-
-  .wsus__dashboard_order .tr_id {
-    width: 280px;
   }
 
   .dashboard_content .wsus__invoice_area {
@@ -2863,37 +2012,6 @@
   .wsus__dash_add_single ul li span {
     width: 30%;
   }
-
-  .wsus__chatlist .wsus_chat_list_text {
-    width: 200px;
-  }
-
-  .wsus__chat_single {
-    width: 100%;
-  }
-
-  .wsus__chat_single_text {
-    width: 71%;
-  }
-
-  .wsus__chatlist {
-    height: 360px;
-    margin-bottom: 25px;
-  }
-
-  .wsus__chatlist_body {
-    max-height: 315px;
-  }
-
-  .wsus__chat_main_area {
-    height: 580px;
-    margin-bottom: 35px;
-  }
-
-  .wsus__chat_area_body {
-    max-height: 485px;
-  }
-
   /*========================
     HOME PAGE 2 START
   =========================*/
@@ -3618,70 +2736,8 @@
     text-align: left !important;
   }
 
-  /* VENDOR DETAILS */
-
-  .vendor_det_banner {
-    height: 400px !important;
-  }
-
-  .wsus__vendor_det_banner_text {
-    background: linear-gradient(90deg,
-        rgba(11, 44, 61, 1) 0%,
-        rgba(6, 120, 148, 0) 100%,
-        rgba(11, 44, 61, 0) 100%);
-  }
-
-  /* ABOUT PAGE START */
-  .wsus__about_top_text h2 {
-    font-size: 30px;
-    margin-bottom: 20px;
-  }
-
-  .wsus__about_top_text p span {
-    margin-top: 15px;
-    font-size: 13px;
-  }
-
-  .wsus__about_top p {
-    width: 100%;
-    font-size: 13px;
-  }
-
-  .wsus__about_top_text {
-    padding: 15px;
-  }
-
-  .wsus__about_top_text h5 {
-    font-size: 15px;
-  }
-
-  .wsus__about_counter_single h2 {
-    font-size: 20px;
-  }
-
-  .wsus__about_accordian h4,
-  .wsus__about_client_boost h4,
-  .wsus__about_award h4,
-  .wsus__about_team h4,
-  .wsus__faq_heading h4 {
-    font-size: 20px;
-    margin-bottom: 20px;
-  }
-
-  .wsus__about_accordian img {
-    margin-top: 30px;
-  }
-
-  .wsus__about_client_boost img {
-    margin-bottom: 25px;
-  }
-
   .wsus__team_text h5 {
     font-size: 20px;
-  }
-
-  .wsus__about_counter_single {
-    margin-bottom: 30px;
   }
 
   .wsus__why_shop {
@@ -3691,107 +2747,6 @@
   .wsus__team_det_rev_single {
     padding: 30px 20px 20px 20px;
     margin: 80px 15px 0px 15px;
-  }
-
-  /* BLOG DETAILS START */
-  .wsus__main_blog_header span {
-    margin: 5px 0px;
-    display: block;
-  }
-
-  .wsus__main_blog h2 {
-    font-size: 20px;
-    margin: 15px 0px 15px 0px;
-  }
-
-  .wsus__blog_quot_area {
-    padding: 25px;
-  }
-
-  .wsus__blog_quot_area i {
-    font-size: 30px;
-  }
-
-  .wsus__blog_quot_area p {
-    font-size: 18px;
-  }
-
-  .wsus__blog_quot_area span {
-    font-size: 13px;
-  }
-
-  .wsus__main_blog h5,
-  .wsus__related_post h5,
-  .wsus__comment_area h4,
-  .wsus__post_comment h4,
-  .wsus__blog_search h4,
-  .wsus__blog_category h4,
-  .wsus__blog_post h4,
-  .wsus__popular_tag h4,
-  .wsus_blog_calender h4,
-  #wsus__faq h4,
-  .wsus__forget_area h4,
-  .wsus__change_password h4 {
-    font-size: 20px;
-  }
-
-  .wsus__comment_img {
-    width: 20% !important;
-  }
-
-  .wsus__comment_text {
-    width: 80% !important;
-    padding-left: 15px;
-  }
-
-  .wsus__comment_text h6 {
-    font-size: 15px;
-  }
-
-  .wsus__comment_text p {
-    font-size: 14px;
-    margin-bottom: 5px;
-  }
-
-  .wsus__pro_det_description .nav .nav-item button {
-    font-size: 14px;
-  }
-
-  .wsus__com_replay {
-    margin-left: 0;
-  }
-
-  .wsus__blog_sidebar {
-    margin-top: 30px;
-  }
-
-  .calendar header {
-    top: 0;
-  }
-
-  .wsus__blog_post_text a {
-    font-size: 13px;
-  }
-
-  /* 404 PAGE START */
-  #wsus__404 {
-    margin-bottom: 0;
-    margin-top: 96px;
-  }
-
-  .wsus__404_text h2 {
-    font-size: 80px;
-    margin-bottom: 27px;
-  }
-
-  .wsus__404_text h4 {
-    font-size: 25px;
-  }
-
-  .wsus__404_text h4 span {
-    font-size: 30px;
-    display: block;
-    margin-bottom: 15px;
   }
 
   /* CART EMPTY PAGE START */
@@ -3881,49 +2836,6 @@
   .wsus__order_details .form-check label {
     font-size: 13px;
   }
-
-  /* CONTACT PAGE START */
-  .wsus__contact_header h4 {
-    font-size: 25px;
-  }
-
-  .wsus__contact_single h5 {
-    font-size: 16px;
-  }
-
-  .wsus__contact_single {
-    margin-bottom: 5px;
-  }
-
-  #wsus__contact hr {
-    margin: 50px 0px 57px 0px;
-  }
-
-  /* DAILE DEALS DETAILS */
-  .wsus__offer_details_banner_text {
-    width: 100%;
-  }
-
-  .wsus__offer_time .simply-amount {
-    font-size: 18px;
-  }
-
-  .wsus__offer_time .simply-days-section,
-  .wsus__offer_time .simply-hours-section,
-  .wsus__offer_time .simply-minutes-section,
-  .wsus__offer_time .simply-seconds-section {
-    width: 60px;
-  }
-
-  /* FAQ PAGE START */
-  .wsus__faq_text h3 {
-    font-size: 20px;
-  }
-
-  .wsus__faq_text .call {
-    font-size: 20px;
-  }
-
   /* FORGET PASSWORD START */
   .wsus__forget_area {
     margin-bottom: 30px;
@@ -4017,25 +2929,8 @@
     margin-bottom: 30px;
   }
 
-  .wsus__pay_caed_header h5 {
-    font-size: 14px;
-  }
-
-  .wsus__pay_caed_header img {
-    width: 50px;
-  }
-
   .wsus__payment_area form {
     padding: 10px;
-  }
-
-  .wsus__save_payment h6 {
-    margin-bottom: 10px;
-  }
-
-  .wsus__save_payment img {
-    margin-left: 0;
-    margin-right: 10px;
   }
 
   .wsus__pay_info_area p {
@@ -4045,75 +2940,10 @@
   .wsus__pay_info_area ul li {
     font-size: 13px;
   }
-
-  /* PRIVACY POLICY START */
-  #wsus__terms_condition h2 {
-    font-size: 25px;
-  }
-
-  .wsus__terms_text h4 {
-    font-size: 16px;
-  }
-
   /* PRODUCT CATEGORY START */
   .wsus__product_topbar {
     flex-direction: column;
   }
-
-  .wsus__category_topbar .wsus__topbar_select {
-    width: 100%;
-    margin-bottom: 15px;
-  }
-
-  .wsus__category_topbar button {
-    width: 100%;
-    padding: 15px 25px;
-  }
-
-  /* TEAM DTAILS START */
-  .wsus__team_details_top {
-    padding: 10px;
-  }
-
-  .wsus__team_details_img {
-    margin-bottom: 30px;
-  }
-
-  .wsus__team_det_text_center {
-    position: static;
-    transform: translate(0);
-    padding: 20px;
-  }
-
-  .wsus__team_details_text h4 {
-    font-size: 23px;
-  }
-
-  .wsus__team_details_text h6 {
-    font-size: 14px;
-  }
-
-  .wsus__team_det_rev_single img {
-    width: 100px !important;
-    height: 100px;
-    margin: -75px auto 0 auto;
-  }
-
-  .wsus__team_det_rev_single span i {
-    width: 60px;
-    height: 60px;
-    font-size: 25px;
-    line-height: 60px;
-  }
-
-  .wsus__team_details_text ul li a {
-    line-height: 32px;
-  }
-
-  .wsus__team_address {
-    margin: 20px 0px;
-  }
-
   /* TRACK ORDER START */
   .tack_form {
     padding: 15px;
@@ -4138,20 +2968,6 @@
     width: 100%;
     text-align: center;
   }
-
-  /* VENDOR PAGE START */
-  .wsus__vendor_single {
-    height: 250px;
-  }
-
-  .wsus__vendor_sidebar {
-    padding: 0;
-  }
-
-  .wsus__vendor_sidebar.show_filter {
-    padding: 20px;
-  }
-
   /* DASHBOARD PAGE START */
   .dashboard_sidebar {
     width: 270px;
@@ -4214,40 +3030,8 @@
     width: 50px;
     height: 50px;
   }
-
-  .wsus__message_text span {
-    font-size: 14px;
-  }
-
-  .wsus__message_text p {
-    font-size: 14px;
-  }
-
   .wsus__message_icon {
     width: 10%;
-  }
-
-  .wsus__dashboard_order table thead tr th {
-    font-size: 13px;
-  }
-
-  .wsus__dashboard_order .package,
-  .wsus__dashboard_order .price {
-    width: 120px;
-  }
-
-  .wsus__dashboard_order table tr td {
-    font-size: 13px;
-  }
-
-  .wsus__dashboard_order .p_date,
-  .wsus__dashboard_order .e_date,
-  .wsus__dashboard_order .method {
-    width: 135px;
-  }
-
-  .wsus__dashboard_order .tr_id {
-    width: 280px;
   }
 
   .dashboard_content .wsus__invoice_area {
@@ -4283,55 +3067,6 @@
   .wsus__dashboard_add {
     padding: 15px;
   }
-
-  .wsus__chatlist .wsus_chat_list_text {
-    width: 200px;
-  }
-
-  .wsus__chatlist .wsus_chat_list_text h4 {
-    font-size: 14px;
-  }
-
-  .wsus__chatlist .wsus_chat_list_img {
-    width: 50px;
-    height: 50px;
-  }
-
-  .wsus__chat_single_img {
-    width: 50px;
-    height: 50px;
-  }
-
-  .wsus__chat_single {
-    width: 100%;
-  }
-
-  .wsus__chat_single_text {
-    width: 75%;
-  }
-
-  .wsus__chatlist {
-    height: 360px;
-    margin-bottom: 25px;
-  }
-
-  .wsus__chatlist_body {
-    max-height: 315px;
-  }
-
-  .wsus__chat_single_text p {
-    font-size: 13px;
-  }
-
-  .wsus__chat_main_area {
-    height: 580px;
-    margin-bottom: 35px;
-  }
-
-  .wsus__chat_area_body {
-    max-height: 485px;
-  }
-
   .wsus__dash_add_single ul li span {
     font-size: 13px;
     width: 100%;
@@ -4430,12 +3165,6 @@
   .wsus__product_details .wsus__pro_name {
     font-size: 15px;
   }
-
-  .wsus__blog_img {
-    height: 200px;
-  }
-
-
   .wsus__checkout_single_address ul li span {
     width: 100%;
   }
