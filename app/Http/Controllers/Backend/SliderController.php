@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Traits\ImageUploadTrait;
 use Illuminate\Http\Request;
 use App\Models\Slider;
+use Image;
 use Illuminate\Support\Facades\Cache;
 use PhpParser\Node\Stmt\Return_;
 
@@ -36,7 +37,7 @@ class SliderController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'banner'=>['required','image','max:2000'],
+            'banner'=>['required','image','mimes:jpeg,png,jpg,gif,svg','max:2000'],
             'type' =>['nullable','string','max:200'],
             'title' => ['max:200'],
             'starting_price'=>['max:200'],
