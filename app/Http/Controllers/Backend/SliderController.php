@@ -49,7 +49,7 @@ class SliderController extends Controller
         $slider = new Slider();
 
         /**header file Upload */
-        $imagePath = $this->uploadImage($request,'banner','uploads');
+        $imagePath = $this->uploadImage($request,'banner','test-uploads');
         $slider->banner=$imagePath;
 
         $slider->type = $request->type;

@@ -11,8 +11,12 @@
   </title>
   <meta name="csrf-token" content="{{ csrf_token() }}" />
   <link rel="icon" type="image/png" href="{{asset("frontend/images/logo/AVIAzul-Celeste.png")}}">
-  <link rel="stylesheet" href="{{asset('frontend/css/all.min.css')}}">
-  <link rel="stylesheet" href="{{asset('frontend/css/bootstrap.min.css')}}">
+  {{-- <link rel="stylesheet" href="{{asset('frontend/css/all.min.css')}}"> --}}
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  {{-- <link rel="stylesheet" href="{{asset('frontend/css/bootstrap.min.css')}}"> --}}
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+
   <link rel="stylesheet" href="{{asset('frontend/css/select2.min.css')}}">
   <link rel="stylesheet" href="{{asset('frontend/css/slick.css')}}">
   <link rel="stylesheet" href="{{asset('frontend/css/jquery.nice-number.min.css')}}">
@@ -66,9 +70,14 @@
 
 
   <!--jquery library js-->
-  <script src="{{asset('frontend/js/jquery-3.6.0.min.js')}}"></script>
+  {{-- <script src="{{asset('frontend/js/jquery-3.6.0.min.js')}}"></script> --}}
+  
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
   <!--bootstrap js-->
-  <script src="{{asset('frontend/js/bootstrap.bundle.min.js')}}"></script>
+  {{-- <script src="{{asset('frontend/js/bootstrap.bundle.min.js')}}"></script> --}}
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
   <!--font-awesome js-->
   <script src="{{asset('frontend/js/Font-Awesome.js')}}"></script>
   <!--select2 js-->
@@ -77,13 +86,18 @@
   <script src="{{asset('frontend/js/slick.min.js')}}"></script>
   <!--simplyCountdown js-->
   <script src="{{asset('frontend/js/simplyCountdown.js')}}"></script>
+
   <!--product zoomer js-->
-  <script src="{{asset('frontend/js/jquery.exzoom.js')}}"></script>
+
+  {{-- <script src="{{asset('frontend/js/jquery.exzoom.js')}}"></script> --}}
+
   <!--nice-number js-->
-  <script src="{{asset('frontend/js/jquery.nice-number.min.js')}}"></script>
+  {{-- <script src="{{asset('frontend/js/jquery.nice-number.min.js')}}"></script> --}}
+
   <!--counter js-->
-  <script src="{{asset('frontend/js/jquery.waypoints.min.js')}}"></script>
-  <script src="{{asset('frontend/js/jquery.countup.min.js')}}"></script>
+  {{-- <script src="{{asset('frontend/js/jquery.waypoints.min.js')}}"></script> --}}
+  
+  {{-- <script src="{{asset('frontend/js/jquery.countup.min.js')}}"></script> --}}
   <!--add row js-->
   <script src="{{asset('frontend/js/add_row_custon.js')}}"></script>
   <!--multiple-image-video js-->
@@ -98,7 +112,7 @@
   <!--venobox js-->
   <script src="{{asset('frontend/js/venobox.min.js')}}"></script>
   <!--classycountdown js-->
-  <script src="{{asset('frontend/js/jquery.classycountdown.js')}}"></script>
+  {{-- <script src="{{asset('frontend/js/jquery.classycountdown.js')}}"></script> --}}
   <script src="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
   <!--Sweetalert js-->
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -106,6 +120,7 @@
 
   <!--main/custom js-->
   <script src="{{asset('frontend/js/main.js')}}"></script>
+  
 
   <!-- Show Dynamic Validation Erros-->
   <script>
