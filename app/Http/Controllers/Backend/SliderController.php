@@ -37,7 +37,7 @@ class SliderController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'banner'=>['required','image','mimes:jpeg,png,jpg,gif,svg','max:2000'],
+            'banner'=>['required','image','mimes:jpeg,png,jpg,gif,svg,webp','max:2000'],
             'type' =>['nullable','string','max:200'],
             'title' => ['max:200'],
             'starting_price'=>['max:200'],
@@ -50,8 +50,12 @@ class SliderController extends Controller
         $slider = new Slider();
 
         /**header file Upload */
-        $imagePath = $this->uploadImage($request,'banner','test-uploads');
-        $slider->banner=$imagePath;
+        $imagePathComputers = $this->uploadImage($request,'banner','uploads/slider/webp/computers',1320,440);
+        $imagePathLaptop = $this->uploadImage($request,'banner','uploads/slider/webp/laptop',1320,440);
+        $imagePathTablet = $this->uploadImage($request,'banner','uploads/slider/webp/tablet',1320,440);
+        $imagePathPhone = $this->uploadImage($request,'banner','uploads/slider/webp/phone',1320,440);
+        
+        $slider->banner=$imagePathComputers;
 
         $slider->type = $request->type;
         $slider->title = $request->title;

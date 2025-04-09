@@ -1,8 +1,11 @@
 <?php
 namespace App\Traits;
 use Illuminate\Http\Request;
-use Image;
+use Intervention\Image\ImageManager;
+use Intervention\Image\Drivers\Gd\Driver;
+use Intervention\Image\EncodedImage;
 use File;
+use Intervention\Image\Drivers\Gd\Encoders\WebpEncoder;
 
 trait ImageUploadTrait{
 
@@ -55,23 +58,32 @@ trait ImageUploadTrait{
     }
 
     /*One image*/
-    public function uploadImage(Request $request,$inputName,$path){
+    public function uploadImage(Request $request,$inputName,$path,$width,$height){
 
-        if($request->hasFile($inputName)){
-            
-            
-            $image = $request->{$inputName};
-            $ext = $image->getClientOriginalName();
-            $imageName = 'media_'.uniqid().'.'.$ext;
+         if ($request->hasFile($inputName)) {
+        $image = $request->{$inputName};
+        $manager = new ImageManager(new Driver());
+        
+        $originalName = pathinfo($image->getClientOriginalName(), PATHINFO_FILENAME);
+        $imageName = $originalName . 'media_' . uniqid() . '.webp';
 
-            $image->move(public_path($path),$imageName);
+        // Procesar la imagen con ImageManager
+        $img = $manager->read($image->getRealPath());
+        $img->resize($width, $height);
+        
+        $img->encode(new WebpEncoder(quality:75));
 
-             
-             $imagePath = asset($path . '/' . $imageName);
-
-             
-             return $imagePath;
+        $uploadPath = public_path($path . '/');
+        if (!file_exists($uploadPath)) {
+            mkdir($uploadPath, 0755, true);
         }
+        
+        $img->save($uploadPath . $imageName);
+
+        
+        $imagePath = asset($path . '/' . $imageName);
+        return $imagePath;
+    }
 
 
     }
