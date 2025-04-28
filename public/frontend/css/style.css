@@ -5537,4 +5537,205 @@ a:not([href]):not([class]):hover {
 }
 /*Fin Estilos para whastapp*/
 
+/* Estilos para servicios dinamicos */
+.services_content_start{
+  background: var(--Backgroud-pure-white);
+  padding: 20px 0px;
+}
+.services_content_start .col-6{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.services_content_start_text{
+  padding-right: 120px;
+}
+.services_content_start_text .services_content_title_start{
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+.services_content_start_text .services_content_subtitle{
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 700;
+}
+.services_content_start_text .services_content_description{
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 500;
+  line-height: 22px;
+  color: #424851;
+}
+.services_content_start_text .services_start_button {
+  background: var(--Primary-Blue-Dark);
+  color: var(--Backgroud-pure-white);
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 700;
+  margin-top: 5px;
+  margin-right: 2px;
+  padding: 5px 18px;
+  border: none;
+}
+.services_content_info{
+  background: var(--Primary-Blue-Dark);
+  
+}
+
+.wsus_content_info{
+  padding: 60px 50px;
+}
+
+.services_content_info .wsus_content_info_subtitle,.wsus_content_info_title,.wsus_content_info_description{
+  color: var(--Backgroud-pure-white);
+  font-family: 'Montserrat', sans-serif;
+}
+
+.wsus_content_info .wsus_content_info_subtitle{
+  font-weight: 300;
+  font-size: 14px;
+}
+.wsus_content_info .wsus_content_info_title{
+  font-weight: 500;
+  font-size: 18px;
+}
+.wsus_content_info .wsus_content_info_description{
+  font-weight: 300;
+  font-size: 13px;
+  line-height: 20px;
+  padding-right: 70px;
+}
+.services_content_info_button{
+  background: var(--Primary-Blue-Dark);
+  color: var(--Backgroud-pure-white);
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 700;
+  margin-top: 5px;
+  margin-right: 2px;
+  padding: 5px 18px;
+  border: solid 1px var(--Backgroud-pure-white);
+  font-size: 14px;
+}
+.wsus_content_info_img img{
+  width: 620px;
+  height: 100%;
+}
+.services_content_ours_process_text{
+  padding: 20px 0px;
+}
+.services_content_ours_process_text .our_process_text, .services_content_ours_process_text_title, .services_content_ours_process_text_subtitle_one, .our_process_text_description{
+  font-family: 'Montserrat', sans-serif;
+  color: var(--Text-Primary-black);
+}
+.services_content_ours_process_text .services_content_ours_process_text_subtitle_one{
+  font-weight: 500;
+  font-size: 14px;
+}
+.services_content_ours_process_text .services_content_ours_process_text_title{
+  font-weight: 700;
+}
+.services_content_ours_process_text .number_our_process{
+  color: var(--Primary-Blue-Dark);
+  font-weight: 600;
+  font-size: 25px;
+}
+.services_content_ours_process_text .services_content_ours_process_text_subtitle{
+  font-weight: 600;
+  font-size: 25px;
+  margin-bottom: 15px;
+}
+.services_content_ours_process_text .accordion_icon_ours_service{
+  color: var(--Primary-Blue-Dark);
+  margin-left: 5px;
+  font-size: 22px;
+}
+
+.services_content_ours_process_text .accordion_item{
+  margin-top: 22px;
+  max-width: 600px;
+}
+.services_content_ours_process_text .our_process_text_description{
+  padding-right: 40px;
+  margin-left: 30px;
+  font-weight: 500;
+  font-size: 15px;
+  line-height: 22px;
+  margin-top: 10px;
+  
+} 
+.accordion_header .services_content_ours_process_text_subtitle {
+  position: relative;
+  padding-left: 10px; /* espacio del lado izquierdo opcional */
+}
+
+.accordion_header .services_content_ours_process_text_subtitle::before {
+  content: "";
+  position: absolute;
+  top: 120%; /* centra la línea en el h3 */
+  left: 10px;
+  transform: translateY(-50%);
+  width: 92%;
+  height: 1px; /* grosor de la línea */
+  background-color: black; /* color de la línea */
+  z-index: -1; /* para que quede detrás del texto */
+}
+
+.services_content_ours_process .col-6{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  
+}
+
+.services_content_ours_process_img-video{
+  width: 660px;
+  height: 540px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.services_content_benefits {
+  background: var(--Primary-Blue-Dark);
+}
+
+.benefits_text {
+  display: flex;
+  justify-content: center; /* Centra horizontalmente el contenedor */
+  align-items: center; /* Centra verticalmente el contenedor */
+  height: 100%;
+  flex-direction: column; /* Asegura que los elementos estén en columna */
+  text-align: start; /* Alinea el contenido al inicio */
+}
+
+.content_benefits_text {
+  width: 100%; /* Asegura que ocupe todo el ancho disponible */
+}
+
+.benefits_text_title,
+.benefits_text_title_description {
+  color: var(--Backgroud-pure-white);
+  font-family: 'Montserrat', sans-serif;
+  text-align: start; /* Alinea el texto al inicio */
+}
+
+.benefist_skills {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start; /* Alinea los elementos al inicio */
+  gap: 10px;
+}
+
+.benefits_text_description {
+  flex: 0 0 33%; /* Cada elemento ocupa un tercio del ancho */
+  box-sizing: border-box;
+  color: var(--Backgroud-pure-white);
+  font-family: 'Montserrat', sans-serif;
+}
+
+.benefits_row {
+  display: flex; /* Activa Flexbox */
+  justify-content: center; /* Centra horizontalmente */
+  align-items: center; /* Centra verticalmente */
+  height: 100vh; /* Asegura que ocupe toda la altura de la ventana */
+}
+/* Fin de Estilos para servicios dinamicos */
+
 /* extra css end here */

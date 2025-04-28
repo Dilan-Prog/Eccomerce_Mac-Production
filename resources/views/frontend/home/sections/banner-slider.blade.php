@@ -11,10 +11,45 @@
                             <a href="{{ $slider->btn_url }}">
                                 @if ($loop->first)
                                 <!-- Primera imagen cargada inmediatamente -->
-                                <img src="{{ asset($slider->banner) }}" alt="slider image" class="wsus__single_slider">
+                                <img 
+                                    src="{{ asset($slider->banner) }}" 
+                                    srcset="
+                                        {{ asset($slider->banner_phone) }} 370w,
+                                        {{ asset($slider->banner_tablet) }} 720w,
+                                        {{ asset($slider->banner_tablet) }} 960w,
+                                        {{ asset($slider->banner_laptop) }} 1140w,
+                                        {{ asset($slider->banner) }} 1320w
+                                        
+                                    " 
+                                    sizes="(max-width: 576px) 370px, 
+                                        (max-width: 768px) 720px, 
+                                        (max-width: 768px) 960px,
+                                        (max-width: 992px) 1140px, 
+                                        1320px,
+                                        1600px"
+                                    alt="slider image" 
+                                    class="wsus__single_slider">
+
                                 @else
                                 <!-- Imágenes diferidas con data-src -->
-                                <img data-src="{{ asset($slider->banner) }}" alt="slider image" class="wsus__single_slider lazy-image">
+                                <img 
+                                    src="{{ asset($slider->banner) }}" 
+                                    srcset="
+                                        {{ asset($slider->banner_phone) }} 370w,
+                                        {{ asset($slider->banner_tablet) }} 720w,
+                                        {{ asset($slider->banner_tablet) }} 960w,
+                                        {{ asset($slider->banner_laptop) }} 1140w,
+                                        {{ asset($slider->banner) }} 1320w
+                                        
+                                    " 
+                                    sizes="(max-width: 576px) 370px, 
+                                        (max-width: 768px) 720px, 
+                                        (max-width: 768px) 960px,
+                                        (max-width: 992px) 1140px, 
+                                        1320px,
+                                        1600px"
+                                    alt="slider image" 
+                                    class="wsus__single_slider">
                                 @endif
                             </a>
                         </div>
@@ -37,9 +72,9 @@
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
                     const img = entry.target;
-                    img.src = img.dataset.src; // Mueve la URL de data-src a src
-                    img.classList.remove("lazy-image"); // Opcional: elimina la clase para evitar reobservación
-                    observer.unobserve(img); // Deja de observar la imagen una vez cargada
+                    img.src = img.dataset.src;
+                    img.classList.remove("lazy-image");
+                    observer.unobserve(img); 
                 }
             });
         });
@@ -48,7 +83,6 @@
             imageObserver.observe(image);
         });
     } else {
-        // Fallback para navegadores antiguos: Cargar todas las imágenes de inmediato
         lazyImages.forEach(img => {
             img.src = img.dataset.src;
         });

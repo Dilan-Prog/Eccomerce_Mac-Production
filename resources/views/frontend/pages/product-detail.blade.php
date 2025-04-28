@@ -210,15 +210,12 @@
                                         <li><button type="button" class="whastapp_cart_cotize"><i class="fa fa-whatsapp" aria-hidden="true"></i> ¡Cotizar Ahora!</button></li>
                                     </ul>
                                 </a>
-                                <a href="tel:8124738768" target="_blank" style="width: 100%;" onclick="dataLayer.push({'event': 'Telefono_Conversion', 'telefono': '8124738768'});">
+                                <a data-name="button_call_product_details" href="tel:8124738768" target="_blank" style="width: 100%;" onclick="dataLayer.push({'event': 'Telefono_Conversion', 'telefono': '8124738768'});">
                                     <ul class="wsus__button_area">
                                         <li><button type="button" class="phone_number_cart_cotize"><i class="fa fa-phone-alt" aria-hidden="true"></i> ¡Atencion Inmediata!</button></li>
                                     </ul>
                                 </a>
                             </div>
-
-
-                            
                             </p>
                                 <div class="wsus__assurance">
                                     <ul>

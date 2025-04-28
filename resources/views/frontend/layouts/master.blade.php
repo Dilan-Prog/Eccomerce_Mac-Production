@@ -64,16 +64,6 @@
 
     <!-- <link rel="stylesheet" href="css/rtl.css"> -->
 </head>
-
-
-
-
-
-
-
-
-
-
 <body>
         <!--header-->
         @include('frontend.layouts.header')
@@ -85,6 +75,8 @@
 
         <!--content-->
         @yield('content')
+
+
         <!--footer-->
         @include( 'frontend.layouts.footer' )
 

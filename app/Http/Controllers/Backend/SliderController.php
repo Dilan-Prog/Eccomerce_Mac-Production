@@ -19,7 +19,6 @@ class SliderController extends Controller
      */
     public function index(SliderDataTable $dataTable)
     {
-
         return $dataTable->render('admin.slider.index');
     }
 
@@ -51,11 +50,14 @@ class SliderController extends Controller
 
         /**header file Upload */
         $imagePathComputers = $this->uploadImage($request,'banner','uploads/slider/webp/computers',1320,440);
-        $imagePathLaptop = $this->uploadImage($request,'banner','uploads/slider/webp/laptop',1320,440);
-        $imagePathTablet = $this->uploadImage($request,'banner','uploads/slider/webp/tablet',1320,440);
-        $imagePathPhone = $this->uploadImage($request,'banner','uploads/slider/webp/phone',1320,440);
+        $imagePathLaptop = $this->uploadImage($request,'banner','uploads/slider/webp/laptop',1140,380);
+        $imagePathTablet = $this->uploadImage($request,'banner','uploads/slider/webp/tablet',720,240);
+        $imagePathPhone = $this->uploadImage($request,'banner','uploads/slider/webp/phone',370,125);
         
         $slider->banner=$imagePathComputers;
+        $slider->banner_laptop=$imagePathLaptop;
+        $slider->banner_tablet=$imagePathTablet;
+        $slider->banner_phone=$imagePathPhone;
 
         $slider->type = $request->type;
         $slider->title = $request->title;
@@ -99,12 +101,11 @@ class SliderController extends Controller
     public function update(Request $request, string $id)
     {
         $request->validate([
-            'banner'=>['nullable','image','max:2000'],
+            'banner'=>['required','image','mimes:jpeg,png,jpg,gif,svg,webp','max:2000'],
             'type' =>['nullable','string','max:200'],
             'title' => ['max:200'],
             'starting_price'=>['max:200'],
             'btn_url' => ['url'],
-
             'serial' => ['required', 'integer'],
             'status'=>['required']
         ]);
@@ -112,8 +113,15 @@ class SliderController extends Controller
         $slider = Slider::findOrFail($id);
 
         /**header file Upload */
-        $imagePath = $this->updateImage($request,'banner','uploads',$slider->banner);
-        $slider->banner= empty(!$imagePath) ? $imagePath : $slider->banner;
+        $imagePathComputers = $this->uploadImage($request,'banner','uploads/slider/webp/computers',1320,440);
+        $imagePathLaptop = $this->uploadImage($request,'banner','uploads/slider/webp/laptop',1140,380);
+        $imagePathTablet = $this->uploadImage($request,'banner','uploads/slider/webp/tablet',720,240);
+        $imagePathPhone = $this->uploadImage($request,'banner','uploads/slider/webp/phone',370,125);
+
+        $slider->banner= empty(!$imagePathComputers) ? $imagePathComputers : $slider->banner;
+        $slider->banner_laptop= empty(!$imagePathLaptop) ? $imagePathLaptop : $slider->banner_laptop;
+        $slider->banner_tablet= empty(!$imagePathTablet) ? $imagePathTablet : $slider->banner_tablet;   
+        $slider->banner_phone= empty(!$imagePathPhone) ? $imagePathPhone : $slider->banner_phone;
 
         $slider->type = $request->type;
         $slider->title = $request->title;

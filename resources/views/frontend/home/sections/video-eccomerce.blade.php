@@ -23,11 +23,13 @@
 
                 </div>
 
-            </div>
-            <div class="col-xl-6 col-md-12">
-                <div class="iframe-video-eccomerce" >
-                    <lite-youtube videoid="3w3xq8VJQSc"></lite-youtube>
+                </div>
+                <div class="col-xl-6 col-md-12">
+                    <div class="iframe-video-eccomerce" >
+                        <lite-youtube videoid="3w3xq8VJQSc"></lite-youtube>
+                    </div>
                 </div>
             </div>
         </div>
+    </div>
 </section>
