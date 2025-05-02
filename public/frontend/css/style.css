@@ -3463,7 +3463,7 @@ Analizar medicine_row_input si es que se ocupa
   width: 170px;
 }
 
-/* 
+/*
 #wsus__dashboard .wishlist .wsus__pro_select {
   width: 210px;
 } */
@@ -5577,7 +5577,7 @@ a:not([href]):not([class]):hover {
 }
 .services_content_info{
   background: var(--Primary-Blue-Dark);
-  
+
 }
 
 .wsus_content_info{
@@ -5659,8 +5659,8 @@ a:not([href]):not([class]):hover {
   font-size: 15px;
   line-height: 22px;
   margin-top: 10px;
-  
-} 
+
+}
 .accordion_header .services_content_ours_process_text_subtitle {
   position: relative;
   padding-left: 10px; /* espacio del lado izquierdo opcional */
@@ -5682,7 +5682,7 @@ a:not([href]):not([class]):hover {
   display: flex;
   justify-content: center;
   align-items: center;
-  
+
 }
 
 .services_content_ours_process_img-video{
@@ -5736,6 +5736,130 @@ a:not([href]):not([class]):hover {
   align-items: center; /* Centra verticalmente */
   height: 100vh; /* Asegura que ocupe toda la altura de la ventana */
 }
+
+.form-service-content{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+    padding: 0;
+
+}
+
+.form-service_title{
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 800;
+    color: var(--Text-Primary-white);
+}
+
+.form-label-service{
+    color: var(--Text-Primary-white);
+}
+
+.form-control-service{
+    display: block;
+    color: var(--Text-Primary-white);
+    background: none;
+    border: solid 1px var(--Backgroud-pure-white);
+    width: 100%;
+    padding: .375rem .75rem;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.5;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-clip: padding-box;
+    border-radius: 8px;
+    transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+}
+
+.form-control-service::placeholder{
+    color: var(--Text-Primary-white);
+}
+/*
+.form-select-service{
+    --bs-form-select-bg-img: url(data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e);
+    display: block;
+    width: 100%;
+    padding: .375rem 2.25rem .375rem .75rem;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.5;
+    color: var(--Text-Primary-white);
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background: none;
+    background-image: none;
+    background-repeat: no-repeat;
+    background-position: right .75rem center;
+    background-size: 16px 12px;
+    border: solid 1px var(--Backgroud-pure-white);
+    border-radius: 8px;
+    transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+
+} */
+
+/* Estilo del contenedor select (equivalente a .form-select-service) */
+.select2-container--default .select2-selection--single {
+    background-color: var(--Primary-Blue-Dark);
+    color: white;
+    border: 1px solid var(--Backgroud-pure-white);
+    border-radius: 8px;
+    padding: 0px 0px;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.5;
+    height: auto;
+}
+
+/* Texto del select */
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+    color: white;
+    line-height: 2.2;
+}
+
+/* Icono de flecha */
+.select2-container--default .select2-selection--single .select2-selection__arrow b {
+    border-color: white transparent transparent transparent;
+}
+
+/* Dropdown: fondo y color del texto */
+.select2-container--default .select2-results > .select2-results__options {
+    background-color: var(--Primary-Blue-Dark);
+    color: white;
+}
+
+/* Opciones individuales */
+.select2-container--default .select2-results__option {
+    background-color: var(--Primary-Blue-Dark);
+    color: white;
+}
+
+/* Hover sobre opciones */
+.select2-container--default .select2-results__option--highlighted[aria-selected] {
+    background-color: white;
+    color: var(--Primary-Blue-Dark);
+}
+
+/* Campo de búsqueda dentro del dropdown */
+.select2-container--default .select2-search--dropdown ,.select2-search__field {
+    background: var(--Primary-Blue-Dark);
+    color: white;
+    border: none;
+}
+
+.form-control-servic::placeholder{
+    color: var(--Text-Primary-white);
+}
+/* .select2-search .select2-search--dropdown{
+    background: var(--Primary-Blue-Dark);
+
+} */
+
+
+
 /* Fin de Estilos para servicios dinamicos */
 
 /* extra css end here */

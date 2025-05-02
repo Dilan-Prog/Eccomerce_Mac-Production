@@ -17,7 +17,7 @@
           <article>
             <span class="services_content_subtitle">Servicio Profesional</span>
             <h1 class="services_content_title_start">Instalacion de Controladores de Temperatura</h1>
-            <p class="services_content_description">Nuestro servicio incluye la instalación de controladores de temperatura precisos y eficientes para distintos entornos: industriales, comerciales y residenciales. 
+            <p class="services_content_description">Nuestro servicio incluye la instalación de controladores de temperatura precisos y eficientes para distintos entornos: industriales, comerciales y residenciales.
               Garantizamos un control térmico óptimo y confiable en cada proyecto.</p>
               <button class="services_start_button">Atencion Inmediata</button>
               <button class="services_start_button"><i class="fa fa-whatsapp"></i> Escribenos</button>
@@ -31,29 +31,28 @@
       <div class="row">
         <div class="col-4">
           <div class="wsus_content_info">
-            <span class="wsus_content_info_subtitle">Cumplimiento de Normativa</span>  
+            <span class="wsus_content_info_subtitle">Cumplimiento de Normativa</span>
             <h4 class="wsus_content_info_title">Cumplimiento de Normativa Sin Complicaciones</h4>
             <p class="wsus_content_info_description">Cumplir con las normativas industriales puede parecer un laberinto: NOM, ISO, seguridad eléctrica… Pero no te preocupes, nosotros nos encargamos. Nos especializamos en la instalación correcta de controladores de temperatura bajo estándares nacionales e internacionales, listos para auditorías y sin riesgos.
-  
+
               Sabemos lo que buscan los inspectores… y lo que necesitas tú para seguir operando sin contratiempos.</p>
             <button class="services_content_info_button">Contactanos</button>
           </div>
         </div>
         <div class="col-4">
           <div class="wsus_content_info">
-            <span class="wsus_content_info_subtitle">Cumplimiento de Normativa</span>  
+            <span class="wsus_content_info_subtitle">Cumplimiento de Normativa</span>
             <h4 class="wsus_content_info_title">Cumplimiento de Normativa Sin Complicaciones</h4>
             <p class="wsus_content_info_description">Cumplir con las normativas industriales puede parecer un laberinto: NOM, ISO, seguridad eléctrica… Pero no te preocupes, nosotros nos encargamos. Nos especializamos en la instalación correcta de controladores de temperatura bajo estándares nacionales e internacionales, listos para auditorías y sin riesgos.
-  
+
               Sabemos lo que buscan los inspectores… y lo que necesitas tú para seguir operando sin contratiempos.</p>
             <button class="services_content_info_button">Contactanos</button>
           </div>
         </div>
         <div class="col-4">
           <div class="wsus_content_info_img">
-            <img src="{{asset('uploads/prueba_servicios.png')}}" alt="image">  
+            <img src="{{asset('uploads/prueba_servicios.png')}}" alt="image">
           </div>
-
         </div>
       </div>
     </article>
@@ -70,7 +69,7 @@
           <article>
             <span class="services_content_ours_process_text_subtitle_one">Nuestro Proceso para</span>
             <h2 class="services_content_ours_process_text_title">Instalaciones de Controladores de Temperatura</h2>
-        
+
             <div class="accordion_item">
               <div class="accordion_header" onclick="toggleAccordion(this)">
                 <h3 class="services_content_ours_process_text_subtitle">
@@ -82,7 +81,7 @@
                 Antes de comenzar, analizamos tu industria, entorno operativo y equipos involucrados. Así identificamos las normativas que deben cumplirse (NOM, ISO, IEC, UL, etc.) en la instalación del controlador.
               </p>
             </div>
-            
+
             <div class="accordion_item">
               <div class="accordion_header" onclick="toggleAccordion(this)">
                 <h3 class="services_content_ours_process_text_subtitle">
@@ -138,48 +137,48 @@
           </div>
         </div>
       </div>
-      <div class="col-6 d-flex align-items-center justify-content-center m-0 p-0">
-          <form class="row g-3 m-5" action="https://formsubmit.co/dilanp270105@gmail.com" method="POST" style="font-family: 'Montserrat', sans-serif;">
-              <h2 style="font-weight: 800;">Llenar Formulario</h2>
+      <div class="col-6 form-service-content">
+          <form class="row form-service" action="https://formsubmit.co/dilanp270105@gmail.com" method="POST" style="font-family: 'Montserrat', sans-serif;">
+              <h2 class="form-service_title">Formulario de Contacto</h2>
               <div class="row ">
                   <div class="col-md-6">
-                      <label for="inputNombre" class="form-label">Nombre</label>
-                      <input type="text" class="form-control" id="inputNombre" placeholder="Nombre" aria-label="First name" name="Nombre" required pattern="[A-Za-z]+" maxlength="30" >
-                      <div class="invalid-feedback"> 
+                      <label for="inputNombre" class="form-label-service">Nombre</label>
+                      <input type="text" class="form-control-service" id="inputNombre" placeholder="Nombre" aria-label="First name" name="Nombre" required pattern="[A-Za-z]+" maxlength="30" >
+                      <div class="invalid-feedback">
                           El nombre no puede estar en blanco.
                       </div>
                   </div>
                   <div class="col-md-6">
-                      <label for="inputAddress2" class="form-label">Apellidos</label>
-                  <input type="text" class="form-control" placeholder="Apellidos" aria-label="Last name" name="Apellido" pattern="[A-Za-z]+" required >
-                  </div> 
-                  
+                      <label for="inputAddress2" class="form-label-service">Apellidos</label>
+                  <input type="text" class="form-control-service" placeholder="Apellidos" aria-label="Last name" name="Apellido" pattern="[A-Za-z]+" required >
+                  </div>
+
               </div>
-              
-              
+
+
               <div class="col-md-6">
-              <label for="inputEmail4" class="form-label">Email</label>
-              <input type="email" class="form-control" id="inputEmail4" placeholder="example@gmail.com" name="email" required>
+              <label for="inputEmail4" class="form-label-service">Email</label>
+              <input type="email" class="form-control-service" id="inputEmail4" placeholder="example@gmail.com" name="email" required>
               </div>
               <div class="col-md-6">
-              <label for="telefono" class="form-label">N&uacute;mero de telefono</label>
-              <input type="tel" class="form-control" id="inputAddress" placeholder="Telefono" name="Telefono" required  pattern="[0-9]{10}" title="Ingrese un número de teléfono válido"> 
+              <label for="telefono" class="form-label-service">N&uacute;mero de telefono</label>
+              <input type="tel" class="form-control-service" id="inputAddress" placeholder="Telefono" name="Telefono" required  pattern="[0-9]{10}" title="Ingrese un número de teléfono válido">
               </div>
-              
-          
-              
+
+
+
               <div class="col-md-4">
-                  <label for="inputCity" class="form-label">Empresa</label>
-                  <input type="text" class="form-control" id="inputCity" placeholder="Nombre Empresa" required name="Ciudad" required>
+                  <label for="inputCity" class="form-label-service">Empresa</label>
+                  <input type="text" class="form-control-service" id="inputCity" placeholder="Nombre Empresa" required name="Ciudad" required>
               </div>
-          
+
               <div class="col-md-4">
-              <label for="inputCity" class="form-label">Ciudad</label>
-              <input type="text" class="form-control" id="inputCity" placeholder="Ciudad Juarez" name="Ciudad" required>
+              <label for="inputCity" class="form-label-service">Ciudad</label>
+              <input type="text" class="form-control-service" id="inputCity" placeholder="Ciudad Juarez" name="Ciudad" required>
               </div>
               <div class="col-md-4">
-                  <label for="inputState" class="form-label">Estado</label>
-                  <select id="inputState" class="form-select" name="Estado" required>
+                  <label for="inputState" class="form-label-service">Estado</label>
+                  <select id="inputState" class="form-select-service" name="Estado" required>
                   <option selected disabled value="" >Seleccionar..</option>
                       <option>Aguascalientes</option>
                       <option>Baja California</option>
@@ -214,22 +213,22 @@
                       <option>Zacatecas</option>
                   </select>
               </div>
-              
-  
+
+
               <div class="col-md-12">
-                  <label for="inputOperation" class="form-label">Operaci&oacute;n</label>
+                  <label for="inputOperation" class="form-label-service">Operaci&oacute;n</label>
                   <select id="inputOperation" class="form-select" name="Operacion" required>
                       <option selected>Servicio De Calibraci&oacute;n Y Puesta En Marcha</option>
                   </select>
               </div>
-              
+
               <div class="col-12 form-floating">
                   <textarea class="form-control" placeholder="Leave a comment here" id="floatingTextarea2" style="height: 100px" name="Mensaje"></textarea>
                   <label for="floatingTextarea2">Mensaje</label>
               </div>
-          
-              
-          
+
+
+
               <div class="col-12">
               <button type="submit" class="btn btn-dark w-100" >Enviar solicitud</button>
               <input type="hidden" name="_next" value="http://127.0.0.1:8000/cotizar"><!--Cambiar url-->
@@ -250,6 +249,8 @@
 
 @push('scripts')
 <script>
+
+
   function toggleAccordion(header) {
     const description = header.nextElementSibling;
     const icon = header.querySelector('.accordion_icon_ours_service');
@@ -263,5 +264,18 @@
     }
   }
 </script>
-  
+<script>
+    $(document).ready(function() {
+      $('#inputState').select2({
+        width: '100%',
+        placeholder: 'Seleccionar..',
+        allowClear: true
+      });
+      $('#inputOperation').select2({
+        width: '100%',
+        allowClear: true
+      });
+    });
+  </script>
+
 @endpush
