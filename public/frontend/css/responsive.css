@@ -271,6 +271,31 @@
   #sticky_sidebar div button p {
     font-size: 13px;
   }
+  .services_content_start_img img{
+    width: 100%;
+  }
+  .services_content_title_start{
+    font-size: 25px;
+  }
+  .services_content_description{
+    font-size: 15px;
+  }
+  .services_content_start_text .services_start_button{
+    font-size: 15px;
+  }
+  .wsus_content_info{
+    padding: 30px 25px;
+  }
+  .wsus_content_info .wsus_content_info_title{
+    font-size: 15px;
+  }
+  .wsus_content_info .wsus_content_info_description{
+    font-size: 12px;
+  }
+  .services_content_info_button{
+    font-size: 15px;
+  }
+
 
 }
 
@@ -708,6 +733,38 @@
   height: 500px; /* Ajusta esta altura según lo necesites */
 
 }
+
+.services_content_start_img img{
+  width: 100%;
+}
+.services_content_title_start{
+  font-size: 25px;
+}
+.services_content_description{
+  font-size: 15px;
+}
+.services_content_start_text .services_start_button{
+  font-size: 15px;
+}
+.wsus_content_info{
+  padding: 30px 25px;
+}
+.wsus_content_info .wsus_content_info_title{
+  font-size: 15px;
+}
+.wsus_content_info .wsus_content_info_description{
+  font-size: 12px;
+}
+.services_content_info_button{
+  font-size: 15px;
+}
+.services_content_ours_process_text .services_content_ours_process_text_title{
+  font-size: 25px;
+}
+.services_content_ours_process_text .services_content_ours_process_text_subtitle,.services_content_ours_process_text .number_our_process{
+  font-size: 18px;
+}
+
 
 
 }
@@ -1436,6 +1493,47 @@
   width: 100%;
   height: 425px; /* Ajusta esta altura según lo necesites */
   max-height: 100%;
+}
+
+.services_content_start{
+  padding-top: 80px;
+}
+
+.services_content_start_text{
+  padding-right: 30px;
+}
+.services_content_start_img img{
+  width: 100%;
+}
+.services_content_title_start{
+  font-size: 15px;
+}
+.services_content_start_text .services_content_subtitle{
+  font-size: 12px;
+}
+.services_content_description{
+  font-size: 10px;
+}
+.services_content_start_text .services_start_button{
+  font-size: 11px;
+}
+.wsus_content_info{
+  padding: 30px 25px;
+}
+.wsus_content_info .wsus_content_info_title{
+  font-size: 15px;
+}
+.wsus_content_info .wsus_content_info_description{
+  font-size: 12px;
+}
+.services_content_info_button{
+  font-size: 15px;
+}
+.services_content_ours_process_text .services_content_ours_process_text_title{
+  font-size: 25px;
+}
+.services_content_ours_process_text .services_content_ours_process_text_subtitle,.services_content_ours_process_text .number_our_process{
+  font-size: 18px;
 }
 
 
