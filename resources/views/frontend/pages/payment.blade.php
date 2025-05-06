@@ -35,14 +35,14 @@
                                     aria-controls="v-pills-paypal" aria-selected="false">
                                     <div class="payment-option">
                                         <div class="image-mask-payment">
-                                            <img src="{{asset('frontend/images/iconos-empresas-sin-fondo/Paypal-logo-uniform.png')}}" alt="Paypal" class="payment-icon">
+                                            <img src="{{asset('frontend/images/iconos-empresas-sin-fondo/Paypal-logo-uniform.png')}}" alt="Pagar con Paypal" class="payment-icon">
                                         </div>
                                         <div class="payment-text">
                                             <h5>Paypal</h5>
                                             <p>Paga sin compartir tu información bancaria directamente.</p>
                                         </div>
                                     </div>
-                                    
+
                                 </button>
                                 <button class="nav-link active" id="v-pills-transfer-tab" data-bs-toggle="pill" data-bs-target="#v-pills-transfer" type="button" role="tab" aria-controls="v-pills-transfer" aria-selected="false">
                                     <div class="discount-banner">
@@ -68,28 +68,28 @@
                                 aria-labelledby="v-pills-home-tab">
                                 @include('frontend.pages.payment-gateway.stripe')
                             </div>
-                            <div class="tab-pane fade show" id="v-pills-paypal" role="tabpanel"
-                                aria-labelledby="v-pills-home-tab">
+                            <div class="tab-pane fade show" id="v-pills-paypal" role="tabpanel" aria-labelledby="v-pills-home-tab">
                                 <div class="row">
                                     <div class="col-xl-12 m-auto">
                                         <div class="wsus__payment_area">
-                                            <a class="nav-link common_btn text-center"
-                                                href="{{ route('user.paypal.payment') }}">Pagar con Paypal</a>
+                                            <h5 class="text-center">Pagar con PayPal</h5>
+                                            {{-- Contenedor para el botón de PayPal --}}
+                                            <div id="paypal-button-container"></div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            
+
                             <div class="tab-pane fade show active" id="v-pills-transfer" role="tabpanel"
                                 arialabelledby="v-pills-home-tab">
-                                
-                                
+
+
                                 <div class="row text-center">
-                                    
+
                                     <h5 class="common_btn">Información Bancaria</h5>
                                     <form action="{{ route('user.payment.transfer') }}" method="POST">
                                         @csrf
-                                        
+
                                         <div class="container mt-2 text-center">
                                             <h6>Entidad Bancaria:</h6>
                                             <p>{{ $transferInfo->nameBank }}</p>
@@ -150,7 +150,49 @@
 @endsection
 
 @push('scripts')
+<script src="https://www.paypal.com/sdk/js?client-id={{ $paypalClientId }}&currency=MXN"></script>
 <script>
+    // Configuracion de Paypal
+
+    paypal.Buttons({
+    createOrder: function(data, actions) {
+        return fetch('{{ route('user.paypal.createOrder') }}', {
+            method: 'post',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            }
+        }).then(function(res) {
+            return res.json();
+        }).then(function(orderData) {
+            return orderData.id;
+        });
+    },
+    onApprove: function(data, actions) {
+        return fetch('{{ route('user.paypal.captureOrder') }}', {
+            method: 'post',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            },
+            body: JSON.stringify({
+                orderId: data.orderID
+            })
+        }).then(function(res) {
+            return res.json();
+        }).then(function(details) {
+            alert('Pago completado por ' + details.payer.name.given_name);
+            window.location.href = "{{ route('user.payment.success') }}";
+        });
+    },
+    onError: function(err){
+        alert('Ocurrió un error al procesar el pago. Inténtalo de nuevo.');
+        window.location.href = "{{ route('user.paypal.cancel') }}";
+    }
+}).render('#paypal-button-container');
+
+
+
     // Variables para descuento y elementos
     const discountRate = 0.02; // Descuento del 2%
     const transferButton = document.getElementById('v-pills-transfer-tab');
@@ -170,5 +212,5 @@
     stripeButton.addEventListener('click', () => applyDiscount(false));
     paypalButton.addEventListener('click', () => applyDiscount(false));
 </script>
-    
+
 @endpush

@@ -116,6 +116,11 @@ Route::group(['middleware' => ['auth','verified'], 'prefix' => 'user', 'as' => '
     Route::get('paypal/success',[PaymentController::class, 'paypalSuccess'])->name('paypal.success');
     Route::get('paypal/cancel',[PaymentController::class, 'paypalCancel'])->name('paypal.cancel');
 
+    // Endpoint to Paypal
+
+    Route::post('paypal/create-order', [PaymentController::class, 'createOrder'])->name('paypal.createOrder');
+    Route::post('paypal/capture-order', [PaymentController::class, 'captureOrder'])->name('paypal.captureOrder');
+
     /**stripe routes */
     Route::post('stripe/payment', [PaymentController::class, 'payWithStripe'])->name('stripe.payment');
 
