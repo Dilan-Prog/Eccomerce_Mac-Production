@@ -10,7 +10,7 @@
       <div class="row">
         <div class="col-12 col-md-6 col-lg-6 col-xl-6">
           <div class="services_content_start_img">
-          <img src="{{ asset('frontend/images/imagen ejemplo.png') }}" alt="image">
+          <img src="{{ asset('uploads/servicios/instalacion_controladores-1.png') }}" alt="image">
           </div>
         </div>
         <div class="col-12 col-md-6 col-lg-6 col-xl-6">
@@ -61,7 +61,7 @@
         </div>
         <div class="col-12 col-md-4 col-lg-4 col-xl-4 content_img_service_personalizate">
         <div class="wsus_content_info_img">
-          <img src="{{ asset('uploads/prueba_servicios.png') }}" alt="image">
+          <img src="{{ asset('uploads/servicios/instalacion_controladores-2.png') }}" alt="image">
         </div>
         </div>
       </div>
@@ -73,7 +73,8 @@
       <div class="row">
       <div class="col-12 col-md-6 col-lg-6 col-xl-6">
         <div class="services_content_ours_process_img-video">
-        <lite-youtube videoid="3w3xq8VJQSc"></lite-youtube>
+        {{-- <lite-youtube videoid="3w3xq8VJQSc"></lite-youtube> --}}
+        <img src="{{ asset('uploads/servicios/instalacion_controladores-3.png') }}" alt="image">
         </div>
       </div>
       <div class="col-12 col-md-6 col-lg-6 col-xl-6">

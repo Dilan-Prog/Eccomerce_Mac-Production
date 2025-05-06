@@ -295,8 +295,10 @@
   .services_content_info_button{
     font-size: 15px;
   }
-
-
+  .services_content_ours_process_img-video{
+    width: 540px;
+  }
+ 
 }
 
 /* Tablet landspace */
@@ -763,6 +765,12 @@
 }
 .services_content_ours_process_text .services_content_ours_process_text_subtitle,.services_content_ours_process_text .number_our_process{
   font-size: 18px;
+}
+.services_content_ours_process_img-video{
+ width: 100%;
+}
+.services_content_ours_process_img-video img{
+  width: 100%;
 }
 
 
@@ -1535,6 +1543,12 @@
 .services_content_ours_process_text .services_content_ours_process_text_subtitle,.services_content_ours_process_text .number_our_process{
   font-size: 18px;
 }
+.services_content_ours_process_img-video{
+  width: 100%;
+ }
+ .services_content_ours_process_img-video img{
+   width: 100%;
+ }
 
 
 }
@@ -2433,6 +2447,48 @@
   bottom: 55px;
   width: 55px;
   height: 55px;
+}
+
+
+.services_content_start{
+  padding-top: 80px;
+}
+
+.services_content_start_text{
+  padding-right: 30px;
+}
+.services_content_start_img img{
+  width: 100%;
+}
+.services_content_title_start{
+  font-size: 15px;
+}
+.services_content_start_text .services_content_subtitle{
+  font-size: 12px;
+}
+.services_content_description{
+  font-size: 10px;
+}
+.services_content_start_text .services_start_button{
+  font-size: 11px;
+}
+.wsus_content_info{
+  padding: 30px 25px;
+}
+.wsus_content_info .wsus_content_info_title{
+  font-size: 15px;
+}
+.wsus_content_info .wsus_content_info_description{
+  font-size: 12px;
+}
+.services_content_info_button{
+  font-size: 15px;
+}
+.services_content_ours_process_text .services_content_ours_process_text_title{
+  font-size: 25px;
+}
+.services_content_ours_process_text .services_content_ours_process_text_subtitle,.services_content_ours_process_text .number_our_process{
+  font-size: 18px;
 }
 
 
@@ -3548,4 +3604,93 @@
 
   /* extra css start here */
 
+  
+.services_content_start{
+  padding-top: 80px;
 }
+
+.services_content_start_text{
+  padding-right: 30px;
+}
+.services_content_start_img img{
+  width: 100%;
+}
+.services_content_title_start{
+  font-size: 15px;
+}
+.services_content_start_text .services_content_subtitle{
+  font-size: 12px;
+}
+.services_content_description{
+  line-height: 20px;
+  font-size: 12px;
+}
+.services_content_start_text .services_start_button{
+  font-size: 11px;
+}
+.wsus_content_info{
+  padding: 30px 25px;
+}
+.wsus_content_info .wsus_content_info_title{
+  font-size: 15px;
+}
+.wsus_content_info .wsus_content_info_description{
+  font-size: 12px;
+}
+.services_content_info_button{
+  font-size: 15px;
+}
+.services_content_ours_process_text .services_content_ours_process_text_title{
+  font-size: 22px;
+}
+.services_content_ours_process_text .services_content_ours_process_text_subtitle,.services_content_ours_process_text .number_our_process{
+  font-size: 15px;
+}
+.services_content_ours_process_text .our_process_text_description{
+  font-size: 12px;
+}
+.benefits_text_title {
+  font-size: 20px;
+}
+.benefits_text_description {
+  flex: 0 0 43%;
+  box-sizing: border-box;
+  margin: 2px 10px;
+  font-size: 13px;
+}
+.form-service_title{
+  font-size: 26px;
+  text-align: center;
+}
+.form-label-service{
+  font-size: 14px;
+  margin-right:4px;
+}
+.form-control-service{
+  width: 70%;
+  padding: .15rem .5rem;
+  font-size: 1rem;
+  line-height: 1.5;
+  margin: 4px 0px;
+}
+.services_content_ours_process_img-video{
+  width: 100%;
+  height: 100%;
+  margin-top: 10px;
+  padding: 0;
+ }
+ .services_content_ours_process_img-video img{
+   width: 100%;
+ }
+.services_content_ours_process_text{
+  margin: 0px 0px;
+}
+
+}
+
+/* .services_content_info .col-12{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+} */

@@ -8,7 +8,7 @@
                     <div class="wsus__footer_content">
                         <a class="wsus__footer_2_logo" href="{{route('index')}}">
                             <img src="{{asset('frontend/images/logo/logo-negro-azul.png')}}" alt="logo" id="logo-horizontal">
-                            <img  src="{{asset('frontend/images/logo/parther.png')}}" alt="Honeywell Parther" id="parther">
+                            <img  src="{{asset('frontend/images/logo/silver-parther.webp')}}" alt="Honeywell Parther" id="parther">
                         </a>
                         <ul class="wsus__footer_social">
                             <li><a class="whatsapp" href="https://wa.link/f28njw" target="_blank"><i class="fab fa-whatsapp" ></i></a></li>

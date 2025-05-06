@@ -92,7 +92,10 @@
                             
                             <li class="wsus__relative_li"><a href="#">Servicios <i class="fas fa-caret-down"></i></a>
                                 <ul class="wsus__menu_droapdown">
-                                    <li><a href="{{ route('sistemas') }}">Sistemas De Control</a></li>
+                                    <li><a href="{{ route('servicio-controladores-temperatura') }}">Instalacion de Controladores</a></li>
+                                    
+                                    <li><a href="{{ route('servicio-instalacion-videoregistradores') }}">Instalacion de Videoregistradores</a></li>
+                                    <li><a href="{{ route('servicio-instalacion-medidoresdeflujo') }}">Instalacion de Medidores de Flujo</a></li>
                                     
                                     <li><a href="{{ route('calibracion-puesta') }}">Calibración y Puesta en Marcha</a></li>
                                 </ul>

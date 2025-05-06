@@ -5548,6 +5548,13 @@ a:not([href]):not([class]):hover {
   justify-content: center;
   align-items: center;
 }
+
+.services_content_start .col-lg-6, .services_content_start .col-xl-6, .services_content_start .col-md-6{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+  }
 .services_content_start_text{
   padding-right: 120px;
 }
@@ -5637,7 +5644,7 @@ a:not([href]):not([class]):hover {
 }
 .wsus_content_info_img {
   width: 100%;
-  height: 360px;
+  height: 100%;
   overflow: hidden; /* Oculta cualquier parte de la imagen que se salga */
 }
 .wsus_content_info_img img {
@@ -5719,7 +5726,13 @@ a:not([href]):not([class]):hover {
   display: flex;
   justify-content: center;
   align-items: center;
+  margin-right: 40px;
 }
+.services_content_ours_process_img-video img{
+  width: 80%;
+}
+
+
 .services_content_benefits {
   background: var(--Primary-Blue-Dark);
 }
