@@ -39,6 +39,9 @@ Route::get('sistemas', [HomeController::class, 'servicesSistemas'])->name('siste
 Route::get('servicio-controladores-temperatura', [HomeController::class, 'servicesControllerTemperature'])->name('servicio-controladores-temperatura');
 Route::get('servicio-instalacion-videoregistradores', [HomeController::class, 'servicesVideorecorders'])->name('servicio-instalacion-videoregistradores');
 Route::get('servicio-instalacion-medidoresdeflujo', [HomeController::class, 'servicesMedidor'])->name('servicio-instalacion-medidoresdeflujo');
+Route::get('servicio-instalacion-plc', [HomeController::class, 'servicesPlc'])->name('servicio-instalacion-plc');
+Route::get('servicio-reparacion-videoregistradores', [HomeController::class, 'servicesReparacionvideorecorders'])->name('servicio-reparacion-videoregistradores');
+Route::get('servicio-calibracion-ema', [HomeController::class, 'servicesCalibrationEMA'])->name('servicio-calibracion-ema');
 Route::get('medicion', [HomeController::class, 'servicesMedicion'])->name('medicion');
 Route::get('/googgle-feed_macdelnorte$product-merchant-center',[ProductController::class, 'generateFeedProduct']);
 

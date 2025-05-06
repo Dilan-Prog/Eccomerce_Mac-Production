@@ -10,16 +10,18 @@
                 <div class="row">
                     <div class="col-12 col-md-6 col-lg-6 col-xl-6">
                         <div class="services_content_start_img">
-                            <img src="{{ asset('uploads/servicios/instalacion_medidorFlujo-1.png') }}" alt="image">
+                            <img src="{{ asset('uploads/servicios/instalacion_reparacion-videoregistradores-1.png') }}" alt="image">
                         </div>
                     </div>
                     <div class="col-12 col-md-6 col-lg-6 col-xl-6">
                         <div class="services_content_start_text">
                             <article>
                                 <span class="services_content_subtitle">Servicio Profesional</span>
-                                <h1 class="services_content_title_start">Instalacion, Configuración y Puesta en Marcha de Medidores de Flujo</h1>
+                                <h1 class="services_content_title_start">Reparacion de Video Registradores</h1>
                                 <p class="services_content_description">
-                                    Especialistas en sistemas de medición de caudal. Ofrecemos instalación profesional de medidores de flujo industriales para garantizar precisión, eficiencia y trazabilidad en tus procesos productivos.
+                                    Especialistas en la reparación y mantenimiento de videoregistradores industriales.
+                                    Diagnóstico, corrección de fallas, calibración y pruebas funcionales para garantizar el
+                                    restablecimiento completo del equipo y su reintegración a la operación industrial.
                                 </p>
                                 <button class="services_start_button"><i class="fa fa-phone-alt"></i> Atencion
                                     Inmediata</button>
@@ -36,28 +38,37 @@
                     <div class="row">
                         <div class="col-12 col-md-4 col-lg-4 col-xl-4">
                             <div class="wsus_content_info">
-                                <span class="wsus_content_info_subtitle">Control de flujo preciso y confiable</span>
-                                <h4 class="wsus_content_info_title">Soluciones para medidores de flujo industriales</h4>
+                                <span class="wsus_content_info_subtitle">Mantenimiento industrial especializado</span>
+                                <h4 class="wsus_content_info_title">Reparación profesional de videoregistradores</h4>
                                 <p class="wsus_content_info_description">
-                                    En entornos industriales, una instalación incorrecta de medidores de flujo puede afectar directamente la eficiencia, calidad y seguridad del proceso. Evaluamos cuidadosamente cada variable operativa (tipo de fluido, presión, temperatura, caudal esperado, compatibilidad con PLCs y SCADA) para asegurar un sistema de medición confiable, preciso y alineado a los estándares normativos.
+                                    Reparamos y restauramos videoregistradores industriales que presentan fallos de lectura,
+                                    errores en pantalla, daños en tarjetas electrónicas, fuentes de alimentación,
+                                    almacenamiento o entradas analógicas. Trabajamos con equipos de marcas reconocidas como
+                                    Honeywell, Yokogawa, Eurotherm, entre otras.
                                 </p>
-                                <button class="services_content_info_button"><i class="fa fa-phone-alt"></i> Contactanos</button>
+                                <button class="services_content_info_button"><i class="fa fa-phone-alt"></i>
+                                    Contáctanos</button>
                             </div>
                         </div>
                         <div class="col-12 col-md-4 col-lg-4 col-xl-4">
                             <div class="wsus_content_info">
-                                <span class="wsus_content_info_subtitle">Instalación y puesta en marcha profesional</span>
-                                <h4 class="wsus_content_info_title">Adaptación a tu infraestructura de proceso</h4>
+                                <span class="wsus_content_info_subtitle">Diagnóstico y validación</span>
+                                <h4 class="wsus_content_info_title">Servicio técnico con garantía</h4>
                                 <p class="wsus_content_info_description">
-                                    Instalamos medidores de flujo industriales de última generación, desde tecnologías electromagnéticas y ultrasónicas hasta vortex y Coriolis, con opciones de salida analógica, digital o por protocolo industrial. Nos aseguramos de que el sistema quede calibrado, probado y listo para su operación, integrándolo sin conflictos a tu sistema SCADA, HMI o control local.
+                                    Ejecutamos un diagnóstico técnico profundo y pruebas de laboratorio para validar la
+                                    reparación antes de su entrega. Garantizamos el correcto registro de datos, integridad
+                                    de entradas/salidas y comunicación con el sistema SCADA o DCS. Nuestro trabajo incluye
+                                    calibración y respaldo de configuración.
                                 </p>
-                                <button class="services_content_info_button"><i class="fa fa-phone-alt"></i> Contactanos</button>
+                                <button class="services_content_info_button"><i class="fa fa-phone-alt"></i>
+                                    Contáctanos</button>
                             </div>
+
 
                         </div>
                         <div class="col-12 col-md-4 col-lg-4 col-xl-4 content_img_service_personalizate">
                             <div class="wsus_content_info_img">
-                                <img src="{{ asset('uploads/servicios/instalacion_medidorFlujo-2.png') }}" alt="image">
+                                <img src="{{ asset('uploads/servicios/instalacion_reparacion-videoregistradores-2.png') }}" alt="image">
                             </div>
                         </div>
                     </div>
@@ -70,84 +81,84 @@
                     <div class="col-12 col-md-6 col-lg-6 col-xl-6">
                         <div class="services_content_ours_process_img-video">
                             {{-- <lite-youtube videoid="3w3xq8VJQSc"></lite-youtube> --}}
-                            <img src="{{ asset('uploads/servicios/instalacion_medidorFlujo-3.png') }}" alt="image">
+                            <img src="{{ asset('uploads/servicios/instalacion_reparacion-videoregistradores-3.png') }}" alt="image">
                         </div>
                     </div>
                     <div class="col-12 col-md-6 col-lg-6 col-xl-6">
                         <div class="services_content_ours_process_text">
                             <article>
                                 <span class="services_content_ours_process_text_subtitle_one">Nuestro Proceso para</span>
-                                <h2 class="services_content_ours_process_text_title">Instalación de Medidores de Flujo Industriales</h2>
+                                <h2 class="services_content_ours_process_text_title">Reparación de Videoregistradores Industriales</h2>
         
                                 <div class="accordion_item">
                                     <div class="accordion_header" onclick="toggleAccordion(this)">
                                         <h3 class="services_content_ours_process_text_subtitle">
-                                            <span class="number_our_process">01</span> Evaluación técnica del sistema
+                                            <span class="number_our_process">01</span> Evaluación técnica inicial
                                             <span class="accordion_icon_ours_service"><i class="fas fa-caret-down"></i></span>
                                         </h3>
                                     </div>
                                     <p class="our_process_text_description" style="display: none;">
-                                        Analizamos el tipo de fluido, presión, temperatura, caudal promedio y condiciones de instalación para seleccionar la tecnología de medición más adecuada (ultrasónica, electromagnética, Coriolis, etc.).
+                                        Se realiza un diagnóstico completo del videoregistrador: revisión de circuitos, entradas analógicas, salidas, fuente de alimentación y módulos de almacenamiento. Identificamos errores de lectura, fallas de comunicación, o daños eléctricos.
                                     </p>
                                 </div>
         
                                 <div class="accordion_item">
                                     <div class="accordion_header" onclick="toggleAccordion(this)">
                                         <h3 class="services_content_ours_process_text_subtitle">
-                                            <span class="number_our_process">02</span> Selección del medidor de flujo
+                                            <span class="number_our_process">02</span> Informe técnico y presupuesto
                                             <span class="accordion_icon_ours_service"><i class="fas fa-caret-down"></i></span>
                                         </h3>
                                     </div>
                                     <p class="our_process_text_description" style="display: none;">
-                                        Recomendamos el equipo óptimo según la aplicación, compatibilidad con señales industriales (4-20 mA, Modbus, HART) y precisión requerida para el proceso.
+                                        Entregamos un informe detallado con las fallas detectadas, piezas a reemplazar o reparar, tiempos estimados y costos. Solo procedemos con autorización del cliente.
                                     </p>
                                 </div>
         
                                 <div class="accordion_item">
                                     <div class="accordion_header" onclick="toggleAccordion(this)">
                                         <h3 class="services_content_ours_process_text_subtitle">
-                                            <span class="number_our_process">03</span> Instalación eléctrica y mecánica
+                                            <span class="number_our_process">03</span> Reparación de componentes
                                             <span class="accordion_icon_ours_service"><i class="fas fa-caret-down"></i></span>
                                         </h3>
                                     </div>
                                     <p class="our_process_text_description" style="display: none;">
-                                        Instalamos el medidor en línea o por bypass según lo requerido, garantizando correcta orientación, sellado, aislamiento y conexión eléctrica para la alimentación y comunicación.
+                                        Reemplazamos o reparamos fuentes, tarjetas electrónicas, convertidores A/D, módulos de entradas/salidas, pantallas y otros componentes críticos, utilizando refacciones originales o equivalentes certificados.
                                     </p>
                                 </div>
         
                                 <div class="accordion_item">
                                     <div class="accordion_header" onclick="toggleAccordion(this)">
                                         <h3 class="services_content_ours_process_text_subtitle">
-                                            <span class="number_our_process">04</span> Configuración y calibración inicial
+                                            <span class="number_our_process">04</span> Calibración y configuración
                                             <span class="accordion_icon_ours_service"><i class="fas fa-caret-down"></i></span>
                                         </h3>
                                     </div>
                                     <p class="our_process_text_description" style="display: none;">
-                                        Parametrizamos el medidor según la aplicación (tipo de fluido, unidad de medida, rangos, factor K, alarmas) y realizamos calibraciones de fábrica o en campo si es necesario.
+                                        Configuramos nuevamente los rangos de medición, tipos de señales (RTD, T/C, mA), y calibramos el equipo según sus especificaciones originales o requerimientos del cliente.
                                     </p>
                                 </div>
         
                                 <div class="accordion_item">
                                     <div class="accordion_header" onclick="toggleAccordion(this)">
                                         <h3 class="services_content_ours_process_text_subtitle">
-                                            <span class="number_our_process">05</span> Integración con sistemas de control
+                                            <span class="number_our_process">05</span> Pruebas funcionales y validación
                                             <span class="accordion_icon_ours_service"><i class="fas fa-caret-down"></i></span>
                                         </h3>
                                     </div>
                                     <p class="our_process_text_description" style="display: none;">
-                                        Integramos el medidor con PLCs, SCADA o sistemas de adquisición de datos existentes, garantizando que las lecturas de flujo estén disponibles en tiempo real.
+                                        Realizamos pruebas de entradas analógicas, alarmas, almacenamiento de datos y comunicación (Ethernet, USB, RS-485, etc.), verificando el correcto funcionamiento del sistema antes de su entrega.
                                     </p>
                                 </div>
         
                                 <div class="accordion_item">
                                     <div class="accordion_header" onclick="toggleAccordion(this)">
                                         <h3 class="services_content_ours_process_text_subtitle">
-                                            <span class="number_our_process">06</span> Pruebas funcionales y puesta en marcha
+                                            <span class="number_our_process">06</span> Entrega y garantía
                                             <span class="accordion_icon_ours_service"><i class="fas fa-caret-down"></i></span>
                                         </h3>
                                     </div>
                                     <p class="our_process_text_description" style="display: none;">
-                                        Verificamos la precisión de las mediciones, respuesta a cambios de flujo, funcionamiento de salidas, alarmas, y dejamos el sistema completamente operativo y documentado.
+                                        Entregamos el videoregistrador reparado, con informe de servicio, parámetros restaurados y garantía por el trabajo realizado. Opcionalmente ofrecemos mantenimiento preventivo o capacitación técnica.
                                     </p>
                                 </div>
         
@@ -160,6 +171,8 @@
             </div>
         </section>
         
+
+
         <section class="services_content_benefits">
             <div class="container">
                 <div class="row">
@@ -168,14 +181,22 @@
                             <h3 class="benefits_text_title">Beneficios de Nuestros Servicios</h3>
                             <p class="benefits_text_title_description">Beneficios de Nuestros Servicios</p>
                             <div class="benefist_skills">
-                                <p class="benefits_text_description"><i class="fas fa-check-circle"></i> Instalación garantizada bajo estándares NOM, ISO e ISA.</p>
-                                <p class="benefits_text_description"><i class="fas fa-check-circle"></i> Reducción de errores de medición y pérdidas en procesos críticos.</p>
-                                <p class="benefits_text_description"><i class="fas fa-check-circle"></i> Aumento de la eficiencia operativa y trazabilidad de caudales.</p>
-                                <p class="benefits_text_description"><i class="fas fa-check-circle"></i> Asesoría técnica desde la selección hasta la puesta en marcha del medidor.</p>
-                                <p class="benefits_text_description"><i class="fas fa-check-circle"></i> Adaptación a líneas de proceso existentes y condiciones industriales exigentes.</p>
-                                <p class="benefits_text_description"><i class="fas fa-check-circle"></i> Soporte técnico post-instalación y ajustes finos en sitio.</p>
-                                <p class="benefits_text_description"><i class="fas fa-check-circle"></i> Instalaciones rápidas sin afectar la producción ni el flujo del sistema.</p>
-                                <p class="benefits_text_description"><i class="fas fa-check-circle"></i> Compatibilidad con sistemas de automatización, PLCs y SCADA.</p>
+                                <p class="benefits_text_description"><i class="fas fa-check-circle"></i> Reparación
+                                    completa de módulos internos: fuentes, tarjetas, entradas analógicas y pantallas.</p>
+                                <p class="benefits_text_description"><i class="fas fa-check-circle"></i> Ahorro
+                                    significativo frente al reemplazo de equipos nuevos.</p>
+                                <p class="benefits_text_description"><i class="fas fa-check-circle"></i> Restauración de
+                                    configuraciones originales y calibración de señales (mA, V, RTD, T/C).</p>
+                                <p class="benefits_text_description"><i class="fas fa-check-circle"></i> Garantía por
+                                    escrito y soporte técnico post-servicio.</p>
+                                <p class="benefits_text_description"><i class="fas fa-check-circle"></i> Compatibilidad
+                                    con sistemas SCADA, Historian y redes industriales existentes.</p>
+                                <p class="benefits_text_description"><i class="fas fa-check-circle"></i> Reducción de
+                                    tiempos de paro y continuidad operativa.</p>
+                                <p class="benefits_text_description"><i class="fas fa-check-circle"></i> Experiencia con
+                                    modelos Honeywell eZtrend, Multitrend SX, Eurotherm, Yokogawa, entre otros.</p>
+                                <p class="benefits_text_description"><i class="fas fa-check-circle"></i> Reporte técnico
+                                    detallado y recomendaciones preventivas.</p>
                             </div>
                         </div>
                     </div>

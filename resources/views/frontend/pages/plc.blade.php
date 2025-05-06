@@ -10,16 +10,19 @@
                 <div class="row">
                     <div class="col-12 col-md-6 col-lg-6 col-xl-6">
                         <div class="services_content_start_img">
-                            <img src="{{ asset('uploads/servicios/instalacion_medidorFlujo-1.png') }}" alt="image">
+                            <img src="{{ asset('uploads/servicios/instalacion_plc-1.png') }}" alt="image">
                         </div>
                     </div>
                     <div class="col-12 col-md-6 col-lg-6 col-xl-6">
                         <div class="services_content_start_text">
                             <article>
                                 <span class="services_content_subtitle">Servicio Profesional</span>
-                                <h1 class="services_content_title_start">Instalacion, Configuración y Puesta en Marcha de Medidores de Flujo</h1>
+                                <h1 class="services_content_title_start">Instalacion, Configuración y proyecto llave en mano
+                                    de PLC</h1>
                                 <p class="services_content_description">
-                                    Especialistas en sistemas de medición de caudal. Ofrecemos instalación profesional de medidores de flujo industriales para garantizar precisión, eficiencia y trazabilidad en tus procesos productivos.
+                                    Especialistas en sistemas de automatización con PLC. Ofrecemos servicio integral —desde
+                                    el diseño del proyecto hasta la puesta en marcha— para garantizar un control fiable y
+                                    eficiente de tus procesos industriales.
                                 </p>
                                 <button class="services_start_button"><i class="fa fa-phone-alt"></i> Atencion
                                     Inmediata</button>
@@ -36,28 +39,33 @@
                     <div class="row">
                         <div class="col-12 col-md-4 col-lg-4 col-xl-4">
                             <div class="wsus_content_info">
-                                <span class="wsus_content_info_subtitle">Control de flujo preciso y confiable</span>
-                                <h4 class="wsus_content_info_title">Soluciones para medidores de flujo industriales</h4>
+                                <span class="wsus_content_info_subtitle">Control de procesos automatizado</span>
+                                <h4 class="wsus_content_info_title">Soluciones de PLC llave en mano</h4>
                                 <p class="wsus_content_info_description">
-                                    En entornos industriales, una instalación incorrecta de medidores de flujo puede afectar directamente la eficiencia, calidad y seguridad del proceso. Evaluamos cuidadosamente cada variable operativa (tipo de fluido, presión, temperatura, caudal esperado, compatibilidad con PLCs y SCADA) para asegurar un sistema de medición confiable, preciso y alineado a los estándares normativos.
+                                    En entornos industriales, un PLC mal dimensionado o configurado puede causar paros,
+                                    defectos o ineficiencias. Diseñamos y entregamos proyectos llave en mano de PLC,
+                                    evaluando protocolos, E/S digitales y analógicas, comunicaciones (Modbus, Profinet,
+                                    EtherNet/IP) y redundancia para asegurar un sistema robusto y escalable.
                                 </p>
-                                <button class="services_content_info_button"><i class="fa fa-phone-alt"></i> Contactanos</button>
+                                <button class="services_content_info_button"><i class="fa fa-phone-alt"></i>
+                                    Contáctanos</button>
                             </div>
                         </div>
                         <div class="col-12 col-md-4 col-lg-4 col-xl-4">
                             <div class="wsus_content_info">
-                                <span class="wsus_content_info_subtitle">Instalación y puesta en marcha profesional</span>
-                                <h4 class="wsus_content_info_title">Adaptación a tu infraestructura de proceso</h4>
+                                <span class="wsus_content_info_subtitle">Implementación y puesta en marcha</span>
+                                <h4 class="wsus_content_info_title">Adaptación a tu infraestructura de control</h4>
                                 <p class="wsus_content_info_description">
-                                    Instalamos medidores de flujo industriales de última generación, desde tecnologías electromagnéticas y ultrasónicas hasta vortex y Coriolis, con opciones de salida analógica, digital o por protocolo industrial. Nos aseguramos de que el sistema quede calibrado, probado y listo para su operación, integrándolo sin conflictos a tu sistema SCADA, HMI o control local.
+                                    Instalamos y configuramos PLC de las principales marcas (Honeywell,Siemens, Allen‑Bradley, Schneider, Mitsubishi), creando lógicas de control, pantallas HMI y comunicaciones con SCADA. Nos aseguramos de que tu sistema funcione sin conflictos y cumpla con normas IEC, UL y NOM.
                                 </p>
-                                <button class="services_content_info_button"><i class="fa fa-phone-alt"></i> Contactanos</button>
+                                <button class="services_content_info_button"><i class="fa fa-phone-alt"></i> Contáctanos</button>
                             </div>
+                            
 
                         </div>
                         <div class="col-12 col-md-4 col-lg-4 col-xl-4 content_img_service_personalizate">
                             <div class="wsus_content_info_img">
-                                <img src="{{ asset('uploads/servicios/instalacion_medidorFlujo-2.png') }}" alt="image">
+                                <img src="{{ asset('uploads/servicios/instalacion_plc-2.png') }}" alt="image">
                             </div>
                         </div>
                     </div>
@@ -67,87 +75,88 @@
         <section class="services_content_ours_process">
             <div class="container">
                 <div class="row">
+                    <!-- Imagen o video ilustrativo -->
                     <div class="col-12 col-md-6 col-lg-6 col-xl-6">
                         <div class="services_content_ours_process_img-video">
-                            {{-- <lite-youtube videoid="3w3xq8VJQSc"></lite-youtube> --}}
-                            <img src="{{ asset('uploads/servicios/instalacion_medidorFlujo-3.png') }}" alt="image">
+                            <img src="{{ asset('uploads/servicios/instalacion_plc-3.png') }}" alt="Instalación de PLC">
                         </div>
                     </div>
+                    <!-- Texto del proceso -->
                     <div class="col-12 col-md-6 col-lg-6 col-xl-6">
                         <div class="services_content_ours_process_text">
                             <article>
                                 <span class="services_content_ours_process_text_subtitle_one">Nuestro Proceso para</span>
-                                <h2 class="services_content_ours_process_text_title">Instalación de Medidores de Flujo Industriales</h2>
+                                <h2 class="services_content_ours_process_text_title">Proyecto Llave en Mano de PLC</h2>
         
                                 <div class="accordion_item">
                                     <div class="accordion_header" onclick="toggleAccordion(this)">
                                         <h3 class="services_content_ours_process_text_subtitle">
-                                            <span class="number_our_process">01</span> Evaluación técnica del sistema
+                                            <span class="number_our_process">01</span> Ingeniería y diseño del sistema
                                             <span class="accordion_icon_ours_service"><i class="fas fa-caret-down"></i></span>
                                         </h3>
                                     </div>
                                     <p class="our_process_text_description" style="display: none;">
-                                        Analizamos el tipo de fluido, presión, temperatura, caudal promedio y condiciones de instalación para seleccionar la tecnología de medición más adecuada (ultrasónica, electromagnética, Coriolis, etc.).
+                                        Definimos especificaciones del PLC, E/S, HMI y comunicaciones según requisitos de proceso, normativas y entorno operativo.
                                     </p>
                                 </div>
         
                                 <div class="accordion_item">
                                     <div class="accordion_header" onclick="toggleAccordion(this)">
                                         <h3 class="services_content_ours_process_text_subtitle">
-                                            <span class="number_our_process">02</span> Selección del medidor de flujo
+                                            <span class="number_our_process">02</span> Suministro de equipos y materiales
                                             <span class="accordion_icon_ours_service"><i class="fas fa-caret-down"></i></span>
                                         </h3>
                                     </div>
                                     <p class="our_process_text_description" style="display: none;">
-                                        Recomendamos el equipo óptimo según la aplicación, compatibilidad con señales industriales (4-20 mA, Modbus, HART) y precisión requerida para el proceso.
+                                        Proveemos PLC, módulos de E/S, fuentes, cables, gabinetes y HMI de acuerdo al diseño aprobado.
                                     </p>
                                 </div>
         
                                 <div class="accordion_item">
                                     <div class="accordion_header" onclick="toggleAccordion(this)">
                                         <h3 class="services_content_ours_process_text_subtitle">
-                                            <span class="number_our_process">03</span> Instalación eléctrica y mecánica
+                                            <span class="number_our_process">03</span> Instalación eléctrica y montaje
                                             <span class="accordion_icon_ours_service"><i class="fas fa-caret-down"></i></span>
                                         </h3>
                                     </div>
                                     <p class="our_process_text_description" style="display: none;">
-                                        Instalamos el medidor en línea o por bypass según lo requerido, garantizando correcta orientación, sellado, aislamiento y conexión eléctrica para la alimentación y comunicación.
+                                        Montamos gabinetes, tendido de cables y conexionado de PLC, E/S y HMI, cumpliendo normas de seguridad eléctrica.
                                     </p>
                                 </div>
         
                                 <div class="accordion_item">
                                     <div class="accordion_header" onclick="toggleAccordion(this)">
                                         <h3 class="services_content_ours_process_text_subtitle">
-                                            <span class="number_our_process">04</span> Configuración y calibración inicial
+                                            <span class="number_our_process">04</span> Programación y configuración
                                             <span class="accordion_icon_ours_service"><i class="fas fa-caret-down"></i></span>
                                         </h3>
                                     </div>
                                     <p class="our_process_text_description" style="display: none;">
-                                        Parametrizamos el medidor según la aplicación (tipo de fluido, unidad de medida, rangos, factor K, alarmas) y realizamos calibraciones de fábrica o en campo si es necesario.
+                                        Desarrollamos la lógica ladder o estructurada, configuramos HMI y establecemos comunicaciones con SCADA o ERP.
                                     </p>
                                 </div>
         
                                 <div class="accordion_item">
                                     <div class="accordion_header" onclick="toggleAccordion(this)">
                                         <h3 class="services_content_ours_process_text_subtitle">
-                                            <span class="number_our_process">05</span> Integración con sistemas de control
+                                            <span class="number_our_process">05</span> Integración y pruebas en planta
                                             <span class="accordion_icon_ours_service"><i class="fas fa-caret-down"></i></span>
                                         </h3>
                                     </div>
                                     <p class="our_process_text_description" style="display: none;">
-                                        Integramos el medidor con PLCs, SCADA o sistemas de adquisición de datos existentes, garantizando que las lecturas de flujo estén disponibles en tiempo real.
+                                        Ejecutamos pruebas de I/O, simulaciones de proceso y validación de secuencias antes de la puesta en marcha.
                                     </p>
                                 </div>
         
                                 <div class="accordion_item">
                                     <div class="accordion_header" onclick="toggleAccordion(this)">
                                         <h3 class="services_content_ours_process_text_subtitle">
-                                            <span class="number_our_process">06</span> Pruebas funcionales y puesta en marcha
+                                            <span class="number_our_process">06</span> Puesta en marcha y capacitación
                                             <span class="accordion_icon_ours_service"><i class="fas fa-caret-down"></i></span>
                                         </h3>
                                     </div>
                                     <p class="our_process_text_description" style="display: none;">
-                                        Verificamos la precisión de las mediciones, respuesta a cambios de flujo, funcionamiento de salidas, alarmas, y dejamos el sistema completamente operativo y documentado.
+                                        Activamos el sistema en condiciones reales, entrenamos a tu equipo de operación y entregamos documentación técnica completa.
                                     </p>
                                 </div>
         
@@ -160,6 +169,7 @@
             </div>
         </section>
         
+
         <section class="services_content_benefits">
             <div class="container">
                 <div class="row">
@@ -168,14 +178,14 @@
                             <h3 class="benefits_text_title">Beneficios de Nuestros Servicios</h3>
                             <p class="benefits_text_title_description">Beneficios de Nuestros Servicios</p>
                             <div class="benefist_skills">
-                                <p class="benefits_text_description"><i class="fas fa-check-circle"></i> Instalación garantizada bajo estándares NOM, ISO e ISA.</p>
-                                <p class="benefits_text_description"><i class="fas fa-check-circle"></i> Reducción de errores de medición y pérdidas en procesos críticos.</p>
-                                <p class="benefits_text_description"><i class="fas fa-check-circle"></i> Aumento de la eficiencia operativa y trazabilidad de caudales.</p>
-                                <p class="benefits_text_description"><i class="fas fa-check-circle"></i> Asesoría técnica desde la selección hasta la puesta en marcha del medidor.</p>
-                                <p class="benefits_text_description"><i class="fas fa-check-circle"></i> Adaptación a líneas de proceso existentes y condiciones industriales exigentes.</p>
-                                <p class="benefits_text_description"><i class="fas fa-check-circle"></i> Soporte técnico post-instalación y ajustes finos en sitio.</p>
-                                <p class="benefits_text_description"><i class="fas fa-check-circle"></i> Instalaciones rápidas sin afectar la producción ni el flujo del sistema.</p>
-                                <p class="benefits_text_description"><i class="fas fa-check-circle"></i> Compatibilidad con sistemas de automatización, PLCs y SCADA.</p>
+                                <p class="benefits_text_description"><i class="fas fa-check-circle"></i> Proyecto llave en mano: diseño, suministro, instalación y puesta en marcha.</p>
+                                <p class="benefits_text_description"><i class="fas fa-check-circle"></i> Cumplimiento de estándares internacionales IEC, UL, NOM e ISA.</p>
+                                <p class="benefits_text_description"><i class="fas fa-check-circle"></i> Reducción de tiempos de paro y optimización de ciclos de producción.</p>
+                                <p class="benefits_text_description"><i class="fas fa-check-circle"></i> Desarrollo de lógicas de control a medida y pantallas HMI intuitivas.</p>
+                                <p class="benefits_text_description"><i class="fas fa-check-circle"></i> Integración con sistemas SCADA, ERP y redes industriales.</p>
+                                <p class="benefits_text_description"><i class="fas fa-check-circle"></i> Soporte técnico y capacitación para tu equipo de mantenimiento.</p>
+                                <p class="benefits_text_description"><i class="fas fa-check-circle"></i> Documentación completa: manuales eléctricos, diagramas ladder y esquemas de cableado.</p>
+                                <p class="benefits_text_description"><i class="fas fa-check-circle"></i> Escalabilidad para futuras ampliaciones o migraciones de sistema.</p>
                             </div>
                         </div>
                     </div>

@@ -10,16 +10,20 @@
                 <div class="row">
                     <div class="col-12 col-md-6 col-lg-6 col-xl-6">
                         <div class="services_content_start_img">
-                            <img src="{{ asset('uploads/servicios/instalacion_medidorFlujo-1.png') }}" alt="image">
+                            <img src="{{ asset('uploads/servicios/calibracion-ema-1.png') }}"
+                                alt="image">
                         </div>
                     </div>
                     <div class="col-12 col-md-6 col-lg-6 col-xl-6">
                         <div class="services_content_start_text">
                             <article>
                                 <span class="services_content_subtitle">Servicio Profesional</span>
-                                <h1 class="services_content_title_start">Instalacion, Configuración y Puesta en Marcha de Medidores de Flujo</h1>
+                                <h1 class="services_content_title_start">Calibraciones EMA de Videoregistradores y Medidores
+                                    de Flujo</h1>
                                 <p class="services_content_description">
-                                    Especialistas en sistemas de medición de caudal. Ofrecemos instalación profesional de medidores de flujo industriales para garantizar precisión, eficiencia y trazabilidad en tus procesos productivos.
+                                    Contamos con acreditación EMA para calibrar y certificar videoregistradores de variables
+                                    analógicas y medidores de flujo industriales. Asegura la trazabilidad, confiabilidad y
+                                    cumplimiento normativo de tus instrumentos de medición.
                                 </p>
                                 <button class="services_start_button"><i class="fa fa-phone-alt"></i> Atencion
                                     Inmediata</button>
@@ -36,28 +40,38 @@
                     <div class="row">
                         <div class="col-12 col-md-4 col-lg-4 col-xl-4">
                             <div class="wsus_content_info">
-                                <span class="wsus_content_info_subtitle">Control de flujo preciso y confiable</span>
-                                <h4 class="wsus_content_info_title">Soluciones para medidores de flujo industriales</h4>
+                                <span class="wsus_content_info_subtitle">Calibración con trazabilidad</span>
+                                <h4 class="wsus_content_info_title">Calibraciones EMA de videoregistradores</h4>
                                 <p class="wsus_content_info_description">
-                                    En entornos industriales, una instalación incorrecta de medidores de flujo puede afectar directamente la eficiencia, calidad y seguridad del proceso. Evaluamos cuidadosamente cada variable operativa (tipo de fluido, presión, temperatura, caudal esperado, compatibilidad con PLCs y SCADA) para asegurar un sistema de medición confiable, preciso y alineado a los estándares normativos.
+                                    Realizamos calibraciones acreditadas ante la EMA (Entidad Mexicana de Acreditación) para
+                                    videoregistradores de variables analógicas como temperatura, presión, flujo, nivel o
+                                    señales eléctricas. Emitimos certificados válidos ante auditorías ISO 9001, IATF, NOM y
+                                    clientes con requerimientos internacionales.
                                 </p>
-                                <button class="services_content_info_button"><i class="fa fa-phone-alt"></i> Contactanos</button>
+                                <button class="services_content_info_button"><i class="fa fa-phone-alt"></i>
+                                    Contáctanos</button>
                             </div>
                         </div>
                         <div class="col-12 col-md-4 col-lg-4 col-xl-4">
                             <div class="wsus_content_info">
-                                <span class="wsus_content_info_subtitle">Instalación y puesta en marcha profesional</span>
-                                <h4 class="wsus_content_info_title">Adaptación a tu infraestructura de proceso</h4>
+                                <span class="wsus_content_info_subtitle">Trazabilidad nacional e internacional</span>
+                                <h4 class="wsus_content_info_title">Medidores de flujo confiables y certificados</h4>
                                 <p class="wsus_content_info_description">
-                                    Instalamos medidores de flujo industriales de última generación, desde tecnologías electromagnéticas y ultrasónicas hasta vortex y Coriolis, con opciones de salida analógica, digital o por protocolo industrial. Nos aseguramos de que el sistema quede calibrado, probado y listo para su operación, integrándolo sin conflictos a tu sistema SCADA, HMI o control local.
+                                    Calibramos medidores de flujo tipo electromagnético, ultrasónico, turbina o Coriolis
+                                    bajo normas nacionales e internacionales, con trazabilidad al CENAM. Garantizamos
+                                    exactitud en tus mediciones para procesos industriales, comerciales o de calidad,
+                                    asegurando cumplimiento ante PROFECO, ISO e industria farmacéutica o alimentaria.
                                 </p>
-                                <button class="services_content_info_button"><i class="fa fa-phone-alt"></i> Contactanos</button>
+                                <button class="services_content_info_button"><i class="fa fa-phone-alt"></i>
+                                    Contáctanos</button>
                             </div>
+
 
                         </div>
                         <div class="col-12 col-md-4 col-lg-4 col-xl-4 content_img_service_personalizate">
                             <div class="wsus_content_info_img">
-                                <img src="{{ asset('uploads/servicios/instalacion_medidorFlujo-2.png') }}" alt="image">
+                                <img src="{{ asset('uploads/servicios/calibracion-ema-2.png') }}"
+                                    alt="image">
                             </div>
                         </div>
                     </div>
@@ -69,97 +83,117 @@
                 <div class="row">
                     <div class="col-12 col-md-6 col-lg-6 col-xl-6">
                         <div class="services_content_ours_process_img-video">
-                            {{-- <lite-youtube videoid="3w3xq8VJQSc"></lite-youtube> --}}
-                            <img src="{{ asset('uploads/servicios/instalacion_medidorFlujo-3.png') }}" alt="image">
+                            <img src="{{ asset('uploads/servicios/calibracion-ema-3.png') }}"
+                                alt="Calibración EMA">
                         </div>
                     </div>
                     <div class="col-12 col-md-6 col-lg-6 col-xl-6">
                         <div class="services_content_ours_process_text">
                             <article>
                                 <span class="services_content_ours_process_text_subtitle_one">Nuestro Proceso para</span>
-                                <h2 class="services_content_ours_process_text_title">Instalación de Medidores de Flujo Industriales</h2>
-        
+                                <h2 class="services_content_ours_process_text_title">Calibraciones EMA de Videoregistradores
+                                    y Medidores de Flujo</h2>
+
                                 <div class="accordion_item">
                                     <div class="accordion_header" onclick="toggleAccordion(this)">
                                         <h3 class="services_content_ours_process_text_subtitle">
-                                            <span class="number_our_process">01</span> Evaluación técnica del sistema
-                                            <span class="accordion_icon_ours_service"><i class="fas fa-caret-down"></i></span>
+                                            <span class="number_our_process">01</span> Recepción y verificación de equipo
+                                            <span class="accordion_icon_ours_service"><i
+                                                    class="fas fa-caret-down"></i></span>
                                         </h3>
                                     </div>
                                     <p class="our_process_text_description" style="display: none;">
-                                        Analizamos el tipo de fluido, presión, temperatura, caudal promedio y condiciones de instalación para seleccionar la tecnología de medición más adecuada (ultrasónica, electromagnética, Coriolis, etc.).
+                                        Registramos y verificamos trazabilidad de cada instrumento (videoregistrador o
+                                        medidor de flujo), su estado, rango de operación y última calibración EMA.
                                     </p>
                                 </div>
-        
+
                                 <div class="accordion_item">
                                     <div class="accordion_header" onclick="toggleAccordion(this)">
                                         <h3 class="services_content_ours_process_text_subtitle">
-                                            <span class="number_our_process">02</span> Selección del medidor de flujo
-                                            <span class="accordion_icon_ours_service"><i class="fas fa-caret-down"></i></span>
+                                            <span class="number_our_process">02</span> Ajuste y acondicionamiento
+                                            <span class="accordion_icon_ours_service"><i
+                                                    class="fas fa-caret-down"></i></span>
                                         </h3>
                                     </div>
                                     <p class="our_process_text_description" style="display: none;">
-                                        Recomendamos el equipo óptimo según la aplicación, compatibilidad con señales industriales (4-20 mA, Modbus, HART) y precisión requerida para el proceso.
+                                        Preparamos el equipo: limpieza, revisión de conexiones, acondicionamiento de
+                                        sensores y verificación de fuente de alimentación, para asegurar condiciones óptimas
+                                        de calibración.
                                     </p>
                                 </div>
-        
+
                                 <div class="accordion_item">
                                     <div class="accordion_header" onclick="toggleAccordion(this)">
                                         <h3 class="services_content_ours_process_text_subtitle">
-                                            <span class="number_our_process">03</span> Instalación eléctrica y mecánica
-                                            <span class="accordion_icon_ours_service"><i class="fas fa-caret-down"></i></span>
+                                            <span class="number_our_process">03</span> Calibración con patrones certificados
+                                            <span class="accordion_icon_ours_service"><i
+                                                    class="fas fa-caret-down"></i></span>
                                         </h3>
                                     </div>
                                     <p class="our_process_text_description" style="display: none;">
-                                        Instalamos el medidor en línea o por bypass según lo requerido, garantizando correcta orientación, sellado, aislamiento y conexión eléctrica para la alimentación y comunicación.
+                                        Realizamos la calibración con patrones rastreables a CENAM/EMA: señales eléctricas
+                                        (4–20 mA, mV, V), caudales de prueba y variables analógicas (T/C, RTD), siguiendo
+                                        procedimientos EMA.
                                     </p>
                                 </div>
-        
+
                                 <div class="accordion_item">
                                     <div class="accordion_header" onclick="toggleAccordion(this)">
                                         <h3 class="services_content_ours_process_text_subtitle">
-                                            <span class="number_our_process">04</span> Configuración y calibración inicial
-                                            <span class="accordion_icon_ours_service"><i class="fas fa-caret-down"></i></span>
+                                            <span class="number_our_process">04</span> Registro y análisis de datos
+                                            <span class="accordion_icon_ours_service"><i
+                                                    class="fas fa-caret-down"></i></span>
                                         </h3>
                                     </div>
                                     <p class="our_process_text_description" style="display: none;">
-                                        Parametrizamos el medidor según la aplicación (tipo de fluido, unidad de medida, rangos, factor K, alarmas) y realizamos calibraciones de fábrica o en campo si es necesario.
+                                        Capturamos las lecturas previas y posteriores a la calibración, analizamos
+                                        desviaciones e incertidumbre, y generamos reporte técnico conforme a EMA.
                                     </p>
                                 </div>
-        
+
                                 <div class="accordion_item">
                                     <div class="accordion_header" onclick="toggleAccordion(this)">
                                         <h3 class="services_content_ours_process_text_subtitle">
-                                            <span class="number_our_process">05</span> Integración con sistemas de control
-                                            <span class="accordion_icon_ours_service"><i class="fas fa-caret-down"></i></span>
+                                            <span class="number_our_process">05</span> Emisión de certificado EMA
+                                            <span class="accordion_icon_ours_service"><i
+                                                    class="fas fa-caret-down"></i></span>
                                         </h3>
                                     </div>
                                     <p class="our_process_text_description" style="display: none;">
-                                        Integramos el medidor con PLCs, SCADA o sistemas de adquisición de datos existentes, garantizando que las lecturas de flujo estén disponibles en tiempo real.
+                                        Entregamos certificado oficial EMA con trazabilidad completa, valores de corrección,
+                                        curva de calibración y niveles de confianza para auditorías.
                                     </p>
                                 </div>
-        
+
                                 <div class="accordion_item">
                                     <div class="accordion_header" onclick="toggleAccordion(this)">
                                         <h3 class="services_content_ours_process_text_subtitle">
-                                            <span class="number_our_process">06</span> Pruebas funcionales y puesta en marcha
-                                            <span class="accordion_icon_ours_service"><i class="fas fa-caret-down"></i></span>
+                                            <span class="number_our_process">06</span> Devolución y soporte post-calibración
+                                            <span class="accordion_icon_ours_service"><i
+                                                    class="fas fa-caret-down"></i></span>
                                         </h3>
                                     </div>
                                     <p class="our_process_text_description" style="display: none;">
-                                        Verificamos la precisión de las mediciones, respuesta a cambios de flujo, funcionamiento de salidas, alarmas, y dejamos el sistema completamente operativo y documentado.
+                                        Devolvemos el equipo con etiqueta de calibración, informe técnico y ofrecemos
+                                        soporte para interpretación de resultados y programación de la próxima calibración.
                                     </p>
                                 </div>
-        
-                                <button class="services_content_info_button"><i class="fa fa-phone-alt"></i> Quiero Contactarlos</button>
-                                <button class="services_content_info_button"><i class="fa fa-whatsapp" aria-hidden="true"></i> Escríbenos</button>
+
+                                <button class="services_content_info_button"><i class="fa fa-phone-alt"></i> Quiero
+                                    Contactarlos</button>
+                                <button class="services_content_info_button"><i class="fa fa-whatsapp"
+                                        aria-hidden="true"></i> Escríbenos</button>
                             </article>
                         </div>
                     </div>
                 </div>
             </div>
         </section>
-        
+
+
+
+
         <section class="services_content_benefits">
             <div class="container">
                 <div class="row">
@@ -168,14 +202,24 @@
                             <h3 class="benefits_text_title">Beneficios de Nuestros Servicios</h3>
                             <p class="benefits_text_title_description">Beneficios de Nuestros Servicios</p>
                             <div class="benefist_skills">
-                                <p class="benefits_text_description"><i class="fas fa-check-circle"></i> Instalación garantizada bajo estándares NOM, ISO e ISA.</p>
-                                <p class="benefits_text_description"><i class="fas fa-check-circle"></i> Reducción de errores de medición y pérdidas en procesos críticos.</p>
-                                <p class="benefits_text_description"><i class="fas fa-check-circle"></i> Aumento de la eficiencia operativa y trazabilidad de caudales.</p>
-                                <p class="benefits_text_description"><i class="fas fa-check-circle"></i> Asesoría técnica desde la selección hasta la puesta en marcha del medidor.</p>
-                                <p class="benefits_text_description"><i class="fas fa-check-circle"></i> Adaptación a líneas de proceso existentes y condiciones industriales exigentes.</p>
-                                <p class="benefits_text_description"><i class="fas fa-check-circle"></i> Soporte técnico post-instalación y ajustes finos en sitio.</p>
-                                <p class="benefits_text_description"><i class="fas fa-check-circle"></i> Instalaciones rápidas sin afectar la producción ni el flujo del sistema.</p>
-                                <p class="benefits_text_description"><i class="fas fa-check-circle"></i> Compatibilidad con sistemas de automatización, PLCs y SCADA.</p>
+                                <p class="benefits_text_description"><i class="fas fa-check-circle"></i> Certificados de
+                                    calibración con validez oficial ante auditorías ISO, NOM, IATF y clientes
+                                    internacionales.</p>
+                                <p class="benefits_text_description"><i class="fas fa-check-circle"></i> Calibración de
+                                    videoregistradores en variables: temperatura, presión, corriente, voltaje y señales 4-20
+                                    mA.</p>
+                                <p class="benefits_text_description"><i class="fas fa-check-circle"></i> Calibración de
+                                    medidores de flujo con trazabilidad al CENAM y apego a normas internacionales.</p>
+                                <p class="benefits_text_description"><i class="fas fa-check-circle"></i> Equipos patrón
+                                    certificados y procedimientos avalados por la EMA.</p>
+                                <p class="benefits_text_description"><i class="fas fa-check-circle"></i> Reporte de
+                                    desviaciones, errores e incertidumbre expandida.</p>
+                                <p class="benefits_text_description"><i class="fas fa-check-circle"></i> Calibraciones en
+                                    sitio o en laboratorio, según tu necesidad.</p>
+                                <p class="benefits_text_description"><i class="fas fa-check-circle"></i> Aseguramiento de
+                                    calidad en tus procesos productivos, evitando sanciones o rechazos.</p>
+                                <p class="benefits_text_description"><i class="fas fa-check-circle"></i> Programas de
+                                    calibración periódica y etiquetado de equipos conforme a normativas.</p>
                             </div>
                         </div>
                     </div>
