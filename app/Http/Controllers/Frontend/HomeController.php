@@ -126,6 +126,15 @@ class HomeController extends Controller
     public function  servicesMedidor(){
         return view('frontend.pages.medidores-flujo');
     }
+    public function  servicesPlc(){
+        return view('frontend.pages.plc');
+    }
+    public function  servicesReparacionvideorecorders(){
+        return view('frontend.pages.reparacion-videoregistradores');
+    }
+    public function  servicesCalibrationEMA(){
+        return view('frontend.pages.calibracion-ema');
+    }
 
 
 

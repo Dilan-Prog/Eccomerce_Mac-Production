@@ -96,8 +96,11 @@
                                     
                                     <li><a href="{{ route('servicio-instalacion-videoregistradores') }}">Instalacion de Videoregistradores</a></li>
                                     <li><a href="{{ route('servicio-instalacion-medidoresdeflujo') }}">Instalacion de Medidores de Flujo</a></li>
+                                    <li><a href="{{ route('servicio-instalacion-plc') }}">Configuracion, Instalacion y Proyecto llave en mano de PLC</a></li>
+                                    <li><a href="{{ route('servicio-reparacion-videoregistradores') }}">Reparacion de Videoregistradores</a></li>
+                                    <li><a href="{{ route('servicio-calibracion-ema') }}">Calibraciones EMA</a></li>
                                     
-                                    <li><a href="{{ route('calibracion-puesta') }}">Calibración y Puesta en Marcha</a></li>
+                                    
                                 </ul>
                             </li>
                             <li><a href="{{ route('contact') }}">Contacto</a></li>
