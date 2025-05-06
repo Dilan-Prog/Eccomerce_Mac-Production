@@ -37,9 +37,11 @@ class PaymentController extends Controller
         if(!Session::has('address')){
             return redirect()->route('user.checkout');
         }
-        return view('frontend.pages.payment', compact('paypalInfo', 'userInfo', 'transferInfo'));
+
+        $paypalClientId = $paypalInfo->mode == 1 ? $paypalInfo->client_id : $paypalInfo->client_id;
+        return view('frontend.pages.payment', compact('paypalInfo', 'userInfo', 'transferInfo', 'paypalClientId'));
     }
-    
+
     public function paymentTransferSuccess(Request $request){
 
         if (!$request->hasValidSignature()) {
@@ -86,7 +88,7 @@ class PaymentController extends Controller
 
         if ($paymentMethod === 'transfer') {
             $order->invocie_id = $refBank; // Si es transferencia, usar el valor de refBank como invocie_id
-    
+
             // Aplicar el descuento si es pago por transferencia
             $discount = 0.02; // por ejemplo, 10% de descuento
             $finalPayableAmount = getFinalPayableAmount() * (1 - $discount);
@@ -99,7 +101,7 @@ class PaymentController extends Controller
 
         $order->user_id = Auth::user()->id;
         $order->sub_total = getCartTotal();
-        
+
         $order->currency_name = $setting->currency_name;
         $order->currency_icon = $setting->currency_icon;
         $order->product_qty =\Cart::content()->count();
@@ -255,6 +257,53 @@ class PaymentController extends Controller
         toastr('Algo Salio Mal en el Pago, Prueba con otro metodo o intentalo mas tarde' , 'error' , 'Error');
         return redirect()->route('user.payment');
     }
+
+    //Nuevos End points para Paypal (Agregacion de botones de pago)
+    public function createOrder(Request $request){
+        $config = $this->paypalConfig();
+        $provider = new PayPalClient($config);
+        $provider->getAccessToken();
+
+        $response = $provider->createOrder([
+            "intent" => "CAPTURE",
+            "purchase_units" => [
+                [
+                    "amount" => [
+                        "currency_code" => $config['currency'],
+                        "value" => getFinalPayableAmount()
+                    ]
+                ]
+            ]
+        ]);
+
+        if (isset($response['id'])) {
+            return response()->json(['id' => $response['id']]);
+        }
+
+        return response()->json(['error' => 'No se pudo crear la orden'], 500);
+    }
+
+    public function captureOrder(Request $request) {
+        $config = $this->paypalConfig();
+        $provider = new PayPalClient($config);
+        $provider->getAccessToken();
+
+        $response = $provider->capturePaymentOrder($request->orderId);
+        if(isset($response['status']) && $response['status'] === 'COMPLETED'){
+            $paypalSetting = PaypalSetting::first();
+            $paidAmount = getFinalPayableAmount();
+            $this->storeOrder(null, 'paypal', 1 , $response['id'], $paidAmount, $paypalSetting->currency_name);
+            $this->clearSession();
+
+            $order = Order::latest()->first();
+            $signeUrl = URL::temporarySignedRoute('user.payment.success', now()->addSeconds(30));
+            $this->notifyPaymentProcessed($order);
+            return response()->json(['redirect_url' => $signeUrl]);
+        }
+        $cancelUrl = route('user.paypal.cancel');
+        return response()->json(['redirect_url' => $cancelUrl]);
+    }
+
 
     /**Payment Stripe */
     public function payWithStripe(Request $request)
