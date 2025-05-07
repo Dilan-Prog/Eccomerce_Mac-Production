@@ -25,6 +25,7 @@ use Stripe\Charge;
 use Stripe\Stripe;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Log;
 
 
 class PaymentController extends Controller
@@ -243,7 +244,11 @@ class PaymentController extends Controller
             $signedUrl = URL::temporarySignedRoute(
                 'user.payment.success', now()->addSeconds(30)
             );
-            $this->notifyPaymentProcessed($order);
+            $this->notifyPaymentProcessed($order);try {
+                $this->notifyPaymentProcessed($order);
+            } catch (\Exception $e) {
+                \Log::error('Error al enviar la notificación al pagar por paypal: ' . $e->getMessage());
+            }
 
             return redirect()->to($signedUrl);
         }
@@ -284,13 +289,14 @@ class PaymentController extends Controller
     ]);
 /** PAYPAL MESES SIN INTERESES DESDE CUENTA DEL USUARIO HACER LA LOGICA PARA AQUELLOS PRODUCTOS QUE NO CUMPLAN CON MESES SIN INTERESES QUE VALGA 3 MESES Y SI SE VA A DAR MAS MESES SIN INTERESES TENEMOS QUE PLANEARLO */
 
-    
+
         if (isset($response['id'])) {
             return response()->json(['id' => $response['id']]);
         }
 
         return response()->json(['error' => 'No se pudo crear la orden'], 500);
     }
+    
 
     public function captureOrder(Request $request) {
         $config = $this->paypalConfig();
@@ -306,7 +312,15 @@ class PaymentController extends Controller
 
             $order = Order::latest()->first();
             $signedUrl = URL::temporarySignedRoute('user.payment.success', now()->addSeconds(30));
-            $this->notifyPaymentProcessed($order);
+            /**AL MOMENTO DE ENVIAR EL CORREO POR LA LAPTOP NO SE ENVIA LA NOTIFICACION YA QUE A AHI UN PROBLEMA CON EL ARCHIVO .env
+             * PERO AL MOMENTO DE ENVIAR LA NOTIFIACION POR LA COMPUTADORA DE ESCRITORIO ( CON UN DIFERENTE ARCHIVO .env) SI SE ENVIA
+             * POR LO QUE SE TIENE QUE HACER UNA VERIFICACION DE QUE EL ARCHIVO .env SEA EL CORRECTO
+             */
+            try {
+                $this->notifyPaymentProcessed($order);
+            } catch (\Exception $e) {
+                \Log::error('Error al enviar la notificación al pagar por paypal: ' . $e->getMessage());
+            }
 
             return response()->json(['redirect_url' => $signedUrl]);
         }
@@ -342,7 +356,11 @@ class PaymentController extends Controller
             $signedUrl = URL::temporarySignedRoute(
                 'user.payment.success', now()->addSeconds(30)
             );
-            $this->notifyPaymentProcessed($order);
+            try {
+                $this->notifyPaymentProcessed($order);
+            } catch (\Exception $e) {
+                \Log::error('Error al enviar la notificación al pagar por paypal: ' . $e->getMessage());
+            }
 
             return redirect()->to($signedUrl);
         }else {
@@ -380,7 +398,11 @@ class PaymentController extends Controller
             'user.payment-transfer.success', now()->addMinutes(1)
         );
         // Disparar la notificación
-        $this->notifyPaymentProcessed($order);
+        try {
+            $this->notifyPaymentProcessed($order);
+        } catch (\Exception $e) {
+            \Log::error('Error al enviar la notificación al pagar por paypal: ' . $e->getMessage());
+        }
 
 
         // Redirigir a la página de éxito de pago o a donde sea necesario
