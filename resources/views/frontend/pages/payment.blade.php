@@ -182,7 +182,7 @@
             return res.json();
         }).then(function(details) {
             if (details.redirect_url) {
-                window.location.href = details.redirect_url; // Redirige a la URL proporcionada
+                window.location.href = details.redirect_url;
             } else {
                 alert('Ocurrió un error al procesar el pago. Inténtalo de nuevo.');
                 window.location.href = "{{ route('user.paypal.cancel') }}";
