@@ -181,14 +181,18 @@
         }).then(function(res) {
             return res.json();
         }).then(function(details) {
-            alert('Pago completado por ' + details.payer.name.given_name);
-            window.location.href = "{{ route('user.payment.success') }}";
+            if (details.redirect_url) {
+                window.location.href = details.redirect_url; // Redirige a la URL proporcionada
+            } else {
+                alert('Ocurrió un error al procesar el pago. Inténtalo de nuevo.');
+                window.location.href = "{{ route('user.paypal.cancel') }}";
+            }
         });
     },
-    onError: function(err){
+    onError: function(err) {
         alert('Ocurrió un error al procesar el pago. Inténtalo de nuevo.');
         window.location.href = "{{ route('user.paypal.cancel') }}";
-    }
+    },
 }).render('#paypal-button-container');
 
 

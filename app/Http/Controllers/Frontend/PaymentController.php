@@ -265,17 +265,26 @@ class PaymentController extends Controller
         $provider->getAccessToken();
 
         $response = $provider->createOrder([
-            "intent" => "CAPTURE",
-            "purchase_units" => [
-                [
-                    "amount" => [
-                        "currency_code" => $config['currency'],
-                        "value" => getFinalPayableAmount()
-                    ]
+        "intent" => "CAPTURE",
+        "purchase_units" => [
+            [
+                "amount" => [
+                    "currency_code" => $config['currency'],
+                    "value" => getFinalPayableAmount()
                 ]
             ]
-        ]);
+        ],
+        "application_context" => [
+            "shipping_preference" => "NO_SHIPPING",
+            "locale" => "es-MX",
+            "payment_method" => [
+                "payee_preferred" => "IMMEDIATE_PAYMENT_REQUIRED"
+            ]
+        ]
+    ]);
+/** PAYPAL MESES SIN INTERESES DESDE CUENTA DEL USUARIO HACER LA LOGICA PARA AQUELLOS PRODUCTOS QUE NO CUMPLAN CON MESES SIN INTERESES QUE VALGA 3 MESES Y SI SE VA A DAR MAS MESES SIN INTERESES TENEMOS QUE PLANEARLO */
 
+    
         if (isset($response['id'])) {
             return response()->json(['id' => $response['id']]);
         }
@@ -296,9 +305,10 @@ class PaymentController extends Controller
             $this->clearSession();
 
             $order = Order::latest()->first();
-            $signeUrl = URL::temporarySignedRoute('user.payment.success', now()->addSeconds(30));
+            $signedUrl = URL::temporarySignedRoute('user.payment.success', now()->addSeconds(30));
             $this->notifyPaymentProcessed($order);
-            return response()->json(['redirect_url' => $signeUrl]);
+
+            return response()->json(['redirect_url' => $signedUrl]);
         }
         $cancelUrl = route('user.paypal.cancel');
         return response()->json(['redirect_url' => $cancelUrl]);
