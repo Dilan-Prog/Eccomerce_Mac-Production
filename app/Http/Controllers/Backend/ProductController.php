@@ -62,7 +62,7 @@ class ProductController extends Controller
         ]);
 
         /**Handle the image upload */
-        $imagePath =  $this->uploadImage($request,'image','uploads');
+        $imagePath =  $this->uploadImage($request,'image','uploads', 500, 500);
 
         $product = new Product();
         $product->thumb_image = $imagePath;
