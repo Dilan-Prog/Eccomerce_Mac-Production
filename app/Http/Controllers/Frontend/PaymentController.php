@@ -30,12 +30,13 @@ use Illuminate\Support\Facades\Log;
 
 class PaymentController extends Controller
 {
-    public function index(){
+    public function index()
+    {
         $paypalInfo = PaypalSetting::first();
         $userInfo = User::first();
         $transferInfo = Transfer::first();
 
-        if(!Session::has('address')){
+        if (!Session::has('address')) {
             return redirect()->route('user.checkout');
         }
 
@@ -43,7 +44,8 @@ class PaymentController extends Controller
         return view('frontend.pages.payment', compact('paypalInfo', 'userInfo', 'transferInfo', 'paypalClientId'));
     }
 
-    public function paymentTransferSuccess(Request $request){
+    public function paymentTransferSuccess(Request $request)
+    {
 
         if (!$request->hasValidSignature()) {
             // Si la firma no es válida, redirigir al index con un mensaje de error
@@ -56,32 +58,32 @@ class PaymentController extends Controller
     }
 
 
-    public function paymentSuccess(Request $request){
+    public function paymentSuccess(Request $request)
+    {
         if (!$request->hasValidSignature()) {
             return Redirect::route('index')->with('error', 'La URL de pago Exitoso ah caducado.');
         }
 
         $order = Order::whereIn('payment_method', ['paypal', 'stripe'])
-                   ->latest()
-                   ->first();
+            ->latest()
+            ->first();
 
         $view = '';
         switch ($order->payment_method) {
-        case 'paypal':
-            $view = 'frontend.pages.payment-success';
-            break;
-        case 'stripe':
-            $view = 'frontend.pages.payment-success';
-            break;
-        default:
-            abort(404); // Manejar cualquier otro método de pago no esperado
-    }
+            case 'paypal':
+                $view = 'frontend.pages.payment-success';
+                break;
+            case 'stripe':
+                $view = 'frontend.pages.payment-success';
+                break;
+            default:
+                abort(404); // Manejar cualquier otro método de pago no esperado
+        }
         return view($view, compact('order'));
-
     }
 
 
-    public function storeOrder($refBank,$paymentMethod, $paymentStatus, $transactionId, $paidAmount, $paidCurrencyName)
+    public function storeOrder($refBank, $paymentMethod, $paymentStatus, $transactionId, $paidAmount, $paidCurrencyName)
     {
         $setting = GeneralSetting::first();
         $order = new Order();
@@ -105,7 +107,7 @@ class PaymentController extends Controller
 
         $order->currency_name = $setting->currency_name;
         $order->currency_icon = $setting->currency_icon;
-        $order->product_qty =\Cart::content()->count();
+        $order->product_qty = \Cart::content()->count();
         $order->payment_method = $paymentMethod;
         $order->payment_status =  $paymentStatus;
         $order->order_address = json_encode(Session::get('address'));
@@ -115,8 +117,8 @@ class PaymentController extends Controller
         $order->save();
 
         $order = Order::find($order->id);
-         // store order products
-         foreach(\Cart::content() as $item){
+        // store order products
+        foreach (\Cart::content() as $item) {
             $product = Product::find($item->id);
             $orderProduct = new OrderProduct();
             $orderProduct->order_id = $order->id;
@@ -144,9 +146,6 @@ class PaymentController extends Controller
         $transaction->amount_real_currency = $paidAmount;
         $transaction->amount_real_name = $paidCurrencyName;
         $transaction->save();
-
-
-
     }
 
     public function clearSession()
@@ -157,7 +156,8 @@ class PaymentController extends Controller
         Session::forget('coupon');
     }
 
-    public function paypalConfig(){
+    public function paypalConfig()
+    {
 
         $paypalSetting = PaypalSetting::first();
 
@@ -186,13 +186,15 @@ class PaymentController extends Controller
 
     /**Paypal redirect */
 
-    public function paywithPaypal(){
+    public function paywithPaypal()
+    {
         $config = $this->paypalConfig();
 
         $provider = new PayPalClient($config);
         $provider->getAccessToken();
         // $provider->setApiCredentials($config);
-        $payableAmount = getFinalPayableAmount();/**Get Final Ammount */
+        $payableAmount = getFinalPayableAmount();
+        /**Get Final Ammount */
 
         $response = $provider->createOrder([
             "intent" => "CAPTURE",
@@ -203,27 +205,24 @@ class PaymentController extends Controller
             "purchase_units" => [
                 [
                     "amount" => [
-                    "currency_code" => $config['currency'],
-                    "value" => $payableAmount
+                        "currency_code" => $config['currency'],
+                        "value" => $payableAmount
                     ]
                 ]
             ]
         ]);
 
-        if(isset($response['id']) && $response['id'] != null){
+        if (isset($response['id']) && $response['id'] != null) {
 
-            foreach($response['links'] as $link){
+            foreach ($response['links'] as $link) {
 
-                if($link['rel'] === 'approve'){
+                if ($link['rel'] === 'approve') {
                     return redirect()->away($link['href']);
                 }
             }
         } else {
             return redirect()->route('user.paypal.cancel');
         }
-
-
-
     }
 
     public function paypalSuccess(Request $request)
@@ -234,17 +233,20 @@ class PaymentController extends Controller
         $response = $provider->capturePaymentOrder($request->token);
         if (isset($response['status']) && $response['status'] == 'COMPLETED') {
             $paypalSetting = PaypalSetting::first();
-            $paidAmount = getFinalPayableAmount();/**Get Final Ammount */
-            $this->storeOrder(null,'paypal', 1, $response['id'], $paidAmount, $paypalSetting->currency_name);
+            $paidAmount = getFinalPayableAmount();
+            /**Get Final Ammount */
+            $this->storeOrder(null, 'paypal', 1, $response['id'], $paidAmount, $paypalSetting->currency_name);
 
             // clear session
             $this->clearSession();
 
             $order = Order::latest()->first();
             $signedUrl = URL::temporarySignedRoute(
-                'user.payment.success', now()->addSeconds(30)
+                'user.payment.success',
+                now()->addSeconds(30)
             );
-            $this->notifyPaymentProcessed($order);try {
+            $this->notifyPaymentProcessed($order);
+            try {
                 $this->notifyPaymentProcessed($order);
             } catch (\Exception $e) {
                 \Log::error('Error al enviar la notificación al pagar por paypal: ' . $e->getMessage());
@@ -254,40 +256,41 @@ class PaymentController extends Controller
         }
 
         return redirect()->route('user.paypal.cancel');
-
     }
 
     public function paypalCancel()
     {
-        toastr('Algo Salio Mal en el Pago, Prueba con otro metodo o intentalo mas tarde' , 'error' , 'Error');
+        toastr('Algo Salio Mal en el Pago, Prueba con otro metodo o intentalo mas tarde', 'error', 'Error');
         return redirect()->route('user.payment');
     }
 
     //Nuevos End points para Paypal (Agregacion de botones de pago)
-    public function createOrder(Request $request){
+    public function createOrder(Request $request)
+    {
         $config = $this->paypalConfig();
         $provider = new PayPalClient($config);
         $provider->getAccessToken();
 
         $response = $provider->createOrder([
-        "intent" => "CAPTURE",
-        "purchase_units" => [
-            [
-                "amount" => [
-                    "currency_code" => $config['currency'],
-                    "value" => getFinalPayableAmount()
+            "intent" => "CAPTURE",
+            "purchase_units" => [
+                [
+                    "amount" => [
+                        "currency_code" => $config['currency'],
+                        "value" => getFinalPayableAmount()
+                    ]
+                ]
+            ],
+            "application_context" => [
+                "shipping_preference" => "NO_SHIPPING",
+                "locale" => "es-MX",
+                "payment_method" => [
+                    "payee_preferred" => "IMMEDIATE_PAYMENT_REQUIRED"
                 ]
             ]
-        ],
-        "application_context" => [
-            "shipping_preference" => "NO_SHIPPING",
-            "locale" => "es-MX",
-            "payment_method" => [
-                "payee_preferred" => "IMMEDIATE_PAYMENT_REQUIRED"
-            ]
-        ]
-    ]);
-/** PAYPAL MESES SIN INTERESES DESDE CUENTA DEL USUARIO HACER LA LOGICA PARA AQUELLOS PRODUCTOS QUE NO CUMPLAN CON MESES SIN INTERESES QUE VALGA 3 MESES Y SI SE VA A DAR MAS MESES SIN INTERESES TENEMOS QUE PLANEARLO */
+        ]);
+        /** PAYPAL MESES SIN INTERESES DESDE CUENTA DEL USUARIO HACER LA LOGICA PARA AQUELLOS PRODUCTOS QUE
+         *  NO CUMPLAN CON MESES SIN INTERESES QUE VALGA 3 MESES Y SI SE VA A DAR MAS MESES SIN INTERESES TENEMOS QUE PLANEARLO */
 
 
         if (isset($response['id'])) {
@@ -296,18 +299,19 @@ class PaymentController extends Controller
 
         return response()->json(['error' => 'No se pudo crear la orden'], 500);
     }
-    
 
-    public function captureOrder(Request $request) {
+
+    public function captureOrder(Request $request)
+    {
         $config = $this->paypalConfig();
         $provider = new PayPalClient($config);
         $provider->getAccessToken();
 
         $response = $provider->capturePaymentOrder($request->orderId);
-        if(isset($response['status']) && $response['status'] === 'COMPLETED'){
+        if (isset($response['status']) && $response['status'] === 'COMPLETED') {
             $paypalSetting = PaypalSetting::first();
             $paidAmount = getFinalPayableAmount();
-            $this->storeOrder(null, 'paypal', 1 , $response['id'], $paidAmount, $paypalSetting->currency_name);
+            $this->storeOrder(null, 'paypal', 1, $response['id'], $paidAmount, $paypalSetting->currency_name);
             $this->clearSession();
 
             $order = Order::latest()->first();
@@ -324,6 +328,7 @@ class PaymentController extends Controller
 
             return response()->json(['redirect_url' => $signedUrl]);
         }
+        \Log::critical('Error al Capturar la Orden de Paypal: ' . json_encode($response));
         $cancelUrl = route('user.paypal.cancel');
         return response()->json(['redirect_url' => $cancelUrl]);
     }
@@ -337,24 +342,26 @@ class PaymentController extends Controller
         $stripeSetting = StripeSetting::first();
         // $total = getFinalPayableAmount();
         // $payableAmount = round($total * $stripeSetting->currency_rate, 2);
-        $payableAmount = getFinalPayableAmount();/**Get Final Ammount */
+        $payableAmount = getFinalPayableAmount();
+        /**Get Final Ammount */
 
         Stripe::setApiKey($stripeSetting->secret_key);
-       $response = Charge::create([
+        $response = Charge::create([
             "amount" => $payableAmount * 100,
             "currency" => $stripeSetting->currency_name,
             "source" => $request->stripe_token,
             "description" => "Venta Por Web Macdelnorte"
         ]);
 
-        if($response->status === 'succeeded'){
-            $this->storeOrder(null,'stripe', 1, $response->id, $payableAmount, $stripeSetting->currency_name);
+        if ($response->status === 'succeeded') {
+            $this->storeOrder(null, 'stripe', 1, $response->id, $payableAmount, $stripeSetting->currency_name);
             // clear session
             $this->clearSession();
 
             $order = Order::latest()->first();
             $signedUrl = URL::temporarySignedRoute(
-                'user.payment.success', now()->addSeconds(30)
+                'user.payment.success',
+                now()->addSeconds(30)
             );
             try {
                 $this->notifyPaymentProcessed($order);
@@ -363,11 +370,10 @@ class PaymentController extends Controller
             }
 
             return redirect()->to($signedUrl);
-        }else {
+        } else {
             toastr('Someting went wrong try agin later!', 'error', 'Error');
             return redirect()->route('user.payment');
         }
-
     }
 
 
@@ -385,7 +391,7 @@ class PaymentController extends Controller
         $paidCurrencyName = $setting->currency_name; // Nombre de la moneda
 
         // Guardar la orden
-        $this->storeOrder($refBank,$paymentMethod, $paymentStatus, $transactionId, $paidAmount, $paidCurrencyName);
+        $this->storeOrder($refBank, $paymentMethod, $paymentStatus, $transactionId, $paidAmount, $paidCurrencyName);
 
         // Limpiar sesión después de completar la orden
         $this->clearSession();
@@ -395,7 +401,8 @@ class PaymentController extends Controller
 
 
         $signedUrl = URL::temporarySignedRoute(
-            'user.payment-transfer.success', now()->addMinutes(1)
+            'user.payment-transfer.success',
+            now()->addMinutes(1)
         );
         // Disparar la notificación
         try {
@@ -417,11 +424,7 @@ class PaymentController extends Controller
 
         // Enviar la notificación
         Notification::send($user, new BuytoPay($order));
-        Notification::route('mail','undemy258@gmail.com')//cambiar a ventas1@macdelnorte.com
-        ->notify(new buytopayAdmin($order));
+        Notification::route('mail', 'undemy258@gmail.com') //cambiar a ventas1@macdelnorte.com
+            ->notify(new buytopayAdmin($order));
     }
-
-
-
-
 }
