@@ -135,6 +135,9 @@ class HomeController extends Controller
     public function  servicesCalibrationEMA(){
         return view('frontend.pages.calibracion-ema');
     }
+    public function  paypalInfo(){
+        return view('frontend.pages.paypal_msi');
+    }
 
 
 

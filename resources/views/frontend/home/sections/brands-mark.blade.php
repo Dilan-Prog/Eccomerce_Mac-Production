@@ -1,6 +1,6 @@
 <section id="brands-mark" class="wsus__flash_sell_2">
     <div class="container">
-        <div class="row" id="brand_mark_slider">
+        <div class="row d-flex justify-content-center align-items-center" id="brand_mark_slider">
             @foreach ($brands as $item)
                
                 <div class="col-xl-3 col-sm-6 col-lg-4">

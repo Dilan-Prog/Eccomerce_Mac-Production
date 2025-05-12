@@ -1356,8 +1356,8 @@ PRODUCT MODAL VIEW END
 
 #wsus__flash_sell .wsus__product_item {
   margin: 25px 12px 0px 12px;
-  width: 300px;
-  height: 510px;
+  width: 225px;
+  height: 550px;
 }
 
 #wsus__flash_sell .nxt_arr,
@@ -1422,8 +1422,8 @@ ELECTRONIC PART START
 #wsus__electronic2 .wsus__product_item,
 #wsus__electronic .wsus__product_item {
   margin: 25px 12px 0px 12px;
-  width: 300px;
-  height: 510px;
+  width: 220px;
+  height: 550px;
 }
 
 /*======================
@@ -4223,7 +4223,7 @@ header .wsus__search button:hover {
 }
 
 .footer_2 {
-  margin-top: 30px;
+  /* margin-top: 30px; */
   background: white;
 }
 
@@ -4435,17 +4435,13 @@ a:not([href]):not([class]):hover {
   color: white;
 }
 
-
-
-
-.brands-logo{
-  margin: 25px 12px 0px 12px;
-  background: #fff;
-  padding: 40px 70px;
-  border-radius: 5px;
-  width: 95%;
+.brands-logo {
+  /* margin: 25px 12px 0px 12px; */
+  /* padding: 40px 70px; */
+  /* width: 95%; */
+  margin: 15px 0px 0px -1px;
+  padding: 14px 20px;
 }
-
 
 .product_qty_wrapper{
   display: flex;
@@ -5889,6 +5885,43 @@ a:not([href]):not([class]):hover {
   background: var(--Backgroud-pure-white); /* Fondo blanco */
   color: var(--Primary-Blue-Dark);
 }
+.ad-banner_home{
+  padding: 25px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.banner-item{
+  margin-bottom: 10px;
+}
+#paypal-msi{
+  background: #ffffff;
+  padding: 20px 0px;
+  font-family: 'Montserrat', sans-serif;
+}
+.paypal-msi-video{
+  width: 70%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 20px;
+}
+#paypal-msi .paypal-msi-title{
+  font-weight: 700;
+  color: var(--Text-Primary-black);
+  font-size: 40px;
+}
+#paypal-msi .paypal-msi-subtitle{
+  font-weight: 500;
+  color: var(--Text-Primary-black);
+  font-size: 20px;
+}
+#paypal-msi .paypal-msi-description{
+  font-weight: 500;
+  color: var(--Text-Primary-black);
+  font-size: 18px;
+}
+
 
 /* .select2-search .select2-search--dropdown{
     background: var(--Primary-Blue-Dark);

@@ -12,52 +12,107 @@
      <!--============================
         BANNER PART 2 END
     ==============================-->
+    
 
+
+        @include('frontend.home.sections.section-shop-info')
 
     <!--============================
         FLASH SELL START
     ==============================-->
-        @include('frontend.home.sections.flash-sale')
-    <!--============================
-        FLASH SELL END
-    ==============================-->
+    <div class="container">
+        <div class="row">
+            <!-- Banner Publicitario -->
+            <div class="col-lg-3 col-xl-3 d-none d-lg-block">
+                <div class="ad-banner_home">
+                        <div class="banner-item">
+                            <a href="{{ route('paypal-msi-info')}}">
+                                <img src="{{ asset('uploads/home-image/1er-banner msi.png') }}" alt="Banner" class="img-fluid">
+                            </a>
+                        </div>
+                        <div class="banner-item">
+                            <a href="https://www.macdelnorte.com/products?category=controladores-y-programadores">
+                                <img src="{{ asset('uploads/home-image/2dobanner.png') }}" alt="Banner" class="img-fluid">
+                            </a>
+                        </div>
+                        <div class="banner-item">
+                            <a href="">
+                                <img src="{{ asset('uploads/home-image/3er banner marca.png') }}" alt="Banner" class="img-fluid">
+                            </a>
+                        </div>
+                        <div class="banner-item">
+                            <a href="https://www.macdelnorte.com/contact">
+                                <img src="{{ asset('uploads/home-image/4tobanner-problemas.png') }}" alt="Banner" class="img-fluid">
+                            </a>
+                        </div>
+                        <div class="banner-item">
+                            <a href="https://www.macdelnorte.com/product-detail/control-edge-hc900">
+                                <img src="{{ asset('uploads/home-image/5tobanner-promociones.png') }}" alt="Banner" class="img-fluid">
+                            </a>
+                        </div>
+                        <div class="banner-item">
+                            <a href="{{route('servicio-instalacion-medidoresdeflujo')}}">
+                                <img src="{{ asset('uploads/home-image/6tobanner-promociones.png') }}" alt="Banner" class="img-fluid">
+                            </a>
+                        </div>
+                        {{-- <div class="banner-item">
+                            <a href="">
+                                <img src="{{ asset('uploads/home-image/5tobanner-promociones.png') }}" alt="Banner" class="img-fluid">
+                            </a>
+                        </div>
+                        <div class="banner-item">
+                            <a href="">
+                                <img src="{{ asset('uploads/home-image/2dobanner.png') }}" alt="Banner" class="img-fluid">
+                            </a>
+                        </div>
+                        <div class="banner-item">
+                            <a href="">
+                                <img src="{{ asset('uploads/home-image/2dobanner.png') }}" alt="Banner" class="img-fluid">
+                            </a>
+                        </div> --}}
+                </div>
+            </div>
+            <div class="col-12 col-lg-9 col-xl-9">
+                @include('frontend.home.sections.flash-sale')
+            <!--============================
+                FLASH SELL END
+            ==============================-->
 
 
-    <!--============================
-       MONTHLY TOP PRODUCT START
-    ==============================-->
-        @include('frontend.home.sections.brands-mark')
-    <!--============================
-       MONTHLY TOP PRODUCT END
-    ==============================-->
+            <!--============================
+            MONTHLY TOP PRODUCT START
+            ==============================-->
+                @include('frontend.home.sections.brands-mark')
+            <!--============================
+            MONTHLY TOP PRODUCT END
+            ==============================-->
 
-    <!--============================
-    LIMIT-SWITCH, MICRO-SWITCH,SENSOR CNTD
-    ==============================-->
-    @include('frontend.home.sections.category-product-slider-two')
-    <!--============================
-        ELECTRONIC PART END
-    ==============================-->
+            <!--============================
+            LIMIT-SWITCH, MICRO-SWITCH,SENSOR CNTD
+            ==============================-->
+            @include('frontend.home.sections.category-product-slider-two')
+            <!--============================
+                ELECTRONIC PART END
+            ==============================-->
 
-     <!--============================
-        Instrument PART START
-    ==============================-->
-    @include('frontend.home.sections.category-product-slider-one') 
-    <!--============================
-        Instrument PART END
-    ==============================-->
+            <!--============================
+                Instrument PART START
+            ==============================-->
+            @include('frontend.home.sections.category-product-slider-one') 
+            <!--============================
+                Instrument PART END
+            ==============================-->
 
-
-
-    <!--============================
-    ELECTRONIC PART START
-    ==============================-->
-    @include('frontend.home.sections.category-product-slider-three')
-    <!--============================
-        ELECTRONIC PART END
-    ==============================-->
-
-
+            <!--============================
+            ELECTRONIC PART START
+            ==============================-->
+            @include('frontend.home.sections.category-product-slider-three')
+            <!--============================
+                ELECTRONIC PART END
+            ==============================-->
+            </div>
+        </div>
+    </div>
      <!--============================
        HOW BUY TO MAC DEL NORTE
     ==============================-->

@@ -1,40 +1,16 @@
 
     <section id="wsus__flash_sell" class="wsus__flash_sell_2">
         <div class=" container">
-            <div class="row">
-                <div class="col-xl-12">
-                    <div class="shopping-info-home">
-                        <div class="row" >
-                            <div class="col-4">
-                                <img src="{{ asset('animations-icons/payment-protected-home.gif') }}" alt="Compra Protegida">
-                                <h4>Compra protegida</h4>
-                                <p>Contamos con seguridad SLL para una transaccion segura.</p>
-                            </div>
-                            <div class="col-4">
-                                <img src="{{ asset('frontend/images/iconos/box-free-home.webp') }}" alt="Garantia">
-                                <h4>Env&iacute;o gratis</h4>
-                                <p>Al comprar tus productos te proporcionamos envio gratis</p>
-                            </div>
-                            <div class="col-4">
-                                <img src="{{ asset('frontend/images/iconos/how-to-pay-home.webp') }}" alt="Formas de Pago">
-                                <h4>Elige como pagar</h4>
-                                <p>Puedes pagar con tarjeta, D&eacute;bito, Credito, Paypal, Transferencias, etc.</p>
-                            </div>
-                        </div>
+            <div class="product-solicited-site">
+                <div class="row">
+                    <div class="col-8 col-sm-9 col-md-9 col-lg-9 col-xl-9">
+                        <h4 style="color: #ffffff">Productos M&aacute;s Vendidos</h4>
+                    </div>
+                    <div class="col-4 col-sm-3 col-md-3 col-lg-3 col-xl-3">
+                        <button><a href="{{route('flash-sale')}}">M&aacute;s Productos <i class="fas fa-plus"></i></a></button>
                     </div>
                 </div>
             </div>
-            
-                <div class="product-solicited-site">
-                    <div class="row">
-                        <div class="col-8 col-sm-9 col-md-9 col-lg-9 col-xl-9">
-                            <h4 style="color: #ffffff">Productos M&aacute;s Vendidos</h4>
-                        </div>
-                        <div class="col-4 col-sm-3 col-md-3 col-lg-3 col-xl-3">
-                            <button><a href="{{route('flash-sale')}}">M&aacute;s Productos <i class="fas fa-plus"></i></a></button>
-                        </div>
-                    </div>
-                </div>
             
             <div class="row flash_sell_slider">
                 
