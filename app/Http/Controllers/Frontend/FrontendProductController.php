@@ -142,7 +142,10 @@ public function chageListView(Request $request)
     /**show product details */
     public function showProduct(string $slug){
 
-        $product = Product::with(['category','productImageGalleries','brand','moreEccomerce'])->where('slug', $slug)->where('status', 1)->first();
+        $product = Product::with(['category','productImageGalleries','brand','moreEccomerce'])
+        ->where('slug', $slug)
+        ->where('status', 1)
+        ->first();
         $reviews = ProductReview::where('product_id', $product->id)->where('status', 1)->paginate(6);
 
         // Contar cuántas reseñas tienen cada calificación

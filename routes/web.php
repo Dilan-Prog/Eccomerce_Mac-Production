@@ -41,9 +41,11 @@ Route::get('servicio-instalacion-videoregistradores', [HomeController::class, 's
 Route::get('servicio-instalacion-medidoresdeflujo', [HomeController::class, 'servicesMedidor'])->name('servicio-instalacion-medidoresdeflujo');
 Route::get('servicio-instalacion-plc', [HomeController::class, 'servicesPlc'])->name('servicio-instalacion-plc');
 Route::get('servicio-reparacion-videoregistradores', [HomeController::class, 'servicesReparacionvideorecorders'])->name('servicio-reparacion-videoregistradores');
+Route::get('paypal-msi-info', [HomeController::class, 'paypalInfo'])->name('paypal-msi-info');
 Route::get('servicio-calibracion-ema', [HomeController::class, 'servicesCalibrationEMA'])->name('servicio-calibracion-ema');
 Route::get('medicion', [HomeController::class, 'servicesMedicion'])->name('medicion');
 Route::get('/googgle-feed_macdelnorte$product-merchant-center',[ProductController::class, 'generateFeedProduct']);
+
 
 
 Route::middleware('auth')->group(function () {
@@ -78,6 +80,7 @@ Route::post('cart/remove-sidebar-product', [CartController::class, 'removeSideba
 Route::get('cart/sidebar-product-total', [CartController::class, 'cartTotal'])->name('cart.sidebar-product-total');
 Route::get('apply-coupon', [CartController::class, 'applyCoupon'])->name('apply-coupon');
 Route::get('coupon-calculation', [CartController::class, 'couponCalculation'])->name('coupon-calculation');
+
 
 
 

@@ -1,4 +1,4 @@
-<section id="video-eccomerce">
+<section id="video-eccomerce" class="mb-3">
     <div class="container">
         <div class="row">
             <div class="col-xl-6 col-md-12 ">

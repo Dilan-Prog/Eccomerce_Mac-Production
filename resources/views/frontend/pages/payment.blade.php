@@ -150,50 +150,51 @@
 @endsection
 
 @push('scripts')
-<script src="https://www.paypal.com/sdk/js?client-id={{ $paypalClientId }}&currency=MXN"></script>
+{{-- CREAR LOGICA PARA &disable-funding=card POR EL PRECIO UNITARIO DEL PRODUCTO --}}
+<script src="https://www.paypal.com/sdk/js?client-id={{ $paypalInfo->client_id }}&currency=MXN"></script>
 <script>
     // Configuracion de Paypal
 
     paypal.Buttons({
-    createOrder: function(data, actions) {
-        return fetch('{{ route('user.paypal.createOrder') }}', {
-            method: 'post',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': '{{ csrf_token() }}'
-            }
-        }).then(function(res) {
-            return res.json();
-        }).then(function(orderData) {
-            return orderData.id;
-        });
-    },
-    onApprove: function(data, actions) {
-        return fetch('{{ route('user.paypal.captureOrder') }}', {
-            method: 'post',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': '{{ csrf_token() }}'
-            },
-            body: JSON.stringify({
-                orderId: data.orderID
-            })
-        }).then(function(res) {
-            return res.json();
-        }).then(function(details) {
-            if (details.redirect_url) {
-                window.location.href = details.redirect_url;
-            } else {
-                alert('Ocurrió un error al procesar el pago. Inténtalo de nuevo.');
-                window.location.href = "{{ route('user.paypal.cancel') }}";
-            }
-        });
-    },
-    onError: function(err) {
-        alert('Ocurrió un error al procesar el pago. Inténtalo de nuevo.');
-        window.location.href = "{{ route('user.paypal.cancel') }}";
-    },
-}).render('#paypal-button-container');
+        createOrder: function(data, actions) {
+            return fetch('{{ route('user.paypal.createOrder') }}', {
+                method: 'post',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                }
+            }).then(function(res) {
+                return res.json();
+            }).then(function(orderData) {
+                return orderData.id;
+            });
+        },
+        onApprove: function(data, actions) {
+            return fetch('{{ route('user.paypal.captureOrder') }}', {
+                method: 'post',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                body: JSON.stringify({
+                    orderId: data.orderID
+                })
+            }).then(function(res) {
+                return res.json();
+            }).then(function(details) {
+                if (details.redirect_url) {
+                    window.location.href = details.redirect_url;
+                } else {
+                    alert('Ocurrió un error al procesar el pago. Inténtalo de nuevo.');
+                    window.location.href = "{{ route('user.paypal.cancel') }}";
+                }
+            });
+        },
+        onError: function(err) {
+            alert('Ocurrió un error al procesar el pago. Inténtalo de nuevo.');
+            window.location.href = "{{ route('user.paypal.cancel') }}";
+        },
+    }).render('#paypal-button-container');
 
 
 
