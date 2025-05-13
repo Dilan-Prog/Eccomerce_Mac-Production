@@ -275,8 +275,6 @@ class ProductController extends Controller
             $item->addChild('g:additional_image_link', url('uploads/' . $galleryImage->image));
         }
 
-
-
         // Disponibilidad
         $availability = $product->qty > 0 ? 'in stock' : 'out of stock';
         $item->addChild('g:availability', $availability);

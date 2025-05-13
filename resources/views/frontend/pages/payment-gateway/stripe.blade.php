@@ -43,7 +43,7 @@ aria-labelledby="v-pills-home-tab">
 @endphp
 @push('scripts')
 <script src="https://js.stripe.com/v3/"></script>
-<script src="checkout.js" defer></script>
+<script src="checkout.js"></script>
 <script>
     var stripe = Stripe("{{$stripeSetting->client_id}}");
     var elements = stripe.elements();
