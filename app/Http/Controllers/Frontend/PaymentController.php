@@ -90,14 +90,17 @@ class PaymentController extends Controller
 
 
         if ($paymentMethod === 'transfer') {
-            $order->invocie_id = $refBank; // Si es transferencia, usar el valor de refBank como invocie_id
+            $order->invocie_id = $refBank;  
+            // Si es transferencia, usar el valor de refBank como invocie_id
 
             // Aplicar el descuento si es pago por transferencia
-            $discount = 0.02; // por ejemplo, 10% de descuento
+            $discount = 0.02; 
+            // por ejemplo, 10% de descuento
             $finalPayableAmount = getFinalPayableAmount() * (1 - $discount);
             $order->amount = $finalPayableAmount;
         } else {
-            $order->invocie_id = rand(1, 999999); // Generar aleatoriamente si no es transferencia
+            $order->invocie_id = rand(1, 999999); 
+            // Generar aleatoriamente si no es transferencia
             $order->amount = getFinalPayableAmount();
         }
 

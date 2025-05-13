@@ -14,6 +14,7 @@ use App\Models\ProductReview;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Cache;
 use App\Models\ShippingRule;
+use Illuminate\Support\Facades\Log;
 
 use Illuminate\Http\Request;
 
@@ -140,17 +141,22 @@ public function chageListView(Request $request)
 }
 
     /**show product details */
-    public function showProduct(string $slug){
+    public function showProduct(string $slug)
+{       
 
+    \Log::info('Buscando producto con slug: ' . $slug);
         $product = Product::with(['category','productImageGalleries','brand','moreEccomerce'])
-        ->where('slug', $slug)
-        ->where('status', 1)
-        ->first();
+            ->where('slug', $slug)
+            ->where('status', 1)
+            ->first();
 
-        
+        if (!$product) {
+            \Log::error('Producto no encontrado: ' . $slug);
+            return redirect()->route('index')->with('error', 'El producto no fue encontrado.');
+        }
+
         $reviews = ProductReview::where('product_id', $product->id)->where('status', 1)->paginate(6);
 
-        // Contar cuántas reseñas tienen cada calificación
         $ratingCounts = [
             5 => $reviews->where('rating', 5)->count(),
             4 => $reviews->where('rating', 4)->count(),
@@ -159,11 +165,8 @@ public function chageListView(Request $request)
             1 => $reviews->where('rating', 1)->count(),
         ];
 
-        
-        // Calcular el promedio de las calificaciones
         $averageRating = $reviews->avg('rating');
 
         return view('frontend.pages.product-detail', compact('product', 'reviews', 'ratingCounts', 'averageRating'));
-
     }
 }

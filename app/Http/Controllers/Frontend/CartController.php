@@ -10,12 +10,13 @@ use App\Models\Product;
 use Illuminate\Http\Request;
 use Cart;
 use Illuminate\Support\Facades\Session;
-
+use Illuminate\Support\Facades\Log;
 class CartController extends Controller
 {
 
     public function cartDetails(){
-
+        \Log::info('Contenido del carrito:', \Cart::content()->toArray());
+        \Log::info('Sesión completa:', session()->all());
         $cartItems = Cart::content();
         if(count($cartItems) === 0){
             Session::forget('coupon');

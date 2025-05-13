@@ -17,7 +17,7 @@ use App\Http\Controllers\Frontend\ReviewController;
 use App\Http\Controllers\Frontend\UserOrderController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
-
+use Illuminate\Support\Facades\Artisan;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -45,6 +45,14 @@ Route::get('paypal-msi-info', [HomeController::class, 'paypalInfo'])->name('payp
 Route::get('servicio-calibracion-ema', [HomeController::class, 'servicesCalibrationEMA'])->name('servicio-calibracion-ema');
 Route::get('medicion', [HomeController::class, 'servicesMedicion'])->name('medicion');
 Route::get('/googgle-feed_macdelnorte$product-merchant-center',[ProductController::class, 'generateFeedProduct']);
+
+Route::get('/clear-cache', function () {
+    Artisan::call('config:clear');
+    Artisan::call('cache:clear');
+    Artisan::call('view:clear');
+    Artisan::call('route:clear');
+    return 'Cache cleared!';
+});
 
 
 
