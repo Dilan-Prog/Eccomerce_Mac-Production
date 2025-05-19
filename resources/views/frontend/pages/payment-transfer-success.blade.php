@@ -71,5 +71,25 @@
 
 
 @endsection
-
+@push('Google-Ads')
+<script>
+  gtag('event', 'page_view', {
+    'send_to': 'AW-16512201966',
+    'transaction_id': '{{ $order->invocie_id }}',
+    'value': {{ $order->amount }},
+    'currency': '{{ $order->currency_name ?? "MXN" }}',
+    'items': [
+      @foreach($order->orderProducts as $item)
+      {
+        'id': '{{ $item->product_id }}',
+        'name': '{{ $item->product_name }}',
+        'quantity': {{ $item->qty }},
+        'price': {{ $item->unit_price }},
+        'google_business_vertical': 'retail'
+      }@if(!$loop->last),@endif
+      @endforeach
+    ]
+  });
+</script>
+@endpush
 

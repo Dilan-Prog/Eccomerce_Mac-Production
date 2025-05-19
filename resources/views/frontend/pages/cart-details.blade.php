@@ -198,7 +198,7 @@
         $('.clear_cart').on('click', function(e){
             e.preventDefault();
             Swal.fire({
-                    title: 'Estas seguto?',
+                    title: 'Estas seguro?',
                     text: "This action will clear your cart!",
                     icon: 'warning',
                     showCancelButton: true,

@@ -270,9 +270,13 @@ class PaymentController extends Controller
     //Nuevos End points para Paypal (Agregacion de botones de pago)
     public function createOrder(Request $request)
     {
+        Log::info('Creando orden PayPal con total: ' . getFinalPayableAmount());
+        Log::info('Datos de sesión (createOrder): ', session()->all());
+
         $config = $this->paypalConfig();
         $provider = new PayPalClient($config);
         $provider->getAccessToken();
+        $payableAmount = number_format(getFinalPayableAmount(), 2, '.', '');
 
         $response = $provider->createOrder([
             "intent" => "CAPTURE",
@@ -280,7 +284,7 @@ class PaymentController extends Controller
                 [
                     "amount" => [
                         "currency_code" => $config['currency'],
-                        "value" => getFinalPayableAmount()
+                        "value" => $payableAmount
                     ]
                 ]
             ],
@@ -306,6 +310,9 @@ class PaymentController extends Controller
 
     public function captureOrder(Request $request)
     {
+
+        Log::info('Capturando orden PayPal con ID: ' . $request->orderId);
+        Log::info('Datos de sesión (captureOrder): ', session()->all());
         $config = $this->paypalConfig();
         $provider = new PayPalClient($config);
         $provider->getAccessToken();
@@ -318,7 +325,11 @@ class PaymentController extends Controller
             $this->clearSession();
 
             $order = Order::latest()->first();
-            $signedUrl = URL::temporarySignedRoute('user.payment.success', now()->addSeconds(30));
+            $signedUrl = URL::temporarySignedRoute(
+                'user.payment.success',
+                now()->addSeconds(30),
+                ['order' => $order->id, 'slug' => $order->product->slug ?? null]
+            );
             /**AL MOMENTO DE ENVIAR EL CORREO POR LA LAPTOP NO SE ENVIA LA NOTIFICACION YA QUE A AHI UN PROBLEMA CON EL ARCHIVO .env
              * PERO AL MOMENTO DE ENVIAR LA NOTIFIACION POR LA COMPUTADORA DE ESCRITORIO ( CON UN DIFERENTE ARCHIVO .env) SI SE ENVIA
              * POR LO QUE SE TIENE QUE HACER UNA VERIFICACION DE QUE EL ARCHIVO .env SEA EL CORRECTO

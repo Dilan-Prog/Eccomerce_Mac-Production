@@ -44,6 +44,11 @@ Route::get('servicio-reparacion-videoregistradores', [HomeController::class, 'se
 Route::get('paypal-msi-info', [HomeController::class, 'paypalInfo'])->name('paypal-msi-info');
 Route::get('servicio-calibracion-ema', [HomeController::class, 'servicesCalibrationEMA'])->name('servicio-calibracion-ema');
 Route::get('medicion', [HomeController::class, 'servicesMedicion'])->name('medicion');
+
+Route::get('Terminos-Condiciones', [HomeController::class, 'terminosCondiciones'])->name('Terminos-Condiciones');
+Route::get('Aviso-Legal', [HomeController::class, 'avisoLegal'])->name('Aviso-Legal');
+Route::get('Aviso-Privacidad', [HomeController::class, 'avisoPrivacidad'])->name('Aviso-Privacidad');
+Route::get('distribuidor-oficial-honeywell', [HomeController::class, 'distribuidorHoneywell'])->name('distribuidor-oficial-honeywell');
 Route::get('/googgle-feed_macdelnorte$product-merchant-center',[ProductController::class, 'generateFeedProduct']);
 
 Route::get('/clear-cache', function () {
