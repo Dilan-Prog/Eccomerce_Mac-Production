@@ -127,7 +127,10 @@
                                                 <span class="in_stock" itemprop="availability" content="https://schema.org/OutOfStock">Agotado</span>
                                             </p>
                                         @endif
-    
+                                    @php
+                                        $msiMeses = 3;
+                                        $msiMonto = $product->price ? $product->price / $msiMeses : 0;
+                                    @endphp
     
                                     @if (checkDiscount($product))
                                     <h4>
@@ -140,12 +143,25 @@
                                     <small><strong>IVA INCLUIDO</strong></small>
                                     
                                     @else
+
                                     <h4>
                                         <meta itemprop="priceCurrency" content="MXN">
                                         <span itemprop="price" content="{{$product->price}}">
                                             {{$settings->currency_icon}}{{ number_format($product->price, 2, '.', ',') }} MXN 
                                         </span>    
                                     </h4>
+                                        @if ($product->price >= 3000)
+                                            <p class="wsus__msi_product">
+                                                Pagalo a <span style="color: #00a650;">{{ $msiMeses }} Meses sin intereses de {{$settings->currency_icon}}{{number_format($msiMonto,2)}} MXN</span>
+                                                pagando con 
+                                                <img src="{{ asset('frontend/images/iconos-empresas-sin-fondo/Paypal-logo.png') }}" alt="Meses sin intereses PayPal" style="height: 22px; vertical-align: middle; margin-left: 3px;">
+                                            </p>
+                                        @else
+                                            <p class="wsus__msi_product">
+                                                Pagalo a <span style="color: #00a650;">{{ $msiMeses }} Meses sin intereses teniendo {{$settings->currency_icon}}3,000 MXN</span> en carrito pagando con 
+                                                <img src="{{ asset('frontend/images/iconos-empresas-sin-fondo/Paypal-logo.png') }}" alt="Meses sin intereses PayPal" style="height: 22px; vertical-align: middle; margin-left: 3px;">
+                                            </p>
+                                        @endif
                                     <small><strong>IVA INCLUIDO</strong></small>
                                     @endif
                                 
@@ -240,25 +256,31 @@
                                         
                                     </ul>
                                 </div>
-                                @if ($product->moreEccomerce)
-                                    {{-- Disponibilidad de Comercio o de mas comercios --}}
-                                <div class="wsus__more_eccomerce" style="margin: 5px 0px">
-                                    <p><b>Disponible en:</b></p>
-                                    @foreach ($product->moreEccomerce as $moreEccomerce)
-                                        @if ($moreEccomerce->nameEccomerce == 'Mercado Libre')
-                                            <a href="{{ $moreEccomerce->linkProduct }}" target="_blank" style="text-decoration: none; color: #333;">
-                                                <img src="{{ asset('frontend/images/iconos-empresas/MercadoLibre_Logo.webp') }}" alt="{{ $product->name . ' ' . $moreEccomerce->nameEccomerce }}" style="width: 125px; ">
-                                            </a>
-                                        @endif
-                                        @if ($moreEccomerce->nameEccomerce == 'Amazon')
-                                            <a href="{{ $moreEccomerce->linkProduct }}" target="_blank" style="text-decoration: none; color: #333;">
-                                                <img src="{{ asset('frontend/images/iconos-empresas/Amazon_logo.png') }}" alt="{{ $product->name . ' ' . $moreEccomerce->nameEccomerce }}" style="width: 125px; ">
-                                            </a>
-                                        @endif
-                                    @endforeach
-                                </div>
+                                @php
+                                    $marketplaces = collect($product->moreEccomerce ?? [])->filter(function($moreEccomerce) {
+                                        return in_array($moreEccomerce->nameEccomerce, ['Mercado Libre', 'Amazon']);
+                                    });
+                                @endphp
+
+
+                                @if ($marketplaces->count() > 0)
+                                    <div class="wsus__more_eccomerce" style="margin: 5px 0px">
+                                        <p><b>Disponible en:</b></p>
+                                        @foreach ($marketplaces as $moreEccomerce)
+                                            @if ($moreEccomerce->nameEccomerce == 'Mercado Libre')
+                                                <a href="{{ $moreEccomerce->linkProduct }}" target="_blank" style="text-decoration: none; color: #333;">
+                                                    <img src="{{ asset('frontend/images/iconos-empresas/MercadoLibre_Logo.webp') }}" alt="{{ $product->name . ' ' . $moreEccomerce->nameEccomerce }}" style="width: 125px;">
+                                                </a>
+                                            @endif
+                                            @if ($moreEccomerce->nameEccomerce == 'Amazon')
+                                                <a href="{{ $moreEccomerce->linkProduct }}" target="_blank" style="text-decoration: none; color: #333;">
+                                                    <img src="{{ asset('frontend/images/iconos-empresas/Amazon_logo.png') }}" alt="{{ $product->name . ' ' . $moreEccomerce->nameEccomerce }}" style="width: 125px;">
+                                                </a>
+                                            @endif
+                                        @endforeach
+                                    </div>
                                 @endif
-                                
+                            
 
                         </div>
                     </div>

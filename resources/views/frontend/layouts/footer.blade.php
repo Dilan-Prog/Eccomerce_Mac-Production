@@ -69,8 +69,50 @@
                                 <li><a href="#"><i class="fas fa-phone-square"></i> 81-2473-8744</a></li>
                                 <li> <a href="mailto:product.manager@macdelnorte.com"><i class="fas fa-envelope"></i> product.manager@macdelnorte.com</a></li>
                             </ul>
+                            <h5 class="mt-5">Avisos Legales</h5>
+                            <ul class="wsus__footer_content wsus__footer_content_2" >
+                                <li><a href="{{ route('Aviso-Privacidad') }}"><i class="fas fa-caret"></i> Aviso de Privacidad</a></li>
+                                <li><a href="{{ route('Aviso-Legal') }}"><i class="fas fa-caret"></i> Aviso Legal</a></li>
+                                <li><a href="{{ route('Terminos-Condiciones') }}"><i class="fas fa-caret"></i> Terminos y Condiciones</a></li>
+                            </ul>
+                        </div>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="wsus__footer_distributions">
+            <div class="container">
+                <div class="row">
+                    <div class="col-4">
+                        <a href="{{route('distribuidor-oficial-honeywell')}}">
+                             <div class="card" style="border-color: #000000">
+                                <img class="card-img-top" src="https://1000marcas.net/wp-content/uploads/2020/02/Logo-Honeywell.png" alt="Distribuidor Oficial Honeywell" style="padding: 0px 80px; width: 100%;">
+                                <div class="card-body">
+                                    <h4 class="card-title">Distribuidor Oficial Honeywell</h4>
+                                    <p class="card-text">Ver documento</p>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                    {{-- <div class="col-4">
+                        <div class="card text-left">
+                          <img class="card-img-top" src="holder.js/100px180/" alt="">
+                          <div class="card-body">
+                            <h4 class="card-title">Title</h4>
+                            <p class="card-text">Body</p>
+                          </div>
                         </div>
                     </div>
+                    <div class="col-4">
+                        <div class="card text-left">
+                          <img class="card-img-top" src="holder.js/100px180/" alt="">
+                          <div class="card-body">
+                            <h4 class="card-title">Title</h4>
+                            <p class="card-text">Body</p>
+                          </div>
+                        </div>
+                    </div> --}}
                 </div>
             </div>
         </div>
@@ -84,13 +126,12 @@
             <img src="{{asset('frontend/images/iconos-empresas/delivery_paquete_express-logo.webp')}}" alt="">
         </div>
 
-
         <div class="wsus__footer_bottom">
             <div class="container">
                 <div class="row">
                     <div class="col-xl-12">
                         <div class="wsus__copyright d-flex justify-content-center">
-                            <p style="color: white">Copyright ©2024 Mac Del Norte. Todos Los Derechos Reservados.</p>
+                            <p style="color: white">Copyright ©2025 Mac Del Norte. Todos Los Derechos Reservados.</p>
                         </div>
                     </div>
                 </div>

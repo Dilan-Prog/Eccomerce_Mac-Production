@@ -35,6 +35,7 @@ class HomeController extends Controller
         
 
         // Caché para los artículos de la venta flash
+        Cache::forget('flash_sale_date');
         $flashSaleItems = Cache::rememberForever('flash_sale_items', function() {
             return FlashSaleItem::with(['product', 'product.productImageGalleries', 'product.category','product.reviews'])
                 ->where('show_at_home', 1)
@@ -137,6 +138,18 @@ class HomeController extends Controller
     }
     public function  paypalInfo(){
         return view('frontend.pages.paypal_msi');
+    }
+    public function  terminosCondiciones(){
+        return view('frontend.pages.Terminos-Conditions');
+    }
+    public function  avisoLegal(){
+        return view('frontend.pages.aviso-legal');
+    }
+    public function  avisoPrivacidad(){
+        return view('frontend.pages.aviso-privacidad');
+    }
+    public function  distribuidorHoneywell(){
+        return view('frontend.pages.honeywell-oficial');
     }
 
 

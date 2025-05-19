@@ -145,6 +145,7 @@ public function chageListView(Request $request)
 {       
 
     \Log::info('Buscando producto con slug: ' . $slug);
+
         $product = Product::with(['category','productImageGalleries','brand','moreEccomerce'])
             ->where('slug', $slug)
             ->where('status', 1)

@@ -66,5 +66,34 @@
 
 
 @endsection
+@push('Google-Ads')
+<script>
+  gtag('event', 'page_view', {
+    'send_to': 'AW-16512201966',
+    'transaction_id': '{{ $order->invocie_id }}',
+    'value': {{ $order->amount }},
+    'currency': '{{ $order->currency_name ?? "MXN" }}',
+    'items': [
+      @foreach($order->orderProducts as $item)
+      {
+        'id': '{{ $item->product_id }}',
+        'name': '{{ $item->product_name }}',
+        'quantity': {{ $item->qty }},
+        'price': {{ $item->unit_price }},
+        'google_business_vertical': 'retail'
+      }@if(!$loop->last),@endif
+      @endforeach
+    ]
+  });
+</script>
+<!-- Event snippet for Compra Concluida conversion page -->
+<script>
+  gtag('event', 'conversion', {
+      'send_to': 'AW-16512201966/W1X_CJCy0sgaEO7p0ME9',
+      'value': {{ $order->amount }},
+      'currency': '{{ $order->currency_name ?? "MXN" }}',
+      'transaction_id': '{{ $order->invocie_id }}'
+  });
+</script>
 
-
+@endpush

@@ -84,7 +84,7 @@
                                     <input class="form-check-input agree_term" type="checkbox" value="" id="flexCheckChecked3"
                                         >
                                     <label class="form-check-label" for="flexCheckChecked3">
-                                        He le&iacute;do y acepto los  <a href="#">t&eacute;rminos y condiciones del sitio web *</a>
+                                        He le&iacute;do y acepto los  <a href="{{route('Terminos-Condiciones')}}">t&eacute;rminos y condiciones del sitio web *</a>
                                     </label>
                                 </div>
                             </div>

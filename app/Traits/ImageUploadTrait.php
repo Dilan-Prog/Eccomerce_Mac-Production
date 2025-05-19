@@ -9,6 +9,33 @@ use Intervention\Image\Drivers\Gd\Encoders\WebpEncoder;
 
 trait ImageUploadTrait{
 
+
+    public function uploadImageAsPng(Request $request, $inputName, $path, $width = null, $height = null)
+    {
+        if ($request->hasFile($inputName)) {
+            $image = $request->{$inputName};
+            $manager = new ImageManager(new Driver());
+
+            $originalName = pathinfo($image->getClientOriginalName(), PATHINFO_FILENAME);
+            $imageName = $originalName . '_media_' . uniqid() . '.png';
+
+            $img = $manager->read($image->getRealPath());
+            if ($width && $height) {
+                $img->resize($width, $height);
+            }
+
+            $uploadPath = public_path($path . '/');
+            if (!file_exists($uploadPath)) {
+                mkdir($uploadPath, 0755, true);
+            }
+
+            $img->toPng()->save($uploadPath . $imageName);
+
+            // Devuelve solo el nombre del archivo o la ruta relativa
+            return $path . '/' . $imageName;
+        }
+        return null;
+    }
     /**Multi - image */
     public function uploadMultiImage(Request $request,$inputName,$path){
 

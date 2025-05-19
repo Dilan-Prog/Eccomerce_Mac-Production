@@ -247,66 +247,72 @@ class ProductController extends Controller
         $products = Product::with(['category', 'brand'])
         ->where('status', 1)
         ->where('is_approved', 1)
+        ->where('price', '>', 0)
         ->get();
 
-    $xml = new \SimpleXMLElement('<rss/>');
-    $xml->addAttribute('version', '2.0');
-    $channel = $xml->addChild('channel');
+        
 
-    $channel->addChild('title', 'Feed de productos de Laravel');
-    $channel->addChild('link', url('/'));
-    $channel->addChild('description', 'Feed de productos para Google Merchant Center');
+        $xml = new \SimpleXMLElement('<rss xmlns:g="http://base.google.com/ns/1.0"/>');
+        $xml->addAttribute('version', '2.0');
+        $channel = $xml->addChild('channel');
 
-    foreach ($products as $product) {
-        $item = $channel->addChild('item');
+        $channel->addChild('title', 'Feed de productos de Laravel');
+        $channel->addChild('link', url('/'));
+        $channel->addChild('description', 'Feed de productos para Google Merchant Center');
 
-        // ID, título y descripción
-        $item->addChild('g:id', $product->sku);
-        $item->addChild('g:title', htmlspecialchars($product->name));
-        $item->addChild('g:description', htmlspecialchars($product->long_description));
+        $gNamespace = 'http://base.google.com/ns/1.0';
+        foreach ($products as $product) {
+            $item = $channel->addChild('item');
 
-        // Enlace al producto
-        $item->addChild('g:link', url("/product/{$product->slug}"));
+            $item->addChild('g:id', htmlspecialchars($product->sku, ENT_XML1 | ENT_QUOTES, 'UTF-8'), $gNamespace);
+            $item->addChild('g:title', htmlspecialchars($product->name, ENT_XML1 | ENT_QUOTES, 'UTF-8'), $gNamespace);
+            $item->addChild('g:description', htmlspecialchars($product->long_description, ENT_XML1 | ENT_QUOTES, 'UTF-8'), $gNamespace);
+            $item->addChild('g:link', htmlspecialchars(url("/product-detail/{$product->slug}"), ENT_XML1 | ENT_QUOTES, 'UTF-8'), $gNamespace);
+            $item->addChild(
+                'g:image_link',
+                htmlspecialchars(
+                    url('uploads/image-png/' . pathinfo($product->thumb_image, PATHINFO_FILENAME) . '_converted.png'),
+                    ENT_XML1 | ENT_QUOTES,
+                    'UTF-8'
+                ),
+                $gNamespace
+            );
 
-        // Imagen principal
-        $item->addChild('g:image_link', url('uploads/' . $product->thumb_image));
+            foreach ($product->productImageGalleries as $galleryImage) {
+                $item->addChild(
+                    'g:additional_image_link',
+                    htmlspecialchars(
+                        url('uploads/image-png/' . pathinfo($galleryImage->image, PATHINFO_FILENAME) . '_converted.png'),
+                        ENT_XML1 | ENT_QUOTES,
+                        'UTF-8'
+                    ),
+                    $gNamespace
+                );
+            }
+            $availability = $product->qty > 0 ? 'in stock' : 'out of stock';
+            $item->addChild('g:availability', $availability, $gNamespace);
 
-        foreach ($product->productImageGalleries as $galleryImage) {
-            $item->addChild('g:additional_image_link', url('uploads/' . $galleryImage->image));
+            $price = number_format((float)$product->price, 2, '.', '') . ' MXN';
+            $item->addChild('g:price', $price, $gNamespace);
+
+            if ($product->brand) {
+                $item->addChild('g:brand', htmlspecialchars($product->brand->name, ENT_XML1 | ENT_QUOTES, 'UTF-8'), $gNamespace);
+            }
+            // if ($product->sku) {
+            //     $item->addChild('g:gtin', htmlspecialchars($product->sku, ENT_XML1 | ENT_QUOTES, 'UTF-8'), $gNamespace);
+            // }
+            if ($product->productModel) {
+                $item->addChild('g:mpn', htmlspecialchars($product->productModel, ENT_XML1 | ENT_QUOTES, 'UTF-8'), $gNamespace);
+            }
+            $item->addChild('g:google_product_category', htmlspecialchars($product->category_id, ENT_XML1 | ENT_QUOTES, 'UTF-8'), $gNamespace);
+
+            if ($product->canonical_url) {
+                $item->addChild('g:canonical_link', htmlspecialchars($product->canonical_url, ENT_XML1 | ENT_QUOTES, 'UTF-8'), $gNamespace);
+            }
         }
 
-        // Disponibilidad
-        $availability = $product->qty > 0 ? 'in stock' : 'out of stock';
-        $item->addChild('g:availability', $availability);
-
-        // Precios (precio regular y oferta si aplica)
-        $item->addChild('g:price', $product->price . ' MXN');
-
-        // Marca
-        if ($product->brand) {
-            $item->addChild('g:brand', $product->brand->name);
-        }
-
-        // GTIN y MPN
-        if ($product->sku) {
-            $item->addChild('g:gtin', $product->sku);
-        }
-
-        if ($product->productModel) {
-            $item->addChild('g:mpn', $product->productModel);
-        }
-
-        // Categoría de Google (personalizable)
-        $item->addChild('g:google_product_category', $product->category_id);
-
-        // URL canónica si existe
-        if ($product->canonical_Url) {
-            $item->addChild('g:canonical_link', $product->canonical_Url);
-        }
+        return response($xml->asXML(), 200)
+            ->header('Content-Type', 'text/xml');
     }
-
-    return response($xml->asXML(), 200)
-        ->header('Content-Type', 'text/xml');
-}
 
 }
