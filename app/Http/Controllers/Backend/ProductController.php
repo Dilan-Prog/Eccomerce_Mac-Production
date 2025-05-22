@@ -315,4 +315,77 @@ class ProductController extends Controller
             ->header('Content-Type', 'text/xml');
     }
 
+    public function generateFeedProductFacebook()  {
+        $products = Product::with(['category', 'brand'])
+        ->where('is_approved', 1)
+        ->where('price', '>', 0)
+        ->get();
+
+        
+
+        $xml = new \SimpleXMLElement('<rss xmlns:g="http://base.google.com/ns/1.0"/>');
+        $xml->addAttribute('version', '2.0');
+        $channel = $xml->addChild('channel');
+
+        $channel->addChild('title', 'Feed de productos de Laravel');
+        $channel->addChild('link', url('/'));
+        $channel->addChild('description', 'Feed de productos para Google Merchant Center');
+
+        $gNamespace = 'http://base.google.com/ns/1.0';
+        foreach ($products as $product) {
+            $item = $channel->addChild('item');
+
+            $item->addChild('g:id', htmlspecialchars($product->sku, ENT_XML1 | ENT_QUOTES, 'UTF-8'), $gNamespace);
+            $item->addChild('g:title', htmlspecialchars($product->name, ENT_XML1 | ENT_QUOTES, 'UTF-8'), $gNamespace);
+            $item->addChild('g:description', htmlspecialchars($product->long_description, ENT_XML1 | ENT_QUOTES, 'UTF-8'), $gNamespace);
+            $item->addChild('g:link', htmlspecialchars(url("/product-detail/{$product->slug}"), ENT_XML1 | ENT_QUOTES, 'UTF-8'), $gNamespace);
+            $item->addChild(
+                'g:image_link',
+                htmlspecialchars(
+                    url('uploads/image-png/' . pathinfo($product->thumb_image, PATHINFO_FILENAME) . '_converted.png'),
+                    ENT_XML1 | ENT_QUOTES,
+                    'UTF-8'
+                ),
+                $gNamespace
+            );
+
+            foreach ($product->productImageGalleries as $galleryImage) {
+                $item->addChild(
+                    'g:additional_image_link',
+                    htmlspecialchars(
+                        url('uploads/image-png/' . pathinfo($galleryImage->image, PATHINFO_FILENAME) . '_converted.png'),
+                        ENT_XML1 | ENT_QUOTES,
+                        'UTF-8'
+                    ),
+                    $gNamespace
+                );
+            }
+            $availability = $product->qty > 0 ? 'in stock' : 'out of stock';
+            $item->addChild('g:availability', $availability, $gNamespace);
+
+            $price = number_format((float)$product->price, 2, '.', '') . ' MXN';
+            $item->addChild('g:price', $price, $gNamespace);
+            $status = $product->qty > 0 ? 'active' : 'inactive';
+            $item->addChild('g:status', $status, $gNamespace);
+
+            if ($product->brand) {
+                $item->addChild('g:brand', htmlspecialchars($product->brand->name, ENT_XML1 | ENT_QUOTES, 'UTF-8'), $gNamespace);
+            }
+            // if ($product->sku) {
+            //     $item->addChild('g:gtin', htmlspecialchars($product->sku, ENT_XML1 | ENT_QUOTES, 'UTF-8'), $gNamespace);
+            // }
+            if ($product->productModel) {
+                $item->addChild('g:mpn', htmlspecialchars($product->productModel, ENT_XML1 | ENT_QUOTES, 'UTF-8'), $gNamespace);
+            }
+            $item->addChild('g:google_product_category', htmlspecialchars($product->category_id, ENT_XML1 | ENT_QUOTES, 'UTF-8'), $gNamespace);
+
+            if ($product->canonical_url) {
+                $item->addChild('g:canonical_link', htmlspecialchars($product->canonical_url, ENT_XML1 | ENT_QUOTES, 'UTF-8'), $gNamespace);
+            }
+        }
+
+        return response($xml->asXML(), 200)
+            ->header('Content-Type', 'text/xml');
+    }
+
 }
