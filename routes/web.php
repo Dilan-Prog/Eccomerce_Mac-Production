@@ -50,6 +50,7 @@ Route::get('Aviso-Legal', [HomeController::class, 'avisoLegal'])->name('Aviso-Le
 Route::get('Aviso-Privacidad', [HomeController::class, 'avisoPrivacidad'])->name('Aviso-Privacidad');
 Route::get('distribuidor-oficial-honeywell', [HomeController::class, 'distribuidorHoneywell'])->name('distribuidor-oficial-honeywell');
 Route::get('/googgle-feed_macdelnorte$product-merchant-center',[ProductController::class, 'generateFeedProduct']);
+Route::get('/googgle-feed_macdelnorte-facebook',[ProductController::class, 'generateFeedProductFacebook']);
 
 Route::get('/clear-cache', function () {
     Artisan::call('config:clear');
