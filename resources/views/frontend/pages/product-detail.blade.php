@@ -130,39 +130,60 @@
                                     @php
                                         $msiMeses = 3;
                                         $msiMonto = $product->price ? $product->price / $msiMeses : 0;
+                                        $msioffert = $product->offert_price ? $product->offert_price / $msiMeses : 0;
+                                        $precioOffert = number_format($product->offert_price, 2, '.', ',');
+                                                [$entero, $decimales] = explode('.', $precioOffert);
+                                        $precio = number_format($product->price, 2, '.', ',');
+                                                [$enteroNormal, $decimalesNormal] = explode('.', $precio);
                                     @endphp
     
                                     @if (checkDiscount($product))
-                                    <h4>
-                                        <meta itemprop="priceCurrency" content="MXN">
-                                        <span itemprop="price" content="{{$product->offer_price}}">
-                                            {{$settings->currency_icon}}{{ number_format($product->offert_price, 2, '.', ',') }} MXN <del>{{$settings->currency_icon}}{{ number_format($product->price, 2, '.', ',') }} MXN</del>
+                                        <h4>
+                                            <meta itemprop="priceCurrency" content="MXN">
+                                            <span itemprop="price" content="{{$product->offert_price}}">
+                                                <del>{{$settings->currency_icon}}{{ number_format($product->price, 2, '.', ',') }} MXN</del>
+                                            </span>
                                             
-                                        </span>
-                                    </h4>
-                                    <small><strong>IVA INCLUIDO</strong></small>
-                                    
-                                    @else
+                                            <span itemprop="price" content="{{ $product->offert_price }}">
+                                                {{$settings->currency_icon}}{{ $entero }}<span style="font-size: 15px; vertical-align: super;">.{{ $decimales }}</span> MXN {{ calculatedDiscountPercent($product->price, $product->offert_price) }}%OFF
+                                            </span>
 
-                                    <h4>
-                                        <meta itemprop="priceCurrency" content="MXN">
-                                        <span itemprop="price" content="{{$product->price}}">
-                                            {{$settings->currency_icon}}{{ number_format($product->price, 2, '.', ',') }} MXN 
-                                        </span>    
-                                    </h4>
-                                        @if ($product->price >= 3000)
+                                        </h4>
+                                        @if ($product->offert_price >= 3000)
                                             <p class="wsus__msi_product">
-                                                Pagalo a <span style="color: #00a650;">{{ $msiMeses }} Meses sin intereses de {{$settings->currency_icon}}{{number_format($msiMonto,2)}} MXN</span>
+                                                Pagalo a <span style="color: #00a650;">{{ $msiMeses }} Meses sin intereses de {{$settings->currency_icon}}{{number_format($msioffert,2)}} MXN</span>
                                                 pagando con 
                                                 <img src="{{ asset('frontend/images/iconos-empresas-sin-fondo/Paypal-logo.png') }}" alt="Meses sin intereses PayPal" style="height: 22px; vertical-align: middle; margin-left: 3px;">
                                             </p>
                                         @else
                                             <p class="wsus__msi_product">
-                                                Pagalo a <span style="color: #00a650;">{{ $msiMeses }} Meses sin intereses teniendo {{$settings->currency_icon}}3,000 MXN</span> en carrito pagando con 
+                                                Pagalo a <span style="color: #00a650;">{{ $msiMeses }} Meses sin intereses a partir de {{$settings->currency_icon}}3,000 MXN</span> en carrito pagando con 
                                                 <img src="{{ asset('frontend/images/iconos-empresas-sin-fondo/Paypal-logo.png') }}" alt="Meses sin intereses PayPal" style="height: 22px; vertical-align: middle; margin-left: 3px;">
                                             </p>
                                         @endif
-                                    <small><strong>IVA INCLUIDO</strong></small>
+                                        <small><strong>IVA INCLUIDO</strong></small>
+                                        
+                                    @else
+
+                                        <h4>
+                                            <meta itemprop="priceCurrency" content="MXN">
+                                            <span itemprop="price" content="{{$product->price}}">
+                                                {{$settings->currency_icon}}{{ $enteroNormal }}<span style="font-size: 15px; vertical-align: super;">.{{ $decimalesNormal }}</span> MXN
+                                            </span>    
+                                        </h4>
+                                            @if ($product->price >= 3000)
+                                                <p class="wsus__msi_product">
+                                                    Pagalo a <span style="color: #00a650;">{{ $msiMeses }} Meses sin intereses de {{$settings->currency_icon}}{{number_format($msiMonto,2)}} MXN</span>
+                                                    pagando con 
+                                                    <img src="{{ asset('frontend/images/iconos-empresas-sin-fondo/Paypal-logo.png') }}" alt="Meses sin intereses PayPal" style="height: 22px; vertical-align: middle; margin-left: 3px;">
+                                                </p>
+                                            @else
+                                                <p class="wsus__msi_product">
+                                                    Pagalo a <span style="color: #00a650;">{{ $msiMeses }} Meses sin intereses teniendo {{$settings->currency_icon}}3,000 MXN</span> en carrito pagando con 
+                                                    <img src="{{ asset('frontend/images/iconos-empresas-sin-fondo/Paypal-logo.png') }}" alt="Meses sin intereses PayPal" style="height: 22px; vertical-align: middle; margin-left: 3px;">
+                                                </p>
+                                            @endif
+                                        <small><strong>IVA INCLUIDO</strong></small>
                                     @endif
                                 
                                 @else

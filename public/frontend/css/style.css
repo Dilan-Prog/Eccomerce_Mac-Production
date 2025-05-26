@@ -1127,7 +1127,7 @@ PRODUCT MODAL VIEW END
 }
 
 .wsus__product_item {
-  height: 510px;
+  height: 535px;
   margin-top: 25px;
   position: relative;
   overflow: hidden;
@@ -1292,7 +1292,7 @@ PRODUCT MODAL VIEW END
   color: #333;
   opacity: 1;
   display: flex;
-  align-items: center;
+  flex-direction: column;
   visibility: visible;
   transition: all linear 0.3s;
   -webkit-transition: all linear 0.3s ease;
@@ -1302,10 +1302,11 @@ PRODUCT MODAL VIEW END
 }
 
 .wsus__product_details .wsus__price del {
-  color: #ff7676;
-  margin-left: 10px;
-  font-size: 16px;
+  /* color: #ff7676; */
+  margin-left: 3px;
+  font-size: 14px;
   font-weight: 500;
+  line-height: 15px;
 }
 
 .wsus__product_details .wsus__pro_rating {
@@ -2133,15 +2134,16 @@ PRODUCT DETAILS START
   font-size: 30px;
   font-weight: 700;
   color: #00468c;
-  margin: 10px 0px 5px 0px;
+  margin: 5px 0px 5px 0px;
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  font-family: "Montserrat", sans-serif;
 }
 
 .wsus__pro_details_text h4 del {
-  color: red;
+  color: rgba(0,0,0,.55);
   font-size: 18px;
-  margin-left: 10px;
+  /* margin-left: 10px; */
 }
 
 .wsus_pro_det_color,

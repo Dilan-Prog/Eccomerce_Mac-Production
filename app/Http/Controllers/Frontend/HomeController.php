@@ -36,6 +36,7 @@ class HomeController extends Controller
 
         // Caché para los artículos de la venta flash
         Cache::forget('flash_sale_date');
+        Cache::forget('flash_sale_items');
         $flashSaleItems = Cache::rememberForever('flash_sale_items', function() {
             return FlashSaleItem::with(['product', 'product.productImageGalleries', 'product.category','product.reviews'])
                 ->where('show_at_home', 1)

@@ -52,6 +52,12 @@ Route::get('distribuidor-oficial-honeywell', [HomeController::class, 'distribuid
 Route::get('/googgle-feed_macdelnorte$product-merchant-center',[ProductController::class, 'generateFeedProduct']);
 Route::get('/googgle-feed_macdelnorte-facebook',[ProductController::class, 'generateFeedProductFacebook']);
 
+
+Route::get('/aplicar-descuento-dc1200', function () {
+    Artisan::call('products:discount-dc1200');
+    return 'Descuento aplicado!';
+});
+
 Route::get('/clear-cache', function () {
     Artisan::call('config:clear');
     Artisan::call('cache:clear');
