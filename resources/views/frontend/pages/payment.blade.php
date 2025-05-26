@@ -72,7 +72,7 @@
                                 <div class="row">
                                     <div class="col-xl-12 m-auto">
                                         <div class="wsus__payment_area">
-                                            <h5 class="text-center">Pagar con PayPal</h5>
+                                            {{-- <h5 class="text-center">Pagar con PayPal</h5> --}}
                                             {{-- Contenedor para el botón de PayPal --}}
                                             <div id="paypal-button-container"></div>
                                         </div>

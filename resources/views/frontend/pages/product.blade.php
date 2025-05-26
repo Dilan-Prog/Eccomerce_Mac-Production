@@ -197,7 +197,7 @@
                                             @endswitch
                                             @if (checkDiscount($product))
 
-                                            <span class="wsus__minus">-{{calculatedDiscountPercent($product->price, $product->offert_price)}}%</span>
+                                            {{-- <span class="wsus__minus">-{{calculatedDiscountPercent($product->price, $product->offert_price)}}%</span> --}}
 
                                             @endif
                                             <a class="wsus__pro_link" href="{{route('product-detail', $product->slug)}}">
@@ -246,34 +246,36 @@
 
                                                     <a class="wsus__pro_name" href="{{route('product-detail', $product->slug)}}" itemprop="name" content="{{$product->name}}">{{$product->name}}</a>
 
+                                                    @php
+                                                        $hasDiscount = checkDiscount($product);
+                                                        $price = $hasDiscount ? $product->offert_price : $product->price;
+                                                    @endphp
 
-                                                    @if (checkDiscount($product))
                                                     <p itemscope itemtype="http://schema.org/Offer">
                                                         <meta itemprop="priceCurrency" content="MXN">
-                                                        <span class="wsus__price" itemprop="price" content="{{$product->offert_price}}">
-                                                        {{$settings->currency_icon}}{{ number_format($product->offert_price, 2, ',', '.') }} MXN <del>{{$settings->currency_icon}}{{ number_format($product->price, 2, '.', ',') }} MXN</del>
+                                                        <span class="wsus__price" itemprop="price" content="{{ $price }}">
+                                                            {{-- Mostrar siempre el <del> arriba si hay descuento --}}
+                                                            <del>
+                                                                @if($hasDiscount)
+                                                                    {{ $settings->currency_icon }}{{ number_format($product->price, 2, '.', ',') }}
+                                                                @endif
+                                                            </del>
+                                                            {{-- Mostrar el precio final --}}
+                                                            <span>
+                                                                {{ $settings->currency_icon }}{{ number_format($price, 2, '.', ',') }}
+                                                                @if($hasDiscount)
+                                                                    <span style="color: #00a650; font-weight: 600;">
+                                                                        {{ calculatedDiscountPercent($product->price, $product->offert_price) }}% OFF
+                                                                    </span>
+                                                                @endif
+                                                            </span>
                                                         </span>
                                                     </p>
                                                     <p>
-                                                        @if ($product->offert_price >= $shippingRules->min_cost)
-                                                            <span class="free-shipping-text"><i class="fas fa-shipping-fast"> Envío Gratis </span>
-                                                        @endif
-                                                    </p>
-                                                    @else
-                                                    <p itemscope itemtype="http://schema.org/Offer">
-                                                        <meta itemprop="priceCurrency" content="MXN">
-                                                        <span class="wsus__price" itemprop="price" content="{{$product->price}}">
-                                                            {{$settings->currency_icon}}{{ number_format($product->price, 2, '.', ',') }} 
-                                                        </span>
-                                                    </p>
-                                                    <p>
-                                                        @if ($product->price >= $shippingRules->min_cost)
+                                                        @if ($price >= $shippingRules->min_cost)
                                                             <span class="free-shipping-text"><i class="fas fa-shipping-fast"></i> Envío Gratis </span>
                                                         @endif
                                                     </p>
-                                                    @endif
-
-
 
 
                                                 @else

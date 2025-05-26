@@ -54,7 +54,7 @@
 
                         @if (checkDiscount($product))
 
-                            <span class="wsus__minus">-{{calculatedDiscountPercent($product->price, $product->offert_price)}}%</span>
+                            {{-- <span class="wsus__minus">-{{calculatedDiscountPercent($product->price, $product->offert_price)}}%</span> --}}
 
                         @endif
                         <a class="wsus__pro_link" href="{{route('product-detail', $product->slug)}}">
@@ -101,43 +101,52 @@
                             </p>
 
                             <a class="wsus__pro_name" href="{{route('product-detail', $product->slug)}}">{{$product->name}}</a>
-                            @if (checkDiscount($product))
-                                <p itemscope itemtype="http://schema.org/Offer">
-                                    <meta itemprop="priceCurrency" content="MXN">
-                                    <span class="wsus__price" itemprop="price" content="{{$product->offert_price}}">
-                                        {{$settings->currency_icon}}{{ number_format($product->offert_price, 2, '.', ',') }} <del>{{$settings->currency_icon}}{{ number_format($product->price, 2, '.', ',') }} </del>
-                                    </span>
-                                </p>
-                                <p>
-                                    @if ($product->offert_price >= $shippingRules->min_cost)
-                                        <span class="free-shipping-text"><i class="fas fa-shipping-fast"> Envío Gratis </span>
-                                    @endif
-                                </p>
-                            @else
-                                <p itemscope itemtype="http://schema.org/Offer">
-                                    <meta itemprop="priceCurrency" content="MXN">
-                                    <span class="wsus__price" itemprop="price" content="{{$product->price}}">
-                                        {{$settings->currency_icon}}{{ number_format($product->price, 2, '.', ',') }} 
-                                    </span>
-                                </p>
-                                <p>
-                                    @if ($product->price >= $shippingRules->min_cost)
-                                        <span class="free-shipping-text"><i class="fas fa-shipping-fast"></i> Envío Gratis </span>
-                                    @endif
-                                </p>
-                            @endif
-                            <form class="shopping-cart-form">
-                                <input type="hidden" name="product_id" value="{{$product->id}}">
-                                <input type="hidden" name="brand_name" value="{{ $product->brand->name }}">
-                                <input type="hidden" name="sku" value="{{$product->sku}}">
-                                <input type="hidden" name="productModel" value="{{$product->productModel}}">
-                                @if ($product->price)
-                                    <button type="submit" class="add_cart" href="#">Agregar al Carrito</button>
-                                @else
-                                    <button  class="add_cart2" href="{{route('contact')}}">Requiere Asesoria</button>
-                                @endif
-                                <input name="qty" type="hidden" min="1" max="100" value="1" />
-                            </form>
+                            @php
+    $hasDiscount = checkDiscount($product);
+    $price = $hasDiscount ? $product->offert_price : $product->price;
+@endphp
+
+@if ($product->price)
+    <p itemscope itemtype="http://schema.org/Offer">
+        <meta itemprop="priceCurrency" content="MXN">
+        <span class="wsus__price" itemprop="price" content="{{ $price }}">
+            <del>
+                @if($hasDiscount)
+                    {{ $settings->currency_icon }}{{ number_format($product->price, 2, '.', ',') }}
+                @endif
+            </del>
+            <span style="color: #333; font-weight: 500;">
+                {{ $settings->currency_icon }}{{ number_format($price, 2, '.', ',') }}
+                @if($hasDiscount)
+                    <span style="color: #00a650; font-weight: 600;">
+                        {{ calculatedDiscountPercent($product->price, $product->offert_price) }}% OFF
+                    </span>
+                @endif
+            </span>
+        </span>
+    </p>
+    <p>
+        @if ($price >= $shippingRules->min_cost)
+            <span class="free-shipping-text"><i class="fas fa-shipping-fast"></i> Envío Gratis </span>
+        @endif
+    </p>
+@else
+    <p class="wsus__stock_area"><span class="in_stock">Disponible</span></p>
+    <p class="wsus__price">N/A +<small> Requiere Asesoria</small> </p>
+@endif
+
+<form class="shopping-cart-form">
+    <input type="hidden" name="product_id" value="{{$product->id}}">
+    <input type="hidden" name="brand_name" value="{{ $product->brand->name }}">
+    <input type="hidden" name="sku" value="{{$product->sku}}">
+    <input type="hidden" name="productModel" value="{{$product->productModel}}">
+    @if ($product->price)
+        <button type="submit" class="add_cart" href="#">Agregar al Carrito</button>
+    @else
+        <a class="add_cart2" href="{{route('contact')}}">Requiere Asesoria</a>
+    @endif
+    <input name="qty" type="hidden" min="1" max="100" value="1" />
+</form>
                         </div>
                     </div>
                 </div>
