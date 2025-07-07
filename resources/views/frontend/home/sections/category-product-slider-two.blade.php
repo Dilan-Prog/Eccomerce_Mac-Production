@@ -25,8 +25,10 @@
                                 </span>
                                 @break                           
                             @case('top_product')
-                                <span class="wsus__new" style="display: none">
-                                    
+                                <div id="hot-sale_wsus_new" style="position: absolute; top: 10px; right: 10px; z-index: 2; width: 70px;">
+                                    <img src="{{asset('frontend/images/logo/hot_sale.png')}}" alt="Promocion de Hot Sale Industrial" >   
+                                </div>
+                                <span class="wsus__new wsus__new--top-product" style="background: #FF0000">Hot sale <i class="fa fa-fire" aria-hidden="true"></i>
                                 </span>
                                 @break
                             @case('best_product')

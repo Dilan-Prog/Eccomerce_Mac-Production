@@ -21,10 +21,9 @@ class ApplyDC1200Discount extends Command
 
 
         foreach ($products as $product) {
-            $product->offert_price = $product->price - ($product->price * 0.10);
-            $product->offer_start_date = '2025-05-01';
-            $product->offer_end_date = '2025-12-30';
-            
+            // $product->offert_price = $product->price - ($product->price * 0.15);
+            $product->offer_end_date = '2025-06-30';
+            $product->product_type = 'new_arrival';
             $product->save();
         }
         // dd($product);

@@ -50,7 +50,7 @@
     
                         <ul class="wsus__menu_item">
                             <li><a class="active" href="{{ route('index') }}">Inicio</a></li>
-                            <li><a href="{{ route('price') }}">Cotizacion</a></li>
+                            {{-- <li><a href="{{ route('price') }}">Cotizacion</a></li> --}}
                             <li><a href="{{ route('about') }}">Nosotros</a></li>
                         </ul>
     
@@ -258,7 +258,7 @@
                 <div class="accordion accordion-flush" id="accordionFlushExample2">
                     <ul>
                         <li><a href="{{ route('index') }}">Inicio</a></li>
-                        <li><a href="{{ route('price') }}">Cotizacion</a></li>
+                        {{-- <li><a href="{{ route('price') }}">Cotizacion</a></li> --}}
                         <li><a href="{{ route('products.index') }}" id="productos-menu-trigger">Productos</a></li>
                         <li><a href="{{ route('about') }}">Nosotros</a></li>
                         <li class="wsus__relative_li">
@@ -266,9 +266,12 @@
                             <div id="services-collapse" class="accordion-collapse collapse">
                                 <div class="accordion-body">
                                     <ul>
-                                        <li><a href="{{ route('sistemas') }}">Sistemas De Control</a></li>
-                                        
-                                        <li><a href="{{ route('calibracion-puesta') }}">Calibración y Puesta en Marcha</a></li>
+                                        <li><a href="{{ route('servicio-controladores-temperatura') }}">Instalacion de Controladores</a></li>
+                                        <li><a href="{{ route('servicio-instalacion-videoregistradores') }}">Instalacion de Videoregistradores</a></li>
+                                        <li><a href="{{ route('servicio-instalacion-medidoresdeflujo') }}">Instalacion de Medidores de Flujo</a></li>
+                                        <li><a href="{{ route('servicio-instalacion-plc') }}">Configuracion, Instalacion y Proyecto llave en mano de PLC</a></li>
+                                        <li><a href="{{ route('servicio-reparacion-videoregistradores') }}">Reparacion de Videoregistradores</a></li>
+                                        <li><a href="{{ route('servicio-calibracion-ema') }}">Calibraciones EMA</a></li>
                                     </ul>
                                 </div>
                             </div>

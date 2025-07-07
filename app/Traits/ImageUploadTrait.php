@@ -4,7 +4,8 @@ use Illuminate\Http\Request;
 use Intervention\Image\ImageManager;
 use Intervention\Image\Drivers\Gd\Driver;
 use Intervention\Image\EncodedImage;
-use File;
+use Illuminate\Support\Facades\File;
+// use File;
 use Intervention\Image\Drivers\Gd\Encoders\WebpEncoder;
 
 trait ImageUploadTrait{
@@ -138,16 +139,40 @@ trait ImageUploadTrait{
 
     }
 
-    /**handle delete file */
-    public function deleteImage(string $path){
-
-        if(File::exists(public_path($path))){
-            File::delete(public_path($path));
-        }
+    /**handle delete file antiguo no sirve para rutas url hacer el cambio a rutas relativas*/
 
 
+    // public function deleteImage(string $path){
+
+    //     if(File::exists(storage_path($path))){
+    //         File::delete(storage_path($path));
+    //     }
+    // }
+
+    /**handle delete file Nuevo ahi que poner o cambiar a rutas relativas*/
+    public function deleteImage(string $fullUrl)
+    {
+    // Obtiene el host base (dominio + esquema)
+    $baseUrl = config('app.url'); // ej: http://eccomerce_mac-production.test
+
+    // Elimina la baseUrl de la URL completa para obtener ruta relativa
+    $relativePath = str_replace($baseUrl, '', $fullUrl);
+
+    // Limpia posibles barras iniciales
+    $relativePath = ltrim($relativePath, '/');
+
+    $fullPath = public_path($relativePath);
+
+    if (File::exists($fullPath)) {
+        File::delete($fullPath);
+        return true;
+    }
+
+    return false;
 
     }
+
+
 
 
 
