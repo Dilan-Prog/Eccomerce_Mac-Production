@@ -58,7 +58,7 @@
                         </div>
                     </div>
                     <div class="col-xl-4 ">
-                        <div class="wsus__pro_details_text" ">
+                        <div class="wsus__pro_details_text" >
                             <span>
                                 @switch($product->product_type)
                                     @case('new_arrival')
@@ -86,7 +86,8 @@
                                         </span>
                                         @break
                                     @case('best_product')
-                                        <span>Mas Vendido  
+                                            
+                                        <span>Mas Vendido
                                             @if ($product->price)
                                             | {{$product->qty}} piezas
                                             @else
@@ -432,7 +433,6 @@
                                     $exisItem = $order->orderProducts()->where('product_id', $product->id)->first();
                                     if ($exisItem) {
                                         $isBrought = true;
-                                        # code...
                                     }
                                 }
                             @endphp

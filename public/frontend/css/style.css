@@ -1170,7 +1170,7 @@ PRODUCT MODAL VIEW END
   left:32px;
   width: 100%; /* Ancho del corte */
   height: 102%; /* La altura completa del elemento */
-  background: #00468c;
+  /* background: #00468c; */
   transform: skewX(-45deg); /* Inclina el corte en 45 grados */
   transform-origin: top left; /* Punto de origen del sesgo */
   z-index: -1; /* Envía el pseudo-elemento detrás del texto */
@@ -1185,12 +1185,13 @@ PRODUCT MODAL VIEW END
 }
 
 .wsus__new--top-product::before {
-  background: #6f42c1; /* Morado */
+  background: #FF0000; /* Morado */
 }
 
 .wsus__new--best-product::before {
   background: #fa7c04; /* Naranja */
 }
+
 
 .wsus__minus {
   position: absolute;

@@ -146,9 +146,12 @@ class SliderController extends Controller
     {
         $slider = Slider::findOrFail($id);
              $this->deleteImage($slider->banner);
+             $this->deleteImage($slider->banner_laptop);
+             $this->deleteImage($slider->banner_tablet);
+             $this->deleteImage($slider->banner_phone);
              $slider->delete();
 
-             return response(['status' => 'success', 'message' => 'Deleted Successfully!']);
+             return response(['status' => 'success', 'message' => 'Borrado Correctamente']);
 
 
     }

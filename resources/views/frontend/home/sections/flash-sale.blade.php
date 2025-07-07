@@ -26,23 +26,25 @@
 
                         @switch($product->product_type)
                             @case('new_arrival')
-                                <span class="wsus__new wsus__new--new-arrival" style="background: #00468c">Nuevo
+                                <span id class="wsus__new wsus__new--new-arrival" style="background: #00468c">Nuevo
                                     
                                 </span>
                                 @break
                             @case('featured_product')
-                                <span class="wsus__new" style="display: none">  
-                                    
+                                
+                                <span class="wsus__new" style="display: none">Hot sale 
                                 </span>
                                 @break                           
                             @case('top_product')
-                                <span class="wsus__new" style="display: none">
-                                    
+                                <div id="hot-sale_wsus_new" style="position: absolute; top: 10px; right: 10px; z-index: 1; width: 70px;">
+                                    <img src="{{asset('frontend/images/logo/hot_sale.png')}}" alt="Promocion de Hot Sale Industrial" >   
+                                </div>
+                                <span class="wsus__new wsus__new--top-product" style="background: #FF0000">Hot sale
                                 </span>
                                 @break
                             @case('best_product')
                                 <span class="wsus__new wsus__new--best-product" style="background: #fa7c04">Más Vendido  
-                                    
+                                     
                                 </span>
                                 @break
                             @default

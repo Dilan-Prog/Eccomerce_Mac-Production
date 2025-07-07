@@ -32,7 +32,7 @@
                         <h5>Paginas</h5>
                         <ul class="wsus__footer_menu">
                             <li><a href="{{ route('index') }}"><i class="fas fa-caret"></i> Inicio</a></li>
-                            <li><a href="{{ route('price') }}"><i class="fas fa-caret"></i> Cotizacion</a></li>
+                            {{-- <li><a href="{{ route('price') }}"><i class="fas fa-caret"></i> Cotizacion</a></li> --}}
                             <li><a href="{{ route('products.index') }}"><i class="fas fa-caret"></i> Productos</a></li>
                             <li><a href="{{ route('about') }}"><i class="fas fa-caret"></i> Nosotros</a></li>
                             <li><a href="#"><i class="fas fa-caret"></i> Servicios</a></li>
