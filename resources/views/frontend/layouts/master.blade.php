@@ -135,6 +135,63 @@
     <script src="{{asset('frontend/js/main.js')}}"></script>
     <!--toast js-->
     <script src="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    {{-- Track Conversion ads --}}
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        [
+        'gclid',
+        'utm_source',
+        'utm_medium',
+        'utm_campaign'
+        ].forEach(param => {
+        const value = urlParams.get(param);
+        if (value) localStorage.setItem(param, value);
+        });
+        localStorage.setItem('landing_page', window.location.pathname);
+    </script>
+{{-- Envio de datos Track Conversion --}}
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+        const conversionLinks = document.querySelectorAll('a.track-conversion');
+
+        conversionLinks.forEach(link => {
+            link.addEventListener('click', function (e) {
+                const type = this.dataset.type || 'desconocido'; 
+                const href = this.getAttribute('href');
+
+                e.preventDefault(); 
+
+               
+                const payload = {
+                    gclid: localStorage.getItem('gclid') || null,
+                    utm_source: localStorage.getItem('utm_source') || null,
+                    utm_medium: localStorage.getItem('utm_medium') || null,
+                    utm_campaign: localStorage.getItem('utm_campaign') || null,
+                    landing_page: localStorage.getItem('landing_page') || window.location.pathname,
+                    type: type 
+                };
+
+                // Envía la info al backend usando fetch POST
+                fetch('{{ route('track.conversion') }}', {
+                    method: 'post',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify(payload)
+                }).catch(err => {
+                    console.warn('No se pudo guardar la conversión:', err);
+                }).finally(() => {
+                    // Después de 300ms redirige al enlace (WhatsApp o Teléfono)
+                    setTimeout(() => {
+                        window.open(href, '_blank');
+                    }, 300);
+                });
+            });
+        });
+    });
+    </script>
+
     <script>
         function loadVideo() {
             var container = document.getElementById('video-container');
@@ -146,8 +203,6 @@
         </script>
         
    
-
-
     <script>
     @if ($errors->any())
                 @foreach ($errors->all() as $error )
@@ -163,6 +218,8 @@
         }
     });
     </script>
+
+
     @include('frontend.layouts.scripts')
     @stack('scripts')
 </body>

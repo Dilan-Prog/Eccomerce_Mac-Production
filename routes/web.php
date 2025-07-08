@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Backend\AdminController;
 use App\Http\Controllers\Backend\ProductController;
+use App\Http\Controllers\Backend\TrackConversionController;
 use App\Http\Controllers\Frontend\FlashSaleController;
 use App\Http\Controllers\Backend\VendorController;
 use App\Http\Controllers\Frontend\BrandsMarkController;
@@ -51,6 +52,8 @@ Route::get('Aviso-Privacidad', [HomeController::class, 'avisoPrivacidad'])->name
 Route::get('distribuidor-oficial-honeywell', [HomeController::class, 'distribuidorHoneywell'])->name('distribuidor-oficial-honeywell');
 Route::get('/googgle-feed_macdelnorte$product-merchant-center',[ProductController::class, 'generateFeedProduct']);
 Route::get('/googgle-feed_macdelnorte-facebook',[ProductController::class, 'generateFeedProductFacebook']);
+
+Route::post('/track-conversion', [TrackConversionController::class, 'store'])->name('track.conversion');
 
 
 Route::get('/aplicar-descuento-dc1200', function () {
