@@ -5935,6 +5935,12 @@ a:not([href]):not([class]):hover {
 
 } */
 
+.wsus__single_slider{
+  align-items: center;
+  justify-content: center;
+  display: flex;
+  
+}
 
 
 /* Fin de Estilos para servicios dinamicos */

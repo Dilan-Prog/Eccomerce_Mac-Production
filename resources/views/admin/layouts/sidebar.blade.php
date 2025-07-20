@@ -27,7 +27,7 @@
                     'admin.canceled-orders',
                 ]) }}">
                 <a href="#" class="nav-link has-dropdown" data-toggle="dropdown"><i
-                        class="fas fa-clipboard-list"></i> <span>Panel De Control</span></a>
+                        class="fas fa-clipboard-list"></i><span>Panel De Control</span></a>
                 <ul class="dropdown-menu">
                     <li class="{{ setActive(['admin.order.*']) }}"><a class="nav-link"
                             href="{{ route('admin.order.index') }}">Todas Las Ordenes</a></li>
@@ -99,12 +99,12 @@
                 </ul>
             </li>
 
-            <li class="dropdown {{ setActive(['admin.flash-sale.*']) }}">
+            <li class="dropdown {{ setActive(['admin.track-conversion.*']) }}">
                 <a href="#" class="nav-link has-dropdown" data-toggle="dropdown"> <i class="fas fa-ad"></i>
                     <span>Publicidad</span></a>
                 <ul class="dropdown-menu">
-                    <li class="{{ setActive(['admin.flash-sale.*']) }}"><a class="nav-link"
-                            href="{{ route('admin.flash-sale.index') }}"> 
+                    <li class="{{ setActive(['admin.track-conversion.*']) }}"><a class="nav-link"
+                            href="{{ route('admin.track-conversion.index') }}"> 
                             {{-- color: #868e96; ANIMAR COLOR --}}
                             <svg role="img" viewBox="0 0 24 24" style="width: 28px; height: 13px;"
                                 xmlns="http://www.w3.org/2000/svg">

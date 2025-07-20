@@ -2,6 +2,11 @@
 
 @section('title')
 {{$settings->site_name}}
+
+@endsection
+@section('meta_tags')
+    <meta name="author" content="{{$settings->site_name}}">
+
 @endsection
 
 @section('content')

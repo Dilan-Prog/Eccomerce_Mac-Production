@@ -19,6 +19,7 @@ use App\Http\Controllers\Frontend\UserOrderController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Artisan;
+use App\Http\Controllers\Backend\ReCaptchaController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -53,6 +54,7 @@ Route::get('distribuidor-oficial-honeywell', [HomeController::class, 'distribuid
 Route::get('/googgle-feed_macdelnorte$product-merchant-center',[ProductController::class, 'generateFeedProduct']);
 Route::get('/googgle-feed_macdelnorte-facebook',[ProductController::class, 'generateFeedProductFacebook']);
 
+Route::post('/recaptcha-validar', [ReCaptchaController::class, 'verify']);
 Route::post('/track-conversion', [TrackConversionController::class, 'store'])->name('track.conversion');
 
 
@@ -61,12 +63,19 @@ Route::get('/aplicar-descuento-dc1200', function () {
     return 'Descuento aplicado!';
 });
 
-Route::get('/clear-cache', function () {
-    Artisan::call('config:clear');
-    Artisan::call('cache:clear');
-    Artisan::call('view:clear');
-    Artisan::call('route:clear');
-    return 'Cache cleared!';
+Route::get('/run-slider-conversion', function () {
+    Artisan::call('images:convert-png');
+
+    return response()->json([
+        'status' => 'ok',
+        'message' => 'Comando ejecutado correctamente',
+        'output' => Artisan::output()
+    ]);
+});
+
+Route::get('/ejecutar-convert', function () {
+    Artisan::call('images:convert-png');
+    return response()->json(['status' => 'ok', 'message' => 'Comando ejecutado correctamente.']);
 });
 
 

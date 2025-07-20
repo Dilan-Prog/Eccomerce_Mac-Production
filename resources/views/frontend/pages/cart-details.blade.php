@@ -4,6 +4,8 @@
 {{$settings->site_name}} || Detalles De Carrito
 @endsection
 
+
+
 @section('content')
     <section id="wsus__cart_view">
         <div class="container">

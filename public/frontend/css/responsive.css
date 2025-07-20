@@ -1,9 +1,9 @@
 @media (min-width: 1400px) {
-    .wsus__banner_content {
+    /* .wsus__banner_content {
 
         overflow: hidden;
 
-      }
+      } */
 
   .dashboard_content .wsus__invoice_description .name {
     width: 40%;

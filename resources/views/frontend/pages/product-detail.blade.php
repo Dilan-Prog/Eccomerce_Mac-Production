@@ -254,6 +254,30 @@
                                     </ul>
                                 </a>
                             </div>
+                            {{-- VALDACION CON reCAPTCHA google
+                            <div class="button_container">
+                                <a id="whatsappBtn" class="track-conversion" data-type="whatsapp" href="#" style="width: 100%;">
+                                    <ul class="wsus__button_area">
+                                        <li>
+                                            <button type="button" class="whastapp_cart_cotize">
+                                                <i class="fa fa-whatsapp" aria-hidden="true"></i> Cotizar Ahora!
+                                            </button>
+                                        </li>
+                                    </ul>
+                                </a>
+                                <a id="telefonoBtn" class="track-conversion" data-type="telefono" href="#" style="width: 100%;">
+                                    <ul class="wsus__button_area">
+                                        <li>
+                                            <button id="button_call_product_details" type="button" class="phone_number_cart_cotize">
+                                                <i class="fa fa-phone-alt" aria-hidden="true"></i> Atención Inmediata!
+                                            </button>
+                                        </li>
+                                    </ul>
+                                </a>
+                            </div> --}}
+
+
+
                             </p>
                                 <div class="wsus__assurance">
                                     <ul>
@@ -556,6 +580,51 @@
 @endsection
 
 @push('scripts')
+{{--    VALIDACION reCAPTCHA Google
+<script>
+    const siteKey = '6LfT84IrAAAAAKVhNXXrFPDAgMFAiCGdj1-tYz2B';
+    const whatsappUrl = 'https://wa.link/f28njw';
+    const telefonoUrl = 'tel:8124738768';
+
+    function validarReCaptcha(action, callback) {
+        grecaptcha.ready(() => {
+            grecaptcha.execute(siteKey, { action: action }).then(token => {
+                if(token) {
+                    callback(token);
+                } else {
+                    alert('No se pudo validar tu acción. Intenta de nuevo.');
+                }
+            });
+        });
+    }
+
+    document.getElementById('whatsappBtn').addEventListener('click', e => {
+        e.preventDefault();
+        validarReCaptcha('whatsapp_click', token => {
+            dataLayer.push({
+                event: 'whatsapp_conversion',
+                action: 'click',
+                label: 'whatsapp-icon',
+                recaptcha_token: token
+            });
+            window.open(whatsappUrl, '_blank');
+        });
+    });
+
+    document.getElementById('telefonoBtn').addEventListener('click', e => {
+        e.preventDefault();
+        validarReCaptcha('telefono_click', token => {
+            dataLayer.push({
+                event: 'Telefono_Conversion',
+                telefono: '8124738768',
+                recaptcha_token: token
+            });
+            window.location.href = telefonoUrl;
+        });
+    });
+</script> --}}
+
+
 <script>
    
 const fileInput = document.getElementById('file-input');

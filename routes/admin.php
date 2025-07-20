@@ -23,6 +23,7 @@ use App\Http\Controllers\Backend\ProductVariantController;
 use App\Http\Controllers\Backend\ProductVariantItemController;
 use App\Http\Controllers\Backend\SettingController;
 use App\Http\Controllers\Backend\StripeSettingController;
+use App\Http\Controllers\Backend\TrackConversionController;
 use App\Http\Controllers\Backend\TransactionController;
 use App\Http\Controllers\Backend\TransferController;
 use App\Http\Controllers\Backend\UserManageController;
@@ -73,6 +74,10 @@ Route::get('products/get-subcategories',[ ProductController::class, 'getSubCateg
 Route::get('products/get-child-categories',[ ProductController::class, 'getChildCategories'])->name('product.get-child-categories');
 Route::resource('products',ProductController::class);
 Route::get('products/search', [ProductController::class, 'searchProducts'])->name('products.search');
+
+/**Ads route */
+Route::get('track-conversion', [TrackConversionController::class, 'index'])->name('track-conversion.index');
+
 
 /**ProductImageGallery route */
 Route::get('products-image-gallery/{productId}', [ProductImageGalleryController::class, 'index'])->name('admin.products-image-gallery.index');
