@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Backend;
 
+use App\DataTables\TrackConversionDataTable;
 use App\Http\Controllers\Controller;
 use App\Models\TrackConversion;
 use Illuminate\Http\Request;
@@ -10,6 +11,12 @@ use Illuminate\Support\Facades\Log;
 class TrackConversionController extends Controller
 {
     //
+    public function index(TrackConversionDataTable $dataTable)
+    {
+        return $dataTable->render('admin.track-conversion.index');
+    }
+
+
 
     public function store(Request $request)
     {

@@ -60,11 +60,18 @@ class ProductController extends Controller
             'canonical_url' => ['nullable', 'url'],
             'is_canonical' => ['nullable', 'boolean'],
         ]);
-
-        /**Handle the image upload */
-        $imagePath =  $this->uploadImage($request,'image','uploads', 500, 500);
+        
 
         $product = new Product();
+        $category = Category::findOrFail($request->category);
+        $brand = Brand::findOrFail($request->brand);
+        /**Handle the image upload */
+        $imagePath =  $this->uploadImage($request,'image','uploads/product/' . Str::slug($brand->name) . '/webp/computers/', 1200, 1200);
+        $imagePath =  $this->uploadImage($request,'image','uploads/product/' . Str::slug($brand->name) .'/webp/laptop', 1000, 1000);
+        $imagePath =  $this->uploadImage($request,'image','uploads/product/' . Str::slug($brand->name) .'/webp/tablet', 800, 800);
+        $imagePath =  $this->uploadImage($request,'image','uploads/product/' . Str::slug($brand->name) .'/webp/phone', 600, 600);
+        $imagePath =  $this->uploadImage($request,'image','uploads/product/' . Str::slug($brand->name) .'/webp/carrusel', 600, 600);
+
         $product->thumb_image = $imagePath;
         $product->name = $request->name;
         $product->slug=Str::slug($request->name);
@@ -91,7 +98,11 @@ class ProductController extends Controller
         $product->seo_description = $request->seo_description;
         $product->canonical_url = $request->canonical_url;
         $product->is_canonical = $request->is_canonical;
+        // dd($request->all());
+
         $product->save();
+
+        
 
         toastr('Producto Creado Con exito');
         return redirect()->route('admin.products.index');
@@ -147,7 +158,7 @@ class ProductController extends Controller
         $product = Product::findOrFail($id);
 
         /**Handle the image upload */
-        $imagePath =  $this->updateImage($request,'image','uploads', $product->thumb_image);
+        $imagePath =  $this->updateImage($request, 'image', 'uploads', $product->thumb_image, 800, 800);
 
         $product->thumb_image = empty(!$imagePath) ? $imagePath : $product->thumb_image;
         $product->name = $request->name;

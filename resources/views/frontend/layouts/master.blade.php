@@ -1,25 +1,23 @@
 <!DOCTYPE html>
-<html lang="es">
-
+<html lang="es-MX">
 <head>
+    {{-- etiquetas preconnect para seguimiento de Google y analytics --}}
+    <link rel="preconnect" href="https://www.google-analytics.com" crossorigin>
+    <link rel="preconnect" href="https://www.googletagmanager.com" crossorigin>
+    <link rel="preconnect" href="https://www.google.com" crossorigin>
+    <link rel="preconnect" href="https://www.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://stats.g.doubleclick.net" crossorigin>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximal-scale=1">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="csrf-token" content="{{ csrf_token() }}" />
-    <meta name="description" content="Comercializadora de Productos de Clase Mundial y Expertos en Instrumentación somos los principales proveedores de marcas de exelencia calidad Garantizandote Seguridad,Calidad y Confianza con nuestros productos de Calidad Alta, Nos destacamos como una empresa con una Gran Capacidad de Proveer Todos Los Productos Industriales al Mejor Precio del Mercado, ademas de que somo Expertos en Instrumentacion de Campo">
-    <meta name="author" content="Mac Del Norte">
-    <meta name="keywords" content="automatizacion, instrumentación, ingenieria, honeywell, transmisores de presion, transmisores de temperatura, medidores de flujo, altech méxico, distribuidor honeywell, videoregistradores, fotoceldas, amplificadores de flama, control de flama, controladores y programadores, control de temperatura, dc1010, dc2800, modutroles, distribuidor certificado honeywell ">
-    <meta name="robots" content="all">
-    
-    
-    <meta name="currency" content="MXN">
-
     <link rel="icon" type="image/png" href="{{asset("frontend/images/logo/AVIAzul-Celeste.png")}}" sizes="16x16">
     <link rel="icon" type="image/png" href="{{asset("frontend/images/logo/AVIAzul-Celeste.png")}}" sizes="32x32">
     
     <meta name="twitter:card" content="{{asset("frontend/images/logo/AVIAzul-Celeste.png")}}">
     <meta name="twitter:site" content="@MacdelNorte">
-    <meta name="twitter:title" content="Mac Del Norte: Comercializadoras de Productos Industriales y Especialistas en Instrumentacion">
+    <meta name="twitter:title" content="Mac Del Norte:Distribuidora y Comercializadora de Productos Industriales y Especialistas en Instrumentacion">
     <meta name="twitter:description" content="Soluciones innovadoras en instrumentacion, automatización, medición y control con el mejor precio de la industria">
     <meta name="twitter:image" content="{{asset("frontend/images/logo/AVIAzul-Celeste.png")}}">
 
@@ -31,36 +29,71 @@
     <meta property="og:site_name" content="Mac Del Norte">
     <meta property="og:type" content="website">
     <meta property="article:author" content="https://www.facebook.com/macdelnorteofficial">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap">
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" fetchpriority="high" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap"></noscript>
+
     <title>
         @yield('title')
     </title>
+    @yield('meta_tags')
     
+    <meta name="author" content="{{$settings->site_name}}">
+    <meta name="description" content="Distribuidora y Comercializadora de prouductos Industriales, Expertos en Instrumentacion y Automatizacion Industrial, Distribuidor Autorizado de productos Industriales.Servicios de Intrumentacion de Campo mas de 7 años de experiencia.">
+    <meta name="keywords" content="Distribuidor autorizado Honeywell, especialistas en instrumentación, automatización industrial, proveedor Honeywell México, equipos de control industrial, Dominion Electrónica, Electrónica Universal, soluciones industriales, refacciones industriales, sensores industriales">
+    <meta name="robots" content="all">
+    <meta name="currency" content="MXN">
+
+
     @yield('canonical_URL')
-    <link rel="stylesheet" href="{{asset('frontend/css/bootstrap.min.css')}}" >
+
+    <link rel="preconnect" href="https://adservice.google.com" crossorigin>
+    <link rel="preconnect" href="https://www.googletagservices.com" crossorigin>
+    <link rel="preconnect" href="https://securepubads.g.doubleclick.net" crossorigin>
+    <link rel="preconnect" href="https://tpc.googlesyndication.com" crossorigin>
+    <link rel="preconnect" href="https://pagead2.googlesyndication.com" crossorigin>
+
+{{-- 
+    <link rel="preload" fetchpriority="high" href="{{asset('frontend/css/bootstrap.min.css')}}" as="style" onload="this.onload=null;this.rel='stylesheet'" >
+    <noscript><link rel="stylesheet" href="{{ asset('frontend/css/bootstrap.min.css') }}"></noscript> --}}
+    <link rel="preload" as="style" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous" fetchpriority="high" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"></noscript>
+
     {{-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous"> --}}
     <link rel="stylesheet" href="{{asset('frontend/css/all.min.css')}}" >
     {{-- <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet" integrity="sha512-sVZ6X2KzNjzDqEtOoyArBPIzY+Z5tc+yjaNQvv3DxRKu+aO+4hBNfRPTPQkn+HkqFhR3LKaU1Y6T1V2kAUp+Zw==" crossorigin="anonymous" referrerpolicy="no-referrer" /> --}}
     <link rel="stylesheet" href="{{asset('frontend/css/select2.min.css')}}" >
+    <link rel="stylesheet" href="{{ asset('frontend/css/select2.min.css') }}">
     {{-- <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" /> --}}
     <link rel="stylesheet" href="{{asset('frontend/css/slick.css')}}">
     {{-- <link href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css" rel="stylesheet" /> --}}
     <link rel="stylesheet" href="{{asset('frontend/css/jquery.nice-number.min.css')}}">
     <link rel="stylesheet" href="{{asset('frontend/css/jquery.calendar.css')}}">
     <link rel="stylesheet" href="{{asset('frontend/css/add_row_custon.css')}}">
-    <link rel="stylesheet" href="{{asset('frontend/css/mobile_menu.css')}}">
+    <link rel="stylesheet"  href="{{ asset('frontend/css/mobile_menu.css') }}">
     <link rel="stylesheet" href="{{asset('frontend/css/jquery.exzoom.css')}}">
     <link rel="stylesheet" href="{{asset('frontend/css/multiple-image-video.css')}}">
     <link rel="stylesheet" href="{{asset('frontend/css/ranger_style.css')}}">
-    <link rel="stylesheet" href="{{asset('frontend/css/jquery.classycountdown.css')}}">
+    <link rel="stylesheet"  href="{{ asset('frontend/css/jquery.classycountdown.css') }}">
     <link rel="stylesheet" href="{{asset('frontend/css/venobox.min.css')}}">
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
-    
-    <link rel="stylesheet" href="{{asset('frontend/css/style.css')}}">
-    <link rel="stylesheet" href="{{asset('frontend/css/responsive.css')}}">
-    <script type="module" src="https://cdn.jsdelivr.net/npm/@justinribeiro/lite-youtube@1/lite-youtube.min.js"></script>
+
+    <script src="https://www.google.com/recaptcha/api.js?render=6LfT84IrAAAAAKVhNXXrFPDAgMFAiCGdj1-tYz2B"></script>
+
+    <link rel="preload" fetchpriority="high" href="{{asset('frontend/css/style.css')}}" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="{{ asset('frontend/css/style.css') }}"></noscript>
+    <link rel="stylesheet" href="{{ asset('frontend/css/responsive.css') }}">
+    <script defer type="module" src="https://cdn.jsdelivr.net/npm/@justinribeiro/lite-youtube@1/lite-youtube.min.js"></script>
 
     <!-- <link rel="stylesheet" href="css/rtl.css"> -->
+    {{-- <script async src="https://www.googletagmanager.com/gtag/js?id=AW-16512201966">
+    </script>
+     <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+    
+      gtag('config', 'AW-16512201966');
+    </script> --}}
     @stack('Google-Ads')
 
 </head>
@@ -135,7 +168,79 @@
     <script src="{{asset('frontend/js/main.js')}}"></script>
     <!--toast js-->
     <script src="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
+
+    <script>
+        const siteKey = '6LfT84IrAAAAAKVhNXXrFPDAgMFAiCGdj1-tYz2B';
+
+        // Función general para ejecutar y validar reCAPTCHA
+        function ejecutarRecaptchaYValidar(action, callbackOK) {
+            grecaptcha.ready(() => {
+                grecaptcha.execute(siteKey, { action: action }).then(token => {
+                    fetch('/recaptcha-validar', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                        },
+                        body: JSON.stringify({ token, action })
+                    }).then(res => {
+                        if (res.ok) {
+                            callbackOK(token);
+                        } else {
+                            alert('No se pudo validar reCAPTCHA.');
+                        }
+                    }).catch(() => alert('Error al validar reCAPTCHA'));
+                });
+            });
+        }
+
+        // WhatsApp flotante
+        document.querySelector('#whastapp-flotante')?.addEventListener('click', function (e) {
+            e.preventDefault();
+            ejecutarRecaptchaYValidar('whatsapp_flotante', function (token) {
+                dataLayer.push({
+                    event: 'whatsapp_conversion',
+                    action: 'click',
+                    label: 'whatsapp_flotante',
+                    recaptcha_token: token
+                });
+                window.open('https://wa.link/f28njw', '_blank');
+            });
+        });
+
+        // WhatsApp en página de producto
+        document.querySelector('#whatsappBtn')?.addEventListener('click', function (e) {
+            e.preventDefault();
+            ejecutarRecaptchaYValidar('whatsapp_click', function (token) {
+                dataLayer.push({
+                    event: 'whatsapp_conversion',
+                    action: 'click',
+                    label: 'whatsapp_producto',
+                    recaptcha_token: token
+                });
+                window.open('https://wa.link/f28njw', '_blank');
+            });
+        });
+
+        // Botón de teléfono
+        document.querySelector('#telefonoBtn')?.addEventListener('click', function (e) {
+            e.preventDefault();
+            ejecutarRecaptchaYValidar('telefono_click', function (token) {
+                dataLayer.push({
+                    event: 'Telefono_Conversion',
+                    telefono: '8124738768',
+                    recaptcha_token: token
+                });
+                window.location.href = 'tel:8124738768';
+            });
+        });
+        </script>
+
+
     {{-- Track Conversion ads --}}
+
+
     <script>
         const urlParams = new URLSearchParams(window.location.search);
         [

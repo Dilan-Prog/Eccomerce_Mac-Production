@@ -49,7 +49,7 @@ class SliderController extends Controller
         $slider = new Slider();
 
         /**header file Upload */
-        $imagePathComputers = $this->uploadImage($request,'banner','uploads/slider/webp/computers',1320,440);
+        $imagePathComputers = $this->uploadImage($request,'banner','uploads/slider/webp/computers',1250,417);
         $imagePathLaptop = $this->uploadImage($request,'banner','uploads/slider/webp/laptop',1140,380);
         $imagePathTablet = $this->uploadImage($request,'banner','uploads/slider/webp/tablet',720,240);
         $imagePathPhone = $this->uploadImage($request,'banner','uploads/slider/webp/phone',370,125);
@@ -101,7 +101,7 @@ class SliderController extends Controller
     public function update(Request $request, string $id)
     {
         $request->validate([
-            'banner'=>['required','image','mimes:jpeg,png,jpg,gif,svg,webp','max:2000'],
+            'banner'=>['image','mimes:jpeg,png,jpg,gif,svg,webp','max:2000'],
             'type' =>['nullable','string','max:200'],
             'title' => ['max:200'],
             'starting_price'=>['max:200'],
@@ -112,16 +112,27 @@ class SliderController extends Controller
 
         $slider = Slider::findOrFail($id);
 
-        /**header file Upload */
-        $imagePathComputers = $this->uploadImage($request,'banner','uploads/slider/webp/computers',1320,440);
-        $imagePathLaptop = $this->uploadImage($request,'banner','uploads/slider/webp/laptop',1140,380);
-        $imagePathTablet = $this->uploadImage($request,'banner','uploads/slider/webp/tablet',720,240);
-        $imagePathPhone = $this->uploadImage($request,'banner','uploads/slider/webp/phone',370,125);
+        if ($request->hasFile('banner')) {
+            // Verifica y elimina solo si existe
+            if (!empty($slider->banner)) {
+                $this->deleteImage($slider->banner);
+            }
+            if (!empty($slider->banner_laptop)) {
+                $this->deleteImage($slider->banner_laptop);
+            }
+            if (!empty($slider->banner_tablet)) {
+                $this->deleteImage($slider->banner_tablet);
+            }
+            if (!empty($slider->banner_phone)) {
+                $this->deleteImage($slider->banner_phone);
+            }
 
-        $slider->banner= empty(!$imagePathComputers) ? $imagePathComputers : $slider->banner;
-        $slider->banner_laptop= empty(!$imagePathLaptop) ? $imagePathLaptop : $slider->banner_laptop;
-        $slider->banner_tablet= empty(!$imagePathTablet) ? $imagePathTablet : $slider->banner_tablet;   
-        $slider->banner_phone= empty(!$imagePathPhone) ? $imagePathPhone : $slider->banner_phone;
+            // Subir nuevas imágenes
+            $slider->banner = $this->uploadImage($request, 'banner', 'uploads/slider/webp/computers', 1320, 450);
+            $slider->banner_laptop = $this->uploadImage($request, 'banner', 'uploads/slider/webp/laptop', 1140, 380);
+            $slider->banner_tablet = $this->uploadImage($request, 'banner', 'uploads/slider/webp/tablet', 720, 240);
+            $slider->banner_phone = $this->uploadImage($request, 'banner', 'uploads/slider/webp/phone', 370, 125);
+        }
 
         $slider->type = $request->type;
         $slider->title = $request->title;

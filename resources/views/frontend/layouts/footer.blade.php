@@ -87,7 +87,11 @@
                     <div class="col-4">
                         <a href="{{route('distribuidor-oficial-honeywell')}}">
                              <div class="card" style="border-color: #000000">
-                                <img class="card-img-top" src="https://1000marcas.net/wp-content/uploads/2020/02/Logo-Honeywell.png" alt="Distribuidor Oficial Honeywell" style="padding: 0px 80px; width: 100%;">
+                                <img class="card-img-top"
+                                        decoding="async" 
+                                        fetchpriority="low" 
+                                        loading="lazy"
+                                         src="https://1000marcas.net/wp-content/uploads/2020/02/Logo-Honeywell.png" alt="Distribuidor Oficial Honeywell" style="padding: 0px 80px; width: 100%;">
                                 <div class="card-body">
                                     <h4 class="card-title">Distribuidor Oficial Honeywell</h4>
                                     <p class="card-text">Ver documento</p>

@@ -23,7 +23,29 @@ class TrackConversionDataTable extends DataTable
     public function dataTable(QueryBuilder $query): EloquentDataTable
     {
         return (new EloquentDataTable($query))
-            ->addColumn('action', 'trackconversion.action')
+            
+            ->addColumn('gclid', function ($query){
+                return $query->gclid;
+            })
+            ->addColumn('type', function ($query) {
+                return $query->type;
+            })
+            ->addColumn('utm_source', function ($query) {
+                return $query->utm_source;
+            })
+            ->addColumn('utm_medium', function ($query) {
+                return $query->utm_medium;
+            })
+            ->addColumn('utm_campaign', function ($query) {
+                return $query->utm_campaign;
+            })
+            ->addColumn('landing_page', function ($query) {
+                return $query->landing_page;
+            })
+            ->addColumn('created_at', function ($query) {
+                return $query->created_at->format('Y-m-d h:i A');
+            })
+
             ->setRowId('id');
     }
 
@@ -35,7 +57,7 @@ class TrackConversionDataTable extends DataTable
      */
     public function query(TrackConversion $model): QueryBuilder
     {
-        return $model->newQuery();
+        return $model->newQuery()->orderBy('created_at', 'desc');
     }
 
     /**
@@ -50,7 +72,7 @@ class TrackConversionDataTable extends DataTable
                     ->columns($this->getColumns())
                     ->minifiedAjax()
                     //->dom('Bfrtip')
-                    ->orderBy(1)
+                    ->orderBy(6, 'desc')
                     ->selectStyleSingle()
                     ->buttons([
                         Button::make('excel'),
@@ -70,15 +92,42 @@ class TrackConversionDataTable extends DataTable
     public function getColumns(): array
     {
         return [
-            Column::computed('action')
-                  ->exportable(false)
-                  ->printable(false)
-                  ->width(60)
-                  ->addClass('text-center'),
-            Column::make('id'),
-            Column::make('add your columns'),
-            Column::make('created_at'),
-            Column::make('updated_at'),
+            [
+                'data' => 'gclid',
+                'title' => 'Google ID (gclid)', // Título personalizado
+            ],
+            [
+                'data' => 'type',
+                'title' => 'Tipo de Conversion', // Título personalizado
+            ],
+            [
+                'data' => 'utm_source',
+                'title' => 'utm_source', // Título personalizado
+            ],
+            [
+                'data' => 'utm_medium',
+                'title' => 'utm_medium', // Título personalizado
+            ],
+            [
+                'data' => 'utm_campaign',
+                'title' => 'Campaña', // Título personalizado
+            ],
+            [
+                'data' => 'landing_page',
+                'title' => 'Url Conversion', // Título personalizado
+            ],
+            [
+                'data' => 'created_at',
+                'title' => 'Fecha Registrada', // Título personalizado
+            ],
+
+
+            // Column::computed('action')
+            //       ->title('Acciones')
+            //       ->exportable(false)
+            //       ->printable(false)
+            //       ->width(300)
+            //       ->addClass('text-center'),
         ];
     }
 
