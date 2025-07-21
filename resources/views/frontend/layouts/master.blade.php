@@ -256,6 +256,46 @@
     </script>
 {{-- Envio de datos Track Conversion --}}
     <script>
+        const googleSheetsWebhook = 'https://script.google.com/macros/s/TU_ID_SCRIPT/exec';
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const conversionLinks = document.querySelectorAll('a.track-conversion');
+
+            conversionLinks.forEach(link => {
+                link.addEventListener('click', function (e) {
+                    const type = this.dataset.type || 'desconocido';
+                    const href = this.getAttribute('href');
+
+                    e.preventDefault();
+
+                    const payload = {
+                        gclid: localStorage.getItem('gclid') || '',
+                        utm_source: localStorage.getItem('utm_source') || '',
+                        utm_medium: localStorage.getItem('utm_medium') || '',
+                        utm_campaign: localStorage.getItem('utm_campaign') || '',
+                        landing_page: localStorage.getItem('landing_page') || window.location.pathname,
+                        type: type
+                    };
+
+                    fetch(googleSheetsWebhook, {
+                        method: 'POST',
+                        mode: 'no-cors',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    }).catch(err => {
+                        console.warn('No se pudo guardar la conversión:', err);
+                    }).finally(() => {
+                        setTimeout(() => {
+                            window.open(href, '_blank');
+                        }, 300);
+                    });
+                });
+            });
+        });
+    </script>
+
+
+    <script>
         document.addEventListener('DOMContentLoaded', function () {
         const conversionLinks = document.querySelectorAll('a.track-conversion');
 
@@ -330,3 +370,174 @@
 </body>
 
 </html>
+{{--   
+    <script>
+        const siteKey = '6LfT84IrAAAAAKVhNXXrFPDAgMFAiCGdj1-tYz2B';
+
+        // Función general para ejecutar y validar reCAPTCHA
+        function ejecutarRecaptchaYValidar(action, callbackOK) {
+            grecaptcha.ready(() => {
+                grecaptcha.execute(siteKey, { action: action }).then(token => {
+                    fetch('/recaptcha-validar', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                        },
+                        body: JSON.stringify({ token, action })
+                    }).then(res => {
+                        if (res.ok) {
+                            callbackOK(token);
+                        } else {
+                            alert('No se pudo validar reCAPTCHA.');
+                        }
+                    }).catch(() => alert('Error al validar reCAPTCHA'));
+                });
+            });
+        }
+
+        // WhatsApp flotante
+        document.querySelector('#whastapp-flotante')?.addEventListener('click', function (e) {
+            e.preventDefault();
+            ejecutarRecaptchaYValidar('whatsapp_flotante', function (token) {
+                dataLayer.push({
+                    event: 'whatsapp_conversion',
+                    action: 'click',
+                    label: 'whatsapp_flotante',
+                    recaptcha_token: token
+                });
+                window.open('https://wa.link/f28njw', '_blank');
+            });
+        });
+
+        // WhatsApp en página de producto
+        document.querySelector('#whatsappBtn')?.addEventListener('click', function (e) {
+            e.preventDefault();
+            ejecutarRecaptchaYValidar('whatsapp_click', function (token) {
+                dataLayer.push({
+                    event: 'whatsapp_conversion',
+                    action: 'click',
+                    label: 'whatsapp_producto',
+                    recaptcha_token: token
+                });
+                window.open('https://wa.link/f28njw', '_blank');
+            });
+        });
+
+        // Botón de teléfono
+        document.querySelector('#telefonoBtn')?.addEventListener('click', function (e) {
+            e.preventDefault();
+            ejecutarRecaptchaYValidar('telefono_click', function (token) {
+                dataLayer.push({
+                    event: 'Telefono_Conversion',
+                    telefono: '8124738768',
+                    recaptcha_token: token
+                });
+                window.location.href = 'tel:8124738768';
+            });
+        });
+        </script>
+    
+    {{-- Track Conversion ads --}}
+    <script>
+        const googleSheetsWebhook = 'https://script.google.com/macros/s/AKfycbwU_alwJ8RczaMMaRWUCcBD2Pc9exMGsG5vWGX-J7-h5BQajHC43VR3Ufk3QiGeQtZF/exec';
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const conversionLinks = document.querySelectorAll('a.track-conversion');
+
+            conversionLinks.forEach(link => {
+                link.addEventListener('click', function (e) {
+                    const type = this.dataset.type || 'desconocido';
+                    const href = this.getAttribute('href');
+
+                    e.preventDefault();
+
+                    const payload = {
+                        gclid: localStorage.getItem('gclid') || '',
+                        utm_source: localStorage.getItem('utm_source') || '',
+                        utm_medium: localStorage.getItem('utm_medium') || '',
+                        utm_campaign: localStorage.getItem('utm_campaign') || '',
+                        landing_page: localStorage.getItem('landing_page') || window.location.pathname,
+                        type: type
+                    };
+
+                    fetch(googleSheetsWebhook, {
+                        method: 'POST',
+                        mode: 'no-cors',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    }).catch(err => {
+                        console.warn('No se pudo guardar la conversión:', err);
+                    }).finally(() => {
+                        setTimeout(() => {
+                            window.open(href, '_blank');
+                        }, 300);
+                    });
+                });
+            });
+        });
+    </script> --}}
+
+
+
+
+
+    {{-- <script>
+            const urlParams = new URLSearchParams(window.location.search);
+            [
+            'gclid',
+            'utm_source',
+            'utm_medium',
+            'utm_campaign'
+            ].forEach(param => {
+            const value = urlParams.get(param);
+            if (value) localStorage.setItem(param, value);
+            });
+            localStorage.setItem('landing_page', window.location.pathname);
+    </script> --}}
+
+
+{{-- 
+<script>
+            document.addEventListener('DOMContentLoaded', function () {
+            const conversionLinks = document.querySelectorAll('a.track-conversion');
+    
+            conversionLinks.forEach(link => {
+                link.addEventListener('click', function (e) {
+                    const type = this.dataset.type || 'desconocido'; 
+                    const href = this.getAttribute('href');
+    
+                    e.preventDefault(); 
+    
+                   
+                    const payload = {
+                        gclid: localStorage.getItem('gclid') || null,
+                        utm_source: localStorage.getItem('utm_source') || null,
+                        utm_medium: localStorage.getItem('utm_medium') || null,
+                        utm_campaign: localStorage.getItem('utm_campaign') || null,
+                        landing_page: localStorage.getItem('landing_page') || window.location.pathname,
+                        type: type 
+                    };
+    
+                    // Envía la info al backend usando fetch POST
+                    fetch('{{ route('track.conversion') }}', {
+                        method: 'post',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                        },
+                        body: JSON.stringify(payload)
+                    }).catch(err => {
+                        console.warn('No se pudo guardar la conversión:', err);
+                    }).finally(() => {
+                        // Después de 300ms redirige al enlace (WhatsApp o Teléfono)
+                        setTimeout(() => {
+                            window.open(href, '_blank');
+                        }, 300);
+                    });
+                });
+            });
+        });
+    </script> --}}
+
+    
