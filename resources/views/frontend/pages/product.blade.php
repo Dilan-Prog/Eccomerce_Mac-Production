@@ -174,28 +174,28 @@
                                             @switch($product->product_type)
                                                     @case('new_arrival')
                                                         <span class="wsus__new wsus__new--new-arrival" style="background: #00468c">Nuevo
-                                                            
+
                                                         </span>
                                                         @break
                                                     @case('featured_product')
-                                                        <span class="wsus__new" style="display: none">  
-                                                            
+                                                        <span class="wsus__new" style="display: none">
+
                                                         </span>
-                                                        @break                           
+                                                        @break
                                                     @case('top_product')
                                                         <div id="hot-sale_wsus_new" style="position: absolute; top: 10px; right: 10px; z-index: 1; width: 70px;">
-                                                            <img src="{{asset('frontend/images/logo/hot_sale.png')}}" alt="Promocion de Hot Sale Industrial"style="width: 70px;">   
+                                                            <img src="{{asset('frontend/images/logo/hot_sale.png')}}" alt="Promocion de Hot Sale Industrial"style="width: 70px;">
                                                         </div>
-                                                        <span class="wsus__new wsus__new--top-product" style="background: #FF0000">Hot sale 
+                                                        <span class="wsus__new wsus__new--top-product" style="background: #FF0000">Hot sale
                                                         </span>
                                                         @break
                                                     @case('best_product')
-                                                        <span class="wsus__new wsus__new--best-product" style="background: #fa7c04">Más Vendido  
-                                                            
+                                                        <span class="wsus__new wsus__new--best-product" style="background: #fa7c04">Más Vendido
+
                                                         </span>
                                                         @break
                                                     @default
-                                                    
+
                                             @endswitch
                                             @if (checkDiscount($product))
 
@@ -232,7 +232,7 @@
                                                             $averageRating = $product->reviews->avg('rating'); // Promedio de las calificaciones
                                                             $reviewCount = $product->reviews->count(); // Número total de reviews
                                                         @endphp
-                                                    
+
                                                         @if ($reviewCount > 0)
                                                             @for ($i = 1; $i <= 5; $i++)
                                                                 <i class="fas fa-star{{ $i <= $averageRating ? '' : '-half-alt' }}" aria-hidden="true"></i>
@@ -272,6 +272,7 @@
                                                                 @endif
                                                             </span>
                                                         </span>
+                                                        <span class="mdn_iva">IVA INCLUIDO</span>
                                                     </p>
                                                     <p>
                                                         @if ($price >= $shippingRules->min_cost)
@@ -360,7 +361,7 @@
                                                         <p class="wsus__price" content="{{$product->price}}" itemscope itemtype="http://schema.org/Offer">
                                                             <meta itemprop="priceCurrency" content="MXN">
                                                             <span itemprop="price">
-                                                                {{$settings->currency_icon}}{{ number_format($product->price, 2, '.', ',') }} 
+                                                                {{$settings->currency_icon}}{{ number_format($product->price, 2, '.', ',') }}
                                                             </span>
                                                         </p>
                                                     @endif

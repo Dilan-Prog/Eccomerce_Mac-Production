@@ -5635,7 +5635,7 @@ a:not([href]):not([class]):hover {
 .services_content_info_button:hover {
   background: var(--Primary-Blue-Dark-Hover);
   transform: scale(1.05); /* Agranda el botón al 110% */
- 
+
 }
 .content_img_service_personalizate{
   padding: 0px 0px;
@@ -5939,7 +5939,13 @@ a:not([href]):not([class]):hover {
   align-items: center;
   justify-content: center;
   display: flex;
-  
+
+}
+
+.mdn_iva{
+    color: var(--Text-Primary-black);
+    font-weight: 600;
+
 }
 
 
