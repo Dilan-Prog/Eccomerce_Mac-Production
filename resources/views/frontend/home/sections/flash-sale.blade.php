@@ -11,47 +11,47 @@
                     </div>
                 </div>
             </div>
-            
+
             <div class="row flash_sell_slider">
-                
-                
+
+
                 @foreach ($flashSaleItems as $item )
-                
+
                 @php
                     $product = \App\Models\Product::find($item->product_id); // Producto ya cargado con las relaciones
                 @endphp
                 <div class="col-xl-3 col-sm-6 col-lg-4">
                     <div class="wsus__product_item">
-                        
+
 
                         @switch($product->product_type)
                             @case('new_arrival')
                                 <span id class="wsus__new wsus__new--new-arrival" style="background: #00468c">Nuevo
-                                    
+
                                 </span>
                                 @break
                             @case('featured_product')
-                                
-                                <span class="wsus__new" style="display: none">Hot sale 
+
+                                <span class="wsus__new" style="display: none">Hot sale
                                 </span>
-                                @break                           
+                                @break
                             @case('top_product')
                                 <div id="hot-sale_wsus_new" style="position: absolute; top: 10px; right: 10px; z-index: 1; width: 70px;">
-                                    <img src="{{asset('frontend/images/logo/hot_sale.png')}}" alt="Promocion de Hot Sale Industrial" >   
+                                    <img src="{{asset('frontend/images/logo/hot_sale.png')}}" alt="Promocion de Hot Sale Industrial" >
                                 </div>
                                 <span class="wsus__new wsus__new--top-product" style="background: #FF0000">Hot sale
                                 </span>
                                 @break
                             @case('best_product')
-                                <span class="wsus__new wsus__new--best-product" style="background: #fa7c04">Más Vendido  
-                                     
+                                <span class="wsus__new wsus__new--best-product" style="background: #fa7c04">Más Vendido
+
                                 </span>
                                 @break
                             @default
-                            
+
                         @endswitch
 
-                        
+
 
 
                         @if (checkDiscount($product))
@@ -71,11 +71,11 @@
                         </a>
 
                         <div class="wsus__product_details">
-                            
+
                             <a class="wsus__category" href="{{route('product-detail', $product->slug)}}">{{$product->category->name}}</a>
                             <p class="">
 
-                            
+
                                 @if ($product->qty > 0)
                                 <p class="wsus__stock_area"><span class="in_stock">Disponibles</span></p>
                                 @elseif ($product->qty === 0)
@@ -87,7 +87,7 @@
                                         $averageRating = $product->reviews->avg('rating'); // Promedio de las calificaciones
                                         $reviewCount = $product->reviews->count(); // Número total de reviews
                                     @endphp
-                                
+
                                     @if ($reviewCount > 0)
                                         @for ($i = 1; $i <= 5; $i++)
                                             <i class="fas fa-star{{ $i <= $averageRating ? '' : '-half-alt' }}" aria-hidden="true"></i>
@@ -126,6 +126,7 @@
                 @endif
             </span>
         </span>
+        <span class="mdn_iva">IVA INCLUIDO</span>
     </p>
     <p>
         @if ($price >= $shippingRules->min_cost)
@@ -133,7 +134,7 @@
         @endif
     </p>
 @else
-    <p class="wsus__stock_area"><span class="in_stock">Disponible</span></p>
+    
     <p class="wsus__price">N/A +<small> Requiere Asesoria</small> </p>
 @endif
 

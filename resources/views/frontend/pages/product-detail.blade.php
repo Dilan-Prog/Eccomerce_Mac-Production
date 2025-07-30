@@ -2,10 +2,10 @@
 
 @section('canonical_URL')
     @if ($product->canonical_url)
-        <link rel="canonical" href="{{ $product->canonical_url }}">    
+        <link rel="canonical" href="{{ $product->canonical_url }}">
     @else
-        <link rel="canonical" href="{{ url()->current() }}">    
-    @endif 
+        <link rel="canonical" href="{{ url()->current() }}">
+    @endif
 @endsection
 
 @section('title')
@@ -21,7 +21,7 @@
                     <div class="container">
                         <div class="row">
                             <div class="col-12">
-                                <ul>                                    
+                                <ul>
                                     <li><a href="#" onclick="window.history.back(); setTimeout(function(){ location.reload(); }, 500); return false;">Volver</a></li>
                                     <li><a href="{{route('products.index', ['category' => $product->category->slug])}}" itemprop="category" content="{{$product->category->name}}">{{$product->category->name}}</a></li>
                                 </ul>
@@ -29,7 +29,7 @@
                         </div>
                     </div>
             </section>
-            <div class="wsus__details_bg" data-name="{{$product->name}}">  
+            <div class="wsus__details_bg" data-name="{{$product->name}}">
                 <div class="row">
                     <div class="col-xl-8 ">
                         <div id="sticky_pro_zoom">
@@ -62,7 +62,7 @@
                             <span>
                                 @switch($product->product_type)
                                     @case('new_arrival')
-                                        <span>Nuevo 
+                                        <span>Nuevo
                                             @if ($product->price)
                                             | {{$product->qty}} piezas
                                             @else
@@ -70,15 +70,15 @@
                                         </span>
                                         @break
                                     @case('featured_product')
-                                        <span>Producto Favorito  
+                                        <span>Producto Favorito
                                             @if ($product->price)
                                             | {{$product->qty}} piezas
                                             @else
                                             @endif
                                         </span>
-                                        @break                           
+                                        @break
                                     @case('top_product')
-                                        <span>Producto Top  
+                                        <span>Producto Top
                                             @if ($product->price)
                                             | {{$product->qty}} piezas
                                             @else
@@ -86,7 +86,7 @@
                                         </span>
                                         @break
                                     @case('best_product')
-                                            
+
                                         <span>Mas Vendido
                                             @if ($product->price)
                                             | {{$product->qty}} piezas
@@ -95,7 +95,7 @@
                                         </span>
                                         @break
                                     @default
-                                    
+
                                 @endswitch
                             </span>
                             <p class="wsus__pro_rating" style="color: #1e77fc;">
@@ -118,7 +118,7 @@
                             <div itemprop="offers" itemscope itemtype="http://schema.org/Offer">
 
                                 @if ($product->price)
-    
+
                                         @if ($product->qty > 0)
                                             <p class="wsus__stock_area">
                                                 <span class="in_stock" itemprop="availability" content="https://schema.org/InStock">Stok Disponible</span>
@@ -137,14 +137,14 @@
                                         $precio = number_format($product->price, 2, '.', ',');
                                                 [$enteroNormal, $decimalesNormal] = explode('.', $precio);
                                     @endphp
-    
+
                                     @if (checkDiscount($product))
                                         <h4>
                                             <meta itemprop="priceCurrency" content="MXN">
                                             <span itemprop="price" content="{{$product->offert_price}}">
                                                 <del>{{$settings->currency_icon}}{{ number_format($product->price, 2, '.', ',') }} MXN</del>
                                             </span>
-                                            
+
                                             <span itemprop="price" content="{{ $product->offert_price }}">
                                                 {{$settings->currency_icon}}{{ $entero }}<span style="font-size: 15px; vertical-align: super;">.{{ $decimales }}</span> MXN {{ calculatedDiscountPercent($product->price, $product->offert_price) }}%OFF
                                             </span>
@@ -153,51 +153,51 @@
                                         @if ($product->offert_price >= 3000)
                                             <p class="wsus__msi_product">
                                                 Pagalo a <span style="color: #00a650;">{{ $msiMeses }} Meses sin intereses de {{$settings->currency_icon}}{{number_format($msioffert,2)}} MXN</span>
-                                                pagando con 
+                                                pagando con
                                                 <img src="{{ asset('frontend/images/iconos-empresas-sin-fondo/Paypal-logo.png') }}" alt="Meses sin intereses PayPal" style="height: 22px; vertical-align: middle; margin-left: 3px;">
                                             </p>
                                         @else
                                             <p class="wsus__msi_product">
-                                                Pagalo a <span style="color: #00a650;">{{ $msiMeses }} Meses sin intereses a partir de {{$settings->currency_icon}}3,000 MXN</span> en carrito pagando con 
+                                                Pagalo a <span style="color: #00a650;">{{ $msiMeses }} Meses sin intereses a partir de {{$settings->currency_icon}}3,000 MXN</span> en carrito pagando con
                                                 <img src="{{ asset('frontend/images/iconos-empresas-sin-fondo/Paypal-logo.png') }}" alt="Meses sin intereses PayPal" style="height: 22px; vertical-align: middle; margin-left: 3px;">
                                             </p>
                                         @endif
                                         <small><strong>IVA INCLUIDO</strong></small>
-                                        
+
                                     @else
 
                                         <h4>
                                             <meta itemprop="priceCurrency" content="MXN">
                                             <span itemprop="price" content="{{$product->price}}">
                                                 {{$settings->currency_icon}}{{ $enteroNormal }}<span style="font-size: 15px; vertical-align: super;">.{{ $decimalesNormal }}</span> MXN
-                                            </span>    
+                                            </span>
                                         </h4>
                                             @if ($product->price >= 3000)
                                                 <p class="wsus__msi_product">
                                                     Pagalo a <span style="color: #00a650;">{{ $msiMeses }} Meses sin intereses de {{$settings->currency_icon}}{{number_format($msiMonto,2)}} MXN</span>
-                                                    pagando con 
+                                                    pagando con
                                                     <img src="{{ asset('frontend/images/iconos-empresas-sin-fondo/Paypal-logo.png') }}" alt="Meses sin intereses PayPal" style="height: 22px; vertical-align: middle; margin-left: 3px;">
                                                 </p>
                                             @else
                                                 <p class="wsus__msi_product">
-                                                    Pagalo a <span style="color: #00a650;">{{ $msiMeses }} Meses sin intereses teniendo {{$settings->currency_icon}}3,000 MXN</span> en carrito pagando con 
+                                                    Pagalo a <span style="color: #00a650;">{{ $msiMeses }} Meses sin intereses teniendo {{$settings->currency_icon}}3,000 MXN</span> en carrito pagando con
                                                     <img src="{{ asset('frontend/images/iconos-empresas-sin-fondo/Paypal-logo.png') }}" alt="Meses sin intereses PayPal" style="height: 22px; vertical-align: middle; margin-left: 3px;">
                                                 </p>
                                             @endif
                                         <small><strong>IVA INCLUIDO</strong></small>
                                     @endif
-                                
+
                                 @else
                                 <p class="wsus__stock_area">
                                     <span class="in_stock" itemprop="availability" content="https://schema.org/MadeToOrder">La venta de este producto requiere asesoria</span>
                                 </p>
                                 @endif
                             </div>
-                            
+
                             <link itemprop="url" href="https://www.macdelnorte.com/public/product-detail/{{$product->slug}}" />
                             <p class="sku">Clave: <span itemprop="sku" content="{!! $product->sku !!}">{!! $product->sku !!}</span></p>
                             <p class="mpn"><span itemprop="mpn"content="{!! $product->productModel !!}" style="display: none; visibility: hidden;">{{$product->productModel}}</span></p>
-                            
+
                             {{-- <p class="description" itemprop="sku">Clave: <span>{!! $product->sku !!}</span></p> --}}
                             <p class="brand_model" itemprop="brand" itemscope itemtype="http://schema.org/Brand">
                                 Marca:<span itemprop="name" content="{{$product->brand->name}}">{{$product->brand->name}}</span>
@@ -209,7 +209,38 @@
                                 <p>La entrega se realiza en un plazo de 1 a 3 d&iacute;as h&aacute;biles. Envio a todo el pais.</p>
 
                             </div>
-                            
+                            <div class="product-variant-picker">
+                                <div class="product-variant-tittle">
+                                    <p class="product-variant-label">
+                                        <span>Medida:</span>
+                                        <span id="por definir" class="product-variant-label-select">3m</span>
+                                    </p>
+                                </div>
+                                <div class="product-variant-picker-default">
+                                    <a class="product-details-variant" href="">
+                                        <div class="product-details-variant-container">
+                                            <p class="product-details-variant-label">
+                                                3m
+                                            </p>
+                                        </div>
+                                    </a>
+                                    <a class="product-details-variant" href="">
+                                        <div class="product-details-variant-container">
+                                            <p class="product-details-variant-label">
+                                                5m
+                                            </p>
+                                        </div>
+                                    </a>
+                                    <a class="product-details-variant" href="">
+                                        <div class="product-details-variant-container">
+                                            <p class="product-details-variant-label">
+                                                10m
+                                            </p>
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
+
                             <form class="shopping-cart-form">
                                 <div class="wsus__quentity">
                                     <input type="hidden" name="product_id" value="{{$product->id}}">
@@ -235,13 +266,13 @@
                                         <ul class="wsus__button_area">
                                             <li><button type="submit" class="add_cart"><i class="fas fa-shopping-cart"></i> Agregar al Carrito</button></li>
                                         </ul>
-                                        
+
                                     </div>
                                 </div>
-                                
+
                                 @endif
                             </form>
-                            
+
                             <div class="button_container">
                                 <a class="track-conversion" data-type="whatsapp" href="https://wa.link/f28njw" target="_blank" style="width: 100%;" onclick="dataLayer.push({'event': 'whatsapp_conversion', 'action': 'click', 'label': 'whatsapp-icon'});" >
                                     <ul class="wsus__button_area">
@@ -299,7 +330,7 @@
                                                 <p><span>Elije Como Pagar,</span> puedes pagar con tarjeta, D&eacute;bito, Credito, Paypal, etc.</p>
                                             </div>
                                         </li>
-                                        
+
                                     </ul>
                                 </div>
                                 @php
@@ -314,7 +345,13 @@
                                         <p><b>Disponible en:</b></p>
                                         @foreach ($marketplaces as $moreEccomerce)
                                             @if ($moreEccomerce->nameEccomerce == 'Mercado Libre')
-                                                <a href="{{ $moreEccomerce->linkProduct }}" target="_blank" style="text-decoration: none; color: #333;">
+                                                <a href="{{ $moreEccomerce->linkProduct }}" target="_blank" style="text-decoration: none; color: #333;"
+                                                        onclick="dataLayer.push({
+                                                        event: 'Mercado_libre-action',
+                                                        action: 'click',
+                                                        label: 'Mercado-Libre-product-detail',
+                                                        value: '{{ $product->price }}'
+                                                    });">
                                                     <img src="{{ asset('frontend/images/iconos-empresas/MercadoLibre_Logo.webp') }}" alt="{{ $product->name . ' ' . $moreEccomerce->nameEccomerce }}" style="width: 125px;">
                                                 </a>
                                             @endif
@@ -326,7 +363,7 @@
                                         @endforeach
                                     </div>
                                 @endif
-                            
+
 
                         </div>
                     </div>
@@ -383,7 +420,7 @@
                                 </div>
                             </div>
 
-                            
+
                         </div>
                     </div>
                 </div>
@@ -423,7 +460,7 @@
                                     <p>( {{ count($reviews) ?? 0 }} Opiniones)</p>
                                 </div>
                             </div>
-                            
+
                         </div>
                         <!-- Barra de Mediciones -->
                         <div class="rating_medition">
@@ -478,7 +515,7 @@
                                         </div>
                                         <input type="hidden" id="rating_value" name="rating" value="0">
                                     </div>
-                            
+
                                     <!-- Comentario -->
                                     <div class="rating_write_commet" style="margin-bottom: 15px;">
                                         <label for="comment">Escribe tu comentario:</label>
@@ -491,24 +528,24 @@
                                         <div class="img_upload">
                                             <label for="file-input" id="upload-icon" class="upload_area">
                                                 <i class="fas fa-image"></i>
-                                                
+
                                             </label>
                                             <input type="file" id="file-input" name="images[]" multiple>
                                             <!-- Área para mostrar la vista previa de las imágenes -->
                                             <div id="image-preview" class="image-preview"></div>
                                         </div>
-                                        
+
                                     </div>
-                                        <input type="hidden" name="product_id" id="" value="{{$product->id}}">                
+                                        <input type="hidden" name="product_id" id="" value="{{$product->id}}">
                                         {{-- <input type="hidden" name="_id" id="" value="{{$user->id}}">                 --}}
                                     <!-- Botón para enviar -->
                                     <button type="submit" class="common_btn">Enviar comentario</button>
                                 </form>
                             </div>
-                                
+
                             @endif
                     @endauth
-                        
+
                     </div>
                     <div class="col-8">
                         <!-- Sección de Comentarios a la derecha -->
@@ -533,7 +570,7 @@
                                                 @endif
                                             @endfor
                                         </div>
-                                        
+
                                     </div>
                                     {{-- Descripcion --}}
                                     <p style="margin-top: 10px;">{{$review->review}}</p>
@@ -542,38 +579,38 @@
                                             @if (count($review->productReviewGalleries) > 0)
                                                 @foreach ($review->productReviewGalleries as $image )
                                                     <img src="{{asset($image->image)}}" alt="" style="border-color: 1px solid gray; width: 180px; height: 200px; margin: 0px 5px;" >
-                                                @endforeach 
+                                                @endforeach
                                             @endif
                                         </div>
-                                        
+
                                     </div>
                                 </div>
-                                
+
                             @endforeach
                             <div class="mt-5">
                                 @if ($reviews->hasPages())
                                     {{$reviews->links()}}
                                 @endif
                             </div>
-                            
-                            
+
+
                         </div>
-                        
+
                         {{-- <!-- Aquí puedes agregar más comentarios -->
                         <div style="text-align: center; margin-top: 20px;">
                             <button class="common_btn">Ver más opiniones</button>
                         </div> --}}
                     </div>
-                    
+
                 </div>
             </section>
-            
-            
+
+
         </div>
     </section>
 
 
-    
+
 
 
 
@@ -626,7 +663,7 @@
 
 
 <script>
-   
+
 const fileInput = document.getElementById('file-input');
 const imagePreviewContainer = document.getElementById('image-preview');
 const uploadIcon = document.getElementById('upload-icon');
@@ -684,14 +721,14 @@ fileInput.addEventListener('change', function() {
    function setRating(rating) {
     // Establece el valor del input oculto con el valor de la estrella seleccionada
     document.getElementById('rating_value').value = rating;
-    
+
     // Cambia el color de las estrellas para reflejar la selección
     updateStarDisplay(rating);
 }
 
 function updateStarDisplay(rating) {
     const stars = document.querySelectorAll('#star');
-    
+
     // Actualiza el color de las estrellas según la calificación seleccionada
     stars.forEach((star, index) => {
         if (index < rating) {
