@@ -5947,6 +5947,36 @@ a:not([href]):not([class]):hover {
     font-weight: 600;
 
 }
+.product-variant-picker {
+  margin-top: 5px;
+  margin-bottom: 10px;
+}
+.product-variant-label span{
+    color: var(--Text-Secondary);
+}
+.product-variant-label-select{
+    color: var(--Text-Primary-black);
+    font-weight: 600;
+    font-size: 20px;
+}
+.product-variant-picker-default{
+    margin-top: 2px;
+    margin-bottom: 2px;
+}
+.product-details-variant{
+    border: solid 1px var(--Text-Primary-black);
+    border-radius: 3.5px;
+}
+
+.product-details-variant-container{
+    padding: 6px 8px;
+}
+.product-details-variant-label{
+    color: var(--Text-Secondary);
+    font-weight: 500;
+}
+
+
 
 
 /* Fin de Estilos para servicios dinamicos */
