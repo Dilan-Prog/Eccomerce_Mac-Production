@@ -5943,10 +5943,10 @@ a:not([href]):not([class]):hover {
 }
 
 .mdn_iva{
-    color: var(--Text-Primary-black);
+    color: #00a650;
     font-weight: 600;
-
 }
+
 .product-variant-picker {
   margin-top: 5px;
   margin-bottom: 10px;
@@ -5966,6 +5966,7 @@ a:not([href]):not([class]):hover {
 .product-details-variant{
     border: solid 1px var(--Text-Primary-black);
     border-radius: 3.5px;
+    margin-left: 1px;
 }
 
 .product-details-variant-container{
@@ -5977,8 +5978,28 @@ a:not([href]):not([class]):hover {
 }
 
 
+.product-details-variant-selected {
+    border: 3px solid #00a650;
+    border-radius: 3.5px;
+}
+
+.product-details-variant-selected {
+    border: 3px solid #00468c;
+    border-radius: 3.5px;
+}
+
+.product-details-variant.none {
+    opacity: 0.5;
+    pointer-events: none; /* evita que se pueda hacer clic */
+    cursor: not-allowed;
+}
+
+.product-details-variant.selected:hover {
+    background-color: #d0e9ff;
+}
 
 
 /* Fin de Estilos para servicios dinamicos */
 
 /* extra css end here */
+

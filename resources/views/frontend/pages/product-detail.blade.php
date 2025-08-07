@@ -114,7 +114,33 @@
                                     <span style="color: #1e77fc;">( {{ count($reviews) ?? 0 }} opiniones)</span>
                                 </div>
                             </p>
-                            <a class="title" href="javascript:;" itemprop="name" content="{{$product->name}}">{{$product->name}}</a>
+                            @php
+                                $variantNames = [];
+                                $sku = $product->sku;
+                                $price = $product->price;
+                                $offerPrice = $product->offert_price ?? null;
+                                if ($selectedCombination) {
+                                    // Obtén los IDs de los items de variante seleccionados
+                                    $selectedIds = json_decode($selectedCombination->variants_item_ids, true);
+                                    foreach ($selectedIds as $itemId) {
+                                        foreach ($product->variants as $variant) {
+                                            $variantItem = $variant->productVariantItems->where('id', $itemId)->first();
+                                            if ($variantItem) {
+                                                $variantNames[] = $variantItem->name;
+                                            }
+                                        }
+                                    }
+                                    // Datos de la combinación seleccionada
+                                    $sku = $selectedCombination->sku ?? $sku;
+                                    $price = $selectedCombination->price ?? $price;
+                                    $offerPrice = $selectedCombination->offert_price ?? $offerPrice;
+                                }
+                                $fullProductName = $product->name . (count($variantNames) ? ' ' . implode(' ', $variantNames) : '');
+                            @endphp
+
+                            <a class="title" href="javascript:;" itemprop="name" content="{{ $fullProductName }}">
+                                {{ $fullProductName }}
+                            </a>
                             <div itemprop="offers" itemscope itemtype="http://schema.org/Offer">
 
                                 @if ($product->price)
@@ -162,15 +188,19 @@
                                                 <img src="{{ asset('frontend/images/iconos-empresas-sin-fondo/Paypal-logo.png') }}" alt="Meses sin intereses PayPal" style="height: 22px; vertical-align: middle; margin-left: 3px;">
                                             </p>
                                         @endif
-                                        <small><strong>IVA INCLUIDO</strong></small>
+                                        <span class="mdn_iva">IVA INCLUIDO</span>
+
 
                                     @else
 
                                         <h4>
                                             <meta itemprop="priceCurrency" content="MXN">
-                                            <span itemprop="price" content="{{$product->price}}">
-                                                {{$settings->currency_icon}}{{ $enteroNormal }}<span style="font-size: 15px; vertical-align: super;">.{{ $decimalesNormal }}</span> MXN
+                                            <span itemprop="price" content="{{$price}}">
+                                                {{$settings->currency_icon}}{{ $price }}<span style="font-size: 15px; vertical-align: super;">.{{ $decimalesNormal }}</span> MXN
                                             </span>
+                                            {{-- <span itemprop="price" content="{{$price}}">
+                                                {{$settings->currency_icon}}{{ $enteroNormal }}<span style="font-size: 15px; vertical-align: super;">.{{ $decimalesNormal }}</span> MXN
+                                            </span> --}}
                                         </h4>
                                             @if ($product->price >= 3000)
                                                 <p class="wsus__msi_product">
@@ -184,7 +214,7 @@
                                                     <img src="{{ asset('frontend/images/iconos-empresas-sin-fondo/Paypal-logo.png') }}" alt="Meses sin intereses PayPal" style="height: 22px; vertical-align: middle; margin-left: 3px;">
                                                 </p>
                                             @endif
-                                        <small><strong>IVA INCLUIDO</strong></small>
+                                        <span class="mdn_iva">IVA INCLUIDO</span>
                                     @endif
 
                                 @else
@@ -195,9 +225,8 @@
                             </div>
 
                             <link itemprop="url" href="https://www.macdelnorte.com/public/product-detail/{{$product->slug}}" />
-                            <p class="sku">Clave: <span itemprop="sku" content="{!! $product->sku !!}">{!! $product->sku !!}</span></p>
+                            <p class="sku">Clave: <span itemprop="sku" content="{!! $sku !!}">{!!$sku !!}</span></p>
                             <p class="mpn"><span itemprop="mpn"content="{!! $product->productModel !!}" style="display: none; visibility: hidden;">{{$product->productModel}}</span></p>
-
                             {{-- <p class="description" itemprop="sku">Clave: <span>{!! $product->sku !!}</span></p> --}}
                             <p class="brand_model" itemprop="brand" itemscope itemtype="http://schema.org/Brand">
                                 Marca:<span itemprop="name" content="{{$product->brand->name}}">{{$product->brand->name}}</span>
@@ -209,37 +238,95 @@
                                 <p>La entrega se realiza en un plazo de 1 a 3 d&iacute;as h&aacute;biles. Envio a todo el pais.</p>
 
                             </div>
-                            <div class="product-variant-picker">
-                                <div class="product-variant-tittle">
-                                    <p class="product-variant-label">
-                                        <span>Medida:</span>
-                                        <span id="por definir" class="product-variant-label-select">3m</span>
-                                    </p>
-                                </div>
-                                <div class="product-variant-picker-default">
-                                    <a class="product-details-variant" href="">
-                                        <div class="product-details-variant-container">
-                                            <p class="product-details-variant-label">
-                                                3m
+                             @php
+                                    // Prepara las combinaciones para JS
+                                    $jsCombinations = [];
+                                    foreach ($productCombinations as $comb) {
+                                        $jsCombinations[] = [
+                                            'id' => $comb->id,
+                                            'variant_item_ids' => json_decode($comb->variants_item_ids, true),
+                                        ];
+                                    }
+                                @endphp
+                            @if($hasCombinations && count($productCombinations) > 0)
+
+
+                                @foreach ($product->variants as $variant)
+                                    @if ($variant->status != 0 && $variant->productVariantItems->where('status', '!=', 0)->where('name', '!=', '')->isNotEmpty())
+                                        <div class="product-variant-picker" data-variant-id="{{ $variant->id }}">
+                                            <div class="product-variant-tittle">
+                                                <p class="product-variant-label">
+                                                    <span>{{ $variant->name }}:</span>
+                                                </p>
+                                            </div>
+                                            <div class="product-variant-picker-default">
+                                                @foreach ($variant->productVariantItems as $variantItem)
+                                                    @if ($variantItem->status != 0)
+                                                        <a role="button"
+                                                        class="product-details-variant{{ $variantItem->is_default ? '-selected' : '' }}"
+                                                        href="#"
+                                                        data-variant-item-id="{{ $variantItem->id }}">
+                                                            <div class="product-details-variant-container">
+                                                                <p class="product-details-variant-label">
+                                                                    {{ $variantItem->name }}
+                                                                </p>
+                                                            </div>
+                                                        </a>
+                                                    @endif
+                                                @endforeach
+                                            </div>
+                                        </div>
+                                    @endif
+                                @endforeach
+                            @else
+                                {{-- Si el producto NO tiene combinaciones, no muestra variantes --}}
+                                {{-- Aquí puedes mostrar solo el precio y datos simples --}}
+                            @endif
+
+
+
+                            {{-- Variantes antiguo --}}
+{{--
+                            @foreach ($product->variants as $variant)
+                                 @if ($variant->status != 0 && $variant->productVariantItems->where('status', '!=', 0)->where('name', '!=', '')->isNotEmpty())
+                                    <div class="product-variant-picker">
+                                        <div class="product-variant-tittle">
+                                            <p class="product-variant-label">
+
+                                                <span>{{ $variant->name }}:</span>
+                                                @foreach ($variant->productVariantItems as $variantItem)
+                                                    @if ($variantItem->status !=0 && $variantItem->is_default != 0)
+                                                        <span id="por definir" class="product-variant-label-select">{{ $variantItem->name }}</span>
+                                                    @endif
+                                                @endforeach
                                             </p>
                                         </div>
-                                    </a>
-                                    <a class="product-details-variant" href="">
-                                        <div class="product-details-variant-container">
-                                            <p class="product-details-variant-label">
-                                                5m
-                                            </p>
+                                        <div class="product-variant-picker-default">
+                                            @foreach ($variant->productVariantItems as $variantItem)
+                                                @if ($variantItem->status != 0)
+                                                    @if ($variantItem->is_default != 0)
+                                                        <a role="button" class="product-details-variant-selected" href="">
+                                                            <div class="product-details-variant-container">
+                                                                <p class="product-details-variant-label">
+                                                                    {{ $variantItem->name }}
+                                                                </p>
+                                                            </div>
+                                                        </a>
+                                                    @else
+                                                        <a role="button" class="product-details-variant" href="">
+                                                            <div class="product-details-variant-container">
+                                                                <p class="product-details-variant-label">
+                                                                    {{ $variantItem->name }}
+                                                                </p>
+                                                            </div>
+                                                        </a>
+                                                    @endif
+                                                @endif
+                                            @endforeach
                                         </div>
-                                    </a>
-                                    <a class="product-details-variant" href="">
-                                        <div class="product-details-variant-container">
-                                            <p class="product-details-variant-label">
-                                                10m
-                                            </p>
-                                        </div>
-                                    </a>
-                                </div>
-                            </div>
+                                    </div>
+                                @endif
+                            @endforeach --}}
 
                             <form class="shopping-cart-form">
                                 <div class="wsus__quentity">
@@ -363,11 +450,8 @@
                                         @endforeach
                                     </div>
                                 @endif
-
-
                         </div>
                     </div>
-
                 </div>
             </div>
             <div class="row">
@@ -617,6 +701,85 @@
 @endsection
 
 @push('scripts')
+
+{{-- Combinaciones desde PHP a JS --}}
+<script>
+    const combinations = @json($jsCombinations);
+
+    // Guarda la selección actual: { variantId: variantItemId }
+    let selected = {};
+
+    // Maneja el click en cada variante
+    document.querySelectorAll('.product-details-variant, .product-details-variant-selected').forEach(el => {
+        el.addEventListener('click', function(e) {
+            e.preventDefault();
+            const variantItemId = parseInt(this.dataset.variantItemId);
+            const variantId = this.closest('.product-variant-picker').dataset.variantId;
+
+            // Actualiza la selección
+            selected[variantId] = variantItemId;
+
+            // Encuentra combinaciones válidas para la selección actual
+            let validCombinations = combinations.filter(comb => {
+                return Object.values(selected).every(selId => comb.variant_item_ids.includes(selId));
+            });
+
+            if (validCombinations.length === 0) return;
+
+            // Recolecta todos los IDs válidos para cada variante
+            let validIds = {};
+            validCombinations.forEach(comb => {
+                comb.variant_item_ids.forEach(id => {
+                    validIds[id] = true;
+                });
+            });
+
+            // Actualiza la UI: muestra/habilita solo los items válidos
+            document.querySelectorAll('[data-variant-item-id]').forEach(item => {
+                const id = parseInt(item.dataset.variantItemId);
+                if (validIds[id]) {
+                    item.style.display = '';
+                    item.classList.remove('disabled-variant');
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+
+            // Marca la variante seleccionada
+            this.closest('.product-variant-picker').querySelectorAll('.product-details-variant-selected').forEach(sel => {
+                sel.classList.remove('product-details-variant-selected');
+                sel.classList.add('product-details-variant');
+            });
+            this.classList.remove('product-details-variant');
+            this.classList.add('product-details-variant-selected');
+
+            // --- Detecta la combinación exacta seleccionada ---
+            if (Object.keys(selected).length === document.querySelectorAll('.product-variant-picker').length) {
+                // Busca la combinación exacta
+                const selectedIds = Object.values(selected).sort((a, b) => a - b);
+                const exactCombination = combinations.find(comb => {
+                    const ids = comb.variant_item_ids.slice().sort((a, b) => a - b);
+                    return JSON.stringify(ids) === JSON.stringify(selectedIds);
+                });
+                if (exactCombination) {
+                    // Actualiza la URL con el parámetro comb
+                    const url = new URL(window.location);
+                    url.searchParams.set('comb', exactCombination.id);
+                    window.history.replaceState({}, '', url);
+
+                    // Aquí puedes actualizar el precio, stock, etc. usando exactCombination.id
+                    console.log('Combinación exacta seleccionada:', exactCombination);
+                }
+            }
+            // --- Fin combinación exacta ---
+        });
+    });
+</script>
+
+
+
+
+
 {{--    VALIDACION reCAPTCHA Google
 <script>
     const siteKey = '6LfT84IrAAAAAKVhNXXrFPDAgMFAiCGdj1-tYz2B';

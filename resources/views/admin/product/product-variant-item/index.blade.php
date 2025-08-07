@@ -6,14 +6,14 @@
 
     <section class="section">
       <div class="section-header">
-        <h1>Variantes Items de Productos</h1>
+        <h1>Item Variante del Producto</h1>
       </div>
       <div class="mb-3">
         <a href="{{route('admin.products-variant.index',['product' => $product->id])}}" class="btn btn-primary">Regresar</a>
       </div>
 
       <div class="section-body">
-        
+
 
         <div class="row">
           <div class="col-12">
@@ -27,12 +27,12 @@
               <div class="card-body">
                 {{$dataTable->table()}}
               </div>
-              
+
             </div>
           </div>
-          
+
         </div>
-        
+
       </div>
     </section>
 
@@ -43,7 +43,7 @@
 
 @push('scripts')
   {{$dataTable->scripts(attributes:['type' => 'module'])}}
-  
+
   <script>
     $(document).ready(function(){
       $('body').on('click', '.change-status',function(){
@@ -61,7 +61,7 @@
               toastr.success(data.message);
           },
           error:function(xhr,status,error){
-            
+
                }
 
         })
@@ -69,7 +69,7 @@
             })
     })
   </script>
-  
+
 @endpush
 
 
