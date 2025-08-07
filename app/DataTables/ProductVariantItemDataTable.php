@@ -23,9 +23,9 @@ class ProductVariantItemDataTable extends DataTable
     {
         return (new EloquentDataTable($query))
             ->addColumn('action', function($query){
-                
-                $editBtn = "<a href='".route('admin.products-variant-item.edit', $query->id)."' class='btn btn-primary'>Edit</a>";
-                $deleteBtn = "<a href='".route('admin.products-variant-item.destroy', $query->id)."' class='btn btn-danger m-2 delete-item'>Delete</a>";
+
+                $editBtn = "<a href='".route('admin.products-variant-item.edit', $query->id)."' class='btn btn-primary'>Editar</a>";
+                $deleteBtn = "<a href='".route('admin.products-variant-item.destroy', $query->id)."' class='btn btn-danger m-2 delete-item'>Eliminar</a>";
 
                 return $editBtn.$deleteBtn;
             })
@@ -41,7 +41,7 @@ class ProductVariantItemDataTable extends DataTable
             })
             ->addColumn('status', function($query){
                 if($query->status == 1){
-                    
+
                                     $button = '<label class="custom-switch mt-2">
                                     <input type="checkbox"checked name="custom-switch-checkbox" data-id="'.$query->id.'" class="custom-switch-input change-status">
                                     <span class="custom-switch-indicator"></span>
@@ -95,18 +95,20 @@ class ProductVariantItemDataTable extends DataTable
     public function getColumns(): array
     {
         return [
-            Column::make('id')->width(50),
-            Column::make('name'),
-            Column::make('variant_name'),
-            Column::make('price'),
-            Column::make('is_default'),
-            Column::make('status'),
+            Column::make('id')->width(50)->title('ID'),
+            Column::make('name')->title('Opcion de Variante'),
+            Column::make('variant_name')->title('Nombre de Variante'),
+            // Column::make('price')->title('Precio'),
+            // Column::make('qty')->title('Cantidad'),
+            // Column::make('is_default')->title('Por Defecto'),
+            Column::make('status')->title('Estado'),
             Column::computed('action')
+                  ->title('Acciones')
                   ->exportable(false)
                   ->printable(false)
                   ->width(200)
                   ->addClass('text-center')
-            
+
         ];
     }
 

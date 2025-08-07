@@ -27,7 +27,7 @@ class ProductImageGalleryController extends Controller
      */
     public function create()
     {
-        
+
     }
 
     /**
@@ -37,7 +37,7 @@ class ProductImageGalleryController extends Controller
     {
         $request->validate([
             'image.*' => ['required', 'image', 'max:2048']
-            
+
         ]);
         /**Handle Image Upload */
         $imagePath = $this->uploadMultiImage($request,'image','uploads');
@@ -46,7 +46,7 @@ class ProductImageGalleryController extends Controller
             $productImageGallery->image = $path;
             $productImageGallery->product_id = $request->product;
             $productImageGallery->save();
-            
+
 
         }
 

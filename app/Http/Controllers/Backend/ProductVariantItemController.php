@@ -32,16 +32,18 @@ class ProductVariantItemController extends Controller
         $request->validate([
             'variant_id' => ['required', 'integer'],
             'name' => ['required', 'max:2000'],
-            'price' => ['required', 'integer'],
-            'is_default' => ['required'],
+            // 'price' => ['required', 'integer'],
+            // 'qty' => ['required', 'integer'],
+            // 'is_default' => ['required'],
             'status' => ['required']
         ]);
 
         $variantItem = new ProductVariantItem();
         $variantItem->product_variant_id = $request->variant_id;
         $variantItem->name = $request->name;
-        $variantItem->price = $request->price;
-        $variantItem->is_default = $request->is_default;
+        // $variantItem->price = $request->price;
+        // $variantItem->qty = $request->qty;
+        // $variantItem->is_default = $request->is_default;
         $variantItem->status = $request->status;
         $variantItem->save();
 
@@ -55,36 +57,38 @@ class ProductVariantItemController extends Controller
         $variantItem = ProductVariantItem::findOrFail($variantItemId);
         return view('admin.product.product-variant-item.edit', compact('variantItem'));
     }
-    
+
 
     public function update(Request $request, string $variantItemId){
         $request->validate([
             'name' => ['required', 'max:2000'],
-            'price' => ['required', 'integer'],
-            'is_default' => ['required'],
+            // 'price' => ['required', 'integer'],
+            // 'qty' => ['required', 'integer'],
+            // 'is_default' => ['required'],
             'status' => ['required']
         ]);
 
         $variantItem = ProductVariantItem::findOrFail($variantItemId);
         $variantItem->name = $request->name;
-        $variantItem->price = $request->price;
-        $variantItem->is_default = $request->is_default;
+        // $variantItem->price = $request->price;
+        // $variantItem->qty = $request->qty;
+        // $variantItem->is_default = $request->is_default;
         $variantItem->status = $request->status;
         $variantItem->save();
 
         toastr('Actualizado con exito', 'success', 'success');
 
         return redirect()->route('admin.products-variant-item.index', ['productId' => $variantItem->productVariant->product_id, 'variantId' => $variantItem->product_variant_id]);
- 
+
     }
 
     public function destroy(string $variantItemId) {
         $variantItem = ProductVariantItem::findOrFail($variantItemId);
         $variantItem->delete();
-    
+
         return response(['status' => 'success', 'message' => "Eliminado con exito"]);
     }
-    
+
     public function changeStatus(Request $request){
 
         $variantItem = ProductVariantItem::findOrFail($request->id);

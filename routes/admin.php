@@ -27,6 +27,7 @@ use App\Http\Controllers\Backend\TrackConversionController;
 use App\Http\Controllers\Backend\TransactionController;
 use App\Http\Controllers\Backend\TransferController;
 use App\Http\Controllers\Backend\UserManageController;
+use App\Http\Controllers\Backend\ProductVariantCombinationsController;
 use App\Models\Subcategory;
 use Illuminate\Support\Facades\Route;
 
@@ -96,6 +97,11 @@ Route::get('products-variant-item-edit/{variantItemId}' , [ProductVariantItemCon
 Route::put('products-variant-item-update/{variantItemId}' , [ProductVariantItemController::class, 'update'])->name('products-variant-item.update');
 Route::delete('products-variant-item/{variantItemId}' , [ProductVariantItemController::class, 'destroy'])->name('products-variant-item.destroy');
 Route::put('products-variant-item-status' , [ProductVariantItemController::class, 'changeStatus'])->name('products-variant-item.change-status');
+
+/**Product Variant Combinations*/
+// Route::get('products-variant-combinations/{productId}', [ProductVariantCombinationsController::class, 'index'])->name('products-variant-combinations.index');
+// Route::get('products-variant-combinations/create/{productId}', [ProductVariantCombinationsController::class, 'create'])->name('products-variant-combinations.create');
+Route::resource('products-variant-combinations', ProductVariantCombinationsController::class);
 
 
 /**Producto More Eccomerce */

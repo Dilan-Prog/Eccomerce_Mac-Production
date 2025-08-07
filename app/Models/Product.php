@@ -43,13 +43,20 @@ class Product extends Model
 
     function productImageGalleries(){
         return $this->hasMany(ProductImageGallery::class);
+    }
 
+    // Relacion de productos
+    function variants(){
+        return $this->hasMany(ProductVariant::class);
+    }
+
+    function combinations()
+    {
+        return $this->hasMany(ProductVariantCombinations::class);
     }
 
     function brand(){
-
         return $this->belongsTo(Brand::class);
-
     }
 
     public function reviews()

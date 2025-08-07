@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class ProductVariantItem extends Model
 {
     use HasFactory;
+    
 
     public function productVariant(){
 

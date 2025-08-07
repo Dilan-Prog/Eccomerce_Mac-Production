@@ -35,10 +35,8 @@ class ProductDataTable extends DataTable
                 <div class="dropdown-menu">
                   <a class="dropdown-item has-icon" href="'.route('admin.products-image-gallery.index', ['product' => $query->id]).'"><i class="far fa-images"></i> Galleria de Imagenes</a>
                   <a class="dropdown-item has-icon" href="'.route('admin.products-variant.index', ['product' => $query->id]).'"><i class="fas fa-boxes"></i> Variantes de Producto</a>
-                    <a class="dropdown-item has-icon" href="'.route('admin.products-more-eccomerce.index', ['product' => $query->id]).'"><i class="fas fa-monero"></i> Agregar Mas Comercios</a>
-
-
-
+                  <a class="dropdown-item has-icon" href="'.route('admin.products-variant-combinations.index', ['product' => $query->id]).'"><i class="fas fa-boxes"></i> Combinaciones del producto</a>
+                  <a class="dropdown-item has-icon" href="'.route('admin.products-more-eccomerce.index', ['product' => $query->id]).'"><i class="fas fa-monero"></i> Agregar Mas Comercios</a>
                 </div>
               </div>';
 
@@ -135,7 +133,7 @@ class ProductDataTable extends DataTable
                         [10, 25, 50, -1],
                         ['10', '25', '50', 'All']   // Configuración de las opciones de cantidad de registros
                     ])->language('spanish')
-                    ->lengthChange(true) 
+                    ->lengthChange(true)
                     ->orderBy(0)
                     ->columns($this->getColumns())
                     ->parameters([
@@ -146,7 +144,7 @@ class ProductDataTable extends DataTable
                                 'text'     => 'Exportar a Excel',
                                 // 'title'    => 'Productos Exportados',  // Título personalizado del archivo Excel
                                 // 'filename' => 'productos_exportados_mac-del-norte',  // Nombre del archivo Excel
-                                
+
                             ],
                             'csv',
                             'pdf',
@@ -154,7 +152,7 @@ class ProductDataTable extends DataTable
                             'reset',
                             'reload',
                         ],
-                        
+
                     'language' => [
                         'sLengthMenu' => 'Mostrar _MENU_ registros por página',
                         'sZeroRecords' => 'No se encontraron resultados',
@@ -210,7 +208,7 @@ class ProductDataTable extends DataTable
                 'data' => 'status',
                 'title' => 'Estado', // Título personalizado
             ],
-            
+
 
             // Columnas adicionales que no se mostrarán, pero se exportarán
         Column::make('category')   // Agregamos la columna 'category'
@@ -247,7 +245,7 @@ class ProductDataTable extends DataTable
                 ->visible(false),   // No la mostramos en el DataTable
 
         Column::make('is_canonical')  // Agregamos la columna 'is_canonical'
-                
+
                 ->exportable(true)  // Hacemos que sea exportable
                 ->visible(false),   // No la mostramos en el DataTable
 

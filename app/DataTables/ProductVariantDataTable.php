@@ -23,15 +23,15 @@ class ProductVariantDataTable extends DataTable
     {
         return (new EloquentDataTable($query))
             ->addColumn('action', function($query){
-                $variantOption = "<a href='".route('admin.products-variant-item.index',['productId' => request()->product, 'variantId' => $query->id])."' class='btn btn-primary mr-2'>Variant Items</a>";
-                $editBtn = "<a href='".route('admin.products-variant.edit', $query->id)."' class='btn btn-primary'>Edit</a>";
-                $deleteBtn = "<a href='".route('admin.products-variant.destroy', $query->id)."' class='btn btn-danger m-2 delete-item'>Delete</a>";
+                $variantOption = "<a href='".route('admin.products-variant-item.index',['productId' => request()->product, 'variantId' => $query->id])."' class='btn btn-primary mr-2'>Variantes</a>";
+                $editBtn = "<a href='".route('admin.products-variant.edit', $query->id)."' class='btn btn-primary'>Editar</a>";
+                $deleteBtn = "<a href='".route('admin.products-variant.destroy', $query->id)."' class='btn btn-danger m-2 delete-item'>Eliminar</a>";
 
                 return $variantOption.$editBtn.$deleteBtn;
             })
             ->addColumn('status', function($query){
                 if($query->status == 1){
-                    
+
                                     $button = '<label class="custom-switch mt-2">
                                     <input type="checkbox"checked name="custom-switch-checkbox" data-id="'.$query->id.'" class="custom-switch-input change-status">
                                     <span class="custom-switch-indicator"></span>
@@ -85,10 +85,11 @@ class ProductVariantDataTable extends DataTable
     public function getColumns(): array
     {
         return [
-            Column::make('id')->width(50),
-            Column::make('name'),
-            Column::make('status')->width(100),
+            Column::make('id')->width(50)->title('ID'),
+            Column::make('name')->title('Nombre'),
+            Column::make('status')->width(100)->title('Estado'),
             Column::computed('action')
+                  ->title('Acciones')
                   ->exportable(false)
                   ->printable(false)
                   ->width(400)

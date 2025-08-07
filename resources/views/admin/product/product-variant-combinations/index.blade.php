@@ -6,7 +6,7 @@
 
     <section class="section">
       <div class="section-header">
-        <h1>Variantes de Productos</h1>
+        <h1>Combinaciones de Producto</h1>
       </div>
       <div class="mb-3">
         <a href="{{route('admin.products.index')}}" class="btn btn-primary">Regresar</a>
@@ -21,7 +21,7 @@
               <div class="card-header">
                 <h4>Producto: {{$product->name}} </h4>
                 <div class="card-header-action">
-                    <a href="{{route('admin.products-variant.create', ['product' => $product->id])}}" class="btn btn-primary">+ Crear Nuevo</a>
+                    <a href="{{route('admin.products-variant-combinations.create', ['product' => $product->id])}}" class="btn btn-primary">+ Crear Nuevo</a>
                 </div>
               </div>
               <div class="card-body">
