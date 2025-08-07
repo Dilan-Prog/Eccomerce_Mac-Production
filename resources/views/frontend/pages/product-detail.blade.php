@@ -17,6 +17,7 @@
 @section('content')
     <section id="wsus__product_details">
         <div class="container" itemscope itemtype="http://schema.org/Product">
+            {{-- Miga de pan o ruta jerarquica --}}
             <section id="wsus__breadcrumb">
                     <div class="container">
                         <div class="row">
@@ -29,6 +30,8 @@
                         </div>
                     </div>
             </section>
+            {{-- Final de miga de pan o ruta jerarquica --}}
+
             <div class="wsus__details_bg" data-name="{{$product->name}}">
                 <div class="row">
                     <div class="col-xl-8 ">
@@ -40,11 +43,12 @@
                                         <li>
                                             <div rel="schema:image" resource="{{asset($product->thumb_image)}}"></div>
                                             <img class="zoom ing-fluid w-100" itemprop="image" src="{{asset($product->thumb_image)}}" alt="{{$product->name}}"></li>
+                                            {{--foreach que recorre toda la galeria de imagenes dentro de ProductGallery existente de cada producto  --}}
                                         @foreach($product->productImageGalleries as $productImage)
-                                        <li><div rel="schema:additionalImage" resource="{{asset($productImage->image)}}"></div>
+                                            <li><div rel="schema:additionalImage" resource="{{asset($productImage->image)}}"></div>
                                             <img class="zoom ing-fluid w-100" itemprop="additionalImage" src="{{asset($productImage->image)}}" alt="{{$product->name}}" ></li>
                                         @endforeach
-
+                                            {{-- Final de foreach que recorre toda la galeria de imagenes dentro de ProductGallery existente de cada producto --}}
                                     </ul>
                                 </div>
                                 <div class="exzoom_nav" ></div>
@@ -59,6 +63,7 @@
                     </div>
                     <div class="col-xl-4 ">
                         <div class="wsus__pro_details_text" >
+                            {{-- Definicion de tipo de producto agregar otro campo que diga condicion del producto --}}
                             <span>
                                 @switch($product->product_type)
                                     @case('new_arrival')
@@ -98,6 +103,8 @@
 
                                 @endswitch
                             </span>
+                            {{-- Final del tipo de producto --}}
+                            {{-- Calificacion o rating del producto basado en comentarios --}}
                             <p class="wsus__pro_rating" style="color: #1e77fc;">
                                 <div style="color: #1e77fc;">
                                     <span style="color: #1e77fc;" >{{ number_format($averageRating, 1) }}</span>
@@ -114,6 +121,9 @@
                                     <span style="color: #1e77fc;">( {{ count($reviews) ?? 0 }} opiniones)</span>
                                 </div>
                             </p>
+                            {{-- Final de Calificacion o Rating del producto basado en comentarios --}}
+
+                            {{-- Llamadas PHP para la obtencion de variant_item_ids e iniciacion a las variantes --}}
                             @php
                                 $variantNames = [];
                                 $sku = $product->sku;
@@ -137,22 +147,27 @@
                                 }
                                 $fullProductName = $product->name . (count($variantNames) ? ' ' . implode(' ', $variantNames) : '');
                             @endphp
-
+                            {{-- Final de llamadas PHP para la obtencion de datos de las variantes del producto --}}
+                            {{-- Nombre dinamico dependiendo si el producto tiene variantes o no --}}
                             <a class="title" href="javascript:;" itemprop="name" content="{{ $fullProductName }}">
                                 {{ $fullProductName }}
                             </a>
                             <div itemprop="offers" itemscope itemtype="http://schema.org/Offer">
-
+                                {{-- Inicio de codicion de precio, Si el producto tiene precio --}}
                                 @if ($product->price)
-
+                                        {{-- Incio de condicion de stock, Si el producto cuenta con stock --}}
                                         @if ($product->qty > 0)
+                                            {{-- Condicion de stock, Si el producto esta en stock --}}
                                             <p class="wsus__stock_area">
                                                 <span class="in_stock" itemprop="availability" content="https://schema.org/InStock">Stok Disponible</span>
                                             </p>
+                                        {{-- No hay stock --}}
                                         @elseif ($product->qty === 0)
+                                            {{-- Condicion de stock, Si el producto esta agotado --}}
                                             <p class="wsus__stock_area" >
                                                 <span class="in_stock" itemprop="availability" content="https://schema.org/OutOfStock">Agotado</span>
                                             </p>
+                                         {{--Final de Condicion de stock, @endif  --}}
                                         @endif
                                     @php
                                         $msiMeses = 3;
@@ -163,38 +178,47 @@
                                         $precio = number_format($product->price, 2, '.', ',');
                                                 [$enteroNormal, $decimalesNormal] = explode('.', $precio);
                                     @endphp
-
+                                    {{-- Si tiene el Producto Descuento se muestra el precio con descuento --}}
                                     @if (checkDiscount($product))
                                         <h4>
+                                            {{-- Meta Etiqueta Indicador de la moneda utilizada --}}
                                             <meta itemprop="priceCurrency" content="MXN">
+                                            {{-- Precio Normal Tachado --}}
                                             <span itemprop="price" content="{{$product->offert_price}}">
                                                 <del>{{$settings->currency_icon}}{{ number_format($product->price, 2, '.', ',') }} MXN</del>
                                             </span>
-
+                                            {{-- Precio con Descuento --}}
                                             <span itemprop="price" content="{{ $product->offert_price }}">
                                                 {{$settings->currency_icon}}{{ $entero }}<span style="font-size: 15px; vertical-align: super;">.{{ $decimales }}</span> MXN {{ calculatedDiscountPercent($product->price, $product->offert_price) }}%OFF
                                             </span>
-
                                         </h4>
+                                        {{-- Si el producto es mayor a 3000 pesos entra a meses sin intereses --}}
                                         @if ($product->offert_price >= 3000)
+                                            {{-- Se muestra en cuanto quedarian los pagos a meses sin interses --}}
                                             <p class="wsus__msi_product">
                                                 Pagalo a <span style="color: #00a650;">{{ $msiMeses }} Meses sin intereses de {{$settings->currency_icon}}{{number_format($msioffert,2)}} MXN</span>
                                                 pagando con
                                                 <img src="{{ asset('frontend/images/iconos-empresas-sin-fondo/Paypal-logo.png') }}" alt="Meses sin intereses PayPal" style="height: 22px; vertical-align: middle; margin-left: 3px;">
                                             </p>
+                                        {{-- No aplica meses sin intereses ya que el monto es menor a 3000 pesos --}}
                                         @else
+                                            {{-- Se muestra que lo puede pagar a meses sin intereses teniendo un carrito mayor o igual a 3000 pesos --}}
                                             <p class="wsus__msi_product">
                                                 Pagalo a <span style="color: #00a650;">{{ $msiMeses }} Meses sin intereses a partir de {{$settings->currency_icon}}3,000 MXN</span> en carrito pagando con
                                                 <img src="{{ asset('frontend/images/iconos-empresas-sin-fondo/Paypal-logo.png') }}" alt="Meses sin intereses PayPal" style="height: 22px; vertical-align: middle; margin-left: 3px;">
                                             </p>
+                                        {{-- Final de meses sin intereses @endif --}}
                                         @endif
+                                        {{-- Indicador de IVA incluido --}}
                                         <span class="mdn_iva">IVA INCLUIDO</span>
 
-
+                                    {{-- Si el producto no tiene descuento se muestra con precio normal --}}
                                     @else
 
                                         <h4>
+                                            {{-- Area de edicion de combinaciones de productos --}}
                                             <meta itemprop="priceCurrency" content="MXN">
+                                            {{-- Precio normal --}}
                                             <span itemprop="price" content="{{$price}}">
                                                 {{$settings->currency_icon}}{{ $price }}<span style="font-size: 15px; vertical-align: super;">.{{ $decimalesNormal }}</span> MXN
                                             </span>
@@ -202,42 +226,56 @@
                                                 {{$settings->currency_icon}}{{ $enteroNormal }}<span style="font-size: 15px; vertical-align: super;">.{{ $decimalesNormal }}</span> MXN
                                             </span> --}}
                                         </h4>
+                                            {{-- Si el producto es mayor a 3000 pesos entra a meses sin intereses --}}
                                             @if ($product->price >= 3000)
+                                                {{-- Se muestra en cuanto quedarian los pagos a meses sin interses --}}
                                                 <p class="wsus__msi_product">
                                                     Pagalo a <span style="color: #00a650;">{{ $msiMeses }} Meses sin intereses de {{$settings->currency_icon}}{{number_format($msiMonto,2)}} MXN</span>
                                                     pagando con
                                                     <img src="{{ asset('frontend/images/iconos-empresas-sin-fondo/Paypal-logo.png') }}" alt="Meses sin intereses PayPal" style="height: 22px; vertical-align: middle; margin-left: 3px;">
                                                 </p>
+                                            {{-- No aplica meses sin intereses ya que el monto es menor a 3000 pesos --}}
                                             @else
+                                                {{-- Se muestra que lo puede pagar a meses sin intereses teniendo un carrito mayor o igual a 3000 pesos --}}
                                                 <p class="wsus__msi_product">
                                                     Pagalo a <span style="color: #00a650;">{{ $msiMeses }} Meses sin intereses teniendo {{$settings->currency_icon}}3,000 MXN</span> en carrito pagando con
                                                     <img src="{{ asset('frontend/images/iconos-empresas-sin-fondo/Paypal-logo.png') }}" alt="Meses sin intereses PayPal" style="height: 22px; vertical-align: middle; margin-left: 3px;">
                                                 </p>
+                                            {{-- Final de meses sin intereses @endif --}}
                                             @endif
-                                        <span class="mdn_iva">IVA INCLUIDO</span>
+                                            {{-- Indicador de IVA incluido --}}
+                                            <span class="mdn_iva">IVA INCLUIDO</span>
+                                    {{-- Final de Precio de Descuento @endif --}}
                                     @endif
-
+                                {{-- En caso de que no tenga precio --}}
                                 @else
-                                <p class="wsus__stock_area">
-                                    <span class="in_stock" itemprop="availability" content="https://schema.org/MadeToOrder">La venta de este producto requiere asesoria</span>
-                                </p>
+                                    {{-- Se pone en stock pero que requiere asesoría porque implica un proceso por detras --}}
+                                    <p class="wsus__stock_area">
+                                        <span class="in_stock" itemprop="availability" content="https://schema.org/MadeToOrder">La venta de este producto requiere asesoria</span>
+                                    </p>
+                                {{-- Final de Condicion de Precio --}}
                                 @endif
                             </div>
-
+                            {{-- Redireccion a Detalles del producto este es una etiqueta que contiene el itemprop --}}
                             <link itemprop="url" href="https://www.macdelnorte.com/public/product-detail/{{$product->slug}}" />
+                            {{-- Clave Unica del producto registrada en ASPELL y tambien en algun momento se hara conexion --}}
                             <p class="sku">Clave: <span itemprop="sku" content="{!! $sku !!}">{!!$sku !!}</span></p>
+                            {{-- Modelo del Producto  no visible--}}
                             <p class="mpn"><span itemprop="mpn"content="{!! $product->productModel !!}" style="display: none; visibility: hidden;">{{$product->productModel}}</span></p>
                             {{-- <p class="description" itemprop="sku">Clave: <span>{!! $product->sku !!}</span></p> --}}
+                            {{-- Marca del producto  --}}
                             <p class="brand_model" itemprop="brand" itemscope itemtype="http://schema.org/Brand">
                                 Marca:<span itemprop="name" content="{{$product->brand->name}}">{{$product->brand->name}}</span>
                             </p>
                             <br>
+                            {{-- Modelo del Producto visible--}}
                             <p class="brand_model" itemprop="model">Modelo :{{$product->productModel}}</p>
-                            <div class="wsus__shipping">
-                                <p class="wsus__shipping-text-one"><i class="fas fa-shipping-fast" aria-hidden="true" style="color: #00a650;"></i><span > Env&iacute;o gratis</span> a partir de $2,299.00</p>
-                                <p>La entrega se realiza en un plazo de 1 a 3 d&iacute;as h&aacute;biles. Envio a todo el pais.</p>
+                            {{-- Envio Gratis y tiempo de envio --}}
+                                <div class="wsus__shipping">
+                                    <p class="wsus__shipping-text-one"><i class="fas fa-shipping-fast" aria-hidden="true" style="color: #00a650;"></i><span > Env&iacute;o gratis</span> a partir de $2,299.00</p>
+                                    <p>La entrega se realiza en un plazo de 1 a 3 d&iacute;as h&aacute;biles. Envio a todo el pais.</p>
 
-                            </div>
+                                </div>
                              @php
                                     // Prepara las combinaciones para JS
                                     $jsCombinations = [];
@@ -247,10 +285,8 @@
                                             'variant_item_ids' => json_decode($comb->variants_item_ids, true),
                                         ];
                                     }
-                                @endphp
+                            @endphp
                             @if($hasCombinations && count($productCombinations) > 0)
-
-
                                 @foreach ($product->variants as $variant)
                                     @if ($variant->status != 0 && $variant->productVariantItems->where('status', '!=', 0)->where('name', '!=', '')->isNotEmpty())
                                         <div class="product-variant-picker" data-variant-id="{{ $variant->id }}">
@@ -282,11 +318,8 @@
                                 {{-- Si el producto NO tiene combinaciones, no muestra variantes --}}
                                 {{-- Aquí puedes mostrar solo el precio y datos simples --}}
                             @endif
-
-
-
-                            {{-- Variantes antiguo --}}
-{{--
+                            {{--Variantes antiguo--}}
+                            {{--
                             @foreach ($product->variants as $variant)
                                  @if ($variant->status != 0 && $variant->productVariantItems->where('status', '!=', 0)->where('name', '!=', '')->isNotEmpty())
                                     <div class="product-variant-picker">
@@ -326,40 +359,48 @@
                                         </div>
                                     </div>
                                 @endif
-                            @endforeach --}}
-
+                            @endforeach
+                            --}}
+                            {{-- Formulario para agregar al carrito --}}
                             <form class="shopping-cart-form">
                                 <div class="wsus__quentity">
+                                    {{-- Pasando del Id del producto --}}
                                     <input type="hidden" name="product_id" value="{{$product->id}}">
+                                    {{-- Pasando el nombre de la marca --}}
                                     <input type="hidden" name="brand_name" value="{{ $product->brand->name }}">
+                                    {{-- Pasando el SKU del producto --}}
                                     <input type="hidden" name="sku" value="{{$product->sku}}">
+                                    {{-- Pasando el modelo del producto --}}
                                     <input type="hidden" name="productModel" value="{{$product->productModel}}">
+                                    {{-- Condicion si el producto tiene precio muestra la cantidad que decea agregar --}}
                                     @if ($product->price)
                                         <h5>Cantidad :</h5>
                                         <div class="select_number">
                                             <input class="number_area" name="qty" type="text" min="1" max="100" value="1" />
                                         </div>
+                                    {{-- Condicion que muestra el contacto directo para esos productos que no tienen precio --}}
                                     @else
                                         <div class="shopping-cart-form-cotize" style="display: flex; align-items: center">
                                             <button class="common_btn"><a href="{{route('contact')}}" target="_black" style="text-decoration: none; color:white">Contacto Directo <i class="fa fa-envelope"></i></a></button>
                                             <p style="margin-left: 10px; margin-right: 10px;" > o </p>
                                             <button class="common_btn"><a href="https://wa.link/f28njw" target="_black" style="text-decoration: none; color:white"><i class="fa fa-whatsapp"></i> Llamanos al  81-35825559 </a></button>
                                         </div>
+                                    {{-- Final de Condicion que muestra la cantidad o si se nececita contacto directo para la venta del producto  @endif--}}
                                     @endif
                                 </div>
+                                {{-- Condicion que muestra el boton de agregar al carrito --}}
                                 @if ($product->price)
                                 <div class="shopping_buttons">
                                     <div class="button_container">
                                         <ul class="wsus__button_area">
                                             <li><button type="submit" class="add_cart"><i class="fas fa-shopping-cart"></i> Agregar al Carrito</button></li>
                                         </ul>
-
                                     </div>
                                 </div>
-
+                                {{-- Final de Condicion que muestra el boton de agregar al carrito --}}
                                 @endif
                             </form>
-
+                            {{-- Botones de contacto --}}
                             <div class="button_container">
                                 <a class="track-conversion" data-type="whatsapp" href="https://wa.link/f28njw" target="_blank" style="width: 100%;" onclick="dataLayer.push({'event': 'whatsapp_conversion', 'action': 'click', 'label': 'whatsapp-icon'});" >
                                     <ul class="wsus__button_area">
@@ -395,8 +436,10 @@
                             </div> --}}
 
 
+                            {{-- Final de Botones de contacto --}}
 
                             </p>
+                            {{-- Beneficios de comprar con nosotros --}}
                                 <div class="wsus__assurance">
                                     <ul>
                                         <li>
@@ -408,6 +451,7 @@
                                         <li>
                                             <div>
                                                 <img id="animated-gif" src="{{ asset('frontend/images/iconos/guarantee.webp') }}" alt="Garantia">
+                                                {{-- HACER EL NUMERO DE GARANTIA DINAMICO --}}
                                                 <p><span>Protecci&oacute;n Adicional,</span> cuenta con garantia de 1 año.</p>
                                             </div>
                                         </li>
@@ -420,13 +464,15 @@
 
                                     </ul>
                                 </div>
+                            {{-- Final Beneficios de comprar con nosotros --}}
+                            {{-- Inicio de PHP para la agregacion de mas comercios como mercado Libre y amazon --}}
                                 @php
                                     $marketplaces = collect($product->moreEccomerce ?? [])->filter(function($moreEccomerce) {
                                         return in_array($moreEccomerce->nameEccomerce, ['Mercado Libre', 'Amazon']);
                                     });
                                 @endphp
-
-
+                            {{-- Final de PHP para la agregacion de mas comercios como mercado Libre y amazon --}}
+                                {{-- Inico de Condicion para mostrar los demas comercios que ahi disponibles --}}
                                 @if ($marketplaces->count() > 0)
                                     <div class="wsus__more_eccomerce" style="margin: 5px 0px">
                                         <p><b>Disponible en:</b></p>
@@ -450,6 +496,7 @@
                                         @endforeach
                                     </div>
                                 @endif
+                                {{-- Final de Condicion para mostrar los demas comercios que ahi disponibles --}}
                         </div>
                     </div>
                 </div>
@@ -464,39 +511,47 @@
                                         data-bs-target="#pills-home22" type="button" role="tab"
                                         aria-controls="pills-home" aria-selected="true">Descripci&oacute;n</button>
                                 </li>
+                                {{-- Ficha Tecnica del Producto mediante drive --}}
                                 <li class="nav-item ">
                                     <a class="common_btn text-center" href="{{ $product->url_PDF }}" style="text-decoration: none; color:white" content="Ficha Tecnica:{{ $product->url_PDF }}">Descargar Pdf/Ficha tecnica</a>
                                 </li>
-
+                                {{-- Final de Ficha Tecnica del Producto mediante drive --}}
                             </ul>
                             <div class="tab-content" id="pills-tabContent4">
                                 <div class="tab-pane fade  show active " id="pills-home22" role="tabpanel"
                                     aria-labelledby="pills-home-tab7">
                                     <div class="row">
+                                        {{-- Inicio de Condicion para mostrar el posible Video que tenga el producto --}}
                                         @if ($product->video_link)
                                             <div class="col-xl-5 col-md-5 col-lg-5 ">
                                                 <div class="wsus__description_area">
+                                                    {{-- Llamada a la descripcion larga del producto --}}
                                                     <div class="wsus__description_area" itemprop="description" content="{{$product->long_description}}">
                                                         {!! $product->long_description !!}
                                                     </div>
-
+                                                    {{-- Final de llamada a la descripcion larga del producto --}}
+                                                    {{-- Inicio de condicion para mostrar el video --}}
                                                     @if ($product->video_link)
 
                                                     <p>Aqui te presentamos un breve video sobre nuestro producto. Recuerda que si necesitas asesoria no dudes en preguntarnos.</p>
                                                     <a class="common_btn mt-2 ml-2">Contactar</a>
                                                     @endif
+                                                    {{-- Final de condicion para mostrar el video --}}
 
                                                 </div>
                                             </div>
+                                            {{--En caso contrario solo se muestra la descripcion larga del producto --}}
                                         @else
                                         <div class="col-xl-12 col-md-5 col-lg-5 ">
                                             <div class="wsus__description_area" itemprop="description" content="{{$product->long_description}}">
                                                 {!! $product->long_description !!}
                                             </div>
                                         </div>
+                                        {{-- Final de condicion para mostrar el video --}}
                                         @endif
                                         @if ($product->video_link)
                                             <div id="video_product" class="col-xl-7 col-md-7 col-lg-7 ">
+                                                {{-- MIGRAR A LIBRERIA LITE-YOUTUBE PARA UN MEJOR RENDIMIENTO --}}
                                                 <iframe src="{{$product->video_link}}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
                                             </div>
                                         @endif
@@ -510,7 +565,7 @@
                 </div>
 
             </div>
-            {{-- Opiniones del Producto --}}
+            {{-- Opiniones del Producto y donde se deja el comentario --}}
             <section class="review_rating_coment">
                 <div class="row">
                     <div class="col-12">
@@ -522,6 +577,7 @@
                         <div class="rating__wrapper">
                             <!-- El 4.9 como un elemento separado -->
                             <div class="rating__statistics">
+                                {{-- Estadisticas del las opiniones del producto --}}
                                 <p class="rating__statistics__number" >
                                     {{ number_format($averageRating, 1) }}
                                 </p>
