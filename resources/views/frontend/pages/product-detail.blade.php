@@ -67,40 +67,26 @@
                             <span>
                                 @switch($product->product_type)
                                     @case('new_arrival')
-                                        <span>Nuevo
-                                            @if ($product->price)
-                                            | {{$product->qty}} piezas
-                                            @else
-                                            @endif
+                                        <span>
+                                            Nuevo{{ ($selectedCombination ? ' | ' . $selectedCombination->qty . ' piezas' : ($product->price ? ' | ' . $product->qty . ' piezas' : '')) }}
                                         </span>
                                         @break
                                     @case('featured_product')
-                                        <span>Producto Favorito
-                                            @if ($product->price)
-                                            | {{$product->qty}} piezas
-                                            @else
-                                            @endif
+                                        <span>
+                                            Producto Favorito{{ ($selectedCombination ? ' | ' . $selectedCombination->qty . ' piezas' : ($product->price ? ' | ' . $product->qty . ' piezas' : '')) }}
                                         </span>
                                         @break
                                     @case('top_product')
-                                        <span>Producto Top
-                                            @if ($product->price)
-                                            | {{$product->qty}} piezas
-                                            @else
-                                            @endif
+                                        <span>
+                                            Producto Top{{ ($selectedCombination ? ' | ' . $selectedCombination->qty . ' piezas' : ($product->price ? ' | ' . $product->qty . ' piezas' : '')) }}
                                         </span>
                                         @break
                                     @case('best_product')
-
-                                        <span>Mas Vendido
-                                            @if ($product->price)
-                                            | {{$product->qty}} piezas
-                                            @else
-                                            @endif
+                                        <span>
+                                            Mas Vendido{{ ($selectedCombination ? ' | ' . $selectedCombination->qty . ' piezas' : ($product->price ? ' | ' . $product->qty . ' piezas' : '')) }}
                                         </span>
                                         @break
                                     @default
-
                                 @endswitch
                             </span>
                             {{-- Final del tipo de producto --}}
@@ -122,32 +108,50 @@
                                 </div>
                             </p>
                             {{-- Final de Calificacion o Rating del producto basado en comentarios --}}
-
                             {{-- Llamadas PHP para la obtencion de variant_item_ids e iniciacion a las variantes --}}
-                            @php
-                                $variantNames = [];
-                                $sku = $product->sku;
-                                $price = $product->price;
-                                $offerPrice = $product->offert_price ?? null;
-                                if ($selectedCombination) {
-                                    // Obtén los IDs de los items de variante seleccionados
-                                    $selectedIds = json_decode($selectedCombination->variants_item_ids, true);
-                                    foreach ($selectedIds as $itemId) {
-                                        foreach ($product->variants as $variant) {
-                                            $variantItem = $variant->productVariantItems->where('id', $itemId)->first();
-                                            if ($variantItem) {
-                                                $variantNames[] = $variantItem->name;
+                                    @php
+                                        // Número de meses para MSI (Meses Sin Intereses)
+                                        $msiMeses = 3;
+
+                                        // Inicialización de variables de variantes y precios
+                                        $variantNames = [];
+                                        $sku = $product->sku;
+                                        $price = $product->price;
+                                        $offerPrice = $product->offert_price ?? null;
+
+                                        // Si hay una combinación seleccionada, se actualizan los datos según la combinación
+                                        if ($selectedCombination) {
+                                            // Obtiene los IDs de los items de variante seleccionados
+                                            $selectedIds = json_decode($selectedCombination->variants_item_ids, true);
+                                            foreach ($selectedIds as $itemId) {
+                                                foreach ($product->variants as $variant) {
+                                                    // Busca el nombre del item de variante seleccionado
+                                                    $variantItem = $variant->productVariantItems->where('id', $itemId)->first();
+                                                    if ($variantItem) {
+                                                        $variantNames[] = $variantItem->name;
+                                                    }
+                                                }
                                             }
+                                            // Actualiza SKU, precio y precio de oferta según la combinación seleccionada
+                                            $sku = $selectedCombination->sku ?? $sku;
+                                            $price = $selectedCombination->price ?? $price;
+                                            $offerPrice = $selectedCombination->offert_price ?? $offerPrice;
                                         }
-                                    }
-                                    // Datos de la combinación seleccionada
-                                    $sku = $selectedCombination->sku ?? $sku;
-                                    $price = $selectedCombination->price ?? $price;
-                                    $offerPrice = $selectedCombination->offert_price ?? $offerPrice;
-                                }
-                                $fullProductName = $product->name . (count($variantNames) ? ' ' . implode(' ', $variantNames) : '');
-                            @endphp
-                            {{-- Final de llamadas PHP para la obtencion de datos de las variantes del producto --}}
+
+                                        // Calcula el monto mensual para MSI y oferta
+                                        $msiMonto = $price ? $price / $msiMeses : 0;
+                                        $msioffert = $offerPrice ? $offerPrice / $msiMeses : 0;
+
+                                        // Formatea los precios para mostrar enteros y decimales por separado
+                                        $precioOffert = number_format($offerPrice, 2, '.', ',');
+                                        [$entero, $decimales] = explode('.', $precioOffert);
+
+                                        $precio = number_format($price, 2, '.', ',');
+                                        [$enteroNormal, $decimalesNormal] = explode('.', $precio);
+
+                                        // Nombre completo del producto incluyendo variantes seleccionadas
+                                        $fullProductName = $product->name . (count($variantNames) ? ' ' . implode(' ', $variantNames) : '');
+                                    @endphp
                             {{-- Nombre dinamico dependiendo si el producto tiene variantes o no --}}
                             <a class="title" href="javascript:;" itemprop="name" content="{{ $fullProductName }}">
                                 {{ $fullProductName }}
@@ -156,28 +160,22 @@
                                 {{-- Inicio de codicion de precio, Si el producto tiene precio --}}
                                 @if ($product->price)
                                         {{-- Incio de condicion de stock, Si el producto cuenta con stock --}}
-                                        @if ($product->qty > 0)
+                                        @php
+                                            $stockQty = $selectedCombination ? $selectedCombination->qty : $product->qty;
+                                        @endphp
+                                        @if ($stockQty > 0)
                                             {{-- Condicion de stock, Si el producto esta en stock --}}
                                             <p class="wsus__stock_area">
                                                 <span class="in_stock" itemprop="availability" content="https://schema.org/InStock">Stok Disponible</span>
                                             </p>
-                                        {{-- No hay stock --}}
-                                        @elseif ($product->qty === 0)
+                                        @elseif ($stockQty === 0)
                                             {{-- Condicion de stock, Si el producto esta agotado --}}
                                             <p class="wsus__stock_area" >
                                                 <span class="in_stock" itemprop="availability" content="https://schema.org/OutOfStock">Agotado</span>
                                             </p>
-                                         {{--Final de Condicion de stock, @endif  --}}
                                         @endif
-                                    @php
-                                        $msiMeses = 3;
-                                        $msiMonto = $product->price ? $product->price / $msiMeses : 0;
-                                        $msioffert = $product->offert_price ? $product->offert_price / $msiMeses : 0;
-                                        $precioOffert = number_format($product->offert_price, 2, '.', ',');
-                                                [$entero, $decimales] = explode('.', $precioOffert);
-                                        $precio = number_format($product->price, 2, '.', ',');
-                                                [$enteroNormal, $decimalesNormal] = explode('.', $precio);
-                                    @endphp
+                                         
+                                        {{-- Final de llamadas PHP para la obtencion de datos de las variantes del producto --}}
                                     {{-- Si tiene el Producto Descuento se muestra el precio con descuento --}}
                                     @if (checkDiscount($product))
                                         <h4>
@@ -192,23 +190,25 @@
                                                 {{$settings->currency_icon}}{{ $entero }}<span style="font-size: 15px; vertical-align: super;">.{{ $decimales }}</span> MXN {{ calculatedDiscountPercent($product->price, $product->offert_price) }}%OFF
                                             </span>
                                         </h4>
-                                        {{-- Si el producto es mayor a 3000 pesos entra a meses sin intereses --}}
-                                        @if ($product->offert_price >= 3000)
-                                            {{-- Se muestra en cuanto quedarian los pagos a meses sin interses --}}
-                                            <p class="wsus__msi_product">
-                                                Pagalo a <span style="color: #00a650;">{{ $msiMeses }} Meses sin intereses de {{$settings->currency_icon}}{{number_format($msioffert,2)}} MXN</span>
-                                                pagando con
-                                                <img src="{{ asset('frontend/images/iconos-empresas-sin-fondo/Paypal-logo.png') }}" alt="Meses sin intereses PayPal" style="height: 22px; vertical-align: middle; margin-left: 3px;">
-                                            </p>
-                                        {{-- No aplica meses sin intereses ya que el monto es menor a 3000 pesos --}}
-                                        @else
-                                            {{-- Se muestra que lo puede pagar a meses sin intereses teniendo un carrito mayor o igual a 3000 pesos --}}
-                                            <p class="wsus__msi_product">
-                                                Pagalo a <span style="color: #00a650;">{{ $msiMeses }} Meses sin intereses a partir de {{$settings->currency_icon}}3,000 MXN</span> en carrito pagando con
-                                                <img src="{{ asset('frontend/images/iconos-empresas-sin-fondo/Paypal-logo.png') }}" alt="Meses sin intereses PayPal" style="height: 22px; vertical-align: middle; margin-left: 3px;">
-                                            </p>
-                                        {{-- Final de meses sin intereses @endif --}}
-                                        @endif
+
+                                            {{-- Si el producto es mayor a 3000 pesos entra a meses sin intereses --}}
+                                            @if ($product->offert_price >= 3000)
+                                                {{-- Se muestra en cuanto quedarian los pagos a meses sin interses --}}
+                                                <p class="wsus__msi_product">
+                                                    Pagalo a <span style="color: #00a650;">{{ $msiMeses }} Meses sin intereses de {{$settings->currency_icon}}{{number_format($msioffert,2)}} MXN</span>
+                                                    pagando con
+                                                    <img src="{{ asset('frontend/images/iconos-empresas-sin-fondo/Paypal-logo.png') }}" alt="Meses sin intereses PayPal" style="height: 22px; vertical-align: middle; margin-left: 3px;">
+                                                </p>
+                                            {{-- No aplica meses sin intereses ya que el monto es menor a 3000 pesos --}}
+                                            @else
+                                                {{-- Se muestra que lo puede pagar a meses sin intereses teniendo un carrito mayor o igual a 3000 pesos --}}
+                                                <p class="wsus__msi_product">
+                                                    Pagalo a <span style="color: #00a650;">{{ $msiMeses }} Meses sin intereses a partir de {{$settings->currency_icon}}3,000 MXN</span> en carrito pagando con
+                                                    <img src="{{ asset('frontend/images/iconos-empresas-sin-fondo/Paypal-logo.png') }}" alt="Meses sin intereses PayPal" style="height: 22px; vertical-align: middle; margin-left: 3px;">
+                                                </p>
+                                            {{-- Final de meses sin intereses @endif --}}
+                                            @endif
+
                                         {{-- Indicador de IVA incluido --}}
                                         <span class="mdn_iva">IVA INCLUIDO</span>
 
@@ -227,7 +227,7 @@
                                             </span> --}}
                                         </h4>
                                             {{-- Si el producto es mayor a 3000 pesos entra a meses sin intereses --}}
-                                            @if ($product->price >= 3000)
+                                            @if ($price >= 3000)
                                                 {{-- Se muestra en cuanto quedarian los pagos a meses sin interses --}}
                                                 <p class="wsus__msi_product">
                                                     Pagalo a <span style="color: #00a650;">{{ $msiMeses }} Meses sin intereses de {{$settings->currency_icon}}{{number_format($msiMonto,2)}} MXN</span>
@@ -247,14 +247,15 @@
                                             <span class="mdn_iva">IVA INCLUIDO</span>
                                     {{-- Final de Precio de Descuento @endif --}}
                                     @endif
-                                {{-- En caso de que no tenga precio --}}
-                                @else
-                                    {{-- Se pone en stock pero que requiere asesoría porque implica un proceso por detras --}}
-                                    <p class="wsus__stock_area">
-                                        <span class="in_stock" itemprop="availability" content="https://schema.org/MadeToOrder">La venta de este producto requiere asesoria</span>
-                                    </p>
-                                {{-- Final de Condicion de Precio --}}
-                                @endif
+
+                            {{-- En caso de que no tenga precio --}}
+                            @else
+                                {{-- Se pone en stock pero que requiere asesoría porque implica un proceso por detras --}}
+                                <p class="wsus__stock_area">
+                                    <span class="in_stock" itemprop="availability" content="https://schema.org/MadeToOrder">La venta de este producto requiere asesoria</span>
+                                </p>
+                            {{-- Final de Condicion de Precio --}}
+                            @endif
                             </div>
                             {{-- Redireccion a Detalles del producto este es una etiqueta que contiene el itemprop --}}
                             <link itemprop="url" href="https://www.macdelnorte.com/public/product-detail/{{$product->slug}}" />
@@ -361,11 +362,15 @@
                                 @endif
                             @endforeach
                             --}}
+
+                            
                             {{-- Formulario para agregar al carrito --}}
                             <form class="shopping-cart-form">
                                 <div class="wsus__quentity">
                                     {{-- Pasando del Id del producto --}}
                                     <input type="hidden" name="product_id" value="{{$product->id}}">
+                                    {{-- Pasando el Id de la combinacion --}}
+                                    <input type="hidden" name="combination_id" id="combination_id" value="{{ $selectedCombination ? $selectedCombination->id : '' }}">
                                     {{-- Pasando el nombre de la marca --}}
                                     <input type="hidden" name="brand_name" value="{{ $product->brand->name }}">
                                     {{-- Pasando el SKU del producto --}}
@@ -373,12 +378,16 @@
                                     {{-- Pasando el modelo del producto --}}
                                     <input type="hidden" name="productModel" value="{{$product->productModel}}">
                                     {{-- Condicion si el producto tiene precio muestra la cantidad que decea agregar --}}
-                                    @if ($product->price)
+                                    @php
+                                        $currentPrice = $selectedCombination ? $selectedCombination->price : $product->price;
+                                        $currentQty = $selectedCombination ? $selectedCombination->qty : $product->qty;
+                                    @endphp
+
+                                    @if ($currentPrice)
                                         <h5>Cantidad :</h5>
                                         <div class="select_number">
-                                            <input class="number_area" name="qty" type="text" min="1" max="100" value="1" />
+                                            <input class="number_area" name="qty" type="text" min="1" max="{{ $currentQty }}" value="1" />
                                         </div>
-                                    {{-- Condicion que muestra el contacto directo para esos productos que no tienen precio --}}
                                     @else
                                         <div class="shopping-cart-form-cotize" style="display: flex; align-items: center">
                                             <button class="common_btn"><a href="{{route('contact')}}" target="_black" style="text-decoration: none; color:white">Contacto Directo <i class="fa fa-envelope"></i></a></button>
@@ -389,7 +398,7 @@
                                     @endif
                                 </div>
                                 {{-- Condicion que muestra el boton de agregar al carrito --}}
-                                @if ($product->price)
+                                @if ($currentPrice)
                                 <div class="shopping_buttons">
                                     <div class="button_container">
                                         <ul class="wsus__button_area">

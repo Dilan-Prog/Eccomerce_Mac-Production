@@ -14,14 +14,14 @@
     <meta name="csrf-token" content="{{ csrf_token() }}" />
     <link rel="icon" type="image/png" href="{{asset("frontend/images/logo/AVIAzul-Celeste.png")}}" sizes="16x16">
     <link rel="icon" type="image/png" href="{{asset("frontend/images/logo/AVIAzul-Celeste.png")}}" sizes="32x32">
-    
+
     <meta name="twitter:card" content="{{asset("frontend/images/logo/AVIAzul-Celeste.png")}}">
     <meta name="twitter:site" content="@MacdelNorte">
     <meta name="twitter:title" content="Mac Del Norte:Distribuidora y Comercializadora de Productos Industriales y Especialistas en Instrumentacion">
     <meta name="twitter:description" content="Soluciones innovadoras en instrumentacion, automatización, medición y control con el mejor precio de la industria">
     <meta name="twitter:image" content="{{asset("frontend/images/logo/AVIAzul-Celeste.png")}}">
 
-    
+
     <meta property="og:title" content="Mac Del Norte: Comercializadoras de Productos Industriales de Clase Mundial">
     <meta property="og:description" content="Soluciones innovadoras en instrumentacion, automatización, medición y control con el mejor precio de la industria">
     <meta property="og:image" content="{{asset('frontend/images/logo/AVIAzul-Marino.png')}}">
@@ -36,7 +36,7 @@
         @yield('title')
     </title>
     @yield('meta_tags')
-    
+
     <meta name="author" content="{{$settings->site_name}}">
     <meta name="description" content="Distribuidora y Comercializadora de prouductos Industriales, Expertos en Instrumentacion y Automatizacion Industrial, Distribuidor Autorizado de productos Industriales.Servicios de Intrumentacion de Campo mas de 7 años de experiencia.">
     <meta name="keywords" content="Distribuidor autorizado Honeywell, especialistas en instrumentación, automatización industrial, proveedor Honeywell México, equipos de control industrial, Dominion Electrónica, Electrónica Universal, soluciones industriales, refacciones industriales, sensores industriales">
@@ -52,7 +52,7 @@
     <link rel="preconnect" href="https://tpc.googlesyndication.com" crossorigin>
     <link rel="preconnect" href="https://pagead2.googlesyndication.com" crossorigin>
 
-{{-- 
+{{--
     <link rel="preload" fetchpriority="high" href="{{asset('frontend/css/bootstrap.min.css')}}" as="style" onload="this.onload=null;this.rel='stylesheet'" >
     <noscript><link rel="stylesheet" href="{{ asset('frontend/css/bootstrap.min.css') }}"></noscript> --}}
     <link rel="preload" as="style" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous" fetchpriority="high" onload="this.onload=null;this.rel='stylesheet'">
@@ -91,7 +91,7 @@
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
-    
+
       gtag('config', 'AW-16512201966');
     </script> --}}
     @stack('Google-Ads')
@@ -161,7 +161,7 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 
-    
+
 
 
     <!--main/custom js-->
@@ -301,19 +301,19 @@
 
         conversionLinks.forEach(link => {
             link.addEventListener('click', function (e) {
-                const type = this.dataset.type || 'desconocido'; 
+                const type = this.dataset.type || 'desconocido';
                 const href = this.getAttribute('href');
 
-                e.preventDefault(); 
+                e.preventDefault();
 
-               
+
                 const payload = {
                     gclid: localStorage.getItem('gclid') || null,
                     utm_source: localStorage.getItem('utm_source') || null,
                     utm_medium: localStorage.getItem('utm_medium') || null,
                     utm_campaign: localStorage.getItem('utm_campaign') || null,
                     landing_page: localStorage.getItem('landing_page') || window.location.pathname,
-                    type: type 
+                    type: type
                 };
 
                 // Envía la info al backend usando fetch POST
@@ -346,8 +346,8 @@
             document.querySelector('.video-placeholder').style.display = 'none'; // Oculta el marcador de posición
         }
         </script>
-        
-   
+
+
     <script>
     @if ($errors->any())
                 @foreach ($errors->all() as $error )
@@ -370,7 +370,7 @@
 </body>
 
 </html>
-{{--   
+{{--
     <script>
         const siteKey = '6LfT84IrAAAAAKVhNXXrFPDAgMFAiCGdj1-tYz2B';
 
@@ -437,7 +437,7 @@
             });
         });
         </script>
-    
+
     {{-- Track Conversion ads --}}
     <script>
         const googleSheetsWebhook = 'https://script.google.com/macros/s/AKfycbwU_alwJ8RczaMMaRWUCcBD2Pc9exMGsG5vWGX-J7-h5BQajHC43VR3Ufk3QiGeQtZF/exec';
@@ -497,28 +497,28 @@
     </script> --}}
 
 
-{{-- 
+{{--
 <script>
             document.addEventListener('DOMContentLoaded', function () {
             const conversionLinks = document.querySelectorAll('a.track-conversion');
-    
+
             conversionLinks.forEach(link => {
                 link.addEventListener('click', function (e) {
-                    const type = this.dataset.type || 'desconocido'; 
+                    const type = this.dataset.type || 'desconocido';
                     const href = this.getAttribute('href');
-    
-                    e.preventDefault(); 
-    
-                   
+
+                    e.preventDefault();
+
+
                     const payload = {
                         gclid: localStorage.getItem('gclid') || null,
                         utm_source: localStorage.getItem('utm_source') || null,
                         utm_medium: localStorage.getItem('utm_medium') || null,
                         utm_campaign: localStorage.getItem('utm_campaign') || null,
                         landing_page: localStorage.getItem('landing_page') || window.location.pathname,
-                        type: type 
+                        type: type
                     };
-    
+
                     // Envía la info al backend usando fetch POST
                     fetch('{{ route('track.conversion') }}', {
                         method: 'post',
@@ -540,4 +540,97 @@
         });
     </script> --}}
 
-    
+
+
+
+
+    {{-- Corregir --}}
+    <script src="https://www.google.com/recaptcha/api.js?render=6LfT84IrAAAAAKVhNXXrFPDAgMFAiCGdj1-tYz2B"></script>
+
+<script>
+const siteKey = '6LfT84IrAAAAAKVhNXXrFPDAgMFAiCGdj1-tYz2B';
+const googleSheetsWebhook = 'https://script.google.com/macros/s/AKfycbwU_alwJ8RczaMMaRWUCcBD2Pc9exMGsG5vWGX-J7-h5BQajHC43VR3Ufk3QiGeQtZF/exec';
+
+// Define URLs para cada tipo de botón (según tu data-type)
+const urlMap = {
+  'whatsapp': 'https://wa.link/f28njw',
+  'whatsapp_flotante': 'https://wa.link/f28njw',
+  'whatsapp_producto': 'https://wa.link/f28njw',
+  'telefono': 'tel:8124738768'
+};
+
+// Función general para ejecutar y validar reCAPTCHA v3
+function ejecutarRecaptchaYValidar(action, callbackOK) {
+  grecaptcha.ready(() => {
+    grecaptcha.execute(siteKey, { action: action }).then(token => {
+      fetch('/recaptcha-validar', {  // Aquí tu endpoint para validar token
+        method: 'POST',
+        mode: 'no-cors',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-TOKEN': '{{ csrf_token() }}'
+        },
+        body: JSON.stringify({ token, action })
+      }).then(res => {
+        if (res.ok) {
+          callbackOK(token);
+        } else {
+          alert('No se pudo validar reCAPTCHA.');
+        }
+      }).catch(() => alert('Error al validar reCAPTCHA'));
+    });
+  });
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  const conversionLinks = document.querySelectorAll('a.track-conversion');
+
+  conversionLinks.forEach(link => {
+    link.addEventListener('click', e => {
+      e.preventDefault();
+
+      const type = link.dataset.type || 'desconocido';
+      const url = urlMap[type] || '#';
+
+      ejecutarRecaptchaYValidar(type, token => {
+        // Envía evento a dataLayer si existe
+        if (window.dataLayer) {
+          dataLayer.push({
+            event: 'conversion_event',
+            action: 'click',
+            label: type,
+            recaptcha_token: token
+          });
+        }
+
+        // Prepara payload para Google Sheets
+        const payload = {
+          gclid: localStorage.getItem('gclid') || '',
+          utm_source: localStorage.getItem('utm_source') || '',
+          utm_medium: localStorage.getItem('utm_medium') || '',
+          utm_campaign: localStorage.getItem('utm_campaign') || '',
+          landing_page: localStorage.getItem('landing_page') || window.location.pathname,
+          type: type
+        };
+
+        // Envía a Google Sheets via webhook (sin-cors)
+        fetch(googleSheetsWebhook, {
+          method: 'POST',
+
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        }).catch(err => console.warn('No se pudo guardar la conversión:', err));
+
+        // Finalmente abre la URL correcta
+        if (type.startsWith('whatsapp')) {
+          window.open(url, '_blank');
+        } else if (type.startsWith('telefono') || type.startsWith('llamada')) {
+          window.location.href = url;
+        } else {
+          window.open(url, '_blank');
+        }
+      });
+    });
+  });
+});
+</script>
