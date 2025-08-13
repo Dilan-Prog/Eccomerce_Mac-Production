@@ -5968,6 +5968,19 @@ a:not([href]):not([class]):hover {
     border-radius: 3.5px;
     margin-left: 1px;
 }
+.product-details-variant-selected {
+    border: 3px solid #1e77fc !important;
+    border-radius: 3.5px;
+    background: #f5faff;
+    box-shadow: 0 0 4px #1e77fc33;
+}
+.variant-unavailable {
+    border: 2px dashed #222 !important;
+    border-radius: 8px;
+    opacity: 0.6;
+    cursor: pointer !important;
+    filter: grayscale(0.5);
+}
 
 .product-details-variant-container{
     padding: 6px 8px;
@@ -5976,27 +5989,12 @@ a:not([href]):not([class]):hover {
     color: var(--Text-Secondary);
     font-weight: 500;
 }
-
-
-.product-details-variant-selected {
-    border: 3px solid #00a650;
-    border-radius: 3.5px;
-}
-
-.product-details-variant-selected {
-    border: 3px solid #00468c;
-    border-radius: 3.5px;
-}
-
 .product-details-variant.none {
     opacity: 0.5;
     pointer-events: none; /* evita que se pueda hacer clic */
     cursor: not-allowed;
 }
 
-.product-details-variant.selected:hover {
-    background-color: #d0e9ff;
-}
 
 
 /* Fin de Estilos para servicios dinamicos */
