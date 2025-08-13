@@ -121,7 +121,17 @@
                             <div class="tab-pane fade {{session()->has('product_list_style') && session()->get('product_list_style') == 'grid' ? 'show active' : ''}} {{!session()->has('product_list_style') ? 'show active' : ''}}" id="v-pills-home" role="tabpanel"
                                 aria-labelledby="v-pills-home-tab">
                                 <div class="row">
+                                    
+
                                     @foreach ($products as $product )
+                                    @php
+                                        $defaultCombination = $product->combinations->where('is_default', 1)->first();
+                                        $showCombination = $defaultCombination ?: null;
+                                        $price = $showCombination ? ($showCombination->offert_price ?? $showCombination->price) : ($product->offert_price ?? $product->price);
+                                        $qty = $showCombination ? $showCombination->qty : $product->qty;
+                                        $sku = $showCombination ? $showCombination->sku : $product->sku;
+                                    @endphp
+
                                     {{-- <div class="col-xl-4 col-sm-6 col-lg-4">
                                         <div class="wsus__product_item">
                                             <span class="wsus__new">{{productType($product->product_type)}}</span>
@@ -218,12 +228,14 @@
                                                 <a class="wsus__category" href="#" itemprop="category">{{$product->category->name}}</a>
 
 
+
+
                                                 @if ($product->price)
 
 
-                                                    @if ($product->qty > 0)
+                                                    @if ($qty > 0)
                                                         <p class="wsus__stock_area"><span class="in_stock" itemprop="offers" itemtype="http://schema.org/Offer"><meta itemprop="availability" content="http://schema.org/InStock">Disponibles</span></p>
-                                                    @elseif ($product->qty === 0)
+                                                    @elseif ($qty === 0)
                                                         <p class="wsus__stock_area"><span class="in_stock" itemprop="offers" itemtype="http://schema.org/Offer"><meta itemprop="availability" content="http://schema.org/OutOfStock">Agotado</span></p>
                                                     @endif
 
@@ -251,23 +263,25 @@
                                                     @php
                                                         $hasDiscount = checkDiscount($product);
                                                         $price = $hasDiscount ? $product->offert_price : $product->price;
+                                                         $defaultCombination = $product->combinations->where('is_default', 1)->first();
+                                                        $showCombination = $defaultCombination ?: null;
+                                                        $price = $showCombination ? ($showCombination->offert_price ?? $showCombination->price) : ($product->offert_price ?? $product->price);
+                                                        $originalPrice = $showCombination ? $showCombination->price : $product->price;
+                                                        $hasDiscount = $showCombination ? ($showCombination->offert_price && $showCombination->offert_price < $showCombination->price) : ($product->offert_price && $product->offert_price < $product->price);
                                                     @endphp
 
                                                     <p itemscope itemtype="http://schema.org/Offer">
                                                         <meta itemprop="priceCurrency" content="MXN">
                                                         <span class="wsus__price" itemprop="price" content="{{ $price }}">
-                                                            {{-- Mostrar siempre el <del> arriba si hay descuento --}}
-                                                            <del>
-                                                                @if($hasDiscount)
-                                                                    {{ $settings->currency_icon }}{{ number_format($product->price, 2, '.', ',') }}
-                                                                @endif
-                                                            </del>
-                                                            {{-- Mostrar el precio final --}}
+                                                            {{-- Mostrar <del> solo si hay descuento --}}
+                                                            @if($hasDiscount)
+                                                                <del>{{ $settings->currency_icon }}{{ number_format($originalPrice, 2, '.', ',') }} MXN</del>
+                                                            @endif
                                                             <span>
-                                                                {{ $settings->currency_icon }}{{ number_format($price, 2, '.', ',') }}
+                                                                {{ $settings->currency_icon }}{{ number_format($price, 2, '.', ',') }} MXN
                                                                 @if($hasDiscount)
                                                                     <span style="color: #00a650; font-weight: 600;">
-                                                                        {{ calculatedDiscountPercent($product->price, $product->offert_price) }}% OFF
+                                                                        {{ calculatedDiscountPercent($originalPrice, $price) }}% OFF
                                                                     </span>
                                                                 @endif
                                                             </span>
@@ -282,25 +296,36 @@
 
 
                                                 @else
-                                                <p class="wsus__stock_area"><span class="in_stock" itemprop="availability" content="http://schema.org/InStock" >Requiere Asesoria</span></p>
-                                                <a class="wsus__pro_name" href="{{route('product-detail', $product->slug)}}">{{$product->name}}</a>
+                                                    <p class="wsus__stock_area"><span class="in_stock" itemprop="availability" content="http://schema.org/InStock" >Requiere Asesoria</span></p>
+                                                    <a class="wsus__pro_name" href="{{route('product-detail', $product->slug)}}">{{$product->name}}</a>
 
-                                                <p class="wsus__price">N/A +<small> Requiere Asesoria</small> </p>
+                                                    <p class="wsus__price">N/A +<small> Requiere Asesoria</small> </p>
                                                 @endif
-
+                                                
+                                                @php
+                                                    $defaultCombination = $product->combinations->where('is_default', 1)->first();
+                                                    $showCombination = $defaultCombination ?: null;
+                                                    $combinationId = $showCombination ? $showCombination->id : '';
+                                                    $price = $showCombination ? ($showCombination->offert_price ?? $showCombination->price) : ($product->offert_price ?? $product->price);
+                                                    $qty = $showCombination ? $showCombination->qty : $product->qty;
+                                                    $sku = $showCombination ? $showCombination->sku : $product->sku;
+                                                    $productModel = $showCombination ? ($showCombination->model ?? $product->productModel) : $product->productModel;
+                                                @endphp
 
                                                 <form class="shopping-cart-form">
                                                     <input type="hidden" name="product_id" value="{{$product->id}}">
+                                                    <input type="hidden" name="combination_id" id="combination_id" value="{{ $combinationId }}">
                                                     <input type="hidden" name="brand_name" itemprop="brand" content="{{$product->brand->name}}" value="{{ $product->brand->name }}">
-                                                    <input type="hidden" name="sku" value="{{$product->sku}}">
-                                                    <input type="hidden" name="productModel" value="{{$product->productModel}}">
+                                                    <input type="hidden" name="sku" value="{{$sku}}">
+                                                    <input type="hidden" name="productModel" value="{{$productModel}}">
+                                                    
                                                     @if ($product->price)
                                                         <button type="submit" class="add_cart" href="#">Agregar al Carrito</button>
                                                     @else
                                                         <a class="add_cart2" href="{{route('contact')}}">Requiere Asesoria</a>
                                                     @endif
 
-                                                    <input name="qty" type="hidden" min="1" max="100" value="1" />
+                                                    <input name="qty" type="hidden" min="1" max="{{ $qty }}" value="1" />
                                                 </form>
                                             </div>
                                         </div>

@@ -219,7 +219,7 @@
                                             {{-- Area de edicion de combinaciones de productos --}}
                                             <meta itemprop="priceCurrency" content="MXN">
                                             {{-- Precio normal --}}
-                                            <span itemprop="price" content="{{$price}}">
+                                            <span itemprop="price" content="{{$price}}" id="dynamic_price">
                                                 {{$settings->currency_icon}}{{ $price }}<span style="font-size: 15px; vertical-align: super;">.{{ $decimalesNormal }}</span> MXN
                                             </span>
                                             {{-- <span itemprop="price" content="{{$price}}">
@@ -260,7 +260,7 @@
                             {{-- Redireccion a Detalles del producto este es una etiqueta que contiene el itemprop --}}
                             <link itemprop="url" href="https://www.macdelnorte.com/public/product-detail/{{$product->slug}}" />
                             {{-- Clave Unica del producto registrada en ASPELL y tambien en algun momento se hara conexion --}}
-                            <p class="sku">Clave: <span itemprop="sku" content="{!! $sku !!}">{!!$sku !!}</span></p>
+                            <p class="sku">Clave: <span itemprop="sku" id="dynamic_sku" content="{!! $sku !!}">{!!$sku !!}</span></p>
                             {{-- Modelo del Producto  no visible--}}
                             <p class="mpn"><span itemprop="mpn"content="{!! $product->productModel !!}" style="display: none; visibility: hidden;">{{$product->productModel}}</span></p>
                             {{-- <p class="description" itemprop="sku">Clave: <span>{!! $product->sku !!}</span></p> --}}
@@ -277,48 +277,65 @@
                                     <p>La entrega se realiza en un plazo de 1 a 3 d&iacute;as h&aacute;biles. Envio a todo el pais.</p>
 
                                 </div>
-                             @php
+                            
+                            @php
                                     // Prepara las combinaciones para JS
                                     $jsCombinations = [];
                                     foreach ($productCombinations as $comb) {
                                         $jsCombinations[] = [
                                             'id' => $comb->id,
                                             'variant_item_ids' => json_decode($comb->variants_item_ids, true),
+                                            'price' => $comb->price,
+                                            'offert_price' => $comb->offert_price,
+                                            'qty' => $comb->qty,
+                                            'sku' => $comb->sku,
+                                            // Puedes agregar más campos si necesitas
                                         ];
+                                        
                                     }
+                                    $activeCombinationItems = [];
+                                    foreach ($productCombinations->where('status', 1) as $comb) {
+                                        $activeCombinationItems = array_merge(
+                                            $activeCombinationItems,
+                                            json_decode($comb->variants_item_ids, true)
+                                        );
+                                    }
+                                    $activeCombinationItems = array_unique($activeCombinationItems);
+                                    $defaultCombination = $productCombinations->where('is_default', 1)->first();
+                                    $defaultItemIds = $defaultCombination ? json_decode($defaultCombination->variants_item_ids, true) : [];
+                                    $selectedItemIds = $selectedCombination ? json_decode($selectedCombination->variants_item_ids, true) : [];
                             @endphp
-                            @if($hasCombinations && count($productCombinations) > 0)
-                                @foreach ($product->variants as $variant)
-                                    @if ($variant->status != 0 && $variant->productVariantItems->where('status', '!=', 0)->where('name', '!=', '')->isNotEmpty())
-                                        <div class="product-variant-picker" data-variant-id="{{ $variant->id }}">
-                                            <div class="product-variant-tittle">
-                                                <p class="product-variant-label">
-                                                    <span>{{ $variant->name }}:</span>
-                                                </p>
-                                            </div>
-                                            <div class="product-variant-picker-default">
-                                                @foreach ($variant->productVariantItems as $variantItem)
-                                                    @if ($variantItem->status != 0)
-                                                        <a role="button"
-                                                        class="product-details-variant{{ $variantItem->is_default ? '-selected' : '' }}"
-                                                        href="#"
-                                                        data-variant-item-id="{{ $variantItem->id }}">
-                                                            <div class="product-details-variant-container">
-                                                                <p class="product-details-variant-label">
-                                                                    {{ $variantItem->name }}
-                                                                </p>
-                                                            </div>
-                                                        </a>
-                                                    @endif
-                                                @endforeach
-                                            </div>
-                                        </div>
-                                    @endif
-                                @endforeach
-                            @else
-                                {{-- Si el producto NO tiene combinaciones, no muestra variantes --}}
-                                {{-- Aquí puedes mostrar solo el precio y datos simples --}}
+                            @foreach ($product->variants as $variant)
+                            @php
+                                // Filtra los items de variante que están en combinaciones activas
+                                $filteredItems = $variant->productVariantItems->whereIn('id', $activeCombinationItems);
+                            @endphp
+                            @if ($variant->status != 0 && $filteredItems->where('status', '!=', 0)->where('name', '!=', '')->isNotEmpty())
+                                <div class="product-variant-picker" data-variant-id="{{ $variant->id }}">
+                                    <div class="product-variant-tittle">
+                                        <p class="product-variant-label">
+                                            <span>{{ $variant->name }}:</span>
+                                        </p>
+                                    </div>
+                                    <div class="product-variant-picker-default">
+                                        @foreach ($filteredItems as $variantItem)
+                                            @if ($variantItem->status != 0)
+                                                <a role="button"
+                                                class="product-details-variant{{ in_array($variantItem->id, $selectedItemIds) ? '-selected' : '' }}"
+                                                href="#"
+                                                data-variant-item-id="{{ $variantItem->id }}">
+                                                    <div class="product-details-variant-container">
+                                                        <p class="product-details-variant-label">
+                                                            {{ $variantItem->name }}
+                                                        </p>
+                                                    </div>
+                                                </a>
+                                            @endif
+                                        @endforeach
+                                    </div>
+                                </div>
                             @endif
+                        @endforeach
                             {{--Variantes antiguo--}}
                             {{--
                             @foreach ($product->variants as $variant)
@@ -769,76 +786,113 @@
 
 {{-- Combinaciones desde PHP a JS --}}
 <script>
-    const combinations = @json($jsCombinations);
+window.productCombinations = @json($jsCombinations);
 
-    // Guarda la selección actual: { variantId: variantItemId }
-    let selected = {};
+document.addEventListener('DOMContentLoaded', function() {
+    let selectedVariantItems = {};
 
-    // Maneja el click en cada variante
-    document.querySelectorAll('.product-details-variant, .product-details-variant-selected').forEach(el => {
+    // Inicializar con los valores por defecto
+    document.querySelectorAll('.product-details-variant-selected').forEach(function(el) {
+        const variantId = el.closest('.product-variant-picker').dataset.variantId;
+        const itemId = el.dataset.variantItemId;
+        selectedVariantItems[variantId] = parseInt(itemId);
+    });
+
+    // Función para actualizar visualmente las opciones disponibles/no disponibles
+    function updateAvailableVariantItems() {
+        const selectedIds = Object.values(selectedVariantItems).map(Number);
+
+        document.querySelectorAll('.product-variant-picker').forEach(function(variantPicker) {
+            const thisVariantId = variantPicker.dataset.variantId;
+
+            variantPicker.querySelectorAll('.product-details-variant, .product-details-variant-selected').forEach(function(option) {
+                const itemId = Number(option.dataset.variantItemId);
+
+                // Simula la selección si el usuario eligiera este item en este grupo
+                let simulatedSelection = {...selectedVariantItems};
+                simulatedSelection[thisVariantId] = itemId;
+                const simulatedIds = Object.values(simulatedSelection).map(Number).sort((a, b) => a - b);
+
+                // ¿Existe alguna combinación EXACTA con esta selección simulada?
+                let isAvailable = window.productCombinations.some(function(comb) {
+                    const combIds = comb.variant_item_ids.map(Number).sort((a, b) => a - b);
+                    return JSON.stringify(combIds) === JSON.stringify(simulatedIds);
+                });
+
+                // Limpia clases previas
+                option.classList.remove('variant-unavailable');
+
+                // Si NO está disponible, pon borde punteado
+                if (!isAvailable) {
+                    option.classList.add('variant-unavailable');
+                }
+            });
+        });
+    }
+
+    // Llama a la función al cargar la página
+    updateAvailableVariantItems();
+
+    // Evento al hacer click en una variante
+    document.querySelectorAll('.product-details-variant, .product-details-variant-selected').forEach(function(el) {
         el.addEventListener('click', function(e) {
             e.preventDefault();
-            const variantItemId = parseInt(this.dataset.variantItemId);
-            const variantId = this.closest('.product-variant-picker').dataset.variantId;
 
-            // Actualiza la selección
-            selected[variantId] = variantItemId;
+            const variantPicker = el.closest('.product-variant-picker');
+            const variantId = variantPicker.dataset.variantId;
+            const itemId = el.dataset.variantItemId;
 
-            // Encuentra combinaciones válidas para la selección actual
-            let validCombinations = combinations.filter(comb => {
-                return Object.values(selected).every(selId => comb.variant_item_ids.includes(selId));
-            });
+            // Simula la selección con este item
+            let simulatedSelection = {...selectedVariantItems};
+            simulatedSelection[variantId] = parseInt(itemId);
+            const simulatedIds = Object.values(simulatedSelection).map(Number).sort((a, b) => a - b);
 
-            if (validCombinations.length === 0) return;
-
-            // Recolecta todos los IDs válidos para cada variante
-            let validIds = {};
-            validCombinations.forEach(comb => {
-                comb.variant_item_ids.forEach(id => {
-                    validIds[id] = true;
-                });
-            });
-
-            // Actualiza la UI: muestra/habilita solo los items válidos
-            document.querySelectorAll('[data-variant-item-id]').forEach(item => {
-                const id = parseInt(item.dataset.variantItemId);
-                if (validIds[id]) {
-                    item.style.display = '';
-                    item.classList.remove('disabled-variant');
-                } else {
-                    item.style.display = 'none';
+            // Buscar la combinación EXACTA con esta selección simulada
+            let matchingCombination = null;
+            window.productCombinations.forEach(function(comb) {
+                const combIds = comb.variant_item_ids.map(Number).sort((a, b) => a - b);
+                if (JSON.stringify(combIds) === JSON.stringify(simulatedIds)) {
+                    matchingCombination = comb;
                 }
             });
 
-            // Marca la variante seleccionada
-            this.closest('.product-variant-picker').querySelectorAll('.product-details-variant-selected').forEach(sel => {
-                sel.classList.remove('product-details-variant-selected');
-                sel.classList.add('product-details-variant');
-            });
-            this.classList.remove('product-details-variant');
-            this.classList.add('product-details-variant-selected');
-
-            // --- Detecta la combinación exacta seleccionada ---
-            if (Object.keys(selected).length === document.querySelectorAll('.product-variant-picker').length) {
-                // Busca la combinación exacta
-                const selectedIds = Object.values(selected).sort((a, b) => a - b);
-                const exactCombination = combinations.find(comb => {
-                    const ids = comb.variant_item_ids.slice().sort((a, b) => a - b);
-                    return JSON.stringify(ids) === JSON.stringify(selectedIds);
+            // Si existe una combinación exacta, recarga la página
+            if (matchingCombination) {
+                let slug = "{{ $product->slug }}";
+                let currentComb = new URLSearchParams(window.location.search).get('comb');
+                if (currentComb != matchingCombination.id.toString()) {
+                    window.location.href = `/product-detail/${slug}?comb=${matchingCombination.id}`;
+                }
+                return;
+            } else {
+                // Si no existe combinación exacta, busca la más cercana que incluya este item
+                let fallbackCombination = null;
+                window.productCombinations.forEach(function(comb) {
+                    const combIds = comb.variant_item_ids.map(Number);
+                    if (combIds.includes(Number(itemId))) {
+                        if (
+                            !fallbackCombination ||
+                            combIds.length < fallbackCombination.variant_item_ids.length
+                        ) {
+                            fallbackCombination = comb;
+                        }
+                    }
                 });
-                if (exactCombination) {
-                    // Actualiza la URL con el parámetro comb
-                    const url = new URL(window.location);
-                    url.searchParams.set('comb', exactCombination.id);
-                    window.history.replaceState({}, '', url);
-
-                    // Aquí puedes actualizar el precio, stock, etc. usando exactCombination.id
-                    console.log('Combinación exacta seleccionada:', exactCombination);
+                if (fallbackCombination) {
+                    let slug = "{{ $product->slug }}";
+                    let currentComb = new URLSearchParams(window.location.search).get('comb');
+                    if (currentComb != fallbackCombination.id.toString()) {
+                        window.location.href = `/product-detail/${slug}?comb=${fallbackCombination.id}`;
+                    }
+                    return;
                 }
             }
-            // --- Fin combinación exacta ---
+
+            // Actualiza visualmente las opciones disponibles
+            updateAvailableVariantItems();
         });
     });
+});
 </script>
 
 

@@ -27,69 +27,172 @@ class CartController extends Controller
 
     }
 
-    public function addToCart(Request $request){
+    public function addToCart(Request $request)
+    {
+        // Si viene combination_id, busca la combinación, si no, el producto base
+        if ($request->filled('combination_id')) {
+            $combination = \App\Models\ProductVariantCombinations::findOrFail($request->combination_id);
+            $product = \App\Models\Product::findOrFail($combination->product_id);
 
-        $product = Product::findOrFail($request->product_id);
-        $brand = Brand::all();
+            // Validar stock de la combinación
+            if ($combination->qty === 0) {
+                return response(['status' => 'error', 'message' => 'Producto Agotado']);
+            } elseif ($combination->qty < $request->qty) {
+                return response(['status' => 'error', 'message' => 'Cantidad agotada']);
+            }
 
-       // check product quantity
-       if($product->qty === 0){
-        return response(['status' => 'error', 'message' => 'Producto Agotado']);
-        }elseif($product->qty < $request->qty){
-            return response(['status' => 'error', 'message' => 'Cantidad agotada']);
+            // Precio con descuento si aplica
+            $combinationPrice = $combination->offert_price ?? $combination->price;
+
+            $cartData = [];
+            $cartData['id'] = 'comb_' . $combination->id; // Prefijo para diferenciar combinaciones
+            $cartData['name'] = $product->name . ' ' . $combination->name;
+            $cartData['qty'] = $request->qty;
+            $cartData['price'] = $combinationPrice;
+            $cartData['weight'] = 10;
+            $cartData['options']['sku'] = $combination->sku;
+            $cartData['options']['productModel'] = $product->productModel;
+            $cartData['options']['image'] = $product->thumb_image;
+            $cartData['options']['slug'] = $product->slug;
+            $cartData['options']['brand_name'] = $request->brand_name;
+            $cartData['options']['combination_id'] = $combination->id;
+
+            \Cart::add($cartData);
+
+            return response(['status' => 'success', 'message' => 'Agregado al carrito con éxito']);
+        } else {
+            // Producto base
+            $product = Product::findOrFail($request->product_id);
+
+            // Validar stock del producto base
+            if ($product->qty === 0) {
+                return response(['status' => 'error', 'message' => 'Producto Agotado']);
+            } elseif ($product->qty < $request->qty) {
+                return response(['status' => 'error', 'message' => 'Cantidad agotada']);
+            }
+
+            // Precio con descuento si aplica
+            $productPrice = checkDiscount($product) ? $product->offert_price : $product->price;
+
+            $cartData = [];
+            $cartData['id'] = $product->id;
+            $cartData['name'] = $product->name;
+            $cartData['qty'] = $request->qty;
+            $cartData['price'] = $productPrice;
+            $cartData['weight'] = 10;
+            $cartData['options']['sku'] = $product->sku;
+            $cartData['options']['productModel'] = $product->productModel;
+            $cartData['options']['image'] = $product->thumb_image;
+            $cartData['options']['slug'] = $product->slug;
+            $cartData['options']['brand_name'] = $request->brand_name;
+
+            \Cart::add($cartData);
+
+            return response(['status' => 'success', 'message' => 'Agregado al carrito con éxito']);
         }
-
-
-
-        $variantTotalAmonut = 0;
-
-        /** check discount */
-        $productPrice = 0;
-
-        if(checkDiscount($product)){
-            $productPrice = $product->offert_price;
-        }else {
-            $productPrice = $product->price;
-        }
-
-        $cartData = [];
-        $cartData['id'] = $product->id;
-        $cartData['name'] = $product->name;
-        $cartData['qty'] = $request->qty;
-        $cartData['price'] = $productPrice;
-        $cartData['weight'] = 10;
-        $cartData['options']['sku'] = $product->sku;
-        $cartData['options']['productModel'] = $product->productModel;
-        $cartData['options']['image'] = $product->thumb_image;
-        $cartData['options']['slug'] = $product->slug;
-        $cartData['options']['brand_name'] = $request->brand_name;
-
-
-
-        Cart::add($cartData);
-
-        return response(['status' => 'success', 'message' => 'Agregado al carrito con exito']);
     }
 
-    public function updateProductQty(Request $request){
+    // CONTROLADOR ANTIGUO
+    // public function addToCart(Request $request){
 
-        $productId = Cart::get($request->rowId)->id;
-        $product = Product::findOrFail($productId);
+    //     $product = Product::findOrFail($request->product_id);
+    //     $brand = Brand::all();
 
-        // check product quantity
-        if($product->qty === 0){
-            return response(['status' => 'error', 'message' => 'Producto Agotado']);
-        }elseif($product->qty < $request->quantity){
-            return response(['status' => 'error', 'message' => 'Cantidad maxima en existencias']);
+    //    // check product quantity
+    //    if($product->qty === 0){
+    //     return response(['status' => 'error', 'message' => 'Producto Agotado']);
+    //     }elseif($product->qty < $request->qty){
+    //         return response(['status' => 'error', 'message' => 'Cantidad agotada']);
+    //     }
+
+
+
+    //     $variantTotalAmonut = 0;
+
+    //     /** check discount */
+    //     $productPrice = 0;
+
+    //     if(checkDiscount($product)){
+    //         $productPrice = $product->offert_price;
+    //     }else {
+    //         $productPrice = $product->price;
+    //     }
+
+    //     $cartData = [];
+    //     $cartData['id'] = $product->id;
+    //     $cartData['name'] = $product->name;
+    //     $cartData['qty'] = $request->qty;
+    //     $cartData['price'] = $productPrice;
+    //     $cartData['weight'] = 10;
+    //     $cartData['options']['sku'] = $product->sku;
+    //     $cartData['options']['productModel'] = $product->productModel;
+    //     $cartData['options']['image'] = $product->thumb_image;
+    //     $cartData['options']['slug'] = $product->slug;
+    //     $cartData['options']['brand_name'] = $request->brand_name;
+
+
+
+    //     Cart::add($cartData);
+
+    //     return response(['status' => 'success', 'message' => 'Agregado al carrito con exito']);
+    // }
+
+    public function updateProductQty(Request $request)
+    {
+        $cartItem = Cart::get($request->rowId);
+
+        // Si el ID del carrito tiene el prefijo 'comb_', es una combinación
+        if (strpos($cartItem->id, 'comb_') === 0 && isset($cartItem->options['combination_id'])) {
+            $combinationId = $cartItem->options['combination_id'];
+            $combination = \App\Models\ProductVariantCombinations::findOrFail($combinationId);
+
+            // Validar stock de la combinación
+            if ($combination->qty === 0) {
+                return response(['status' => 'error', 'message' => 'Producto Agotado']);
+            } elseif ($combination->qty < $request->quantity) {
+                return response(['status' => 'error', 'message' => 'Cantidad máxima en existencias']);
+            }
+        } else {
+            // Producto base
+            $productId = $cartItem->id;
+            $product = Product::findOrFail($productId);
+
+            // Validar stock del producto base
+            if ($product->qty === 0) {
+                return response(['status' => 'error', 'message' => 'Producto Agotado']);
+            } elseif ($product->qty < $request->quantity) {
+                return response(['status' => 'error', 'message' => 'Cantidad máxima en existencias']);
+            }
         }
-
 
         Cart::update($request->rowId, $request->quantity);
         $productTotal = $this->getProductTotal($request->rowId);
+
+        return response(['status' => 'success', 'message' => 'Cantidad actualizada con éxito', 'product_total' => $productTotal]);
+    }
+
+
+
+    //CONTROLADOR ANTIGUO
+    // public function updateProductQty(Request $request){
+
+    //     $productId = Cart::get($request->rowId)->id;
+    //     $product = Product::findOrFail($productId);
+
+    //     // check product quantity
+    //     if($product->qty === 0){
+    //         return response(['status' => 'error', 'message' => 'Producto Agotado']);
+    //     }elseif($product->qty < $request->quantity){
+    //         return response(['status' => 'error', 'message' => 'Cantidad maxima en existencias']);
+    //     }
+
+
+    //     Cart::update($request->rowId, $request->quantity);
+    //     $productTotal = $this->getProductTotal($request->rowId);
         
 
-        return response(['status' => 'success', 'message' => 'Agregado por exito!', 'product_total' => $productTotal]);
-    }
+    //     return response(['status' => 'success', 'message' => 'Agregado por exito!', 'product_total' => $productTotal]);
+    // }
 
     /**get Product Total */
 
