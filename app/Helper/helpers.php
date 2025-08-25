@@ -24,6 +24,19 @@ function checkDiscount($product){
     return false;
 
 }
+function checkCombinationDiscount($combination){
+    $currentDate = date('Y-m-d');
+    if(
+        isset($combination->offert_price) && $combination->offert_price > 0 &&
+        isset($combination->offer_start_date) && isset($combination->offer_end_date) &&
+        $currentDate >= $combination->offer_start_date &&
+        $currentDate <= $combination->offer_end_date &&
+        $combination->offert_price < $combination->price
+    ){
+        return true;
+    }
+    return false;
+}
 
 /**Calculate Discount percent */
 function calculatedDiscountPercent($originalPrice, $discountPrice){
