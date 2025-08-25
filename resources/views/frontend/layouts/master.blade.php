@@ -83,6 +83,29 @@
     <noscript><link rel="stylesheet" href="{{ asset('frontend/css/style.css') }}"></noscript>
     <link rel="stylesheet" href="{{ asset('frontend/css/responsive.css') }}">
     <script defer type="module" src="https://cdn.jsdelivr.net/npm/@justinribeiro/lite-youtube@1/lite-youtube.min.js"></script>
+    <head>
+  <meta charset="utf-8">
+  <title>Mi Sitio</title>
+
+            <!-- Captura GCLID + UTM -->
+            <script>
+            (function() {
+                const params = new URLSearchParams(window.location.search);
+
+                if (params.has('gclid')) localStorage.setItem('gclid', params.get('gclid'));
+                if (params.has('utm_source')) localStorage.setItem('utm_source', params.get('utm_source'));
+                if (params.has('utm_medium')) localStorage.setItem('utm_medium', params.get('utm_medium'));
+                if (params.has('utm_campaign')) localStorage.setItem('utm_campaign', params.get('utm_campaign'));
+
+                if (!localStorage.getItem('landing_page')) {
+                    localStorage.setItem('landing_page', window.location.pathname);
+                }
+            })();
+            </script>
+
+  <!-- Otros CSS o scripts que carguen después -->
+</head>
+
 
     <!-- <link rel="stylesheet" href="css/rtl.css"> -->
     {{-- <script async src="https://www.googletagmanager.com/gtag/js?id=AW-16512201966">
@@ -241,7 +264,7 @@
     {{-- Track Conversion ads --}}
 
 
-    <script>
+    {{-- <script>
         const urlParams = new URLSearchParams(window.location.search);
         [
         'gclid',
@@ -253,10 +276,10 @@
         if (value) localStorage.setItem(param, value);
         });
         localStorage.setItem('landing_page', window.location.pathname);
-    </script>
+    </script> --}}
 {{-- Envio de datos Track Conversion --}}
     <script>
-        const googleSheetsWebhook = 'https://script.google.com/macros/s/TU_ID_SCRIPT/exec';
+        const googleSheetsWebhook = 'https://script.google.com/macros/s/AKfycbwp8PQWscSciD7gc5c1DMiFntOr0HuAPraK9pfzwtzqCP_4DF9azi8Fy16HfEeqxK3T/exec';
 
         document.addEventListener('DOMContentLoaded', function () {
             const conversionLinks = document.querySelectorAll('a.track-conversion');
@@ -439,45 +462,47 @@
         </script>
 
     {{-- Track Conversion ads --}}
+{{--     
     <script>
-        const googleSheetsWebhook = 'https://script.google.com/macros/s/AKfycbwU_alwJ8RczaMMaRWUCcBD2Pc9exMGsG5vWGX-J7-h5BQajHC43VR3Ufk3QiGeQtZF/exec';
+    const googleSheetsWebhook = 'https://script.google.com/macros/s/AKfycbwp8PQWscSciD7gc5c1DMiFntOr0HuAPraK9pfzwtzqCP_4DF9azi8Fy16HfEeqxK3T/exec
+';
 
-        document.addEventListener('DOMContentLoaded', function () {
-            const conversionLinks = document.querySelectorAll('a.track-conversion');
+    document.addEventListener('DOMContentLoaded', function () {
+        const conversionLinks = document.querySelectorAll('a.track-conversion');
 
-            conversionLinks.forEach(link => {
-                link.addEventListener('click', function (e) {
-                    const type = this.dataset.type || 'desconocido';
-                    const href = this.getAttribute('href');
+        conversionLinks.forEach(link => {
+            link.addEventListener('click', function (e) {
+                const type = this.dataset.type || 'desconocido';
+                const href = this.getAttribute('href');
 
-                    e.preventDefault();
+                e.preventDefault();
 
-                    const payload = {
-                        gclid: localStorage.getItem('gclid') || '',
-                        utm_source: localStorage.getItem('utm_source') || '',
-                        utm_medium: localStorage.getItem('utm_medium') || '',
-                        utm_campaign: localStorage.getItem('utm_campaign') || '',
-                        landing_page: localStorage.getItem('landing_page') || window.location.pathname,
-                        type: type
-                    };
+                const payload = {
+                    gclid: localStorage.getItem('gclid') || '',
+                    utm_source: localStorage.getItem('utm_source') || '',
+                    utm_medium: localStorage.getItem('utm_medium') || '',
+                    utm_campaign: localStorage.getItem('utm_campaign') || '',
+                    landing_page: localStorage.getItem('landing_page') || window.location.pathname,
+                    type: type
+                };
 
-                    fetch(googleSheetsWebhook, {
-                        method: 'POST',
-                        mode: 'no-cors',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(payload)
-                    }).catch(err => {
-                        console.warn('No se pudo guardar la conversión:', err);
-                    }).finally(() => {
-                        setTimeout(() => {
-                            window.open(href, '_blank');
-                        }, 300);
-                    });
+                fetch(googleSheetsWebhook, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                }).catch(err => {
+                    console.warn('No se pudo guardar la conversión:', err);
+                }).finally(() => {
+                    setTimeout(() => {
+                        window.open(href, '_blank');
+                    }, 300);
                 });
             });
         });
-    </script> --}}
+    });
+</script>
 
+ --}}
 
 
 

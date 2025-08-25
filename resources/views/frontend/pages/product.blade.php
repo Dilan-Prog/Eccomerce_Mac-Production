@@ -261,33 +261,57 @@
                                                     <a class="wsus__pro_name" href="{{route('product-detail', $product->slug)}}" itemprop="name" content="{{$product->name}}">{{$product->name}}</a>
 
                                                     @php
-                                                        $hasDiscount = checkDiscount($product);
-                                                        $price = $hasDiscount ? $product->offert_price : $product->price;
-                                                         $defaultCombination = $product->combinations->where('is_default', 1)->first();
-                                                        $showCombination = $defaultCombination ?: null;
-                                                        $price = $showCombination ? ($showCombination->offert_price ?? $showCombination->price) : ($product->offert_price ?? $product->price);
-                                                        $originalPrice = $showCombination ? $showCombination->price : $product->price;
-                                                        $hasDiscount = $showCombination ? ($showCombination->offert_price && $showCombination->offert_price < $showCombination->price) : ($product->offert_price && $product->offert_price < $product->price);
-                                                    @endphp
+    $defaultCombination = $product->combinations->where('is_default', 1)->first();
+    $showCombination = $defaultCombination ?: null;
+    $combinationId = $showCombination ? $showCombination->id : '';
+    $productModel = $showCombination ? ($showCombination->model ?? $product->productModel) : $product->productModel;
+    $price = $showCombination ? ($showCombination->offert_price ?? $showCombination->price) : ($product->offert_price ?? $product->price);
+    $qty = $showCombination ? $showCombination->qty : $product->qty;
+    $sku = $showCombination ? $showCombination->sku : $product->sku;
+    $today = date('Y-m-d');
+
+    if ($showCombination) {
+        $offerPrice = $showCombination->offert_price;
+        $normalPrice = $showCombination->price;
+        $offerStart = $showCombination->offer_start_date;
+        $offerEnd = $showCombination->offer_end_date;
+        $hasDiscount = $offerPrice > 0
+            && $offerStart && $offerEnd
+            && $today >= $offerStart
+            && $today <= $offerEnd
+            && $offerPrice < $normalPrice;
+    } else {
+        $offerPrice = $product->offert_price;
+        $normalPrice = $product->price;
+        $offerStart = $product->offer_start_date;
+        $offerEnd = $product->offer_end_date;
+        $hasDiscount = $offerPrice > 0
+            && $offerStart && $offerEnd
+            && $today >= $offerStart
+            && $today <= $offerEnd
+            && $offerPrice < $normalPrice;
+    }
+    $finalPrice = $hasDiscount ? $offerPrice : $normalPrice;
+@endphp
 
                                                     <p itemscope itemtype="http://schema.org/Offer">
                                                         <meta itemprop="priceCurrency" content="MXN">
-                                                        <span class="wsus__price" itemprop="price" content="{{ $price }}">
-                                                            {{-- Mostrar <del> solo si hay descuento --}}
-                                                            @if($hasDiscount)
-                                                                <del>{{ $settings->currency_icon }}{{ number_format($originalPrice, 2, '.', ',') }} MXN</del>
-                                                            @endif
-                                                            <span>
-                                                                {{ $settings->currency_icon }}{{ number_format($price, 2, '.', ',') }} MXN
-                                                                @if($hasDiscount)
-                                                                    <span style="color: #00a650; font-weight: 600;">
-                                                                        {{ calculatedDiscountPercent($originalPrice, $price) }}% OFF
-                                                                    </span>
-                                                                @endif
-                                                            </span>
-                                                        </span>
+                                                        <span class="wsus__price" itemprop="price" content="{{ $finalPrice }}">
+        @if($hasDiscount)
+            <del>{{ $settings->currency_icon }}{{ number_format($normalPrice, 2, '.', ',') }} MXN</del>
+        @endif
+        <span style="color: #333; font-weight: 500;">
+            {{ $settings->currency_icon }}{{ number_format($finalPrice, 2, '.', ',') }} MXN
+            @if($hasDiscount)
+                <span style="color: #00a650; font-weight: 600;">
+                    {{ round((($normalPrice - $offerPrice) / $normalPrice) * 100) }}% OFF
+                </span>
+            @endif
+        </span>
+    </span>
                                                         <span class="mdn_iva">IVA INCLUIDO</span>
                                                     </p>
+                                                    
                                                     <p>
                                                         @if ($price >= $shippingRules->min_cost)
                                                             <span class="free-shipping-text"><i class="fas fa-shipping-fast"></i> Envío Gratis </span>
@@ -303,13 +327,22 @@
                                                 @endif
                                                 
                                                 @php
+                                                    // Usar helpers personalizados para validar descuentos y fechas
                                                     $defaultCombination = $product->combinations->where('is_default', 1)->first();
                                                     $showCombination = $defaultCombination ?: null;
-                                                    $combinationId = $showCombination ? $showCombination->id : '';
-                                                    $price = $showCombination ? ($showCombination->offert_price ?? $showCombination->price) : ($product->offert_price ?? $product->price);
-                                                    $qty = $showCombination ? $showCombination->qty : $product->qty;
-                                                    $sku = $showCombination ? $showCombination->sku : $product->sku;
-                                                    $productModel = $showCombination ? ($showCombination->model ?? $product->productModel) : $product->productModel;
+
+                                                    if ($showCombination) {
+                                                        // Usa tu helper para combinaciones
+                                                        $hasDiscount = checkCombinationDiscount($showCombination);
+                                                        $offerPrice = $showCombination->offert_price;
+                                                        $normalPrice = $showCombination->price;
+                                                    } else {
+                                                        // Usa tu helper para producto base
+                                                        $hasDiscount = checkDiscount($product);
+                                                        $offerPrice = $product->offert_price;
+                                                        $normalPrice = $product->price;
+                                                    }
+                                                    $finalPrice = $hasDiscount ? $offerPrice : $normalPrice;
                                                 @endphp
 
                                                 <form class="shopping-cart-form">
