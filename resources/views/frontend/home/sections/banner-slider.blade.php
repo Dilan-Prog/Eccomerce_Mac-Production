@@ -1,6 +1,6 @@
 
 
-<section id="wsus__banner">
+< id="wsus__banner">
     <div class="container">
         <div class="row">
             <div class="col-xl-12">
@@ -11,45 +11,45 @@
                             <a href="{{ $slider->btn_url }}">
                                 @if ($loop->first)
                                 <!-- Primera imagen cargada inmediatamente -->
-                                    <img 
+                                    <img
                                         class="wsus__single_slider"
-                                        alt="slider image" 
-                                        decoding="sync" 
-                                        fetchpriority="high" 
+                                        alt="slider image"
+                                        decoding="sync"
+                                        fetchpriority="high"
                                         loading="eager"
-                                        src="{{ asset($slider->banner) }}" 
+                                        src="{{ asset($slider->banner) }}"
                                         srcset="
                                             {{ asset($slider->banner_phone) }} 370w,
                                             {{ asset($slider->banner_tablet) }} 720w,
                                             {{ asset($slider->banner_laptop) }} 1140w,
                                             {{ asset($slider->banner) }} 1250w
-                                        " 
+                                        "
                                         sizes="
-                                            (max-width: 576px) 370px, 
-                                            (max-width: 768px) 720px, 
-                                            (max-width: 992px) 1140px, 
+                                            (max-width: 576px) 370px,
+                                            (max-width: 768px) 720px,
+                                            (max-width: 992px) 1140px,
                                             100vw
                                         "
                                         >
                                 @else
                                     <!-- Imágenes diferidas (puedes aplicar lazy-loading si lo deseas) -->
-                                    <img 
+                                    <img
                                         class="wsus__single_slider lazy-image"
-                                        alt="slider image" 
-                                        decoding="async" 
-                                        fetchpriority="low" 
+                                        alt="slider image"
+                                        decoding="async"
+                                        fetchpriority="low"
                                         loading="lazy"
-                                        data-src="{{ asset($slider->banner) }}" 
+                                        data-src="{{ asset($slider->banner) }}"
                                         data-srcset="
                                             {{ asset($slider->banner_phone) }} 370w,
                                             {{ asset($slider->banner_tablet) }} 720w,
                                             {{ asset($slider->banner_laptop) }} 1140w,
                                             {{ asset($slider->banner) }} 1250w
-                                        " 
+                                        "
                                         sizes="
-                                            (max-width: 576px) 370px, 
-                                            (max-width: 768px) 720px, 
-                                            (max-width: 992px) 1140px, 
+                                            (max-width: 576px) 370px,
+                                            (max-width: 768px) 720px,
+                                            (max-width: 992px) 1140px,
                                             100vw
                                         "
                                         >
@@ -63,6 +63,7 @@
         </div>
     </div>
 </section>
+
 @push('scripts')
 <script>
 document.addEventListener("DOMContentLoaded", () => {
@@ -76,7 +77,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     img.src = img.dataset.src;
                     img.srcset = img.dataset.srcset;
                     img.classList.remove("lazy-image");
-                    observer.unobserve(img); 
+                    observer.unobserve(img);
                 }
             });
         });
