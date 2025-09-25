@@ -220,7 +220,7 @@
                                             <meta itemprop="priceCurrency" content="MXN">
                                             {{-- Precio normal --}}
                                             <span itemprop="price" content="{{$price}}" id="dynamic_price">
-                                                {{$settings->currency_icon}}{{ $price }}<span style="font-size: 15px; vertical-align: super;">.{{ $decimalesNormal }}</span> MXN
+                                                {{$settings->currency_icon}}{{ $price }} {{--<span style="font-size: 15px; vertical-align: super;">.{{ $decimalesNormal }}</span>--}} MXN
                                             </span>
                                             {{-- <span itemprop="price" content="{{$price}}">
                                                 {{$settings->currency_icon}}{{ $enteroNormal }}<span style="font-size: 15px; vertical-align: super;">.{{ $decimalesNormal }}</span> MXN
@@ -254,7 +254,15 @@
                                 <p class="wsus__stock_area">
                                     <span class="in_stock" itemprop="availability" content="https://schema.org/MadeToOrder">La venta de este producto requiere asesoria</span>
                                 </p>
-                            {{-- Final de Condicion de Precio --}}
+                            {{-- Final de Condicion de Precio --}}                            <?php
+                            // ...existing code...
+                            $precioFormateado = number_format($product->price, 2, '.', ',');
+                            $precioOffertFormateado = number_format($product->offert_price, 2, '.', ',');
+                            // ...existing code...                            <?php
+                            // ...existing code...
+                            $precioFormateado = number_format($product->price, 2, '.', ',');
+                            $precioOffertFormateado = number_format($product->offert_price, 2, '.', ',');
+                            // ...existing code...
                             @endif
                             </div>
                             {{-- Redireccion a Detalles del producto este es una etiqueta que contiene el itemprop --}}
