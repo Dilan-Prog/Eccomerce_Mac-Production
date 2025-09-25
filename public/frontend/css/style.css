@@ -5511,8 +5511,9 @@ a:not([href]):not([class]):hover {
 /*Estilos para whastapp*/
 #whastapp-image {
   position: fixed;
+  top: 50%;
   bottom: 80px;
-  right: 20px;
+  right: 12%;
   width: 80px;
   height: 80px;
   border-radius: 50%;
