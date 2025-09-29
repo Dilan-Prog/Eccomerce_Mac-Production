@@ -1,6 +1,6 @@
 
 
-< id="wsus__banner">
+<section id="wsus__banner">
     <div class="container">
         <div class="row">
             <div class="col-xl-12">

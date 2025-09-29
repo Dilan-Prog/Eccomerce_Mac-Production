@@ -125,7 +125,7 @@
     <!--============================
        HOW BUY TO MAC DEL NORTE END
     ==============================-->
-    @include('frontend.home.sections.chat-personal')
+    
     
     {{-- @include('frontend.home.sections.whastapp-chat') --}}
 
