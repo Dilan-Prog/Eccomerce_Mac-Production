@@ -84,7 +84,7 @@
                     <label>Modelo</label>
                     <input type="text" class="form-control" name="productModel" value="{{old('productModel')}}">
                   </div>
-                
+
                   <div class="form-group">
                       <label>Precio</label>
                       <input type="text" class="form-control" name="price" value="{{old('price')}}">
@@ -93,7 +93,7 @@
                       <label>Precio De Oferta</label>
                       <input type="text" class="form-control" name="offert_price" value="{{old('offert_price')}}">
                   </div>
-                  
+
                   <div class="row">
 
                     <div class="col-md-6">
@@ -170,14 +170,14 @@
                       <option value="0">No</option>
                     </select>
                   </div>
-                  
+
                   <div class="form-group">
                     <label>Url Canonica Personalizada (Solo Marketing)</label>
                     <div class="wsus__topbar_select">
                         <input class="form-control" name="canonical_url" value="{{old('canonical_url')}}" placeholder="Poner URL Canonical en caso de no tener una afiliacion y ser unica dejar el campo vacio y posteriormente rellenarlo">
                     </div>
                   </div>
-                
+
 
                 {{-- Base Search Canonical URL --}}
 
@@ -185,15 +185,15 @@
                     <label>Url Canonica Personalizada</label>
                     <div class="wsus__topbar_select">
                         <select class="form-control" name="canonical_url" id="product-search">
-                            
-                            
+
+
                         </select>
                     </div>
                 </div>
                  --}}
 
                  {{-- End Base Search Canonical URL --}}
-                
+
 
                     <button type="submit" class="btn btn-primary">Crear</button>
                 </form>
@@ -248,7 +248,7 @@
     //               })
     //           };
     //       },
-            
+
     //     },
     //     minimumInputLength: 2 // Mínimo de caracteres para comenzar la búsqueda
     // });
@@ -305,7 +305,7 @@
 
     })
 
-    
+
 
 
 

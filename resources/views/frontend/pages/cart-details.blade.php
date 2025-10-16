@@ -243,7 +243,7 @@
 
         }
 
-        
+
 
         // applay coupon on cart
 
