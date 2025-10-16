@@ -132,6 +132,7 @@ class FrontendProductController extends Controller
             $shippingRules = ShippingRule::where('type', 'min_cost')->first();
 
 
+            
         return view('frontend.pages.product', compact('products', 'categories', 'brands','shippingRules'));
     }
 
