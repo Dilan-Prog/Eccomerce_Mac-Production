@@ -4,6 +4,8 @@
         overflow: hidden;
 
       } */
+  
+
 
   .dashboard_content .wsus__invoice_description .name {
     width: 40%;
@@ -20,10 +22,17 @@
   .add_address_btn {
     margin-top: 0;
   }
+  
+#whastapp-image {
+  top: 50%;
+  bottom: 80px;
+  right: 12%;
+}
 
 }
 /* Laptop */
 @media (min-width: 1200px) and (max-width: 1399.99px) {
+
   .wsus__icon_area li {
     margin-left: 5px;
   }
@@ -298,6 +307,12 @@
   .services_content_ours_process_img-video{
     width: 540px;
   }
+
+  #whastapp-image {
+  top: 78%;
+  bottom: 80px;
+  right: 3%;
+}
  
 }
 
@@ -773,7 +788,11 @@
   width: 100%;
 }
 
-
+#whastapp-image {
+  top: 78%;
+  bottom: 80px;
+  right: 3%;
+}
 
 }
 /* Tablet not Landspace */
@@ -1583,7 +1602,6 @@
 .services_content_ours_process_text{
   margin: 0px 0px;
 }
-
 
 }
 /* Phone */
@@ -2481,6 +2499,8 @@
   bottom: 55px;
   width: 55px;
   height: 55px;
+  top: 50%;
+  right: 12%;
 }
 
 
@@ -3631,9 +3651,11 @@
 }
 
 #whastapp-image {
-  bottom: 55px;
   width: 55px;
   height: 55px;
+  top: 70%;
+  bottom: 80px;
+  right: 3%;
 }
 
   /* extra css start here */
@@ -3719,6 +3741,7 @@
 .services_content_ours_process_text{
   margin: 0px 0px;
 }
+
 
 }
 

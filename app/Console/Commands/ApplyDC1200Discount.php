@@ -14,19 +14,17 @@ class ApplyDC1200Discount extends Command
     public function handle()
     {
         // Busca la categoría DC1200 por nombre o slug
-        $products = Product::where('category_id', 4)
-        ->where('sub_category_id', 23)
-        ->get();
-
-
+        $products = Product::all();
 
         foreach ($products as $product) {
-            // $product->offert_price = $product->price - ($product->price * 0.15);
-            $product->offer_end_date = '2025-06-30';
-            $product->product_type = 'new_arrival';
+            // Si el modelo inicia con "TZ", asigna el video
+            if (strpos($product->productModel, 'DC1010') === 0) {
+                $product->video_link = 'https://www.youtube.com/embed/2-KNdxuNm8Q';
+            }
+
             $product->save();
         }
-        // dd($product);
+
         $this->info('Descuento aplicado a ' . $products->count() . ' productos.');
     }
 }

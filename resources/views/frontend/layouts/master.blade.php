@@ -128,6 +128,7 @@
         @include('frontend.layouts.menu')
 
         @include('frontend.layouts.whastapp-chat')
+        @include('frontend.layouts.chat-personal')
 
         <!--content-->
         @yield('content')
