@@ -5283,7 +5283,7 @@ a:not([href]):not([class]):hover {
   border-radius: 15px;
   font-size: 14px;
   color: #333;
-  max-width: 70%;
+  max-width: 90%;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   line-height: 1.4;
 }
@@ -5509,10 +5509,12 @@ a:not([href]):not([class]):hover {
 
 
 /*Estilos para whastapp*/
+
 #whastapp-image {
   position: fixed;
+  top: 50%;
   bottom: 80px;
-  right: 20px;
+  right: 12%;
   width: 80px;
   height: 80px;
   border-radius: 50%;
