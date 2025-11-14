@@ -105,6 +105,9 @@ class FrontendProductController extends Controller
                 ->where(function ($query) use ($request) {
                     $query->where('name', 'like', '%' . $request->search . '%')
                         ->orWhere('long_description', 'like', '%' . $request->search . '%')
+                        // Busqueda por SKU (exacta y parcial)
+                        ->orWhere('sku', $request->search)
+                        ->orWhere('sku', 'like', '%' . $request->search . '%')
                         ->orWhereHas('category', function ($query) use ($request) {
                             $query->where('name', 'like', '%' . $request->search . '%')
                                 ->orWhere('long_description', 'like', '%' . $request->search . '%');
@@ -132,7 +135,7 @@ class FrontendProductController extends Controller
             $shippingRules = ShippingRule::where('type', 'min_cost')->first();
 
 
-            
+
         return view('frontend.pages.product', compact('products', 'categories', 'brands','shippingRules'));
     }
 

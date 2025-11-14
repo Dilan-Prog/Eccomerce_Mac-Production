@@ -50,7 +50,7 @@ class Product extends Model
         return $this->hasMany(ProductVariant::class);
     }
 
-    function  ()
+    function  combinations()
     {
         return $this->hasMany(ProductVariantCombinations::class);
     }
