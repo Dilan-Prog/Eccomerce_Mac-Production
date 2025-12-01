@@ -1,211 +1,211 @@
-# Redirections to HTTPS segure
-RewriteEngine On
-RewriteCond %{HTTPS} off
-RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
-# <FilesMatch "\.(css|js)$">
-#     Header set Cache-Control "no-cache, no-store, must-revalidate"
-# </FilesMatch>
-# Cache Images, CSS, and JavaScript
-<IfModule mod_expires.c>
-    ExpiresActive On
-    ExpiresDefault "access plus 1 month"
-    ExpiresByType image/jpg "access plus 1 month"
-    ExpiresByType image/jpeg "access plus 1 month"
-    ExpiresByType image/png "access plus 1 month"
-    ExpiresByType image/gif "access plus 1 month"
+# # Redirections to HTTPS segure
+# RewriteEngine On
+# RewriteCond %{HTTPS} off
+# RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+# # <FilesMatch "\.(css|js)$">
+# #     Header set Cache-Control "no-cache, no-store, must-revalidate"
+# # </FilesMatch>
+# # Cache Images, CSS, and JavaScript
+# <IfModule mod_expires.c>
+#     ExpiresActive On
+#     ExpiresDefault "access plus 1 month"
+#     ExpiresByType image/jpg "access plus 1 month"
+#     ExpiresByType image/jpeg "access plus 1 month"
+#     ExpiresByType image/png "access plus 1 month"
+#     ExpiresByType image/gif "access plus 1 month"
     
-    ExpiresByType application/javascript "access plus 3 month"
+#     ExpiresByType application/javascript "access plus 3 month"
+# # </IfModule>
+
+# # Cache Fonts
+# <IfModule mod_expires.c>
+#     ExpiresByType font/woff "access plus 1 year"
+#     ExpiresByType font/woff2 "access plus 1 year"
 # </IfModule>
 
-# Cache Fonts
-<IfModule mod_expires.c>
-    ExpiresByType font/woff "access plus 1 year"
-    ExpiresByType font/woff2 "access plus 1 year"
-</IfModule>
+# # BEGIN cPanel-generated php ini directives, do not edit
+# <IfModule mod_expires.c>
+#     ExpiresActive On
 
-# BEGIN cPanel-generated php ini directives, do not edit
-<IfModule mod_expires.c>
-    ExpiresActive On
-
-    # Imágenes
-    ExpiresByType image/webp "access plus 1 year"
-    ExpiresByType image/jpg "access plus 1 year"
-    ExpiresByType image/jpeg "access plus 1 year"
-    ExpiresByType image/png "access plus 1 year"
-    ExpiresByType image/gif "access plus 1 year"
-    ExpiresByType image/svg+xml "access plus 1 year"
+#     # Imágenes
+#     ExpiresByType image/webp "access plus 1 year"
+#     ExpiresByType image/jpg "access plus 1 year"
+#     ExpiresByType image/jpeg "access plus 1 year"
+#     ExpiresByType image/png "access plus 1 year"
+#     ExpiresByType image/gif "access plus 1 year"
+#     ExpiresByType image/svg+xml "access plus 1 year"
     
-    # CSS y JavaScript
-    ExpiresByType text/css "access plus 1 year"
-    ExpiresByType application/javascript "access plus 1 year"
-    ExpiresByType application/x-javascript "access plus 1 year"
+#     # CSS y JavaScript
+#     ExpiresByType text/css "access plus 1 year"
+#     ExpiresByType application/javascript "access plus 1 year"
+#     ExpiresByType application/x-javascript "access plus 1 year"
 
-    # Fuentes
-    ExpiresByType font/woff "access plus 1 year"
-    ExpiresByType font/woff2 "access plus 1 year"
-    ExpiresByType font/ttf "access plus 1 year"
-    ExpiresByType font/eot "access plus 1 year"
-</IfModule>
+#     # Fuentes
+#     ExpiresByType font/woff "access plus 1 year"
+#     ExpiresByType font/woff2 "access plus 1 year"
+#     ExpiresByType font/ttf "access plus 1 year"
+#     ExpiresByType font/eot "access plus 1 year"
+# </IfModule>
 
-<IfModule mod_headers.c>
-    <FilesMatch "\.(css|js|woff2|woff|ttf|eot|svg|jpg|jpeg|png|gif|webp)$">
-        Header set Cache-Control "public, max-age=31536000, immutable"
-    </FilesMatch>
-</IfModule>
+# <IfModule mod_headers.c>
+#     <FilesMatch "\.(css|js|woff2|woff|ttf|eot|svg|jpg|jpeg|png|gif|webp)$">
+#         Header set Cache-Control "public, max-age=31536000, immutable"
+#     </FilesMatch>
+# </IfModule>
 
 
-# Manual editing of this file may result in unexpected behavior.
-# To make changes to this file, use the cPanel MultiPHP INI Editor (Home >> Software >> MultiPHP INI Editor)
-# For more information, read our documentation (https://go.cpanel.net/EA4ModifyINI)
-<IfModule php8_module>
-   php_flag display_errors Off
-   php_value max_execution_time 30
-   php_value max_input_time 60
-   php_value max_input_vars 1000
-   php_value memory_limit 512M
-   php_value post_max_size 8M
-   php_value session.gc_maxlifetime 1440
-   php_value session.save_path "/var/cpanel/php/sessions/ea-php83"
-   php_value upload_max_filesize 2M
-   php_flag zlib.output_compression Off
-</IfModule>
-<IfModule lsapi_module>
-   php_flag display_errors Off
-   php_value max_execution_time 30
-   php_value max_input_time 60
-   php_value max_input_vars 1000
-   php_value memory_limit 512M
-   php_value post_max_size 8M
-   php_value session.gc_maxlifetime 1440
-   php_value session.save_path "/var/cpanel/php/sessions/ea-php83"
-   php_value upload_max_filesize 2M
-   php_flag zlib.output_compression Off
-</IfModule>
-<IfModule mod_rewrite.c>
-    RewriteEngine On
+# # Manual editing of this file may result in unexpected behavior.
+# # To make changes to this file, use the cPanel MultiPHP INI Editor (Home >> Software >> MultiPHP INI Editor)
+# # For more information, read our documentation (https://go.cpanel.net/EA4ModifyINI)
+# <IfModule php8_module>
+#    php_flag display_errors Off
+#    php_value max_execution_time 30
+#    php_value max_input_time 60
+#    php_value max_input_vars 1000
+#    php_value memory_limit 512M
+#    php_value post_max_size 8M
+#    php_value session.gc_maxlifetime 1440
+#    php_value session.save_path "/var/cpanel/php/sessions/ea-php83"
+#    php_value upload_max_filesize 2M
+#    php_flag zlib.output_compression Off
+# </IfModule>
+# <IfModule lsapi_module>
+#    php_flag display_errors Off
+#    php_value max_execution_time 30
+#    php_value max_input_time 60
+#    php_value max_input_vars 1000
+#    php_value memory_limit 512M
+#    php_value post_max_size 8M
+#    php_value session.gc_maxlifetime 1440
+#    php_value session.save_path "/var/cpanel/php/sessions/ea-php83"
+#    php_value upload_max_filesize 2M
+#    php_flag zlib.output_compression Off
+# </IfModule>
+# <IfModule mod_rewrite.c>
+#     RewriteEngine On
 
-    # Canonical: remove /public/ from visible URLs, force https + www, internally serve from /public
+#     # Canonical: remove /public/ from visible URLs, force https + www, internally serve from /public
 
-    # 1) If the original client request contained "/public/" -> redirect to canonical without /public/
-    #    Use THE_REQUEST so internal rewrites are not redirected (avoids loops).
-    RewriteCond %{THE_REQUEST} \s/+public/([^\s?]*) [NC]
-    RewriteRule ^public/(.*)$ https://www.macdelnorte.com/$1 [L,R=301]
+#     # 1) If the original client request contained "/public/" -> redirect to canonical without /public/
+#     #    Use THE_REQUEST so internal rewrites are not redirected (avoids loops).
+#     RewriteCond %{THE_REQUEST} \s/+public/([^\s?]*) [NC]
+#     RewriteRule ^public/(.*)$ https://www.macdelnorte.com/$1 [L,R=301]
 
-    # 2) Force HTTPS + www (preserve path & query). Handles proxy via X-Forwarded-Proto.
-    RewriteCond %{HTTP_HOST} !^www\.macdelnorte\.com$ [NC]
-    RewriteRule ^ https://www.macdelnorte.com%{REQUEST_URI} [L,R=301]
-    RewriteCond %{HTTPS} off
-    RewriteCond %{HTTP:X-Forwarded-Proto} !https
-    RewriteRule ^ https://www.macdelnorte.com%{REQUEST_URI} [L,R=301]
+#     # 2) Force HTTPS + www (preserve path & query). Handles proxy via X-Forwarded-Proto.
+#     RewriteCond %{HTTP_HOST} !^www\.macdelnorte\.com$ [NC]
+#     RewriteRule ^ https://www.macdelnorte.com%{REQUEST_URI} [L,R=301]
+#     RewriteCond %{HTTPS} off
+#     RewriteCond %{HTTP:X-Forwarded-Proto} !https
+#     RewriteRule ^ https://www.macdelnorte.com%{REQUEST_URI} [L,R=301]
 
-    # 3) Internally rewrite to /public when file/dir doesn't exist and URI is not already /public/
-    RewriteCond %{REQUEST_URI} !^/public/
-    RewriteCond %{REQUEST_FILENAME} !-f
-    RewriteCond %{REQUEST_FILENAME} !-d
-    RewriteRule ^(.*)$ public/$1 [L]
-</IfModule>
+#     # 3) Internally rewrite to /public when file/dir doesn't exist and URI is not already /public/
+#     RewriteCond %{REQUEST_URI} !^/public/
+#     RewriteCond %{REQUEST_FILENAME} !-f
+#     RewriteCond %{REQUEST_FILENAME} !-d
+#     RewriteRule ^(.*)$ public/$1 [L]
+# </IfModule>
 
-# Static caching
-<IfModule mod_expires.c>
-    ExpiresActive On
-    ExpiresDefault "access plus 1 month"
-    ExpiresByType image/webp "access plus 1 year"
-    ExpiresByType image/jpg  "access plus 1 year"
-    ExpiresByType image/jpeg "access plus 1 year"
-    ExpiresByType image/png  "access plus 1 year"
-    ExpiresByType image/gif  "access plus 1 year"
-    ExpiresByType image/svg+xml "access plus 1 year"
-    ExpiresByType text/css "access plus 1 year"
-    ExpiresByType application/javascript "access plus 1 year"
-    ExpiresByType application/x-javascript "access plus 1 year"
-    ExpiresByType font/woff  "access plus 1 year"
-    ExpiresByType font/woff2 "access plus 1 year"
-    ExpiresByType font/ttf   "access plus 1 year"
-    ExpiresByType font/eot   "access plus 1 year"
-</IfModule>
+# # Static caching
+# <IfModule mod_expires.c>
+#     ExpiresActive On
+#     ExpiresDefault "access plus 1 month"
+#     ExpiresByType image/webp "access plus 1 year"
+#     ExpiresByType image/jpg  "access plus 1 year"
+#     ExpiresByType image/jpeg "access plus 1 year"
+#     ExpiresByType image/png  "access plus 1 year"
+#     ExpiresByType image/gif  "access plus 1 year"
+#     ExpiresByType image/svg+xml "access plus 1 year"
+#     ExpiresByType text/css "access plus 1 year"
+#     ExpiresByType application/javascript "access plus 1 year"
+#     ExpiresByType application/x-javascript "access plus 1 year"
+#     ExpiresByType font/woff  "access plus 1 year"
+#     ExpiresByType font/woff2 "access plus 1 year"
+#     ExpiresByType font/ttf   "access plus 1 year"
+#     ExpiresByType font/eot   "access plus 1 year"
+# </IfModule>
 
-<IfModule mod_headers.c>
-    <FilesMatch "\.(css|js|woff2|woff|ttf|eot|svg|jpg|jpeg|png|gif|webp)$">
-        Header set Cache-Control "public, max-age=31536000, immutable"
-    </FilesMatch>
-</IfModule>
+# <IfModule mod_headers.c>
+#     <FilesMatch "\.(css|js|woff2|woff|ttf|eot|svg|jpg|jpeg|png|gif|webp)$">
+#         Header set Cache-Control "public, max-age=31536000, immutable"
+#     </FilesMatch>
+# </IfModule>
 
-<IfModule mod_deflate.c>
-    AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css application/javascript application/json
-</IfModule>
+# <IfModule mod_deflate.c>
+#     AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css application/javascript application/json
+# </IfModule>
 
-# cPanel PHP handler (mantener si el hosting lo requiere)
-<IfModule mime_module>
-  AddHandler application/x-httpd-ea-php83 .php .php8 .phtml
-</IfModule>
-# php -- END cPanel-generated handler, do not edit
+# # cPanel PHP handler (mantener si el hosting lo requiere)
+# <IfModule mime_module>
+#   AddHandler application/x-httpd-ea-php83 .php .php8 .phtml
+# </IfModule>
+# # php -- END cPanel-generated handler, do not edit
 
-# Root .htaccess: force https+www, return 404 for visible /public/, internally serve from /public
+# # Root .htaccess: force https+www, return 404 for visible /public/, internally serve from /public
 
-<IfModule mod_rewrite.c>
-    RewriteEngine On
+# <IfModule mod_rewrite.c>
+#     RewriteEngine On
 
-    # 1) Force HTTPS + www (preserve path & query)
-    RewriteCond %{HTTP_HOST} !^www\.macdelnorte\.com$ [NC]
-    RewriteRule ^ https://www.macdelnorte.com%{REQUEST_URI} [L,R=301]
-    RewriteCond %{HTTPS} off
-    RewriteCond %{HTTP:X-Forwarded-Proto} !https
-    RewriteRule ^ https://www.macdelnorte.com%{REQUEST_URI} [L,R=301]
+#     # 1) Force HTTPS + www (preserve path & query)
+#     RewriteCond %{HTTP_HOST} !^www\.macdelnorte\.com$ [NC]
+#     RewriteRule ^ https://www.macdelnorte.com%{REQUEST_URI} [L,R=301]
+#     RewriteCond %{HTTPS} off
+#     RewriteCond %{HTTP:X-Forwarded-Proto} !https
+#     RewriteRule ^ https://www.macdelnorte.com%{REQUEST_URI} [L,R=301]
 
-    # 2) If the original client request contained "/public/" => return 404
-    # Use THE_REQUEST so internal rewrites are NOT affected (avoids blocking internal rewrite)
-    RewriteCond %{THE_REQUEST} \s/public/ [NC]
-    RewriteRule ^public/ - [L,R=404]
+#     # 2) If the original client request contained "/public/" => return 404
+#     # Use THE_REQUEST so internal rewrites are NOT affected (avoids blocking internal rewrite)
+#     RewriteCond %{THE_REQUEST} \s/public/ [NC]
+#     RewriteRule ^public/ - [L,R=404]
 
-    # 3) Internally rewrite to /public when file/dir doesn't exist and URI is not already /public/
-    RewriteCond %{REQUEST_URI} !^/public/
-    RewriteCond %{REQUEST_FILENAME} !-f
-    RewriteCond %{REQUEST_FILENAME} !-d
-    RewriteRule ^(.*)$ public/$1 [L]
-</IfModule>
+#     # 3) Internally rewrite to /public when file/dir doesn't exist and URI is not already /public/
+#     RewriteCond %{REQUEST_URI} !^/public/
+#     RewriteCond %{REQUEST_FILENAME} !-f
+#     RewriteCond %{REQUEST_FILENAME} !-d
+#     RewriteRule ^(.*)$ public/$1 [L]
+# </IfModule>
 
-# Static caching / Expires
-<IfModule mod_expires.c>
-    ExpiresActive On
-    ExpiresDefault "access plus 1 month"
+# # Static caching / Expires
+# <IfModule mod_expires.c>
+#     ExpiresActive On
+#     ExpiresDefault "access plus 1 month"
 
-    ExpiresByType image/webp "access plus 1 year"
-    ExpiresByType image/jpg  "access plus 1 year"
-    ExpiresByType image/jpeg "access plus 1 year"
-    ExpiresByType image/png  "access plus 1 year"
-    ExpiresByType image/gif  "access plus 1 year"
-    ExpiresByType image/svg+xml "access plus 1 year"
+#     ExpiresByType image/webp "access plus 1 year"
+#     ExpiresByType image/jpg  "access plus 1 year"
+#     ExpiresByType image/jpeg "access plus 1 year"
+#     ExpiresByType image/png  "access plus 1 year"
+#     ExpiresByType image/gif  "access plus 1 year"
+#     ExpiresByType image/svg+xml "access plus 1 year"
 
-    ExpiresByType text/css "access plus 1 year"
-    ExpiresByType application/javascript "access plus 1 year"
-    ExpiresByType application/x-javascript "access plus 1 year"
+#     ExpiresByType text/css "access plus 1 year"
+#     ExpiresByType application/javascript "access plus 1 year"
+#     ExpiresByType application/x-javascript "access plus 1 year"
 
-    ExpiresByType font/woff  "access plus 1 year"
-    ExpiresByType font/woff2 "access plus 1 year"
-    ExpiresByType font/ttf   "access plus 1 year"
-    ExpiresByType font/eot   "access plus 1 year"
-</IfModule>
+#     ExpiresByType font/woff  "access plus 1 year"
+#     ExpiresByType font/woff2 "access plus 1 year"
+#     ExpiresByType font/ttf   "access plus 1 year"
+#     ExpiresByType font/eot   "access plus 1 year"
+# </IfModule>
 
-<IfModule mod_headers.c>
-    <FilesMatch "\.(css|js|woff2|woff|ttf|eot|svg|jpg|jpeg|png|gif|webp)$">
-        Header set Cache-Control "public, max-age=31536000, immutable"
-    </FilesMatch>
-</IfModule>
+# <IfModule mod_headers.c>
+#     <FilesMatch "\.(css|js|woff2|woff|ttf|eot|svg|jpg|jpeg|png|gif|webp)$">
+#         Header set Cache-Control "public, max-age=31536000, immutable"
+#     </FilesMatch>
+# </IfModule>
 
-<IfModule mod_deflate.c>
-    AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css application/javascript application/json
-</IfModule>
+# <IfModule mod_deflate.c>
+#     AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css application/javascript application/json
+# </IfModule>
 
-# cPanel PHP handler (mantener si el hosting lo requiere)
-<IfModule mime_module>
-  AddHandler application/x-httpd-ea-php83 .php .php8 .phtml
-</IfModule>
+# # cPanel PHP handler (mantener si el hosting lo requiere)
+# <IfModule mime_module>
+#   AddHandler application/x-httpd-ea-php83 .php .php8 .phtml
+# </IfModule>
 
-# How to add other forbidden visible prefixes (examples):
-# - To return 404 for /private/ as well, add:
-#   RewriteCond %{THE_REQUEST} \s/(?:public|private)/ [NC]
-#   RewriteRule ^(?:public|private)/ - [L,R=404]
-#
-# - Or add a single rule for one extra prefix:
-#   RewriteCond %{THE_REQUEST} \s/otroPrefijo/ [NC]
-#   RewriteRule ^otroPrefijo/ - [L,R=404]
+# # How to add other forbidden visible prefixes (examples):
+# # - To return 404 for /private/ as well, add:
+# #   RewriteCond %{THE_REQUEST} \s/(?:public|private)/ [NC]
+# #   RewriteRule ^(?:public|private)/ - [L,R=404]
+# #
+# # - Or add a single rule for one extra prefix:
+# #   RewriteCond %{THE_REQUEST} \s/otroPrefijo/ [NC]
+# #   RewriteRule ^otroPrefijo/ - [L,R=404]

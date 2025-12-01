@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AspelSync\AspelSyncController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -9,7 +10,7 @@ use Illuminate\Support\Facades\Route;
 |--------------------------------------------------------------------------
 |
 | Here is where you can register API routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
+| routes are loaded by the RouteServiceProvider and all of them willa
 | be assigned to the "api" middleware group. Make something great!
 |
 */
@@ -17,3 +18,7 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+// Route::post('/aspel/sync', [AspelSyncController::class, 'syncData']);
+Route::post('/aspel/sync', [AspelSyncController::class, 'sync']);
+// Route::match(['GET', 'POST'], '/aspel/sync', [AspelSyncController::class, 'sync']);
