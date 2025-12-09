@@ -36,7 +36,7 @@ class ProductDataTable extends DataTable
                   <a class="dropdown-item has-icon" href="'.route('admin.products-image-gallery.index', ['product' => $query->id]).'"><i class="far fa-images"></i> Galleria de Imagenes</a>
                   <a class="dropdown-item has-icon" href="'.route('admin.products-variant.index', ['product' => $query->id]).'"><i class="fas fa-boxes"></i> Variantes de Producto</a>
                   <a class="dropdown-item has-icon" href="'.route('admin.products-variant-combinations.index', ['product' => $query->id]).'"><i class="fas fa-boxes"></i> Combinaciones del producto</a>
-                  <a class="dropdown-item has-icon" href="'.route('admin.products-more-eccomerce.index', ['product' => $query->id]).'"><i class="fas fa-monero"></i> Agregar Mas Comercios</a>
+                  <a class="dropdown-item has-icon" href="'.route('admin.products-more-eccomerce.index', ['product' => $query->id]).'"><i class="fas fa-store"></i> Agregar Mas Comercios</a>
                 </div>
               </div>';
 
@@ -259,7 +259,7 @@ class ProductDataTable extends DataTable
     }
 
     /**
-     * Get the filename for export.
+     * Get the filename for exportd.
      */
     protected function filename(): string
     {

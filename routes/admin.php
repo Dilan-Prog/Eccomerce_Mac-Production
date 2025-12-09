@@ -17,6 +17,7 @@ use App\Http\Controllers\Backend\OrderController;
 use App\Http\Controllers\Backend\PaymentSettingController;
 use App\Http\Controllers\Backend\PaypalSettingController;
 use App\Http\Controllers\Backend\ProductController;
+use App\Http\Controllers\AspelSync\AspelSyncController;
 use App\Http\Controllers\Backend\ProductImageGalleryController;
 use App\Http\Controllers\Backend\ProductMoreEccomerceController;
 use App\Http\Controllers\Backend\ProductVariantController;
@@ -76,6 +77,9 @@ Route::get('products/get-child-categories',[ ProductController::class, 'getChild
 Route::resource('products',ProductController::class);
 Route::get('products/search', [ProductController::class, 'searchProducts'])->name('products.search');
 
+/**Product Sync Aspell Route */
+Route::get('/sync-aspel', [AspelSyncController::class, 'index'])->name('sync-aspel.index');
+
 /**Ads route */
 Route::get('track-conversion', [TrackConversionController::class, 'index'])->name('track-conversion.index');
 
@@ -83,7 +87,6 @@ Route::get('track-conversion', [TrackConversionController::class, 'index'])->nam
 /**ProductImageGallery route */
 Route::get('products-image-gallery/{productId}', [ProductImageGalleryController::class, 'index'])->name('admin.products-image-gallery.index');
 Route::resource('products-image-gallery', ProductImageGalleryController::class);
-
 
 /**Product Variant */
 Route::put('products-variant/change-status', [ProductVariantController::class, 'changeStatus'])->name('products-variant.change-status');
