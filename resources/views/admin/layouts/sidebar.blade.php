@@ -78,6 +78,18 @@
                             href="{{ route('admin.products.index') }}"> <i class="fas fa-box"></i>Productos</a></li>
                 </ul>
             </li>
+            <li
+                class="dropdown {{ setActive(['admin.sync-aspel.*']) }}">
+                <a href="#" class="nav-link has-dropdown" data-toggle="dropdown"><i class="fas fa-tags"></i>
+                    <span>Aspel Sincronizacion</span></a>
+                <ul class="dropdown-menu">
+                    <li class="{{ setActive(['admin.sync-aspel.*']) }}"><a class="nav-link"
+                            href="{{ route('admin.sync-aspel.index') }}">Productos</a></li>
+                </ul>
+            </li>
+
+                
+            </li>
 
             <li
                 class="dropdown {{ setActive(['admin.flash-sale.*', 'admin.coupons.*', 'admin.shipping-rule.*', 'admin.payment-settings.*']) }}">

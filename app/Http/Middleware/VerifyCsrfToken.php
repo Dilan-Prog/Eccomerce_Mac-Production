@@ -12,6 +12,7 @@ class VerifyCsrfToken extends Middleware
      * @var array<int, string>
      */
     protected $except = [
-        //
+        // api para solo recibir informacion de aspel
+        'api/aspel/sync',
     ];
 }
