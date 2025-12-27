@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AspelSync\AspelSyncController;
+use App\Http\Controllers\AspelSync\PrecioXProductoController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -21,4 +22,5 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 // Route::post('/aspel/sync', [AspelSyncController::class, 'syncData']);
 Route::post('/aspel/sync', [AspelSyncController::class, 'sync']);
+Route::post('/aspel/precio-x-producto', [PrecioXProductoController::class, 'precioXProducto']);
 // Route::match(['GET', 'POST'], '/aspel/sync', [AspelSyncController::class, 'sync']);

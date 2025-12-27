@@ -116,8 +116,24 @@
                                         // Inicialización de variables de variantes y precios
                                         $variantNames = [];
                                         $sku = $product->sku;
-                                        $price = $product->price;
-                                        $offerPrice = $product->offert_price ?? null;
+                                        
+                                        // Validación de precio según price_personalizated
+                                        if ($product->price_personalizated == 1) {
+                                            // Precio personalizado (manual)
+                                            $price = $product->price;
+                                        } else {
+                                            // Precio de Aspel, pero si es null usar price como fallback
+                                            $price = $product->aspel_price ?? $product->price;
+                                        }
+                                        
+                                        // Validación de precio de oferta según price_offert_personalizated
+                                        if ($product->price_offert_personalizated == 1) {
+                                            // Precio de oferta personalizado (manual)
+                                            $offerPrice = $product->offert_price ?? null;
+                                        } else {
+                                            // Precio de oferta de Aspel, pero si es null usar offert_price como fallback
+                                            $offerPrice = $product->aspel_offert_price ?? $product->offert_price ?? null;
+                                        }
 
                                         // Si hay una combinación seleccionada, se actualizan los datos según la combinación
                                         if ($selectedCombination) {
@@ -158,7 +174,7 @@
                             </a>
                             <div itemprop="offers" itemscope itemtype="http://schema.org/Offer">
                                 {{-- Inicio de codicion de precio, Si el producto tiene precio --}}
-                                @if ($product->price)
+                                @if ($price)
                                         {{-- Incio de condicion de stock, Si el producto cuenta con stock --}}
                                         @php
                                             $stockQty = $selectedCombination ? $selectedCombination->qty : $product->qty;
@@ -182,17 +198,17 @@
                                             {{-- Meta Etiqueta Indicador de la moneda utilizada --}}
                                             <meta itemprop="priceCurrency" content="MXN">
                                             {{-- Precio Normal Tachado --}}
-                                            <span itemprop="price" content="{{$product->offert_price}}">
-                                                <del>{{$settings->currency_icon}}{{ number_format($product->price, 2, '.', ',') }} MXN</del>
+                                            <span itemprop="price" content="{{$offerPrice}}">
+                                                <del>{{$settings->currency_icon}}{{ number_format($price, 2, '.', ',') }} MXN</del>
                                             </span>
                                             {{-- Precio con Descuento --}}
-                                            <span itemprop="price" content="{{ $product->offert_price }}">
-                                                {{$settings->currency_icon}}{{ $entero }}<span style="font-size: 15px; vertical-align: super;">.{{ $decimales }}</span> MXN {{ calculatedDiscountPercent($product->price, $product->offert_price) }}%OFF
+                                            <span itemprop="price" content="{{ $offerPrice }}">
+                                                {{$settings->currency_icon}}{{ $entero }}<span style="font-size: 15px; vertical-align: super;">.{{ $decimales }}</span> MXN {{ calculatedDiscountPercent($price, $offerPrice) }}%OFF
                                             </span>
                                         </h4>
 
                                             {{-- Si el producto es mayor a 3000 pesos entra a meses sin intereses --}}
-                                            @if ($product->offert_price >= 3000)
+                                            @if ($offerPrice >= 3000)
                                                 {{-- Se muestra en cuanto quedarian los pagos a meses sin interses --}}
                                                 <p class="wsus__msi_product">
                                                     Pagalo a <span style="color: #00a650;">{{ $msiMeses }} Meses sin intereses de {{$settings->currency_icon}}{{number_format($msioffert,2)}} MXN</span>
@@ -220,7 +236,7 @@
                                             <meta itemprop="priceCurrency" content="MXN">
                                             {{-- Precio normal --}}
                                             <span itemprop="price" content="{{$price}}" id="dynamic_price">
-                                                {{$settings->currency_icon}}{{ $price }} {{--<span style="font-size: 15px; vertical-align: super;">.{{ $decimalesNormal }}</span>--}} MXN
+                                                {{$settings->currency_icon}}{{ number_format($price, 2, '.', ',') }} {{--<span style="font-size: 15px; vertical-align: super;">.{{ $decimalesNormal }}</span>--}} MXN
                                             </span>
                                             {{-- <span itemprop="price" content="{{$price}}">
                                                 {{$settings->currency_icon}}{{ $enteroNormal }}<span style="font-size: 15px; vertical-align: super;">.{{ $decimalesNormal }}</span> MXN
@@ -254,15 +270,7 @@
                                 <p class="wsus__stock_area">
                                     <span class="in_stock" itemprop="availability" content="https://schema.org/MadeToOrder">La venta de este producto requiere asesoria</span>
                                 </p>
-                            {{-- Final de Condicion de Precio --}}                            <?php
-                            // ...existing code...
-                            $precioFormateado = number_format($product->price, 2, '.', ',');
-                            $precioOffertFormateado = number_format($product->offert_price, 2, '.', ',');
-                            // ...existing code...                            <?php
-                            // ...existing code...
-                            $precioFormateado = number_format($product->price, 2, '.', ',');
-                            $precioOffertFormateado = number_format($product->offert_price, 2, '.', ',');
-                            // ...existing code...
+                            {{-- Final de Condicion de Precio --}}
                             @endif
                             </div>
                             {{-- Redireccion a Detalles del producto este es una etiqueta que contiene el itemprop --}}
@@ -404,7 +412,7 @@
                                     <input type="hidden" name="productModel" value="{{$product->productModel}}">
                                     {{-- Condicion si el producto tiene precio muestra la cantidad que decea agregar --}}
                                     @php
-                                        $currentPrice = $selectedCombination ? $selectedCombination->price : $product->price;
+                                        $currentPrice = $selectedCombination ? $selectedCombination->price : $price;
                                         $currentQty = $selectedCombination ? $selectedCombination->qty : $product->qty;
                                     @endphp
 
@@ -1030,7 +1038,7 @@ function updateStarDisplay(rating) {
 }
 </script>
 
-    @if ($product->price)
+    @if ($price)
         <script type="application/ld+json">
             {
               "@context": "https://schema.org/",
@@ -1055,7 +1063,7 @@ function updateStarDisplay(rating) {
                 "url": "{{$product->slug }}",
                 "itemCondition": "https://schema.org/NewCondition",
                 "availability": "https://schema.org/{{ $product->qty > 0 ? 'InStock' : 'OutOfStock' }}",
-                "price": "{{ $product->offer_price ?: $product->price }}",
+                "price": "{{ $offerPrice ?: $price }}",
                 "priceCurrency": "MXN"
               },
               "aggregateRating": {

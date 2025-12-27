@@ -74,8 +74,9 @@ Route::resource('brand',BrandController::class);
 Route::put('product/change-status', [ProductController::class, 'changeStatus'])->name('product.change-status');
 Route::get('products/get-subcategories',[ ProductController::class, 'getSubCategories'])->name('product.get-subcategories');
 Route::get('products/get-child-categories',[ ProductController::class, 'getChildCategories'])->name('product.get-child-categories');
+Route::get('products/search-sku',[ ProductController::class, 'searchSku'])->name('product.search-sku');
 Route::resource('products',ProductController::class);
-Route::get('products/search', [ProductController::class, 'searchProducts'])->name('products.search');
+
 
 /**Product Sync Aspell Route */
 Route::get('/sync-aspel', [AspelSyncController::class, 'index'])->name('sync-aspel.index');

@@ -127,58 +127,24 @@
                                     @php
                                         $defaultCombination = $product->combinations->where('is_default', 1)->first();
                                         $showCombination = $defaultCombination ?: null;
-                                        $price = $showCombination ? ($showCombination->offert_price ?? $showCombination->price) : ($product->offert_price ?? $product->price);
+
+                                        // Precios del producto base con lógica price_personalizated / aspel_price
+                                        $basePrice = $product->price_personalizated == 1
+                                            ? $product->price
+                                            : ($product->aspel_price ?? $product->price);
+                                        $baseOfferPrice = $product->price_offert_personalizated == 1
+                                            ? $product->offert_price
+                                            : ($product->aspel_offert_price ?? $product->offert_price);
+
+                                        // Precio a mostrar (combination si aplica, si no precio/oferta calculados)
+                                        $price = $showCombination
+                                            ? ($showCombination->offert_price ?? $showCombination->price)
+                                            : ($baseOfferPrice ?: $basePrice);
+
                                         $qty = $showCombination ? $showCombination->qty : $product->qty;
                                         $sku = $showCombination ? $showCombination->sku : $product->sku;
                                     @endphp
-
-                                    {{-- <div class="col-xl-4 col-sm-6 col-lg-4">
-                                        <div class="wsus__product_item">
-                                            <span class="wsus__new">{{productType($product->product_type)}}</span>
-                                            @if (checkDiscount($product))
-
-                                            <span class="wsus__minus">-{{calculatedDiscountPercent($product->price, $product->offert_price)}}%</span>
-
-                                            @endif
-                                            <a class="wsus__pro_link" href="{{route('product-detail', $product->slug)}}">
-                                                <img src="{{asset($product->thumb_image)}}" alt="product" class="img-fluid w-100 img_1" />
-                                                <img src="
-                                                @if (isset($product->productImageGalleries[0]->image))
-                                                    {{asset($product->productImageGalleries[0]->image)}}
-                                                @else
-                                                    {{asset($product->thumb_image)}}
-                                                @endif
-                                                " class="img-fluid w-100 img_2" />
-                                            </a>
-                                            <div class="wsus__product_details">
-                                                <a class="wsus__category" href="#">{{$product->category->name}}</a>
-                                                <p class="wsus__pro_rating">
-                                                    <i class="fas fa-star"></i>
-                                                    <i class="fas fa-star"></i>
-                                                    <i class="fas fa-star"></i>
-                                                    <i class="fas fa-star"></i>
-                                                    <i class="fas fa-star-half-alt"></i>
-                                                    <span>(133 review)</span>
-                                                </p>
-                                                <a class="wsus__pro_name" href="{{route('product-detail', $product->slug)}}">{{$product->name}}</a>
-                                                @if (checkDiscount($product))
-                                                    <p class="wsus__price">{{$settings->currency_icon}}{{$product->offert_price}} MXN <del>{{$settings->currency_icon}}{{$product->price}} MXN</del></p>
-                                                @else
-                                                    <p class="wsus__price">{{$settings->currency_icon}}{{$product->price}} </p>
-                                                @endif
-                                                <form class="shopping-cart-form">
-                                                    <input type="hidden" name="product_id" value="{{$product->id}}">
-                                                    <input type="hidden" name="brand_name" value="{{ $product->brand->name }}">
-                                                    <button type="submit" class="add_cart" href="#">Agregar al Carrito</button>
-
-                                                    <input name="qty" type="hidden" min="1" max="100" value="1" />
-                                                </form>
-                                            </div>
-                                        </div>
-                                    </div> --}}
                                     <div class="col-xl-4 col-sm-6 col-lg-4">
-
-
                                         <div class="wsus__product_item" itemscope itemtype="http://schema.org/Product">
 
                                             @switch($product->product_type)
@@ -223,22 +189,13 @@
                                                 " class="img-fluid w-100 img_2" loading="lazy" />
                                             </a>
                                             <div class="wsus__product_details">
-
-
                                                 <a class="wsus__category" href="#" itemprop="category">{{$product->category->name}}</a>
-
-
-
-
-                                                @if ($product->price)
-
-
+                                                @if ($price)
                                                     @if ($qty > 0)
                                                         <p class="wsus__stock_area"><span class="in_stock" itemprop="offers" itemtype="http://schema.org/Offer"><meta itemprop="availability" content="http://schema.org/InStock">Disponibles</span></p>
                                                     @elseif ($qty === 0)
                                                         <p class="wsus__stock_area"><span class="in_stock" itemprop="offers" itemtype="http://schema.org/Offer"><meta itemprop="availability" content="http://schema.org/OutOfStock">Agotado</span></p>
                                                     @endif
-
                                                     <p class="wsus__pro_rating">
                                                         @php
                                                             $averageRating = $product->reviews->avg('rating'); // Promedio de las calificaciones
@@ -256,59 +213,64 @@
                                                             @endfor
                                                         @endif
                                                     </p>
-
-
                                                     <a class="wsus__pro_name" href="{{route('product-detail', $product->slug)}}" itemprop="name" content="{{$product->name}}">{{$product->name}}</a>
-
                                                     @php
-    $defaultCombination = $product->combinations->where('is_default', 1)->first();
-    $showCombination = $defaultCombination ?: null;
-    $combinationId = $showCombination ? $showCombination->id : '';
-    $productModel = $showCombination ? ($showCombination->model ?? $product->productModel) : $product->productModel;
-    $price = $showCombination ? ($showCombination->offert_price ?? $showCombination->price) : ($product->offert_price ?? $product->price);
-    $qty = $showCombination ? $showCombination->qty : $product->qty;
-    $sku = $showCombination ? $showCombination->sku : $product->sku;
-    $today = date('Y-m-d');
+                                                        $defaultCombination = $product->combinations->where('is_default', 1)->first();
+                                                        $showCombination = $defaultCombination ?: null;
+                                                        $combinationId = $showCombination ? $showCombination->id : '';
+                                                        $productModel = $showCombination ? ($showCombination->model ?? $product->productModel) : $product->productModel;
+                                                        // Mantén $price sin recalcular aquí; usaremos $finalPrice más abajo
+                                                        $qty = $showCombination ? $showCombination->qty : $product->qty;
+                                                        $sku = $showCombination ? $showCombination->sku : $product->sku;
+                                                        $today = date('Y-m-d');
 
-    if ($showCombination) {
-        $offerPrice = $showCombination->offert_price;
-        $normalPrice = $showCombination->price;
-        $offerStart = $showCombination->offer_start_date;
-        $offerEnd = $showCombination->offer_end_date;
-        $hasDiscount = $offerPrice > 0
-            && $offerStart && $offerEnd
-            && $today >= $offerStart
-            && $today <= $offerEnd
-            && $offerPrice < $normalPrice;
-    } else {
-        $offerPrice = $product->offert_price;
-        $normalPrice = $product->price;
-        $offerStart = $product->offer_start_date;
-        $offerEnd = $product->offer_end_date;
-        $hasDiscount = $offerPrice > 0
-            && $offerStart && $offerEnd
-            && $today >= $offerStart
-            && $today <= $offerEnd
-            && $offerPrice < $normalPrice;
-    }
-    $finalPrice = $hasDiscount ? $offerPrice : $normalPrice;
-@endphp
+                                                        if ($showCombination) {
+                                                            $offerPrice = $showCombination->offert_price;
+                                                            $normalPrice = $showCombination->price;
+                                                            $offerStart = $showCombination->offer_start_date;
+                                                            $offerEnd = $showCombination->offer_end_date;
+                                                            $hasDiscount = $offerPrice > 0
+                                                                && $offerStart && $offerEnd
+                                                                && $today >= $offerStart
+                                                                && $today <= $offerEnd
+                                                                && $offerPrice < $normalPrice;
+                                                        } else {
+                                                            // Lógica de precios para producto base respetando price_personalizated y aspel_price
+                                                            $normalPrice = $product->price_personalizated == 1
+                                                                ? $product->price
+                                                                : ($product->aspel_price ?? $product->price);
 
+                                                            $offerPrice = $product->price_offert_personalizated == 1
+                                                                ? $product->offert_price
+                                                                : ($product->aspel_offert_price ?? $product->offert_price);
+
+                                                            $offerStart = $product->offer_start_date;
+                                                            $offerEnd = $product->offer_end_date;
+                                                            $hasDiscount = $offerPrice > 0
+                                                                && $offerStart && $offerEnd
+                                                                && $today >= $offerStart
+                                                                && $today <= $offerEnd
+                                                                && $offerPrice < $normalPrice;
+                                                        }
+                                                        $finalPrice = $hasDiscount ? $offerPrice : $normalPrice;
+                                                        // Usa el precio final para consistencia en secciones siguientes
+                                                        $price = $finalPrice;
+                                                    @endphp
                                                     <p itemscope itemtype="http://schema.org/Offer">
                                                         <meta itemprop="priceCurrency" content="MXN">
                                                         <span class="wsus__price" itemprop="price" content="{{ $finalPrice }}">
-        @if($hasDiscount)
-            <del>{{ $settings->currency_icon }}{{ number_format($normalPrice, 2, '.', ',') }} MXN</del>
-        @endif
-        <span style="color: #333; font-weight: 500;">
-            {{ $settings->currency_icon }}{{ number_format($finalPrice, 2, '.', ',') }} MXN
-            @if($hasDiscount)
-                <span style="color: #00a650; font-weight: 600;">
-                    {{ round((($normalPrice - $offerPrice) / $normalPrice) * 100) }}% OFF
-                </span>
-            @endif
-        </span>
-    </span>
+                                                        @if($hasDiscount)
+                                                            <del>{{ $settings->currency_icon }}{{ number_format($normalPrice, 2, '.', ',') }} MXN</del>
+                                                        @endif
+                                                        <span style="color: #333; font-weight: 500;">
+                                                            {{ $settings->currency_icon }}{{ number_format($finalPrice, 2, '.', ',') }} MXN
+                                                            @if($hasDiscount)
+                                                                <span style="color: #00a650; font-weight: 600;">
+                                                                    {{ round((($normalPrice - $offerPrice) / $normalPrice) * 100) }}% OFF
+                                                                </span>
+                                                            @endif
+                                                        </span>
+                                                    </span>
                                                         <span class="mdn_iva">IVA INCLUIDO</span>
                                                     </p>
                                                     
@@ -331,28 +293,43 @@
                                                     $defaultCombination = $product->combinations->where('is_default', 1)->first();
                                                     $showCombination = $defaultCombination ?: null;
 
+                                                    $today = date('Y-m-d');
+
                                                     if ($showCombination) {
-                                                        // Usa tu helper para combinaciones
+                                                        // Combinación: respeta lógica actual
                                                         $hasDiscount = checkCombinationDiscount($showCombination);
                                                         $offerPrice = $showCombination->offert_price;
                                                         $normalPrice = $showCombination->price;
                                                     } else {
-                                                        // Usa tu helper para producto base
-                                                        $hasDiscount = checkDiscount($product);
-                                                        $offerPrice = $product->offert_price;
-                                                        $normalPrice = $product->price;
+                                                        // Producto base: lógica price_personalizated / aspel_price
+                                                        $normalPrice = $product->price_personalizated == 1
+                                                            ? $product->price
+                                                            : ($product->aspel_price ?? $product->price);
+
+                                                        $offerPrice = $product->price_offert_personalizated == 1
+                                                            ? $product->offert_price
+                                                            : ($product->aspel_offert_price ?? $product->offert_price);
+
+                                                        $offerStart = $product->offer_start_date;
+                                                        $offerEnd = $product->offer_end_date;
+                                                        $hasDiscount = $offerPrice > 0
+                                                            && $offerStart && $offerEnd
+                                                            && $today >= $offerStart
+                                                            && $today <= $offerEnd
+                                                            && $offerPrice < $normalPrice;
                                                     }
+
                                                     $finalPrice = $hasDiscount ? $offerPrice : $normalPrice;
                                                 @endphp
 
                                                 <form class="shopping-cart-form">
                                                     <input type="hidden" name="product_id" value="{{$product->id}}">
-                                                    <input type="hidden" name="combination_id" id="combination_id" value="{{ $combinationId }}">
+                                                    <input type="hidden" name="combination_id" id="combination_id" value="{{ $combinationId ?? '' }}">
                                                     <input type="hidden" name="brand_name" itemprop="brand" content="{{$product->brand->name}}" value="{{ $product->brand->name }}">
                                                     <input type="hidden" name="sku" value="{{$sku}}">
-                                                    <input type="hidden" name="productModel" value="{{$productModel}}">
+                                                    <input type="hidden" name="productModel" value="{{$productModel ?? ''}}">
                                                     
-                                                    @if ($product->price)
+                                                    @if ($price)
                                                         <button type="submit" class="add_cart" href="#">Agregar al Carrito</button>
                                                     @else
                                                         <a class="add_cart2" href="{{route('contact')}}">Requiere Asesoria</a>

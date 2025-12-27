@@ -71,8 +71,23 @@ class CartController extends Controller
                 return response(['status' => 'error', 'message' => 'Cantidad agotada']);
             }
 
+            // Determinar precio base usando la lógica de price_personalizated
+            $basePrice = $product->price_personalizated == 1 
+                ? $product->price 
+                : ($product->aspel_price ?? $product->price);
+            
+            // Determinar precio de oferta usando la lógica de price_offert_personalizated
+            $offerPrice = $product->price_offert_personalizated == 1 
+                ? $product->offert_price 
+                : ($product->aspel_offert_price ?? $product->offert_price);
+
+            // Validar que tengamos un precio válido
+            if (empty($basePrice) && empty($offerPrice)) {
+                return response(['status' => 'error', 'message' => 'El producto no tiene un precio válido']);
+            }
+
             // Precio con descuento si aplica
-            $productPrice = checkDiscount($product) ? $product->offert_price : $product->price;
+            $productPrice = checkDiscount($product) ? $offerPrice : $basePrice;
 
             $cartData = [];
             $cartData['id'] = $product->id;

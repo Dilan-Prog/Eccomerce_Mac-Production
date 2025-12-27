@@ -96,12 +96,88 @@
                     <input type="text" class="form-control" name="productModel" value="{{$product->productModel}}">
                   </div>
                   <div class="form-group">
+                      <label for="inputState">Precio Personalizado</label>
+                      <select id="inputState" class="form-control" name="price_personalizated">
+                        <option {{$product->price_personalizated == 0 ? 'selected' : ''}} value="0">No</option>
+                        <option {{$product->price_personalizated == 1 ? 'selected' : ''}} value="1">Si</option>
+                      </select>
+                  </div>
+                  <div class="form-group">
                       <label>Precio</label>
                       <input type="text" class="form-control" name="price" value="{{$product->price}}">
                   </div>
                   <div class="form-group">
+                      <label>Precio Aspel</label>
+                      @php
+                        $aspelCurrencyCode = $aspelCurrency->cve_moned ?? 'MXN';
+                        $aspelExchangeRate = $aspelCurrency && $aspelCurrency->tipo_cambio ? (float) $aspelCurrency->tipo_cambio : 1;
+                        $aspelSymbol = $aspelCurrency->simbolo ?? '$';
+                        $aspelIsMXN = $aspelCurrencyCode === 'MXN';
+                        $ivaPercent = (float) $ivaValue;
+                      @endphp
+                      @if(isset($aspelPriceOptions) && count($aspelPriceOptions))
+                        <select class="form-control" name="aspel_price">
+                          <option value="">Seleccionar...</option>
+                          @foreach($aspelPriceOptions as $opt)
+                            @php
+                              $desc = optional($opt->precio_info)->descripcion ?? ('Precio ' . $opt->cve_precio);
+                              $val = $opt->precio;
+                              $convertedVal = $aspelIsMXN ? $val : $val * $aspelExchangeRate;
+                              $priceWithIva = $convertedVal * (1 + $ivaPercent / 100);
+                              $selectedAspel = ($product->aspel_price == $priceWithIva) || ($product->aspel_price == $convertedVal) || ($product->aspel_price == $val);
+                            @endphp
+                            <option value="{{ $priceWithIva }}" {{ $selectedAspel ? 'selected' : '' }}>
+                              {{ $desc }} — {{ $aspelSymbol }}{{ number_format($val, 2) }} {{ $aspelCurrencyCode }}
+                              @if(!$aspelIsMXN)
+                                / Precio Con IVA MXN ${{ number_format($priceWithIva, 2) }} ({{ number_format($ivaPercent, 2) }}% IVA)
+                              @else
+                                / Precio Con IVA MXN ${{ number_format($priceWithIva, 2) }} ({{ number_format($ivaPercent, 2) }}% IVA)
+                              @endif
+                            </option>
+                          @endforeach
+                        </select>
+                      @else
+                        <input type="text" class="form-control" name="aspel_price" value="{{$product->aspel_price}}" placeholder="Sin precios SAE para este SKU">
+                      @endif
+                  </div>
+                  <div class="form-group">
+                      <label for="inputState">Precio Oferta Personalizado</label>
+                      <select id="inputState" class="form-control" name="price_offert_personalizated">
+                        <option {{$product->price_offert_personalizated == 0 ? 'selected' : ''}} value="0">No</option>
+                        <option {{$product->price_offert_personalizated == 1 ? 'selected' : ''}} value="1">Si</option>
+                      </select>
+                  </div>
+                  <div class="form-group">
                       <label>Precio De Oferta</label>
                       <input type="text" class="form-control" name="offert_price" value="{{$product->offert_price}}">
+                  </div>
+                  <div class="form-group">
+                      <label>Precio De Oferta Aspel</label>
+                      @if(isset($aspelPriceOptions) && count($aspelPriceOptions))
+                        <select class="form-control" name="aspel_offert_price">
+                          <option value="">Seleccionar...</option>
+                          @foreach($aspelPriceOptions as $opt)
+                            @php
+                              $desc = optional($opt->precio_info)->descripcion ?? ('Precio ' . $opt->cve_precio);
+                              $val = $opt->precio;
+                              $convertedVal = $aspelIsMXN ? $val : $val * $aspelExchangeRate;
+                              $priceWithIva = $convertedVal * (1 + $ivaPercent / 100);
+                              $selectedAspel = ($product->aspel_offert_price == $priceWithIva) || ($product->aspel_offert_price == $convertedVal) || ($product->aspel_offert_price == $val);
+                            @endphp
+                            <option value="{{ $priceWithIva }}" {{ $selectedAspel ? 'selected' : '' }}>
+                              {{ $desc }} — {{ $aspelSymbol }}{{ number_format($val, 2) }} {{ $aspelCurrencyCode }}
+                              @if(!$aspelIsMXN)
+                                / Precio Con IVA MXN ${{ number_format($priceWithIva, 2) }} ({{ number_format($ivaPercent, 2) }}% IVA)
+                              @else
+                                / Precio Con IVA MXN ${{ number_format($priceWithIva, 2) }} ({{ number_format($ivaPercent, 2) }}% IVA)
+                              @endif
+                              (ID: {{ $opt->cve_precio }})
+                            </option>
+                          @endforeach
+                        </select>
+                      @else
+                        <input type="text" class="form-control" name="aspel_offert_price" value="{{$product->aspel_offert_price}}" placeholder="Sin precios SAE para este SKU">
+                      @endif
                   </div>
                   <div class="row">
 
@@ -118,10 +194,24 @@
                       </div>
                     </div>
                   </div>
-
+                  <div class="form-group">
+                      <label for="inputState">Cantidad Personalizada</label>
+                      <select id="inputState" class="form-control" name="qty_personalizated">
+                        <option {{$product->qty_personalizated == 0 ? 'selected' : ''}} value="0">No</option>
+                        <option {{$product->qty_personalizated == 1 ? 'selected' : ''}} value="1">Si</option>
+                      </select>
+                  </div>
                   <div class="form-group">
                       <label>Cantidad De Stock</label>
                       <input type="number" class="form-control" min="0" name="qty" value="{{$product->qty}}">
+                  </div>
+                  <div class="form-group">
+                      <label>Cantidad Aspel</label>
+                      @if(isset($aspelProductData) && $aspelProductData)
+                        <div class="input-group">
+                          <input type="number" class="form-control" min="0" name="qty_aspel" value="{{intval($aspelProductData->exist)}}">
+                        </div>
+                      @endif
                   </div>
                   <div class="form-group">
                     <label>Video Link (Formato embed https://www.youtube.com/embed/ AQUI CAMBIAR EL ID)</label>
@@ -254,6 +344,66 @@
       })
 
     })
+
+    // Función para actualizar estado de Precio Personalizado
+    function updatePrecioPersonalizadoState(){
+      let val = $('select[name="price_personalizated"]').val();
+      if(val == '0'){ // Si es personalizado (Si)
+        $('input[name="price"]').prop('disabled', true);
+        $('select[name="aspel_price"]').prop('disabled', false);
+        $('input[name="aspel_price"]').prop('disabled', false);
+      } else { // Si no es personalizado (No)
+        $('input[name="price"]').prop('disabled', false);
+        $('select[name="aspel_price"]').prop('disabled', true);
+        $('input[name="aspel_price"]').prop('disabled', true);
+      }
+    }
+
+    // Función para actualizar estado de Precio Oferta Personalizado
+    function updatePrecioOfertaPersonalizadoState(){
+      let val = $('select[name="price_offert_personalizated"]').val();
+      if(val == '0'){ // Si es personalizado (Si)
+        $('input[name="offert_price"]').prop('disabled', true);
+        $('select[name="aspel_offert_price"]').prop('disabled', false);
+        $('input[name="aspel_offert_price"]').prop('disabled', false);
+      } else { // Si no es personalizado (No)
+        $('input[name="offert_price"]').prop('disabled', false);
+        $('select[name="aspel_offert_price"]').prop('disabled', true);
+        $('input[name="aspel_offert_price"]').prop('disabled', true);
+      }
+    }
+
+    // Función para actualizar estado de Cantidad Personalizada
+    function updateCantidadPersonalizadaState(){
+      let val = $('select[name="qty_personalizated"]').val();
+      if(val == '0'){ // Si es personalizado (Si)
+        $('input[name="qty"]').prop('disabled', true);
+        $('input[name="qty_aspel"]').prop('disabled', false);
+      } else { // Si no es personalizado (No)
+        $('input[name="qty"]').prop('disabled', false);
+        $('input[name="qty_aspel"]').prop('disabled', true);
+      }
+    }
+
+    // Validación de Precio Personalizado
+    $('body').on('change', 'select[name="price_personalizated"]', function(e){
+      updatePrecioPersonalizadoState();
+    });
+
+    // Validación de Precio Oferta Personalizado
+    $('body').on('change', 'select[name="price_offert_personalizated"]', function(e){
+      updatePrecioOfertaPersonalizadoState();
+    });
+
+    // Validación de Cantidad Personalizada
+    $('body').on('change', 'select[name="qty_personalizated"]', function(e){
+      updateCantidadPersonalizadaState();
+    });
+
+    // Inicializar estado al cargar
+    updatePrecioPersonalizadoState();
+    updatePrecioOfertaPersonalizadoState();
+    updateCantidadPersonalizadaState();
 
   })
 </script>
