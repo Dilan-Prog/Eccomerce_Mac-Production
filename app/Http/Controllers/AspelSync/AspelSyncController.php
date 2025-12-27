@@ -12,6 +12,17 @@ class AspelSyncController extends Controller
 {
     public function sync(Request $request)
     {
+        $items = $request->input('items', []);
+        $flat = [];
+        foreach ($items as $item) {
+            if (is_array($item) && isset($item[0]) && is_array($item[0])) {
+                foreach ($item as $row) { $flat[] = $row; }
+            } else {
+                $flat[] = $item;
+            }
+        }
+        $request->merge(['items' => $flat]);
+
         $request->validate([
             'items' => 'required|array',
             'items.*.cve_art' => 'required|string|max:50',

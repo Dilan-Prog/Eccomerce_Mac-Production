@@ -99,20 +99,27 @@ class AspelSync extends Model
         'price' => 'decimal:2',
     ];
 
-    // Relaciones si las necesitas
-    // public function scopeActive($query)
-    // {
-    //     return $query->where('status', 'A');
-    // }
+    /**
+     * Relación 1 a Muchos: Un producto tiene muchos precios asignados
+     */
+    public function preciosXProductos()
+    {
+        return $this->hasMany(PrecioXProductAspel::class, 'cve_art', 'cve_art');
+    }
 
-    // public function scopeWithStock($query)
-    // {
-    //     return $query->where('exist', '>', 0);
-    // }
-
-    // public function scopeByType($query, $type)
-    // {
-    //     return $query->where('tipo_ele', $type);
-    // }
+    /**
+     * Relación a través de tabla intermedia: Acceso a los precios
+     */
+    public function precios()
+    {
+        return $this->hasManyThrough(
+            Precios::class,
+            PrecioXProductAspel::class,
+            'cve_art',
+            'cve_precio',
+            'cve_art',
+            'cve_precio'
+        );
+    }
 }
 ?>

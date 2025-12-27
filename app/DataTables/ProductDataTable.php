@@ -66,6 +66,22 @@ class ProductDataTable extends DataTable
                         break;
                 }
             })
+            ->addColumn('price', function($query){
+                if($query->price_personalizated == 1){
+                    // Precio personalizado (manual)
+                    return number_format($query->price,2, '.', ',');
+                } else {
+                    // Precio de Aspel, pero si es null usar el price como fallback
+                    if($query->aspel_price == null){
+                        return number_format($query->price,2, '.', ',');
+                    }else{
+                        return number_format($query->aspel_price,2, '.', ',');
+                    }
+                }
+            })
+            ->addColumn('price_personalizated', function($query){
+                return $query->price_personalizated == 1 ? 'Si' : 'No';
+            })
             ->addColumn('status', function($query){
                 if($query->status == 1){
 
@@ -195,6 +211,10 @@ class ProductDataTable extends DataTable
             [
                 'data' => 'price',
                 'title' => 'Precio', // Título personalizado
+            ],
+            [
+                'data' => 'price_personalizated',
+                'title' => 'Precio Personalizado(SAE)', // Título personalizado
             ],
             [
                 'data' => 'image',

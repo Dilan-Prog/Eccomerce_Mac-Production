@@ -15,6 +15,7 @@ use App\Models\OrderProduct;
 use App\Models\ProductImageGallery;
 use App\Models\ProductVariant;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Str;
 
 class ProductController extends Controller
@@ -129,7 +130,32 @@ class ProductController extends Controller
         $subCategories = Subcategory::where('category_id', $product->category_id)->get();
         $childCategories = ChildCategory::where('sub_category_id', $product->sub_category_id)->get();
         $brands = Brand::all();
-        return view('admin.product.edit', compact('product','brands','categories','subCategories','childCategories'));
+        $aspelPriceOptions = [];
+        $aspelProductData = null;
+        $aspelCurrency = null;
+        $ivaValue = DB::table('general_settings')->value('iva_mexico') ?? 16.00;
+        try {
+            $aspelProduct = \App\Models\AspelSync::where('cve_art', $product->sku)->first();
+            if ($aspelProduct) {
+                $aspelPriceOptions = \App\Models\PrecioXProductAspel::with('precio_info')
+                    ->where('cve_art', $aspelProduct->cve_art)
+                    ->get();
+                // Obtener datos del producto Aspel (existencias)
+                $aspelProductData = $aspelProduct;
+                // Obtener moneda de Aspel para convertir a MXN en la vista
+                $aspelCurrency = DB::table('monedas_aspel')
+                    ->where('num_moneda', $aspelProduct->num_mon)
+                    ->first();
+            }
+        } catch (\Throwable $e) {
+            // Evitar que un fallo en Aspel rompa la vista
+            $aspelPriceOptions = [];
+            $aspelProductData = null;
+            $aspelCurrency = null;
+        }
+
+
+        return view('admin.product.edit', compact('product','brands','categories','subCategories','childCategories', 'aspelPriceOptions', 'aspelProductData', 'aspelCurrency', 'ivaValue'));
     }
 
     /**
@@ -145,6 +171,8 @@ class ProductController extends Controller
             'brand' => ['required', 'integer', 'exists:brands,id'],
             'price'=>['nullable'],
             'qty'=>['nullable'],
+            'qty_aspel' => ['nullable'],
+            'qty_personalizated' => ['nullable','boolean'],
             'short_description'=>['required','max:600'],
             'long_description'=>['required'],
             'seo_title' => ['nullable','max:200'],
@@ -153,6 +181,11 @@ class ProductController extends Controller
             'url_PDF' => ['nullable'],
             'canonical_url' => ['nullable', 'url'],
             'is_canonical' => ['nullable', 'boolean'],
+            'aspel_price' => ['nullable'],
+            'price_personalizated' => ['nullable','boolean'],
+            'offert_price' => ['nullable'],
+            'aspel_offert_price' => ['nullable'],
+            'price_offert_personalizated' => ['nullable','boolean'],
 
         ]);
         $product = Product::findOrFail($id);
@@ -177,6 +210,10 @@ class ProductController extends Controller
         $product->productModel = $request->productModel;
         $product->price = $request->price;
         $product->offert_price = $request->offert_price;
+        $product->aspel_price = $request->aspel_price;
+        $product->price_personalizated = $request->price_personalizated;
+        $product->aspel_offert_price = $request->aspel_offert_price;
+        $product->price_offert_personalizated = $request->price_offert_personalizated;
         $product->offer_start_date = $request->offer_start_date;
         $product->offer_end_date = $request->offer_end_date;
         $product->product_type = $request->product_type;
@@ -186,6 +223,9 @@ class ProductController extends Controller
         $product->seo_description = $request->seo_description;
         $product->canonical_url = $request->canonical_url;
         $product->is_canonical = $request->is_canonical;
+        $product->qty_aspel = $request->qty_aspel;
+        $product->qty_personalizated = $request->qty_personalizated;
+        // dd($request->all());
         
         $product->save();
 
@@ -247,6 +287,53 @@ class ProductController extends Controller
     {
         $childCategories = Childcategory::where('sub_category_id',$request->id)->get();
         return $childCategories;
+    }
+
+    /**
+     * Search SKU in Aspel and Products tables
+     */
+    public function searchSku(Request $request)
+    {
+        $sku = $request->sku;
+        $results = [];
+
+        // Buscar en aspel_products que EMPIEZAN con el SKU ingresado
+        try {
+            $aspelProducts = \App\Models\AspelSync::where('cve_art', 'LIKE', $sku . '%')
+                ->limit(20)
+                ->get();
+            
+            foreach ($aspelProducts as $aspelProduct) {
+                $aspelPrices = \App\Models\PrecioXProductAspel::with('precio_info')
+                    ->where('cve_art', $aspelProduct->cve_art)
+                    ->get();
+
+                $prices = [];
+                foreach ($aspelPrices as $price) {
+                    $prices[] = [
+                        'cve_precio' => $price->cve_precio,
+                        'precio' => $price->precio,
+                        'descripcion' => optional($price->precio_info)->descripcion ?? 'Precio ' . $price->cve_precio
+                    ];
+                }
+
+                $existsInProducts = Product::where('sku', $aspelProduct->cve_art)->exists();
+
+                $results[] = [
+                    'cve_art' => $aspelProduct->cve_art,
+                    'descr' => $aspelProduct->descr,
+                    'exist' => intval($aspelProduct->exist),
+                    'costo_prom' => $aspelProduct->costo_prom,
+                    'ult_costo' => $aspelProduct->ult_costo,
+                    'aspel_prices' => $prices,
+                    'exists_in_products' => $existsInProducts
+                ];
+            }
+        } catch (\Throwable $e) {
+            // Error al buscar en Aspel, continuar sin datos
+        }
+
+        return response()->json($results);
     }
 
     
@@ -325,6 +412,7 @@ class ProductController extends Controller
         return response($xml->asXML(), 200)
             ->header('Content-Type', 'text/xml');
     }
+
 
     public function generateFeedProductFacebook()  {
         $products = Product::with(['category', 'brand'])

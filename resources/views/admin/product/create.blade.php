@@ -76,22 +76,45 @@
                             </select>
                       </div>
 
-                    <div class="form-group">
-                      <label>Sku</label>
-                      <input type="text" class="form-control" name="sku" value="{{old('sku')}}">
-                  </div>
+                    <div class="form-group position-relative">
+                      <label>Sku</label><small id="sku-status" class="form-text d-block mt-2"></small>
+                      <input type="text" class="form-control sku-input" name="sku" value="{{old('sku')}}" placeholder="Escribe el SKU para buscar">
+                      <div id="sku-dropdown" class="list-group" style="position: absolute; top: 100%; left: 0; right: 0; max-height: 250px; overflow-y: auto; display: none; z-index: 1000; margin-top: 2px;"></div>
+                    </div>
                   <div class="form-group">
                     <label>Modelo</label>
                     <input type="text" class="form-control" name="productModel" value="{{old('productModel')}}">
                   </div>
 
                   <div class="form-group">
+                      <label for="inputState">Precio Personalizado</label>
+                      <select id="inputState" class="form-control" name="price_personalizated">
+                        <option value="0">No</option>
+                        <option value="1">Si</option>
+                      </select>
+                  </div>
+                  <div class="form-group">
                       <label>Precio</label>
                       <input type="text" class="form-control" name="price" value="{{old('price')}}">
                   </div>
                   <div class="form-group">
+                      <label>Precio Aspel</label>
+                      <input type="text" class="form-control" name="aspel_price" value="{{old('aspel_price')}}" placeholder="Sin precios SAE para este SKU">
+                  </div>
+                  <div class="form-group">
+                      <label for="inputState">Precio Oferta Personalizado</label>
+                      <select id="inputState" class="form-control" name="price_offert_personalizated">
+                        <option value="0">No</option>
+                        <option value="1">Si</option>
+                      </select>
+                  </div>
+                  <div class="form-group">
                       <label>Precio De Oferta</label>
                       <input type="text" class="form-control" name="offert_price" value="{{old('offert_price')}}">
+                  </div>
+                  <div class="form-group">
+                      <label>Precio De Oferta Aspel</label>
+                      <input type="text" class="form-control" name="aspel_offert_price" value="{{old('aspel_offert_price')}}" placeholder="Sin precios SAE para este SKU">
                   </div>
 
                   <div class="row">
@@ -111,8 +134,19 @@
                   </div>
 
                   <div class="form-group">
+                      <label for="inputState">Cantidad Personalizada</label>
+                      <select id="inputState" class="form-control" name="qty_personalizated">
+                        <option value="0">No</option>
+                        <option value="1">Si</option>
+                      </select>
+                  </div>
+                  <div class="form-group">
                       <label>Cantidad En Stock</label>
                       <input type="number" class="form-control" min="0" name="qty" value="{{old('qty')}}">
+                  </div>
+                  <div class="form-group">
+                      <label>Cantidad Aspel</label>
+                      <input type="number" class="form-control" min="0" name="qty_aspel" value="{{old('qty_aspel')}}" placeholder="Ingrese cantidad manual">
                   </div>
                   <div class="form-group">
                       <label>Video Link (Formato embed https://www.youtube.com/embed/ AQUI CAMBIAR EL ID)</label>
@@ -195,7 +229,7 @@
                  {{-- End Base Search Canonical URL --}}
 
 
-                    <button type="submit" class="btn btn-primary">Crear</button>
+                    <button type="submit" class="btn btn-primary" id="submit-btn">Crear</button>
                 </form>
               </div>
 
@@ -214,46 +248,6 @@
 @push('scripts')
 <script>
   $(document).ready(function(){
-
-
-
-    // Base Search Canonical URL
-
-    // $('#product-search').select2({
-    //     placeholder: 'Buscar...',
-    //     ajax: {
-    //         url: "{{ route('admin.products.search') }}", // RUTA DE LA BÚSQUEDA
-    //         dataType: 'json',
-    //         delay: 250, // Retardo para evitar peticiones excesivas
-    //         data: function (params) {
-    //             return {
-    //                 query: params.term // El término que el usuario ingresa
-    //             };
-    //         },
-    //         success: function (data) {
-    //         console.log('Success:', data); // Verifica los datos recibidos en la consola
-    //         },
-    //         error: function (xhr, status, error) {
-    //             console.error('Error:', error); // Muestra el error si algo sale mal
-    //             alert('Hubo un problema al cargar los productos. Por favor, intenta de nuevo más tarde.');
-    //         },
-    //         processResults: function (data) {
-    //           console.log(data); // Verifica los datos recibidos
-    //           return {
-    //               results: $.map(data.results, function (product) {
-    //                   return {
-    //                       id: product.id,
-    //                       text: product.text
-    //                   };
-    //               })
-    //           };
-    //       },
-
-    //     },
-    //     minimumInputLength: 2 // Mínimo de caracteres para comenzar la búsqueda
-    // });
-
-    // End Base Search Canonical URL
 
     $('body').on('change', '.main-category',function(e){
       let id = $(this).val();
@@ -304,6 +298,179 @@
       })
 
     })
+
+    // Búsqueda automática de SKU con dropdown
+    let skuSearchTimeout;
+    let selectedSkuData = null;
+    
+    $('.sku-input').on('keyup', function(){
+      let sku = $(this).val().trim();
+      let dropdown = $('#sku-dropdown');
+      let statusElement = $('#sku-status');
+      
+      clearTimeout(skuSearchTimeout);
+      
+      if(sku.length < 1){
+        dropdown.hide();
+        statusElement.html('');
+        selectedSkuData = null;
+        return;
+      }
+      
+      statusElement.text('Buscando...').removeClass('text-success text-warning text-danger').addClass('text-muted');
+      
+      skuSearchTimeout = setTimeout(function(){
+        $.ajax({
+          method: 'GET',
+          url: "{{route('admin.product.search-sku')}}",
+          data: { sku: sku },
+          success: function(data){
+            dropdown.html('');
+            
+            // Si hay resultados
+            if(data && data.length > 0){
+              data.forEach(function(item, index){
+                let displayText = item.cve_art + ' - ' + (item.descr || 'Sin descripción');
+                let warningClass = item.exists_in_products ? ' border-warning' : '';
+                let option = $('<a href="#" class="list-group-item list-group-item-action sku-option'+warningClass+'" data-index="'+index+'">'+displayText+'</a>');
+                dropdown.append(option);
+              });
+              dropdown.show();
+              statusElement.html('');
+              // Guardar los datos para usar después
+              window.skuResults = data;
+            } else {
+              statusElement.html('<div class="text-danger">No se encontraron resultados</div>');
+              dropdown.hide();
+              selectedSkuData = null;
+            }
+          },
+          error: function(xhr, status, error){
+            console.log(error);
+            statusElement.html('<div class="text-danger">Error al buscar</div>');
+            dropdown.hide();
+            selectedSkuData = null;
+          }
+        });
+      }, 300);
+    });
+    
+    // Al hacer click en una opción del dropdown
+    $(document).on('click', '.sku-option', function(e){
+      e.preventDefault();
+      let index = $(this).data('index');
+      let data = window.skuResults[index];
+      
+      // Establecer el valor en el input
+      $('.sku-input').val(data.cve_art);
+      $('#sku-dropdown').hide();
+      selectedSkuData = data;
+      
+      // Auto-llenar datos de Aspel
+      if(data){
+        // Auto-llenar cantidad Aspel
+        $('input[name="qty_aspel"]').val(data.exist);
+        
+        // Si hay precios de Aspel, mostrar en los campos correspondientes
+        if(data.aspel_prices && data.aspel_prices.length > 0){
+          // Para precio normal
+          let precioInput = $('input[name="aspel_price"]');
+          precioInput.val(data.aspel_prices[0].precio);
+          
+          // Para precio oferta (si existe más de un precio)
+          if(data.aspel_prices.length > 1){
+            let ofertaInput = $('input[name="aspel_offert_price"]');
+            ofertaInput.val(data.aspel_prices[1].precio);
+          }
+        }
+      }
+      
+      let statusElement = $('#sku-status');
+      
+      if(data.exists_in_products){
+        // Si el SKU ya existe, solo mostrar el error
+        statusElement.html('<div class="text-danger"><i class="fas fa-exclamation-triangle"></i> <strong>Este SKU ya existe en productos. No se puede crear.</strong></div>');
+        $('#submit-btn').prop('disabled', true).addClass('disabled');
+      } else {
+        // Si el SKU no existe, mostrar el mensaje de éxito
+        let html = '<div class="text-success"><i class="fas fa-check-circle"></i> '+data.cve_art+' seleccionado</div>';
+        statusElement.html(html);
+        $('#submit-btn').prop('disabled', false).removeClass('disabled');
+      }
+    });
+    
+    // Cerrar dropdown al hacer click fuera
+    $(document).on('click', function(e){
+      if(!$(e.target).closest('.form-group').length){
+        $('#sku-dropdown').hide();
+      }
+    });
+
+    // Validación al enviar el formulario
+    $('form').on('submit', function(e){
+      if(selectedSkuData && selectedSkuData.exists_in_products){
+        e.preventDefault();
+        alert('⚠️ Este SKU ya existe en productos. Por favor seleccione un SKU diferente.');
+        $('.sku-input').focus();
+        return false;
+      }
+    });
+
+    // Función para actualizar estado de Precio Personalizado
+    function updatePrecioPersonalizadoState(){
+      let val = $('select[name="price_personalizated"]').val();
+      if(val == '1'){ // Si es personalizado (Si)
+        $('input[name="price"]').prop('disabled', false);
+        $('input[name="aspel_price"]').prop('disabled', true);
+      } else { // Si no es personalizado (No)
+        $('input[name="price"]').prop('disabled', true);
+        $('input[name="aspel_price"]').prop('disabled', false);
+      }
+    }
+
+    // Función para actualizar estado de Precio Oferta Personalizado
+    function updatePrecioOfertaPersonalizadoState(){
+      let val = $('select[name="price_offert_personalizated"]').val();
+      if(val == '1'){ // Si es personalizado (Si)
+        $('input[name="offert_price"]').prop('disabled', true);
+        $('input[name="aspel_offert_price"]').prop('disabled', false);
+      } else { // Si no es personalizado (No)
+        $('input[name="offert_price"]').prop('disabled', false);
+        $('input[name="aspel_offert_price"]').prop('disabled', true);
+      }
+    }
+
+    // Función para actualizar estado de Cantidad Personalizada
+    function updateCantidadPersonalizadaState(){
+      let val = $('select[name="qty_personalizated"]').val();
+      if(val == '1'){ // Si es personalizado (Si)
+        $('input[name="qty"]').prop('disabled', true);
+        $('input[name="qty_aspel"]').prop('disabled', false);
+      } else { // Si no es personalizado (No)
+        $('input[name="qty"]').prop('disabled', false);
+        $('input[name="qty_aspel"]').prop('disabled', true);
+      }
+    }
+
+    // Validación de Precio Personalizado
+    $('body').on('change', 'select[name="price_personalizated"]', function(e){
+      updatePrecioPersonalizadoState();
+    });
+
+    // Validación de Precio Oferta Personalizado
+    $('body').on('change', 'select[name="price_offert_personalizated"]', function(e){
+      updatePrecioOfertaPersonalizadoState();
+    });
+
+    // Validación de Cantidad Personalizada
+    $('body').on('change', 'select[name="qty_personalizated"]', function(e){
+      updateCantidadPersonalizadaState();
+    });
+
+    // Inicializar estado al cargar
+    updatePrecioPersonalizadoState();
+    updatePrecioOfertaPersonalizadoState();
+    updateCantidadPersonalizadaState();
 
 
 
