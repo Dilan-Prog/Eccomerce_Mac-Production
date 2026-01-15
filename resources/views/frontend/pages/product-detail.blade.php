@@ -68,22 +68,42 @@
                                 @switch($product->product_type)
                                     @case('new_arrival')
                                         <span>
-                                            Nuevo{{ ($selectedCombination ? ' | ' . $selectedCombination->qty . ' piezas' : ($product->price ? ' | ' . $product->qty . ' piezas' : '')) }}
+                                            Nuevo
+                                            @if($selectedCombination)
+                                                | {{ $selectedCombination->qty }} piezas
+                                            @else
+                                                | {{ $product->qty_personalizated == 0 ? $product->qty_aspel : $product->qty }} piezas
+                                            @endif
                                         </span>
                                         @break
                                     @case('featured_product')
                                         <span>
-                                            Producto Favorito{{ ($selectedCombination ? ' | ' . $selectedCombination->qty . ' piezas' : ($product->price ? ' | ' . $product->qty . ' piezas' : '')) }}
+                                            Producto Favorito
+                                            @if($selectedCombination)
+                                                | {{ $selectedCombination->qty }} piezas
+                                            @else
+                                                | {{ $product->qty_personalizated == 0 ? $product->qty_aspel : $product->qty }} piezas
+                                            @endif
                                         </span>
                                         @break
                                     @case('top_product')
                                         <span>
-                                            Producto Top{{ ($selectedCombination ? ' | ' . $selectedCombination->qty . ' piezas' : ($product->price ? ' | ' . $product->qty . ' piezas' : '')) }}
+                                            Producto Top
+                                            @if($selectedCombination)
+                                                | {{ $selectedCombination->qty }} piezas
+                                            @else
+                                                | {{ $product->qty_personalizated == 0 ? $product->qty_aspel : $product->qty }} piezas
+                                            @endif
                                         </span>
                                         @break
                                     @case('best_product')
                                         <span>
-                                            Mas Vendido{{ ($selectedCombination ? ' | ' . $selectedCombination->qty . ' piezas' : ($product->price ? ' | ' . $product->qty . ' piezas' : '')) }}
+                                            Mas Vendido
+                                            @if($selectedCombination)
+                                                | {{ $selectedCombination->qty }} piezas
+                                            @else
+                                                | {{ $product->qty_personalizated == 0 ? $product->qty_aspel : $product->qty }} piezas
+                                            @endif
                                         </span>
                                         @break
                                     @default
@@ -177,7 +197,9 @@
                                 @if ($price)
                                         {{-- Incio de condicion de stock, Si el producto cuenta con stock --}}
                                         @php
-                                            $stockQty = $selectedCombination ? $selectedCombination->qty : $product->qty;
+                                            $stockQty = $selectedCombination
+                                                ? $selectedCombination->qty
+                                                : ($product->qty_personalizated == 0 ? $product->qty_aspel : $product->qty);
                                         @endphp
                                         @if ($stockQty > 0)
                                             {{-- Condicion de stock, Si el producto esta en stock --}}
@@ -413,7 +435,9 @@
                                     {{-- Condicion si el producto tiene precio muestra la cantidad que decea agregar --}}
                                     @php
                                         $currentPrice = $selectedCombination ? $selectedCombination->price : $price;
-                                        $currentQty = $selectedCombination ? $selectedCombination->qty : $product->qty;
+                                        $currentQty = $selectedCombination
+                                            ? $selectedCombination->qty
+                                            : ($product->qty_personalizated == 0 ? $product->qty_aspel : $product->qty);
                                     @endphp
 
                                     @if ($currentPrice)

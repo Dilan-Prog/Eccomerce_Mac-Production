@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Backend;
 
 use App\DataTables\ProductDataTable;
 use App\Http\Controllers\Controller;
+use App\Models\AspelSync;
 use App\Models\Brand;
+use App\Models\PrecioXProductAspel;
 use App\Models\Product;
 use App\Traits\ImageUploadTrait;
 use Illuminate\Http\Request;
@@ -36,8 +38,14 @@ class ProductController extends Controller
     {
         $categories = Category::all();
         $brands = Brand::all();
-        return view('admin.product.create', compact('categories', 'brands'));
+        $ivaValue = DB::table('general_settings')->value('iva_mexico');
+    
+        return view('admin.product.create', compact('categories', 'brands', 'ivaValue'));
     }
+
+
+    
+
 
     /**
      * Store a newly created resource in storage.
@@ -52,6 +60,7 @@ class ProductController extends Controller
             'brand' => ['required', 'integer', 'exists:brands,id'],
             'price'=>['nullable'],
             'qty'=>['nullable'],
+            'qty_aspel' => ['nullable'],
             'short_description'=>['required','max:600'],
             'long_description'=>['required'],
             'seo_title' => ['nullable','max:200'],
@@ -60,6 +69,11 @@ class ProductController extends Controller
             'url_PDF' => ['nullable'],
             'canonical_url' => ['nullable', 'url'],
             'is_canonical' => ['nullable', 'boolean'],
+            'aspel_price' => ['nullable'],
+            'price_personalizated' => ['nullable','boolean'],
+            'offert_price' => ['nullable'],
+            'aspel_offert_price' => ['nullable'],
+            'price_offert_personalizated' => ['nullable','boolean'],
         ]);
         
 
@@ -81,15 +95,36 @@ class ProductController extends Controller
         $product->sub_category_id = $request->sub_category;
         $product->child_category_id = $request->child_category;
         $product->brand_id = $request->brand;
-        $product->qty = $request->qty;
+        $product->qty_personalizated = $request->qty_personalizated;
+        if($request->qty_personalizated == 0){
+            $product->qty = 0;
+        }
+        else{
+            $product->qty = $request->qty;
+        }
+        $product->qty_aspel = $request->qty_aspel;
         $product->short_description = $request->short_description;
         $product->long_description = $request->long_description;
         $product->video_link = $request->video_link;
         $product->url_PDF = $request->url_PDF;
         $product->sku = $request->sku;
         $product->productModel = $request->productModel;
-        $product->price = $request->price;
-        $product->offert_price = $request->offert_price;
+        $product->price_personalizated = $request->price_personalizated;
+        if($request->price_personalizated == 0){
+            $product->price = 0;
+        }
+        else{
+            $product->price = $request->price;
+        }
+        $product->price_offert_personalizated = $request->price_offert_personalizated;
+        if($request->price_offert_personalizated == 0){
+            $product->offert_price = 0;
+        }
+        else{
+            $product->offert_price = $request->offert_price;
+        }
+        $product->aspel_price = $request->aspel_price;
+        $product->aspel_offert_price = $request->aspel_offert_price;
         $product->offer_start_date = $request->offer_start_date;
         $product->offer_end_date = $request->offer_end_date;
         $product->product_type = $request->product_type;
@@ -99,7 +134,8 @@ class ProductController extends Controller
         $product->seo_description = $request->seo_description;
         $product->canonical_url = $request->canonical_url;
         $product->is_canonical = $request->is_canonical;
-        // dd($request->all());
+        // Testeo de envio de datos
+        // dd($request->all()); 
 
         $product->save();
 
@@ -135,9 +171,9 @@ class ProductController extends Controller
         $aspelCurrency = null;
         $ivaValue = DB::table('general_settings')->value('iva_mexico') ?? 16.00;
         try {
-            $aspelProduct = \App\Models\AspelSync::where('cve_art', $product->sku)->first();
+            $aspelProduct = AspelSync::where('cve_art', $product->sku)->first();
             if ($aspelProduct) {
-                $aspelPriceOptions = \App\Models\PrecioXProductAspel::with('precio_info')
+                $aspelPriceOptions = PrecioXProductAspel::with('precio_info')
                     ->where('cve_art', $aspelProduct->cve_art)
                     ->get();
                 // Obtener datos del producto Aspel (existencias)
@@ -201,19 +237,36 @@ class ProductController extends Controller
         $product->sub_category_id = $request->sub_category;
         $product->child_category_id = $request->child_category;
         $product->brand_id = $request->brand;
-        $product->qty = $request->qty;
+        $product->qty_personalizated = $request->qty_personalizated;
+        if($request->qty_personalizated == 0){
+            $product->qty = 0;
+        }
+        else{
+            $product->qty = $request->qty;
+        }
+        $product->qty_aspel = $request->qty_aspel;
         $product->short_description = $request->short_description;
         $product->long_description = $request->long_description;
         $product->video_link = $request->video_link;
         $product->url_PDF = $request->url_PDF;
         $product->sku = $request->sku;
         $product->productModel = $request->productModel;
-        $product->price = $request->price;
-        $product->offert_price = $request->offert_price;
-        $product->aspel_price = $request->aspel_price;
         $product->price_personalizated = $request->price_personalizated;
-        $product->aspel_offert_price = $request->aspel_offert_price;
+        if($request->price_personalizated == 0){
+            $product->price = 0;
+        }
+        else{
+            $product->price = $request->price;
+        }
+        $product->aspel_price = $request->aspel_price;
         $product->price_offert_personalizated = $request->price_offert_personalizated;
+        if($request->price_offert_personalizated == 0){
+            $product->offert_price = 0;
+        }
+        else{
+            $product->offert_price = $request->offert_price;
+        }
+        $product->aspel_offert_price = $request->aspel_offert_price;
         $product->offer_start_date = $request->offer_start_date;
         $product->offer_end_date = $request->offer_end_date;
         $product->product_type = $request->product_type;
@@ -223,8 +276,7 @@ class ProductController extends Controller
         $product->seo_description = $request->seo_description;
         $product->canonical_url = $request->canonical_url;
         $product->is_canonical = $request->is_canonical;
-        $product->qty_aspel = $request->qty_aspel;
-        $product->qty_personalizated = $request->qty_personalizated;
+        
         // dd($request->all());
         
         $product->save();
@@ -299,12 +351,12 @@ class ProductController extends Controller
 
         // Buscar en aspel_products que EMPIEZAN con el SKU ingresado
         try {
-            $aspelProducts = \App\Models\AspelSync::where('cve_art', 'LIKE', $sku . '%')
+            $aspelProducts = AspelSync::where('cve_art', 'LIKE', $sku . '%')
                 ->limit(20)
                 ->get();
             
             foreach ($aspelProducts as $aspelProduct) {
-                $aspelPrices = \App\Models\PrecioXProductAspel::with('precio_info')
+                $aspelPrices =  PrecioXProductAspel::with('precio_info')
                     ->where('cve_art', $aspelProduct->cve_art)
                     ->get();
 
@@ -487,4 +539,49 @@ class ProductController extends Controller
             ->header('Content-Type', 'text/xml');
     }
 
+    public function getAspelPrices(Request $request)
+    {
+        $sku = $request->sku;
+        $ivaValue = DB::table('general_settings')->value('iva_mexico');
+        $aspelProduct = AspelSync::where('cve_art', $sku)->first();
+        $aspelPriceOptions = [];
+        $aspelCurrency = null;
+        $aspelExchangeRate = 1.0;
+        $aspelIsMXN = true;
+        if ($aspelProduct) {
+            $aspelPriceOptions = PrecioXProductAspel::with('precio_info')
+                ->where('cve_art', $aspelProduct->cve_art)
+                ->get();
+            $aspelCurrency = DB::table('monedas_aspel')
+                ->where('num_moneda', $aspelProduct->num_mon)
+                ->first();
+            if ($aspelCurrency) {
+                $aspelIsMXN = ($aspelCurrency->cve_moned === 'MXN');
+                if (!$aspelIsMXN) {
+                    $aspelExchangeRate = floatval($aspelCurrency->tipo_cambio);
+                }
+            }
+        }
+        // Prepara los datos para JS
+        $result = [];
+        foreach ($aspelPriceOptions as $opt) {
+            $val = $opt->precio;
+            $convertedVal = $aspelIsMXN ? $val : $val * $aspelExchangeRate;
+            $priceWithIva = $convertedVal * (1 + floatval($ivaValue) / 100);
+            $result[] = [
+                'desc' => optional($opt->precio_info)->descripcion ?? ('Precio ' . $opt->cve_precio),
+                'val' => $val,
+                'convertedVal' => $convertedVal,
+                'priceWithIva' => $priceWithIva,
+                'cve_precio' => $opt->cve_precio,
+            ];
+        }
+        return response()->json([
+            'prices' => $result,
+            'currency' => $aspelCurrency ? $aspelCurrency->cve_moned : 'MXN',
+            'symbol' => $aspelCurrency ? $aspelCurrency->simbolo : '$',
+            'iva' => $ivaValue,
+        ]);
+    }
+    
 }

@@ -65,11 +65,20 @@
                                 <p class="wsus__pro_rating">
 
 
-                                    @if ($product->qty > 0)
-                                    <p class="wsus__stock_area"><span class="in_stock">Disponibles</span></p>
-                                    @elseif ($product->qty === 0)
-                                        <p class="wsus__stock_area"><span class="in_stock">Agotado</span></p>
-                                    @endif
+                                    @php
+                                            $stockQty = ($product->qty_personalizated == 0 ? $product->qty_aspel : $product->qty);
+                                        @endphp
+                                        @if ($stockQty > 0)
+                                            {{-- Condicion de stock, Si el producto esta en stock --}}
+                                            <p class="wsus__stock_area">
+                                                <span class="in_stock" itemprop="availability" content="https://schema.org/InStock">Stok Disponible</span>
+                                            </p>
+                                        @elseif ($stockQty === 0)
+                                            {{-- Condicion de stock, Si el producto esta agotado --}}
+                                            <p class="wsus__stock_area" >
+                                                <span class="in_stock" itemprop="availability" content="https://schema.org/OutOfStock">Agotado</span>
+                                            </p>
+                                        @endif
 
                                 </p>
                                 <a class="wsus__pro_name" href="{{route('product-detail', $product->slug)}}">{{$product->name}}</a>

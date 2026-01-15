@@ -75,6 +75,8 @@ Route::put('product/change-status', [ProductController::class, 'changeStatus'])-
 Route::get('products/get-subcategories',[ ProductController::class, 'getSubCategories'])->name('product.get-subcategories');
 Route::get('products/get-child-categories',[ ProductController::class, 'getChildCategories'])->name('product.get-child-categories');
 Route::get('products/search-sku',[ ProductController::class, 'searchSku'])->name('product.search-sku');
+Route::get('products/aspel-prices', [ProductController::class, 'getAspelPrices'])->name('product.aspel-prices');
+Route::get('products/get-aspel-currency',[ ProductController::class, 'getAspelCurrency'])->name('product.get-aspel-currency');
 Route::resource('products',ProductController::class);
 
 

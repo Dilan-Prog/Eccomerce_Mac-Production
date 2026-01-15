@@ -570,7 +570,7 @@ return [
 			'27' => 'Tabasco',
 			'28' => 'Tamaulipas',
 			'29' => 'Tlaxcala',
-			'30' => 'Veracruz-Llave',
+			'30' => 'Veracruz',
 			'31' => 'Yucatan',
 			'32' => 'Zacatecas', 
     ]

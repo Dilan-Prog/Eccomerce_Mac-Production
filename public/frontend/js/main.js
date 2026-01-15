@@ -56,9 +56,12 @@ $(function () {
 
 
     //=======SELECT2======
-    $(document).ready(function () {
-        $('.select_2').select2();
+    $(function () {
+    $('.select_2').select2({
+        dropdownParent: $('#exampleModal'),
+        width: '100%'
     });
+});
 
 
     //*======BANNER SLIDER=====
