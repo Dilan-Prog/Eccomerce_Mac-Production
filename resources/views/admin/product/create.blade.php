@@ -8,22 +8,16 @@
       <div class="section-header">
         <h1>Nuevo Productos</h1>
       </div>
-
-
       <div class="section-body">
-
-
         <div class="row">
           <div class="col-12">
             <div class="card">
               <div class="card-header">
                 <h4>Crear Nuevo Productos</h4>
-
               </div>
               <div class="card-body">
                 <form action="{{route('admin.products.store')}}" method="POST" enctype="multipart/form-data">
                     @csrf
-
                     <div class="form-group">
                         <label>Imagen</label>
                         <input type="file" class="form-control" name="image">
@@ -40,7 +34,7 @@
                               <select id="inputState" class="form-control main-category" name="category">
                                 <option value="">Seleccionar</option>
                                 @foreach ($categories as $category )
-                                <option value="{{$category->id}}">{{$category->name}}</option>
+                                <option value="{{$category->id}}" {{ old('category') == $category->id ? 'selected' : '' }}>{{$category->name}}</option>
                                 @endforeach
                               </select>
                         </div>
@@ -58,7 +52,6 @@
                             <label for="inputState">Categoria Secundaria</label>
                               <select id="inputState" class="form-control child-category" name="child_category">
                                 <option value="">Seleccionar</option>
-
                               </select>
                         </div>
                       </div>
@@ -69,10 +62,8 @@
                             <select id="inputState" class="form-control" name="brand">
                               <option selected="">Seleccionar</option>
                               @foreach ($brands as $brand)
-                              <option value="{{$brand->id}}">{{$brand->name}}</option>
-
+                              <option value="{{$brand->id}}" {{ old('brand') == $brand->id ? 'selected' : '' }}>{{$brand->name}}</option>
                               @endforeach
-
                             </select>
                       </div>
 
@@ -85,12 +76,11 @@
                     <label>Modelo</label>
                     <input type="text" class="form-control" name="productModel" value="{{old('productModel')}}">
                   </div>
-
                   <div class="form-group">
                       <label for="inputState">Precio Personalizado</label>
                       <select id="inputState" class="form-control" name="price_personalizated">
-                        <option value="0">No</option>
-                        <option value="1">Si</option>
+                        <option value="0" {{ old('price_personalizated') == '0' ? 'selected' : '' }}>No</option>
+                        <option value="1" {{ old('price_personalizated') == '1' ? 'selected' : '' }}>Si</option>
                       </select>
                   </div>
                   <div class="form-group">
@@ -98,14 +88,17 @@
                       <input type="text" class="form-control" name="price" value="{{old('price')}}">
                   </div>
                   <div class="form-group">
-                      <label>Precio Aspel</label>
-                      <input type="text" class="form-control" name="aspel_price" value="{{old('aspel_price')}}" placeholder="Sin precios SAE para este SKU">
-                  </div>
+                    <label>Precio Aspel</label>
+                        <select class="form-control" name="aspel_price" id="aspel-price-select">
+                            <option value="">Sin precios SAE para este SKU</option>
+                        </select>
+                </div>
+
                   <div class="form-group">
                       <label for="inputState">Precio Oferta Personalizado</label>
                       <select id="inputState" class="form-control" name="price_offert_personalizated">
-                        <option value="0">No</option>
-                        <option value="1">Si</option>
+                        <option value="0" {{ old('price_offert_personalizated') == '0' ? 'selected' : '' }}>No</option>
+                        <option value="1" {{ old('price_offert_personalizated') == '1' ? 'selected' : '' }}>Si</option>
                       </select>
                   </div>
                   <div class="form-group">
@@ -114,11 +107,12 @@
                   </div>
                   <div class="form-group">
                       <label>Precio De Oferta Aspel</label>
-                      <input type="text" class="form-control" name="aspel_offert_price" value="{{old('aspel_offert_price')}}" placeholder="Sin precios SAE para este SKU">
+                        <select class="form-control" name="aspel_offert_price" id="aspel-offert-price-select">
+                          <option value="" >Sin precios SAE para este SKU</option>
+                        </select>
                   </div>
 
                   <div class="row">
-
                     <div class="col-md-6">
                       <div class="form-group">
                           <label for="inputState">Fecha De Inicio De Oferta</label>
@@ -136,8 +130,8 @@
                   <div class="form-group">
                       <label for="inputState">Cantidad Personalizada</label>
                       <select id="inputState" class="form-control" name="qty_personalizated">
-                        <option value="0">No</option>
-                        <option value="1">Si</option>
+                        <option value="0" {{ old('qty_personalizated') == '0' ? 'selected' : '' }}>No</option>
+                        <option value="1" {{ old('qty_personalizated') == '1' ? 'selected' : '' }}>Si</option>
                       </select>
                   </div>
                   <div class="form-group">
@@ -169,11 +163,11 @@
                   <div class="form-group">
                       <label for="inputState">Tipo De Producto</label>
                         <select id="inputState" class="form-control" name="product_type">
-                          <option value="0">Seleccionar...</option>
-                          <option value="new_arrival">Nuevo</option>
+                          <option value="0" {{ old('product_type') == '0' ? 'selected' : '' }}>Seleccionar...</option>
+                          <option value="new_arrival" {{ old('product_type') == 'new_arrival' ? 'selected' : '' }}>Nuevo</option>
                           <option value="featured_product" disabled>Producto Destacado</option>
-                          <option value="top_product">Más Buscado</option>
-                          <option value="best_product">Más Vendido</option>
+                          <option value="top_product" {{ old('product_type') == 'top_product' ? 'selected' : '' }}>Más Buscado</option>
+                          <option value="best_product" {{ old('product_type') == 'best_product' ? 'selected' : '' }}>Más Vendido</option>
 
                         </select>
                   </div>
@@ -190,9 +184,9 @@
                     <div class="form-group">
                         <label for="inputState">Estado</label>
                           <select id="inputState" class="form-control" name="status">
-                            <option value="none">Seleccionar...</option>
-                            <option value="1">Activo</option>
-                            <option value="0">Inactivo</option>
+                            <option value="none" {{ old('status') == 'none' ? 'selected' : '' }} >Seleccionar...</option>
+                            <option value="1" {{ old('status') == '1' ? 'selected' : '' }}>Activo</option>
+                            <option value="0" {{ old('status') == '0' ? 'selected' : '' }}>Inactivo</option>
                           </select>
                     </div>
 
@@ -200,8 +194,8 @@
                     <label>Es Url Canonica (Solo Marketing)</label>
                     <select class="form-control" name="is_canonical">
                       <option value="">Seleccionar</option>
-                      <option value="1">Si</option>
-                      <option value="0">No</option>
+                      <option value="1" {{ old('is_canonical') == '1' ? 'selected' : '' }}>Si</option>
+                      <option value="0" {{ old('is_canonical') == '0' ? 'selected' : '' }}>No</option>
                     </select>
                   </div>
 
@@ -397,6 +391,50 @@
         statusElement.html(html);
         $('#submit-btn').prop('disabled', false).removeClass('disabled');
       }
+
+      // Después de selectedSkuData = data;
+      $.ajax({
+          url: "{{ route('admin.product.aspel-prices') }}",
+          method: "GET",
+          data: { sku: data.cve_art },
+          success: function(res) {
+              // Llenar aspel_price
+              let select = $('select[name="aspel_price"]');
+              select.html('');
+              if(res.prices && res.prices.length > 0){
+                  select.append('<option value="">Seleccionar...</option>');
+                  res.prices.forEach(function(opt){
+                      select.append(
+                          `<option value="${opt.priceWithIva}">
+                              ${opt.desc}--${res.symbol}${Number(opt.val).toFixed(2)} ${res.currency}
+                              / Precio Con IVA MXN $${Number(opt.priceWithIva).toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} (${Number(res.iva).toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}% IVA)
+                          </option>`
+                      );
+                  });
+              } else {
+                  select.append('<option value="">Sin precios SAE para este SKU</option>');
+              }
+              select.prop('disabled', false);
+
+              // Llenar aspel_offert_price igual
+              let selectOffert = $('select[name="aspel_offert_price"]');
+              selectOffert.html('');
+              if(res.prices && res.prices.length > 0){
+                  selectOffert.append('<option value="">Seleccionar...</option>');
+                  res.prices.forEach(function(opt){
+                      selectOffert.append(
+                          `<option value="${opt.priceWithIva}">
+                              ${opt.desc}--${res.symbol}${Number(opt.val).toFixed(2)} ${res.currency}
+                              / Precio Con IVA MXN $${Number(opt.priceWithIva).toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} (${Number(res.iva).toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}% IVA)
+                          </option>`
+                      );
+                  });
+              } else {
+                  selectOffert.append('<option value="">Sin precios SAE para este SKU</option>');
+              }
+              selectOffert.prop('disabled', false);
+          }
+      });
     });
     
     // Cerrar dropdown al hacer click fuera
@@ -405,6 +443,8 @@
         $('#sku-dropdown').hide();
       }
     });
+
+
 
     // Validación al enviar el formulario
     $('form').on('submit', function(e){
@@ -419,23 +459,27 @@
     // Función para actualizar estado de Precio Personalizado
     function updatePrecioPersonalizadoState(){
       let val = $('select[name="price_personalizated"]').val();
-      if(val == '1'){ // Si es personalizado (Si)
-        $('input[name="price"]').prop('disabled', false);
-        $('input[name="aspel_price"]').prop('disabled', true);
-      } else { // Si no es personalizado (No)
+      if(val == '0'){ // Si es personalizado (Si)
         $('input[name="price"]').prop('disabled', true);
+        $('select[name="aspel_price"]').prop('disabled', false);
         $('input[name="aspel_price"]').prop('disabled', false);
+      } else { // Si no es personalizado (No)
+        $('input[name="price"]').prop('disabled', false);
+        $('select[name="aspel_price"]').prop('disabled', true);
+        $('input[name="aspel_price"]').prop('disabled', true);
       }
     }
 
     // Función para actualizar estado de Precio Oferta Personalizado
     function updatePrecioOfertaPersonalizadoState(){
       let val = $('select[name="price_offert_personalizated"]').val();
-      if(val == '1'){ // Si es personalizado (Si)
+      if(val == '0'){ // Si es personalizado (Si)
         $('input[name="offert_price"]').prop('disabled', true);
+        $('select[name="aspel_offert_price"]').prop('disabled', false);
         $('input[name="aspel_offert_price"]').prop('disabled', false);
       } else { // Si no es personalizado (No)
         $('input[name="offert_price"]').prop('disabled', false);
+        $('select[name="aspel_offert_price"]').prop('disabled', true);
         $('input[name="aspel_offert_price"]').prop('disabled', true);
       }
     }
@@ -443,7 +487,7 @@
     // Función para actualizar estado de Cantidad Personalizada
     function updateCantidadPersonalizadaState(){
       let val = $('select[name="qty_personalizated"]').val();
-      if(val == '1'){ // Si es personalizado (Si)
+      if(val == '0'){ // Si es personalizado (Si)
         $('input[name="qty"]').prop('disabled', true);
         $('input[name="qty_aspel"]').prop('disabled', false);
       } else { // Si no es personalizado (No)
@@ -475,9 +519,9 @@
 
 
 
-
-
   })
+
+  
 </script>
 
 @endpush

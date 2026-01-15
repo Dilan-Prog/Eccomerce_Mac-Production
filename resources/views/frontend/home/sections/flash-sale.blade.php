@@ -19,11 +19,18 @@
 
                 @php
                     $product = \App\Models\Product::find($item->product_id); // Producto ya cargado con las relaciones
+                    // Lógica de precio base y oferta considerando aspel_price y price_offert_personalizated
+                    $basePrice = $product->price_personalizated == 1
+                        ? $product->price
+                        : ($product->aspel_price ?? $product->price);
+                    $baseOfferPrice = $product->price_offert_personalizated == 1
+                        ? $product->offert_price
+                        : ($product->aspel_offert_price ?? $product->offert_price);
+                    $hasDiscount = checkDiscount($product);
+                    $price = $hasDiscount ? $baseOfferPrice : $basePrice;
                 @endphp
                 <div class="col-xl-3 col-sm-6 col-lg-4">
                     <div class="wsus__product_item">
-
-
                         @switch($product->product_type)
                             @case('new_arrival')
                                 <span id class="wsus__new wsus__new--new-arrival" style="background: #00468c">Nuevo
@@ -74,11 +81,13 @@
 
                             <a class="wsus__category" href="{{route('product-detail', $product->slug)}}">{{$product->category->name}}</a>
                             <p class="">
+                                @php
+                                    $stockQty = ($product->qty_personalizated == 0 ? $product->qty_aspel : $product->qty);
+                                @endphp
 
-
-                                @if ($product->qty > 0)
+                                @if ($stockQty > 0)
                                 <p class="wsus__stock_area"><span class="in_stock">Disponibles</span></p>
-                                @elseif ($product->qty === 0)
+                                @elseif ($stockQty === 0)
                                     <p class="wsus__stock_area"><span class="in_stock">Agotado</span></p>
                                 @endif
 
@@ -103,54 +112,48 @@
                             </p>
 
                             <a class="wsus__pro_name" href="{{route('product-detail', $product->slug)}}">{{$product->name}}</a>
-                            @php
-    $hasDiscount = checkDiscount($product);
-    $price = $hasDiscount ? $product->offert_price : $product->price;
-@endphp
+                            
 
-@if ($product->price)
-    <p itemscope itemtype="http://schema.org/Offer">
-        <meta itemprop="priceCurrency" content="MXN">
-        <span class="wsus__price" itemprop="price" content="{{ $price }}">
-            <del>
-                @if($hasDiscount)
-                    {{ $settings->currency_icon }}{{ number_format($product->price, 2, '.', ',') }}
+                @if ($basePrice)
+                    <p itemscope itemtype="http://schema.org/Offer">
+                        <meta itemprop="priceCurrency" content="MXN">
+                        <span class="wsus__price" itemprop="price" content="{{ $price }}">
+                            @if($hasDiscount)
+                                <del>{{ $settings->currency_icon }}{{ number_format($basePrice, 2, '.', ',') }} MXN</del>
+                            @endif
+                            <span style="color: #333; font-weight: 500;">
+                                {{ $settings->currency_icon }}{{ number_format($price, 2, '.', ',') }} MXN
+                                @if($hasDiscount)
+                                    <span style="color: #00a650; font-weight: 600;">
+                                        {{ calculatedDiscountPercent($basePrice, $baseOfferPrice) }}% OFF
+                                    </span>
+                                @endif
+                            </span>
+                        </span>
+                        <span class="mdn_iva">IVA INCLUIDO</span>
+                    </p>
+                    <p>
+                        @if ($price >= $shippingRules->min_cost)
+                            <span class="free-shipping-text"><i class="fas fa-shipping-fast"></i> Envío Gratis </span>
+                        @endif
+                    </p>
+                @else
+                    <p class="wsus__price">N/A +<small> Requiere Asesoria</small> </p>
                 @endif
-            </del>
-            <span style="color: #333; font-weight: 500;">
-                {{ $settings->currency_icon }}{{ number_format($price, 2, '.', ',') }}
-                @if($hasDiscount)
-                    <span style="color: #00a650; font-weight: 600;">
-                        {{ calculatedDiscountPercent($product->price, $product->offert_price) }}% OFF
-                    </span>
-                @endif
-            </span>
-        </span>
-        <span class="mdn_iva">IVA INCLUIDO</span>
-    </p>
-    <p>
-        @if ($price >= $shippingRules->min_cost)
-            <span class="free-shipping-text"><i class="fas fa-shipping-fast"></i> Envío Gratis </span>
-        @endif
-    </p>
-@else
-    
-    <p class="wsus__price">N/A +<small> Requiere Asesoria</small> </p>
-@endif
 
-<form class="shopping-cart-form">
-    <input type="hidden" name="product_id" value="{{$product->id}}">
-    <input type="hidden" name="brand_name" value="{{ $product->brand->name }}">
-    <input type="hidden" name="sku" value="{{$product->sku}}">
-    <input type="hidden" name="productModel" value="{{$product->productModel}}">
-    @if ($product->price)
-        <button type="submit" class="add_cart" href="#">Agregar al Carrito</button>
-    @else
-        <a class="add_cart2" href="{{route('contact')}}">Requiere Asesoria</a>
-    @endif
-    <input name="qty" type="hidden" min="1" max="100" value="1" />
-</form>
-                        </div>
+                <form class="shopping-cart-form">
+                    <input type="hidden" name="product_id" value="{{$product->id}}">
+                    <input type="hidden" name="brand_name" value="{{ $product->brand->name }}">
+                    <input type="hidden" name="sku" value="{{$product->sku}}">
+                    <input type="hidden" name="productModel" value="{{$product->productModel}}">
+                    @if ($basePrice)
+                        <button type="submit" class="add_cart" href="#">Agregar al Carrito</button>
+                    @else
+                        <a class="add_cart2" href="{{route('contact')}}">Requiere Asesoria</a>
+                    @endif
+                    <input name="qty" type="hidden" min="1" max="100" value="1" />
+                </form>
+            </div>
                     </div>
                 </div>
                 @endforeach

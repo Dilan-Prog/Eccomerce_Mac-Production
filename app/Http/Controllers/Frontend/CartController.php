@@ -65,12 +65,12 @@ class CartController extends Controller
             $product = Product::findOrFail($request->product_id);
 
             // Validar stock del producto base
-            if ($product->qty === 0) {
+            $stockQty = $product->qty_personalizated == 0 ? $product->qty_aspel : $product->qty;
+            if ($stockQty === 0) {
                 return response(['status' => 'error', 'message' => 'Producto Agotado']);
-            } elseif ($product->qty < $request->qty) {
+            } elseif ($stockQty < $request->qty) {
                 return response(['status' => 'error', 'message' => 'Cantidad agotada']);
             }
-
             // Determinar precio base usando la lógica de price_personalizated
             $basePrice = $product->price_personalizated == 1 
                 ? $product->price 
@@ -173,9 +173,11 @@ class CartController extends Controller
             $product = Product::findOrFail($productId);
 
             // Validar stock del producto base
-            if ($product->qty === 0) {
+            $stock = $product->qty_personalizated == 0 ? $product->qty_aspel : $product->qty;
+
+            if ($stock === 0) {
                 return response(['status' => 'error', 'message' => 'Producto Agotado']);
-            } elseif ($product->qty < $request->quantity) {
+            } elseif ($stock < $request->quantity) {
                 return response(['status' => 'error', 'message' => 'Cantidad máxima en existencias']);
             }
         }

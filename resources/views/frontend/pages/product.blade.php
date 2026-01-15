@@ -141,7 +141,9 @@
                                             ? ($showCombination->offert_price ?? $showCombination->price)
                                             : ($baseOfferPrice ?: $basePrice);
 
-                                        $qty = $showCombination ? $showCombination->qty : $product->qty;
+                                        $qty = $showCombination
+                                        ? $showCombination->qty
+                                        : ($product->qty_personalizated == 0 ? $product->qty_aspel : $product->qty);
                                         $sku = $showCombination ? $showCombination->sku : $product->sku;
                                     @endphp
                                     <div class="col-xl-4 col-sm-6 col-lg-4">
@@ -190,6 +192,7 @@
                                             </a>
                                             <div class="wsus__product_details">
                                                 <a class="wsus__category" href="#" itemprop="category">{{$product->category->name}}</a>
+
                                                 @if ($price)
                                                     @if ($qty > 0)
                                                         <p class="wsus__stock_area"><span class="in_stock" itemprop="offers" itemtype="http://schema.org/Offer"><meta itemprop="availability" content="http://schema.org/InStock">Disponibles</span></p>
@@ -219,8 +222,10 @@
                                                         $showCombination = $defaultCombination ?: null;
                                                         $combinationId = $showCombination ? $showCombination->id : '';
                                                         $productModel = $showCombination ? ($showCombination->model ?? $product->productModel) : $product->productModel;
-                                                        // Mantén $price sin recalcular aquí; usaremos $finalPrice más abajo
+                                                        // Mantén $price sin recalcular aquí; usaremos $finalPrice más abajo REVISAR ESTA LINEA
                                                         $qty = $showCombination ? $showCombination->qty : $product->qty;
+
+
                                                         $sku = $showCombination ? $showCombination->sku : $product->sku;
                                                         $today = date('Y-m-d');
 

@@ -87,10 +87,11 @@
                             </select>
                       </div>
 
-                    <div class="form-group">
-                      <label>Sku</label>
-                      <input type="text" class="form-control" name="sku" value="{{$product->sku}}">
-                  </div>
+                    <div class="form-group position-relative">
+                      <label>Sku</label><small id="sku-status" class="form-text d-block mt-2"></small>
+                      <input type="text" class="form-control sku-input" name="sku" value="{{ old('sku', $product->sku) }}" placeholder="Escribe el SKU para buscar">
+                      <div id="sku-dropdown" class="list-group" style="position: absolute; top: 100%; left: 0; right: 0; max-height: 250px; overflow-y: auto; display: none; z-index: 1000; margin-top: 2px;"></div>
+                    </div>
                   <div class="form-group">
                     <label>Modelo</label>
                     <input type="text" class="form-control" name="productModel" value="{{$product->productModel}}">
@@ -124,15 +125,14 @@
                               $val = $opt->precio;
                               $convertedVal = $aspelIsMXN ? $val : $val * $aspelExchangeRate;
                               $priceWithIva = $convertedVal * (1 + $ivaPercent / 100);
-                              $selectedAspel = ($product->aspel_price == $priceWithIva) || ($product->aspel_price == $convertedVal) || ($product->aspel_price == $val);
+                              $selectedAspel = false;
+                              if ($product->aspel_price) {
+                                $selectedAspel = (round($product->aspel_price, 2) == round($priceWithIva, 2));
+                              }
                             @endphp
                             <option value="{{ $priceWithIva }}" {{ $selectedAspel ? 'selected' : '' }}>
                               {{ $desc }} — {{ $aspelSymbol }}{{ number_format($val, 2) }} {{ $aspelCurrencyCode }}
-                              @if(!$aspelIsMXN)
-                                / Precio Con IVA MXN ${{ number_format($priceWithIva, 2) }} ({{ number_format($ivaPercent, 2) }}% IVA)
-                              @else
-                                / Precio Con IVA MXN ${{ number_format($priceWithIva, 2) }} ({{ number_format($ivaPercent, 2) }}% IVA)
-                              @endif
+                              / Precio Con IVA MXN ${{ number_format($priceWithIva, 2) }} ({{ number_format($ivaPercent, 2) }}% IVA)
                             </option>
                           @endforeach
                         </select>
@@ -344,6 +344,159 @@
       })
 
     })
+    
+    // Búsqueda automática de SKU con dropdown
+    let skuSearchTimeout;
+    let selectedSkuData = null;
+    
+    $('.sku-input').on('keyup', function(){
+      let sku = $(this).val().trim();
+      let dropdown = $('#sku-dropdown');
+      let statusElement = $('#sku-status');
+      
+      clearTimeout(skuSearchTimeout);
+      
+      if(sku.length < 1){
+        dropdown.hide();
+        statusElement.html('');
+        selectedSkuData = null;
+        return;
+      }
+      
+      statusElement.text('Buscando...').removeClass('text-success text-warning text-danger').addClass('text-muted');
+      
+      skuSearchTimeout = setTimeout(function(){
+        $.ajax({
+          method: 'GET',
+          url: "{{route('admin.product.search-sku')}}",
+          data: { sku: sku },
+          success: function(data){
+            dropdown.html('');
+            
+            // Si hay resultados
+            if(data && data.length > 0){
+              data.forEach(function(item, index){
+                let displayText = item.cve_art + ' - ' + (item.descr || 'Sin descripción');
+                let warningClass = item.exists_in_products ? ' border-warning' : '';
+                let option = $('<a href="#" class="list-group-item list-group-item-action sku-option'+warningClass+'" data-index="'+index+'">'+displayText+'</a>');
+                dropdown.append(option);
+              });
+              dropdown.show();
+              statusElement.html('');
+              // Guardar los datos para usar después
+              window.skuResults = data;
+            } else {
+              statusElement.html('<div class="text-danger">No se encontraron resultados</div>');
+              dropdown.hide();
+              selectedSkuData = null;
+            }
+          },
+          error: function(xhr, status, error){
+            console.log(error);
+            statusElement.html('<div class="text-danger">Error al buscar</div>');
+            dropdown.hide();
+            selectedSkuData = null;
+          }
+        });
+      }, 300);
+    });
+    
+    // Al hacer click en una opción del dropdown
+    $(document).on('click', '.sku-option', function(e){
+      e.preventDefault();
+      let index = $(this).data('index');
+      let data = window.skuResults[index];
+      
+      // Establecer el valor en el input
+      $('.sku-input').val(data.cve_art);
+      $('#sku-dropdown').hide();
+      selectedSkuData = data;
+      
+      // Auto-llenar datos de Aspel
+      if(data){
+        // Auto-llenar cantidad Aspel
+        $('input[name="qty_aspel"]').val(data.exist);
+        
+        // Si hay precios de Aspel, mostrar en los campos correspondientes
+        if(data.aspel_prices && data.aspel_prices.length > 0){
+          // Para precio normal
+          let precioInput = $('input[name="aspel_price"]');
+          precioInput.val(data.aspel_prices[0].precio);
+          
+          // Para precio oferta (si existe más de un precio)
+          if(data.aspel_prices.length > 1){
+            let ofertaInput = $('input[name="aspel_offert_price"]');
+            ofertaInput.val(data.aspel_prices[1].precio);
+          }
+        }
+      }
+      
+      let statusElement = $('#sku-status');
+      
+      if(data.exists_in_products){
+        // Si el SKU ya existe, solo mostrar el error
+        statusElement.html('<div class="text-danger"><i class="fas fa-exclamation-triangle"></i> <strong>Este SKU ya existe en productos. No se puede crear.</strong></div>');
+        $('#submit-btn').prop('disabled', true).addClass('disabled');
+      } else {
+        // Si el SKU no existe, mostrar el mensaje de éxito
+        let html = '<div class="text-success"><i class="fas fa-check-circle"></i> '+data.cve_art+' seleccionado</div>';
+        statusElement.html(html);
+        $('#submit-btn').prop('disabled', false).removeClass('disabled');
+      }
+
+      // Después de selectedSkuData = data;
+      $.ajax({
+          url: "{{ route('admin.product.aspel-prices') }}",
+          method: "GET",
+          data: { sku: data.cve_art },
+          success: function(res) {
+              // Llenar aspel_price
+              let select = $('select[name="aspel_price"]');
+              select.html('');
+              if(res.prices && res.prices.length > 0){
+                  select.append('<option value="">Seleccionar...</option>');
+                  res.prices.forEach(function(opt){
+                      select.append(
+                          `<option value="${opt.priceWithIva}">
+                              ${opt.desc} — ${res.symbol}${Number(opt.val).toFixed(2)} ${res.currency}
+                              / Precio Con IVA MXN $${Number(opt.priceWithIva).toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} (${Number(res.iva).toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}% IVA)
+                          </option>`
+                      );
+                  });
+              } else {
+                  select.append('<option value="">Sin precios SAE para este SKU</option>');
+              }
+              select.prop('disabled', false);
+
+              // Llenar aspel_offert_price igual
+              let selectOffert = $('select[name="aspel_offert_price"]');
+              selectOffert.html('');
+              if(res.prices && res.prices.length > 0){
+                  selectOffert.append('<option value="">Seleccionar...</option>');
+                  res.prices.forEach(function(opt){
+                      selectOffert.append(
+                          `<option value="${opt.priceWithIva}">
+                              ${opt.desc} — ${res.symbol}${Number(opt.val).toFixed(2)} ${res.currency}
+                              / Precio Con IVA MXN $${Number(opt.priceWithIva).toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} (${Number(res.iva).toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}% IVA)
+                          </option>`
+                      );
+                  });
+              } else {
+                  selectOffert.append('<option value="">Sin precios SAE para este SKU</option>');
+              }
+              selectOffert.prop('disabled', false);
+          }
+      });
+    });
+    
+    // Cerrar dropdown al hacer click fuera
+    $(document).on('click', function(e){
+      if(!$(e.target).closest('.form-group').length){
+        $('#sku-dropdown').hide();
+      }
+    });
+
+
 
     // Función para actualizar estado de Precio Personalizado
     function updatePrecioPersonalizadoState(){
