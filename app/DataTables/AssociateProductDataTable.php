@@ -27,46 +27,53 @@ class AssociateProductDataTable extends DataTable
                 return $img = "<img width='70px' src='".asset($query->thumb_image)."' ></img>";
             })
             ->addColumn('price', function($query){
-                // IVA desde settings
-                $ivaValue = DB::table('general_settings')->value('iva_mexico') ?? 0;
-
-                // Intentar obtener el precio desde la tabla precio_x_product_aspel
-                // usando sku (products.sku) que corresponde a cve_art en Aspel
+                // Mostrar el precio tal cual (sin IVA, sin conversión).
+                // Si existe precio Aspel (precio_x_product_aspel), usarlo; si no, usar aspel_price o price.
                 $aspelPrecio = DB::table('precio_x_product_aspel')
                     ->where('cve_art', $query->sku)
                     ->where('cve_precio', 2)
                     ->value('precio');
 
+                $priceValue = null;
+                $currencyCode = 'MXN';
+
                 if (!is_null($aspelPrecio)) {
-                    // Obtener info de moneda del producto Aspel (num_mon)
+                    $priceValue = floatval($aspelPrecio);
                     $aspelProd = DB::table('aspel_products')
                         ->where('cve_art', $query->sku)
                         ->first();
-
-                    $exchange = 1.0;
                     if ($aspelProd && isset($aspelProd->num_mon) && intval($aspelProd->num_mon) === 2) {
-                        // Si la moneda es USD (num_mon = 2), obtener tipo de cambio
-                        $mon = DB::table('monedas_aspel')->where('num_moneda', $aspelProd->num_mon)->first();
-                        if ($mon && !empty($mon->tipo_cambio)) {
-                            $exchange = floatval($mon->tipo_cambio) ?: 1.0;
-                        }
+                        $currencyCode = 'USD';
                     }
-
-                    // Convertir a MXN si aplica
-                    $converted = floatval($aspelPrecio) * $exchange;
-                    // Aplicar IVA
-                    $withIva = $converted * (1 + floatval($ivaValue) / 100);
-                    return '$' . number_format(round($withIva, 2), 2, '.', ',') . ' MXN';
-                }
-
-                // Fallback al comportamiento actual si no hay precio Aspel
-                if ($query->price_personalizated == 1) {
-                    $base = floatval($query->price);
                 } else {
-                    $base = is_null($query->aspel_price) ? floatval($query->price) : floatval($query->aspel_price);
+                    if (!is_null($query->aspel_price)) {
+                        $priceValue = floatval($query->aspel_price);
+                        // intentar obtener moneda de aspel_products si existe
+                        $aspelProd = DB::table('aspel_products')
+                            ->where('cve_art', $query->sku)
+                            ->first();
+                        if ($aspelProd && isset($aspelProd->num_mon) && intval($aspelProd->num_mon) === 2) {
+                            $currencyCode = 'USD';
+                            
+                        }
+                    } else {
+                        $priceValue = floatval($query->price);
+                        // no tenemos referencia Aspel; asumimos MXN por defecto
+                        $currencyCode = 'MXN';
+                    }
                 }
-                $withIva = $base * (1 + floatval($ivaValue) / 100);
-                return '$' . number_format(round($withIva, 2), 2, '.', ',') . ' MXN';
+
+                return '$' . number_format(round($priceValue, 2), 2, '.', ',');
+            })
+            ->addColumn('divisa', function($query) {
+                // Determinar moneda via aspel_products.num_mon (1 = MXN, 2 = USD)
+                $aspelProd = DB::table('aspel_products')
+                    ->where('cve_art', $query->sku)
+                    ->first();
+                if ($aspelProd && isset($aspelProd->num_mon) && intval($aspelProd->num_mon) === 2) {
+                    return 'USD';
+                }
+                return 'MXN';
             })
             ->addColumn('brand', function($query) {
                 return $query->brand ? $query->brand->name : 'N/A';  // Retrieve brand name
@@ -165,6 +172,11 @@ class AssociateProductDataTable extends DataTable
                 'title' => 'Cantidad',
                 'width' => '10%',
                 'align' => 'start'
+            ],
+            [
+                'data' => 'divisa',
+                'title' => 'Divisa',
+                'width' => '7%'
             ],
             [
                 'data' => 'price',
