@@ -90,16 +90,16 @@ class PaymentController extends Controller
 
 
         if ($paymentMethod === 'transfer') {
-            $order->invocie_id = $refBank;  
+            $order->invocie_id = $refBank;
             // Si es transferencia, usar el valor de refBank como invocie_id
 
             // Aplicar el descuento si es pago por transferencia
-            $discount = 0.02; 
+            $discount = 0.02;
             // por ejemplo, 10% de descuento
             $finalPayableAmount = getFinalPayableAmount() * (1 - $discount);
             $order->amount = $finalPayableAmount;
         } else {
-            $order->invocie_id = rand(1, 999999); 
+            $order->invocie_id = rand(1, 999999);
             // Generar aleatoriamente si no es transferencia
             $order->amount = getFinalPayableAmount();
         }
@@ -380,7 +380,7 @@ class PaymentController extends Controller
             try {
                 $this->notifyPaymentProcessed($order);
             } catch (\Exception $e) {
-                \Log::error('Error al enviar la notificación al pagar por paypal: ' . $e->getMessage());
+                \Log::error('Error al enviar la notificación al pagar por Stripe: ' . $e->getMessage());
             }
 
             return redirect()->to($signedUrl);
@@ -422,7 +422,7 @@ class PaymentController extends Controller
         try {
             $this->notifyPaymentProcessed($order);
         } catch (\Exception $e) {
-            \Log::error('Error al enviar la notificación al pagar por paypal: ' . $e->getMessage());
+            \Log::error('Error al enviar la notificación al pagar por transferencia: ' . $e->getMessage());
         }
 
 
@@ -438,7 +438,7 @@ class PaymentController extends Controller
 
         // Enviar la notificación
         Notification::send($user, new BuytoPay($order));
-        Notification::route('mail', 'undemy258@gmail.com') //cambiar a ventas1@macdelnorte.com
+        Notification::route('mail', 'dilanp270105@gmail.com') //cambiar a ventas1@macdelnorte.com
             ->notify(new buytopayAdmin($order));
     }
 }

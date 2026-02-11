@@ -139,7 +139,7 @@ class AspelSyncDataTable extends DataTable
             // Column::make('comp_x_rec')->title('Compras Pend.')->visible(false)->className('text-center'),
 
             // // Columnas de costos
-           
+
 
             // // Columnas de control
             // Column::make('con_serie')->title('Con Serie')->visible(false)->className('text-center'),
