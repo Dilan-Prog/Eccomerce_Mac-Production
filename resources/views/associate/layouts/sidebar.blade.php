@@ -8,7 +8,7 @@
         <li class="menu-header">Panel De Asociados</li>
 
             <li class="dropdown active">
-                <a href="{{route('associate.dashboard')}}" class="nav-link"><i class="fas fa-fire"></i><span>Noticias</span></a>
+                <a href="{{route('associate.dashboard')}}" class="nav-link"><i class="fas fa-fire"></i><span>Inicio</span></a>
             </li>
 
         <li class="menu-header">Paneles</li>
@@ -17,7 +17,7 @@
             'associate.products.*',
             ])}}">
           <a href="{{route('associate.products.index')}}" class="nav-link" > <i class="fas fa-clipboard-list" style='font-size:24px' aria-hidden="true"></i> <span>Productos</span></a>
-          
+
         </li>
       </ul>
     </aside>
