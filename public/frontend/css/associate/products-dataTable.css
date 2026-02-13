@@ -1,4 +1,13 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;900&display=swap');
 :root{
+    --font-montserrat: 'Montserrat', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    --font-weight-light: 300;
+    --font-weight-regular: 400;
+    --font-weight-medium: 500;
+    --font-weight-semibold: 600;
+    --font-weight-bold: 700;
+    --font-weight-black: 900;
+
     --background-color: #ffffff;
     --background-color-secondary:#c7c7c7;
     --border-dataTable: #bfbfbf;
@@ -7,6 +16,10 @@
     --btn-color-main: #00468C;
     --btn-color-hover: #0072E3;
     --background-product-modal: #FAFDFB;
+    --modal-text-main:#4b4b4b;
+    --iva-text:#FC544B;
+    --shipping-text: #0D8630;
+    --text-black: #000000;
 }
 
 .dataTable-content{
@@ -311,10 +324,47 @@
     padding: 28px;
     align-items: start;
 }
-.product-modal .modal-left{
-    display:flex;
-    align-items:center;
-    justify-content:center;
+.product-modal .modal-left .modal-details-title{
+    color: #000;
+}
+.product-modal .modal-left .modal-image-container{
+    border: 1.5px solid var(--border-dataTable);
+    background-color: var(--background-color);
+    padding: 10px 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 360px;
+    height: 360px;
+}
+.modal-image-container img{
+    max-width: 215px;
+    max-height: 215px;
+}
+/* Gallery thumbnails under modal image */
+.modal-gallery-images{
+    max-width: 360px;
+    height: 60px;
+    display: flex;
+}
+.modal-gallery-images .gallery-thumb{
+    width: 60px;
+    height: 60px;
+    border: 1.5px solid var(--border-dataTable);
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    background: var(--background-color);
+    padding: 12px 12px;
+
+}
+.modal-gallery-images .gallery-thumb img{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
 }
 .product-modal .modal-left .modal-image{
     max-width: 340px;
@@ -327,12 +377,64 @@
     font-size: 20px;
     color: #111;
 }
+.product-modal .modal-right .modal-type{
+    display: inline-block;
+    background-color: var(--main-color);
+    color: #fff;
+    padding: 6px 14px;
+    border-radius: 4px;
+    font-weight: var(--font-weight-semibold);
+    font-family: var(--font-montserrat);
+    font-size: 8px;
+    line-height: 1;
+    text-align: center;
+    margin: 0;
+}
+.product-modal .modal-right .modal-title{
+    display: inline-block;
+    font-size: 20px;
+    line-height: 21px;
+    font-weight: 800;
+    color: var(--modal-text-main);
+    margin: 2px 0px 0px 0px;
+}
+.product-modal .modal-right .modal-price{
+    display: inline-block;
+    margin-top: 15px;
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--modal-text-main);
+    margin: 10px 0px 0px 0px;
+}
+.product-modal .modal-right .modal-iva{
+   font-size: 12px;
+   color: var(--iva-text);
+}
+.product-modal .modal-right .modal-shipping{
+    font-size: 12px;
+    color: var(--shipping-text);
+    font-family: var(--font-montserrat);
+    font-weight: var(--font-weight-bold);
+}
+.product-modal .modal-right .modal-brand{
+    font-size: 12px;
+    color: var(--text-black);
+    font-family: var(--font-montserrat);
+    font-weight: var(--font-weight-medium);
+}
+.product-modal .modal-right .modal-model{
+    font-size: 12px;
+    color: var(--text-black);
+    font-family: var(--font-montserrat);
+    font-weight: var(--font-weight-medium);
+}
 .product-modal .modal-right p{ margin: 6px 0; color: var(--item-text); }
 
 @media (max-width: 700px){
     .product-modal .modal-inner{ grid-template-columns: 1fr; }
     .product-modal .modal-left .modal-image{ max-height: 260px; }
 }
+
 
 
 
