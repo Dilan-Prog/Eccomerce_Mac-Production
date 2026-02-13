@@ -4,13 +4,9 @@
 
 @endpush
 @section('content')
-
-
-
     <section class="section">
       <div class="section-header">
         <h1>Productos</h1>
-
       </div>
       <div class="section-body">
         <div class="row">
@@ -82,16 +78,33 @@
             <button type="button" class="modal-close" aria-label="Cerrar">&times;</button>
             <div class="modal-inner">
                 <div class="modal-left">
-                    <h3>Detalles Del Producto</h3>
-                    <img src="" alt="Imagen del producto" class="modal-image">
+                    <div class="modal-details-title">
+                        <h3>Detalles Del Producto</h3>
+                    </div>
+                    <div class="modal-image-container">
+                        <img src="{{ asset('uploads/image-png/media_6660077231c58.dc2500_converted.png') }}" alt="">
+                    </div>
+                    <div class="modal-gallery-images">
+                        <div class="gallery-thumb"><img src="{{ asset('uploads/image-png/media_6660077231c58.dc2500_converted.png') }}" alt=""></div>
+                        <div class="gallery-thumb"><img src="{{ asset('uploads/image-png/media_6660077231c58.dc2500_converted.png') }}" alt=""></div>
+                        <div class="gallery-thumb"><img src="{{ asset('uploads/image-png/media_6660077231c58.dc2500_converted.png') }}" alt=""></div>
+                        <div class="gallery-thumb"><img src="{{ asset('uploads/image-png/media_6660077231c58.dc2500_converted.png') }}" alt=""></div>
+                        <div class="gallery-thumb"><img src="{{ asset('uploads/image-png/media_6660077231c58.dc2500_converted.png') }}" alt=""></div>
+                        <div class="gallery-thumb"><img src="{{ asset('uploads/image-png/media_6660077231c58.dc2500_converted.png') }}" alt=""></div>
+                    </div>
                 </div>
                 <div class="modal-right">
-                    <h2 class="modal-title">Título del producto</h2>
-                    <p class="modal-price"></p>
-                    <p class="modal-brand"></p>
-                    <p class="modal-model"></p>
+                    <p class="modal-type">Nuevo</p>
+                    <h2 class="modal-title">Control de Temperatura DC1020CT-311-000-E-0</h2>
+                    <p class="modal-price">$4,606.36 MXN</p>
+                    <p class="modal-iva">Incluye IVA</p>
+                    <p class="modal-shipping">Disponible para envio Inmediato</p>
+                    <p class="modal-brand">Marca: Honeywell</p>
+                    <p class="modal-model">Modelo: DC1020CT-311-000-E-0</p>
+                    <p>Linea: Honeywell Process</p>
                     <hr>
-                    <p class="modal-desc"></p>
+                    <p class="modal-ficha">Ficha Tecnica</p>
+                    <p class="modal-desc">Control de Temperatura DC1020 Honeywell</p>
                 </div>
             </div>
         </div>
@@ -118,15 +131,10 @@
     <script>
         // Modal handling for product details
         (function($){
-            function openProductModal(data){
+            function openProductModal(){
                 var $modal = $('#product-modal');
-                $modal.find('.modal-image').attr('src', data.image || '');
-                $modal.find('.modal-image').attr('alt', data.title || '');
-                $modal.find('.modal-title').text(data.title || '');
-                $modal.find('.modal-price').text(data.price || '');
-                $modal.find('.modal-brand').text(data.brand || '');
-                $modal.find('.modal-model').text(data.model || '');
-                $modal.find('.modal-desc').text(data.desc || '');
+                // Intentionally do not inject DataTable values into the modal.
+                // The modal markup/content is left unchanged; only open/close behavior is kept.
                 $modal.addClass('open').attr('aria-hidden','false');
                 $('body').css('overflow','hidden');
             }
@@ -137,19 +145,10 @@
                 $('body').css('overflow','');
             }
 
-            // Open modal when clicking the product button
+            // Open modal when clicking the product button — do NOT copy DataTable values into modal
             $(document).on('click', '.dataTable-btn', function(e){
                 e.preventDefault();
-                var $row = $(this).closest('tr');
-                var data = {
-                    image: $row.find('.dataTable-image img').attr('src'),
-                    title: $row.find('.dataTable-title').text().trim(),
-                    model: $row.find('.dataTable-model').text().trim(),
-                    brand: $row.find('.dataTable-brand').text().trim(),
-                    price: $row.find('.dataTable-price').text().trim(),
-                    desc: $row.find('.dataTable-title').text().trim() // fallback, replace if available
-                };
-                openProductModal(data);
+                openProductModal();
             });
 
             // Close handlers
