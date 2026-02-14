@@ -372,6 +372,9 @@
     width: 100%;
     object-fit: contain;
 }
+.product-modal .modal-right{
+    margin-top: 15%;
+}
 .product-modal .modal-right .modal-title{
     margin: 0 0 8px 0;
     font-size: 20px;
@@ -416,17 +419,17 @@
     font-family: var(--font-montserrat);
     font-weight: var(--font-weight-bold);
 }
-.product-modal .modal-right .modal-brand{
+.product-modal .modal-right .modal-brand,
+.product-modal .modal-right .modal-model,
+.product-modal .modal-right .modal-line-brand,
+.product-modal .modal-right .modal-ficha,
+.product-modal .modal-right .modal-desc,
+.product-modal .modal-right .modal-desc-title {
     font-size: 12px;
     color: var(--text-black);
     font-family: var(--font-montserrat);
     font-weight: var(--font-weight-medium);
-}
-.product-modal .modal-right .modal-model{
-    font-size: 12px;
-    color: var(--text-black);
-    font-family: var(--font-montserrat);
-    font-weight: var(--font-weight-medium);
+    line-height: 12px;
 }
 .product-modal .modal-right p{ margin: 6px 0; color: var(--item-text); }
 
@@ -434,7 +437,11 @@
     .product-modal .modal-inner{ grid-template-columns: 1fr; }
     .product-modal .modal-left .modal-image{ max-height: 260px; }
 }
-
+.modal-ficha-icon {
+  font-size: 20px;
+  vertical-align: middle;
+  color: var(--text-black);
+}
 
 
 

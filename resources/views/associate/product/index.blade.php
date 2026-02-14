@@ -1,6 +1,7 @@
 @extends('associate.layouts.master')
 @push('styles')
     <link rel="stylesheet" href="{{asset('frontend/css/associate/products-dataTable.css')}}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 
 @endpush
 @section('content')
@@ -101,9 +102,14 @@
                     <p class="modal-shipping">Disponible para envio Inmediato</p>
                     <p class="modal-brand">Marca: Honeywell</p>
                     <p class="modal-model">Modelo: DC1020CT-311-000-E-0</p>
-                    <p>Linea: Honeywell Process</p>
+                    <p class="modal-line-brand">Linea: Honeywell Process</p>
                     <hr>
                     <p class="modal-ficha">Ficha Tecnica</p>
+                    <a href="">
+                        <i class="bi bi-file-earmark modal-ficha-icon" aria-hidden="true"></i>
+                    </a>
+                    <hr>
+                    <p class="modal-desc-title">Descripcion:</p>
                     <p class="modal-desc">Control de Temperatura DC1020 Honeywell</p>
                 </div>
             </div>
