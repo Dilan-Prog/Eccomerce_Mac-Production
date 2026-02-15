@@ -18,8 +18,6 @@ class HomeController extends Controller
 
     public function index()
     {
-
-
         // Caché para los sliders
         $sliders = Cache::remember('sliders', 600, function() {
             return Slider::where('status', 1)->orderBy('serial', 'asc')->get();
@@ -36,7 +34,7 @@ class HomeController extends Controller
 
         // Caché para los artículos de la venta flash
         Cache::forget('flash_sale_date');
-        Cache::forget('flash_sale_items');
+        Cache::forget(key: 'flash_sale_items');
         $flashSaleItems = Cache::rememberForever('flash_sale_items', function() {
             return FlashSaleItem::with(['product', 'product.productImageGalleries', 'product.category','product.reviews'])
                 ->where('show_at_home', 1)
