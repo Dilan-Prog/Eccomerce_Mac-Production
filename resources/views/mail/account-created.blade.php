@@ -1,18 +1,18 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Cuenta creada Mac Del Norte</title>
 </head>
 <body>
-    Hi, {{$name}}
-    <br>
-    Here is your login credentials:
-    <br>
-    Email: {{$email}}
-    <br>
-    Passwrod: {{$password}}
+    <p>Hola {{ $name }},</p>
+    <p>Tu cuenta ha sido creada correctamente en {{ config('app.name') }}.</p>
+    <ul>
+        <li><strong>Correo:</strong> {{ $email }}</li>
+        <li><strong>Contraseña:</strong> {{ $password }}</li>
+    </ul>
+    <p>Puedes iniciar sesión aquí: <a href="{{ url('/') }}">{{ url('/') }}</a></p>
+    <p>Saludos,<br>{{ config('app.name') }}</p>
 </body>
 </html>
