@@ -61,9 +61,10 @@
                                 </div>
                             </div>
                             <div class="col-md-3">
+                                {{-- Requiere migracion de una nueva tabla dentro de productos --}}
                                 <div class="form-group">
                                     <label for="inputState">Precio Especial</label>
-                                    <select id="inputState" class="form-control" name="type_price">
+                                    <select id="inputState" class="form-control" name="type_price" disabled>
                                         <option value="">Seleccionar</option>
                                         <option value="1">Precio Publico</option>
                                         <option value="2">Precio Minimo</option>
@@ -92,7 +93,7 @@
                                 </div>
                             </div>
                         </div>
-                        <button type="submmit" class="btn btn-primary">Crear</button>
+                        <button type="submit" class="btn btn-primary">Crear</button>
                     </form>
                   </div>
 
