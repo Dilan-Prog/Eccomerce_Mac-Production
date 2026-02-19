@@ -34,14 +34,13 @@ class CategoryController extends Controller
     public function store(Request $request)
     {
         //
-        
+
         $request->validate([
             'icon'=>['nullable'],
             'name'=>['required','max:200', 'unique:categories,name'],
             'status'=>['required']
-
-
         ]);
+        
         $category = new Category();
         $category->icon = $request->icon;
         $category->name = $request->name;
@@ -84,7 +83,7 @@ class CategoryController extends Controller
         ]);
 
         $category = Category::findOrFail($id);
-        
+
         $category->icon = $request->icon;
         $category->name = $request->name;
         $category->slug = Str::slug($request->name);
@@ -102,9 +101,9 @@ class CategoryController extends Controller
         $category = Category::findOrFail($id);
         $subCategory = Subcategory::where('category_id',$category->id)->count();
         if($subCategory > 0){
-            return response(['status' => 'error', 'message' => 'Esta Categoria contiene Sub Categorias, Para eliminar esta Categoria elimina las Sub Categorias primero.']);     
+            return response(['status' => 'error', 'message' => 'Esta Categoria contiene Sub Categorias, Para eliminar esta Categoria elimina las Sub Categorias primero.']);
         }
-        
+
         $category->delete();
 
         return response(['status' => 'success', 'message' => 'Deleted Successfully!']);
