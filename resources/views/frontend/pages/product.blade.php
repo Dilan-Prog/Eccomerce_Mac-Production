@@ -121,7 +121,7 @@
                             <div class="tab-pane fade {{session()->has('product_list_style') && session()->get('product_list_style') == 'grid' ? 'show active' : ''}} {{!session()->has('product_list_style') ? 'show active' : ''}}" id="v-pills-home" role="tabpanel"
                                 aria-labelledby="v-pills-home-tab">
                                 <div class="row">
-                                    
+
 
                                     @foreach ($products as $product )
                                     @php
@@ -278,7 +278,7 @@
                                                     </span>
                                                         <span class="mdn_iva">IVA INCLUIDO</span>
                                                     </p>
-                                                    
+
                                                     <p>
                                                         @if ($price >= $shippingRules->min_cost)
                                                             <span class="free-shipping-text"><i class="fas fa-shipping-fast"></i> Envío Gratis </span>
@@ -292,7 +292,7 @@
 
                                                     <p class="wsus__price">N/A +<small> Requiere Asesoria</small> </p>
                                                 @endif
-                                                
+
                                                 @php
                                                     // Usar helpers personalizados para validar descuentos y fechas
                                                     $defaultCombination = $product->combinations->where('is_default', 1)->first();
@@ -333,9 +333,11 @@
                                                     <input type="hidden" name="brand_name" itemprop="brand" content="{{$product->brand->name}}" value="{{ $product->brand->name }}">
                                                     <input type="hidden" name="sku" value="{{$sku}}">
                                                     <input type="hidden" name="productModel" value="{{$productModel ?? ''}}">
-                                                    
+
                                                     @if ($price)
-                                                        <button type="submit" class="add_cart" href="#">Agregar al Carrito</button>
+                                                        <button type="submit" class="
+
+                                                        " href="#">Agregar al Carrito</button>
                                                     @else
                                                         <a class="add_cart2" href="{{route('contact')}}">Requiere Asesoria</a>
                                                     @endif
