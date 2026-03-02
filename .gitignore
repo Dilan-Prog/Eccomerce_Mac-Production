@@ -19,3 +19,8 @@ yarn-error.log
 /.vscode
 /public/uploads.zip
 /public/uploads/image-png.zip
+notepad .gitignore
+/storage/*.log
+/storage/**/*.log
+storage/laravel*.log
+*.log
