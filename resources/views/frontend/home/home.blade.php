@@ -22,9 +22,18 @@
 
         @include('frontend.home.sections.section-shop-info')
 
+    
+
     <!--============================
         FLASH SELL START
     ==============================-->
+
+        {{-- Opinion Google --}}
+
+        @include('frontend.home.sections.opinion-google')
+
+
+
     <div class="container">
         <div class="row">
             <!-- Banner Publicitario -->

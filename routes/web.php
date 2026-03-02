@@ -90,16 +90,20 @@ Route::middleware('auth')->group(function () {
 /**send emails */
 Route::post('email', [PaymentController::class, 'emailFormSend'])->name('email-form');
 
+
 require __DIR__.'/auth.php';
-
-
-
 Route::get('flash-sale', [FlashSaleController::class, 'index'])->name('flash-sale');
 
 /**Products details */
-Route::get('products', [FrontendProductController::class, 'productsIndex'])->name('products.index');
-Route::get('product-detail/{slug}', [FrontendProductController::class, 'showProduct'])->name('product-detail');
-Route::get('change-product-list-view', [FrontendProductController::class, 'chageListView'])->name('change-product-list-view');
+Route::controller(FrontendProductController::class)->group(function () {
+    Route::get('products', 'productsIndex')->name('products.index');
+    Route::get('product-detail/{slug}', 'showProduct')->name('product-detail');
+    Route::get('change-product-list-view', 'chageListView')->name('change-product-list-view');
+});
+
+// Route::get('products', [FrontendProductController::class, 'productsIndex'])->name('products.index');
+// Route::get('product-detail/{slug}', [FrontendProductController::class, 'showProduct'])->name('product-detail');
+// Route::get('change-product-list-view', [FrontendProductController::class, 'chageListView'])->name('change-product-list-view');
 /**Add to cart route */
 Route::post('add-to-cart', [CartController::class, 'addToCart'])->name('add-to-cart');
 Route::get('cart-details', [CartController::class, 'cartDetails'])->name('cart-details');

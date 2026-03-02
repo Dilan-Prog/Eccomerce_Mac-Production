@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers\Backend;
 
 use App\DataTables\AssociateProductDataTable;
@@ -7,21 +6,27 @@ use App\Http\Controllers\Controller;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-
-
-
 class AssociateProductController extends Controller
 {
-
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    public function index(Request $request)
     {
+        $q = trim((string) $request->get('search', ''));
+
         $productAssociate = Product::with(['brand', 'productImageGalleries'])
             ->where('status', 1)
-            ->paginate(25);
+            ->when($q, function ($query) use ($q) {
+                $query->where(function ($sub) use ($q) {
+                    $sub->where('name', 'like', "%{$q}%")
+                        ->orWhere('sku', 'like', "%{$q}%")
+                        ->orWhereHas('brand', function ($b) use ($q) {
+                            $b->where('name', 'like', "%{$q}%");
+                        });
+                });
+            })
+            ->paginate(25)
+            ->appends(['search' => $q]);
 
+        // SKUs SOLO de la página filtrada actual
         $skus = collect($productAssociate->items())
             ->pluck('sku')
             ->filter()
@@ -30,14 +35,25 @@ class AssociateProductController extends Controller
         $aspelPrecio = DB::table('precio_x_product_aspel')
             ->whereIn('cve_art', $skus)
             ->where('cve_precio', 2)
-            ->pluck('precio', 'cve_art'); // [sku => precio]
+            ->pluck('precio', 'cve_art');
 
         $aspelMoneda = DB::table('aspel_products')
             ->whereIn('cve_art', $skus)
-            ->pluck('num_mon', 'cve_art'); // [sku => num_mon]
+            ->pluck('num_mon', 'cve_art');
+
+        if ($request->ajax()) {
+            $tbody = view('associate.product.partials.tbody', compact('productAssociate','aspelPrecio','aspelMoneda'))->render();
+            $pager = view('associate.product.partials.pager', compact('productAssociate'))->render();
+
+            return response()->json([
+                'tbody' => $tbody,
+                'pager' => $pager,
+            ]);
+        }
 
         return view('associate.product.index', compact('productAssociate', 'aspelPrecio', 'aspelMoneda'));
     }
+
 
     /**
      * Show the form for creating a new resource.
@@ -103,6 +119,7 @@ class AssociateProductController extends Controller
             'shipping_text' => $shippingText,
             'thumb' => asset($product->thumb_image),
             'description' => $product->long_description ?? $product->name,
+            'pdf_url' => $product->url_PDF,
             'gallery' => $product->productImageGalleries
                 ->map(fn($g) => asset($g->image))
                 ->values(),
@@ -115,10 +132,6 @@ class AssociateProductController extends Controller
     {
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-
     public function update(Request $request, string $id)
     {
     }
@@ -128,4 +141,4 @@ class AssociateProductController extends Controller
     public function destroy(string $id)
     {
     }
-}
+}   
