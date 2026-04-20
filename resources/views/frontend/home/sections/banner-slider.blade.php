@@ -19,7 +19,8 @@
                                         loading="eager"
                                         src="{{ asset($slider->banner) }}"
                                         srcset="
-                                            {{ asset($slider->banner_phone) }} 370w,
+                                            {{ asset($slide
+                                            r->banner_phone) }} 370w,
                                             {{ asset($slider->banner_tablet) }} 720w,
                                             {{ asset($slider->banner_laptop) }} 1140w,
                                             {{ asset($slider->banner) }} 1250w
