@@ -29,7 +29,7 @@
                                 <div class="card-body">
                                     <img src="{{asset('frontend/images/iconos/tecnologia.webp')}}" alt="">
                                     <h5>Nuevas Tecnologias</h5>
-                                    <p class="associate-desription">Acceso a tegnologia de primera mano con demos y capacitaciones por parte del fabricante.</p>
+                                    <p class="associate-desription">Acceso a tecnología de primera mano con demos y capacitaciones por parte del fabricante.</p>
                                 </div>
                             </div>
                         </div>
@@ -38,7 +38,7 @@
                                 <div class="card-body">
                                     <img src="{{asset('frontend/images/iconos/price-unique.webp')}}" alt="">
                                     <h5>Precios Exclusivos</h5>
-                                    <p class="associate-desription">Para todos los Reveendedores y Asociados para tener una mayor competitividad en el mercado y Stock Inmediato.</p>
+                                    <p class="associate-desription">Para todos los Revendedores y Asociados para tener una mayor competitividad en el mercado y Stock Inmediato.</p>
                                 </div>
                             </div>
                         </div>
@@ -47,7 +47,7 @@
                                 <div class="card-body">
                                     <img src="{{asset('frontend/images/iconos/tarjeta-de-credito.webp')}}" alt="">
                                     <h5>Credito</h5>
-                                    <p class="associate-desription">Credito para mayor flexibilidad y adquisicion de producto para crecimiento continuo de nuestros asociados y reveendedores.</p>
+                                    <p class="associate-desription">Credito para mayor flexibilidad y adquisicion de producto para crecimiento continuo de nuestros asociados y revendedores.</p>
                                 </div>
                             </div>
                         </div>
@@ -65,7 +65,7 @@
             </div>
 
         </div>
-        
+
         <div class="container" style="background-color: white ;">
             <div class="container " style="background-color: white ;">
               <div class="row ">
@@ -77,15 +77,15 @@
                           <div class="col-md-6">
                               <label for="inputNombre" class="form-label">Nombre</label>
                               <input type="text" class="form-control" id="inputNombre" placeholder="Nombre" aria-label="First name" name="name" required pattern="[A-Za-z]+" maxlength="30" >
-                              <div class="invalid-feedback"> 
+                              <div class="invalid-feedback">
                                   El nombre no puede estar en blanco.
                               </div>
                           </div>
                           <div class="col-md-6">
                               <label for="inputAddress2" class="form-label">Apellidos</label>
                             <input type="text" class="form-control" placeholder="Apellidos" aria-label="Last name" name="Apellido" pattern="[A-Za-z]+" required >
-                          </div> 
-                          
+                          </div>
+
                       </div>
                       <div class="col-md-6">
                         <label for="inputEmail4" class="form-label">Email</label>
@@ -93,13 +93,13 @@
                       </div>
                       <div class="col-md-6">
                         <label for="telefono" class="form-label">N&uacute;mero de telefono</label>
-                        <input type="tel" class="form-control" id="inputAddress" placeholder="Telefono" name="Telefono" required  pattern="[0-9]{10}" title="Ingrese un número de teléfono válido"> 
+                        <input type="tel" class="form-control" id="inputAddress" placeholder="Telefono" name="Telefono" required  pattern="[0-9]{10}" title="Ingrese un número de teléfono válido">
                       </div>
                       <div class="col-md-4">
                           <label for="inputCity" class="form-label">Empresa</label>
                           <input type="text" class="form-control" id="inputCity" placeholder="Nombre Empresa" required name="Ciudad" required>
                         </div>
-                  
+
                       <div class="col-md-4">
                         <label for="inputCity" class="form-label">Ciudad</label>
                         <input type="text" class="form-control" id="inputCity" placeholder="Ciudad Juarez" name="Ciudad" required>
@@ -141,21 +141,21 @@
                               <option>Zacatecas</option>
                           </select>
                       </div>
-                      
+
                       <div class="col-md-12">
                           <label for="inputOperation" class="form-label">Operaci&oacute;n</label>
                           <select id="inputOperation" class="form-select" name="Operacion" required>
                               <option selected>Asociado/Renvendedor</option>
                           </select>
                       </div>
-                      
+
                       <div class="col-12 form-floating">
                           <textarea class="form-control" placeholder="Leave a comment here" id="floatingTextarea2" style="height: 100px" name="Mensaje"></textarea>
                           <label for="floatingTextarea2">Mensaje</label>
                         </div>
-                  
-                        
-                  
+
+
+
                       <div class="col-12">
                         <button type="submit" class="btn btn-dark w-100" >Enviar solicitud</button>
                         <input type="hidden" name="_next" value="http://127.0.0.1:8000/cotizar"><!--Cambiar url-->

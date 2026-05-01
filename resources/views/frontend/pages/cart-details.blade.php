@@ -95,7 +95,7 @@
                     <div class="wsus__cart_list_footer_button" id="sticky_sidebar">
                         <h6>Total Del Carrito</h6>
                         <p>subtotal: <span id="sub_total">{{ $settings->currency_icon }}{{ formatCurrency(getCartTotal()) }}</span></p>
-                        <p>Envio: <span>$00.00</span></p>
+                        <p>Envío: <span>$00.00</span></p>
                         <p>Descuento: <span id="discount">{{ $settings->currency_icon }}{{ formatCurrency(getCartDiscount()) }}</span></p>
                         <p class="total"><span >Total:</span> <span id="cart_total">{{ $settings->currency_icon }}{{ formatCurrency(getMainCartTotal()) }}</span></p>
 

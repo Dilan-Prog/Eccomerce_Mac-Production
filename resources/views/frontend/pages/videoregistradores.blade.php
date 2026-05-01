@@ -21,7 +21,7 @@
                                 <p class="services_content_description">Especialistas en sistemas de grabadores de variables
                                     analógicas. Ofrecemos instalación profesional de grabadores de datos para garantizar la
                                     confiabilidad y precisión de tus procesos industriales.</p>
-                                <button class="services_start_button"><i class="fa fa-phone-alt"></i> Atencion
+                                <button class="services_start_button"><i class="fa fa-phone-alt"></i> Atención
                                     Inmediata</button>
                                 <button class="services_start_button"><i class="fa fa-whatsapp"></i> Escribenos</button>
                             </article>

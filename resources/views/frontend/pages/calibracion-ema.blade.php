@@ -25,7 +25,7 @@
                                     analógicas y medidores de flujo industriales. Asegura la trazabilidad, confiabilidad y
                                     cumplimiento normativo de tus instrumentos de medición.
                                 </p>
-                                <button class="services_start_button"><i class="fa fa-phone-alt"></i> Atencion
+                                <button class="services_start_button"><i class="fa fa-phone-alt"></i> Atención
                                     Inmediata</button>
                                 <button class="services_start_button"><i class="fa fa-whatsapp"></i> Escribenos</button>
                             </article>

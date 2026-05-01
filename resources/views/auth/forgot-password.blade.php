@@ -27,7 +27,7 @@
                                 <button class="common_btn" type="submit">Enviar</button>
                             </form>
                         </div>
-                        <a class="see_btn mt-4" href="{{route('login')}}">Ir a Iniciar Sesion</a>
+                        <a class="see_btn mt-4" href="{{route('login')}}">Ir a Iniciar Sesión</a>
                     </div>
                 </div>
             </div>

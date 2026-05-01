@@ -1,7 +1,7 @@
     @extends('frontend.layouts.master')
 
     @section('title')
-    {{$settings->site_name}} || Iniciar Sesi&oacute;n
+    {{$settings->site_name}} || Iniciar Sesión
 
     @endsection
 
@@ -19,7 +19,7 @@
                             <li class="nav-item" role="presentation">
                                 <button class="nav-link active" id="pills-home-tab2" data-bs-toggle="pill"
                                     data-bs-target="#pills-homes" type="button" role="tab" aria-controls="pills-homes"
-                                    aria-selected="true">Iniciar Sesion</button>
+                                    aria-selected="true">Iniciar Sesión</button>
                             </li>
                             <li class="nav-item" role="presentation">
                                 <button class="nav-link" id="pills-profile-tab2" data-bs-toggle="pill"
@@ -53,10 +53,10 @@
                                         </div>
 
 
-                                       
 
-                                        <button class="common_btn" type="submit">Iniciar Sesion</button>
-                                        
+
+                                        <button class="common_btn" type="submit">Iniciar Sesión</button>
+
                                     </form>
                                 </div>
                             </div>

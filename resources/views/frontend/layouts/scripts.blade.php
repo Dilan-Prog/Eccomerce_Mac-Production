@@ -97,10 +97,10 @@
                     if ($('.mini_cart_wrapper').find('li').length === 0) {
                         $('.mini_cart_actions').addClass('d-none');
                         $('.mini_cart_wrapper').html(
-                            '<li class="text-center">Carrito Vacio!</li>');
+                            '<li class="text-center">Carrito Vacío!</li>');
                     }
                     toastr.success(data.message);
-                    
+
                 },
                 error: function(data) {
                     console.log(data);
@@ -136,7 +136,7 @@
         }
     });
 
-    
+
 
 
     })

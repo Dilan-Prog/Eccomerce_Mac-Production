@@ -38,7 +38,7 @@
                             <div class="redirection-site-order-content">
                                 <img src="{{asset('frontend/images/iconos/full-cart.webp')}}" alt="">
                                 <p>Quiero Seguir Comprando</p>
-                                <small>Envio gratis en miles de productos y con los mejores precios del mercado.</small>
+                                <small>Envío gratis en miles de productos y con los mejores precios del mercado.</small>
                             </div>
                         </div>
                     </a>

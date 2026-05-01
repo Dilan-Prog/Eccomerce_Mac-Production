@@ -21,7 +21,7 @@
                                 <p class="services_content_description">
                                     Especialistas en sistemas de medición de caudal. Ofrecemos instalación profesional de medidores de flujo industriales para garantizar precisión, eficiencia y trazabilidad en tus procesos productivos.
                                 </p>
-                                <button class="services_start_button"><i class="fa fa-phone-alt"></i> Atencion
+                                <button class="services_start_button"><i class="fa fa-phone-alt"></i> Atención
                                     Inmediata</button>
                                 <button class="services_start_button"><i class="fa fa-whatsapp"></i> Escribenos</button>
                             </article>
@@ -78,7 +78,7 @@
                             <article>
                                 <span class="services_content_ours_process_text_subtitle_one">Nuestro Proceso para</span>
                                 <h2 class="services_content_ours_process_text_title">Instalación de Medidores de Flujo Industriales</h2>
-        
+
                                 <div class="accordion_item">
                                     <div class="accordion_header" onclick="toggleAccordion(this)">
                                         <h3 class="services_content_ours_process_text_subtitle">
@@ -90,7 +90,7 @@
                                         Analizamos el tipo de fluido, presión, temperatura, caudal promedio y condiciones de instalación para seleccionar la tecnología de medición más adecuada (ultrasónica, electromagnética, Coriolis, etc.).
                                     </p>
                                 </div>
-        
+
                                 <div class="accordion_item">
                                     <div class="accordion_header" onclick="toggleAccordion(this)">
                                         <h3 class="services_content_ours_process_text_subtitle">
@@ -102,7 +102,7 @@
                                         Recomendamos el equipo óptimo según la aplicación, compatibilidad con señales industriales (4-20 mA, Modbus, HART) y precisión requerida para el proceso.
                                     </p>
                                 </div>
-        
+
                                 <div class="accordion_item">
                                     <div class="accordion_header" onclick="toggleAccordion(this)">
                                         <h3 class="services_content_ours_process_text_subtitle">
@@ -114,7 +114,7 @@
                                         Instalamos el medidor en línea o por bypass según lo requerido, garantizando correcta orientación, sellado, aislamiento y conexión eléctrica para la alimentación y comunicación.
                                     </p>
                                 </div>
-        
+
                                 <div class="accordion_item">
                                     <div class="accordion_header" onclick="toggleAccordion(this)">
                                         <h3 class="services_content_ours_process_text_subtitle">
@@ -126,7 +126,7 @@
                                         Parametrizamos el medidor según la aplicación (tipo de fluido, unidad de medida, rangos, factor K, alarmas) y realizamos calibraciones de fábrica o en campo si es necesario.
                                     </p>
                                 </div>
-        
+
                                 <div class="accordion_item">
                                     <div class="accordion_header" onclick="toggleAccordion(this)">
                                         <h3 class="services_content_ours_process_text_subtitle">
@@ -138,7 +138,7 @@
                                         Integramos el medidor con PLCs, SCADA o sistemas de adquisición de datos existentes, garantizando que las lecturas de flujo estén disponibles en tiempo real.
                                     </p>
                                 </div>
-        
+
                                 <div class="accordion_item">
                                     <div class="accordion_header" onclick="toggleAccordion(this)">
                                         <h3 class="services_content_ours_process_text_subtitle">
@@ -150,7 +150,7 @@
                                         Verificamos la precisión de las mediciones, respuesta a cambios de flujo, funcionamiento de salidas, alarmas, y dejamos el sistema completamente operativo y documentado.
                                     </p>
                                 </div>
-        
+
                                 <button class="services_content_info_button"><i class="fa fa-phone-alt"></i> Quiero Contactarlos</button>
                                 <button class="services_content_info_button"><i class="fa fa-whatsapp" aria-hidden="true"></i> Escríbenos</button>
                             </article>
@@ -159,7 +159,7 @@
                 </div>
             </div>
         </section>
-        
+
         <section class="services_content_benefits">
             <div class="container">
                 <div class="row">

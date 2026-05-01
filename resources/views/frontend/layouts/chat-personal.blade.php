@@ -148,7 +148,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 addBotMessage('<div class="message-container">\
                     <img src="{{ asset('frontend/images/logo/AVIAzul-Marino.png') }}" alt="Avatar" class="avatar" />\
                     <div class="messages">\
-                        <div class="message">Claro estamos para ayudarte. Contáctanos a través de estos medios para una atencion mas personalizada.</div>\
+                        <div class="message">Claro estamos para ayudarte. Contáctanos a través de estos medios para una atención mas personalizada.</div>\
                     </div>\
                 </div>');
                 addOptions([

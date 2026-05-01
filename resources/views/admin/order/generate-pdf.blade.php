@@ -145,7 +145,7 @@
                                 <div class="invoice-detail-value">{{ $settings->currency_icon }}{{ @$coupon->discount ? @$coupon->discount : 0 }}</div>
                               </div>
                               <div class="invoice-detail-item">
-                                <div class="invoice-detail-name">Envio</div>
+                                <div class="invoice-detail-name">Envío</div>
                                 <div class="invoice-detail-value">{{ $settings->currency_icon }}{{ @$shipping->cost }}</div>
                               </div>
                               <hr class="mt-2 mb-2">

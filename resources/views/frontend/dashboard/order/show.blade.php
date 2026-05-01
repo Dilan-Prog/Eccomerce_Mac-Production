@@ -46,7 +46,7 @@
                                                         <div>
                                                             <h5>Fecha Del Pedido: {{ date('d-M-Y', strtotime($order->created_at)) }}</h5>
                                                             <br>
-                                                            <h6>Envio: {{ $shipping->name }}</h6>
+                                                            <h6>Envío: {{ $shipping->name }}</h6>
                                                             <h6 class="mt-3">Estado del Pedido:</h6>
                                                             @php
                                                                 switch ($order->order_status) {
@@ -141,7 +141,7 @@
                                         <div class="wsus__invoice_footer">
 
                                             <p><span>Sub Total:</span> {{ @$settings->currency_icon }} {{ formatCurrency($order->sub_total) }}</p>
-                                            <p><span>Envio(+):</span>{{ @$settings->currency_icon }} {{formatCurrency(@$shipping->cost)}} </p>
+                                            <p><span>Envío(+):</span>{{ @$settings->currency_icon }} {{formatCurrency(@$shipping->cost)}} </p>
                                             <p><span>Coupon(-):</span>{{ @$settings->currency_icon }} {{formatCurrency(@$coupon->discount ? $coupon->discount : 0)}}</p>
                                             <p><span>Monto Total:</span>{{ @$settings->currency_icon }} {{formatCurrency(@$order->amount)}} Mxn</p>
 

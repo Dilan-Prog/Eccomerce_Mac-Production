@@ -24,7 +24,7 @@
                                     el diseño del proyecto hasta la puesta en marcha— para garantizar un control fiable y
                                     eficiente de tus procesos industriales.
                                 </p>
-                                <button class="services_start_button"><i class="fa fa-phone-alt"></i> Atencion
+                                <button class="services_start_button"><i class="fa fa-phone-alt"></i> Atención
                                     Inmediata</button>
                                 <button class="services_start_button"><i class="fa fa-whatsapp"></i> Escribenos</button>
                             </article>
@@ -60,7 +60,7 @@
                                 </p>
                                 <button class="services_content_info_button"><i class="fa fa-phone-alt"></i> Contáctanos</button>
                             </div>
-                            
+
 
                         </div>
                         <div class="col-12 col-md-4 col-lg-4 col-xl-4 content_img_service_personalizate">
@@ -87,7 +87,7 @@
                             <article>
                                 <span class="services_content_ours_process_text_subtitle_one">Nuestro Proceso para</span>
                                 <h2 class="services_content_ours_process_text_title">Proyecto Llave en Mano de PLC</h2>
-        
+
                                 <div class="accordion_item">
                                     <div class="accordion_header" onclick="toggleAccordion(this)">
                                         <h3 class="services_content_ours_process_text_subtitle">
@@ -99,7 +99,7 @@
                                         Definimos especificaciones del PLC, E/S, HMI y comunicaciones según requisitos de proceso, normativas y entorno operativo.
                                     </p>
                                 </div>
-        
+
                                 <div class="accordion_item">
                                     <div class="accordion_header" onclick="toggleAccordion(this)">
                                         <h3 class="services_content_ours_process_text_subtitle">
@@ -111,7 +111,7 @@
                                         Proveemos PLC, módulos de E/S, fuentes, cables, gabinetes y HMI de acuerdo al diseño aprobado.
                                     </p>
                                 </div>
-        
+
                                 <div class="accordion_item">
                                     <div class="accordion_header" onclick="toggleAccordion(this)">
                                         <h3 class="services_content_ours_process_text_subtitle">
@@ -123,7 +123,7 @@
                                         Montamos gabinetes, tendido de cables y conexionado de PLC, E/S y HMI, cumpliendo normas de seguridad eléctrica.
                                     </p>
                                 </div>
-        
+
                                 <div class="accordion_item">
                                     <div class="accordion_header" onclick="toggleAccordion(this)">
                                         <h3 class="services_content_ours_process_text_subtitle">
@@ -135,7 +135,7 @@
                                         Desarrollamos la lógica ladder o estructurada, configuramos HMI y establecemos comunicaciones con SCADA o ERP.
                                     </p>
                                 </div>
-        
+
                                 <div class="accordion_item">
                                     <div class="accordion_header" onclick="toggleAccordion(this)">
                                         <h3 class="services_content_ours_process_text_subtitle">
@@ -147,7 +147,7 @@
                                         Ejecutamos pruebas de I/O, simulaciones de proceso y validación de secuencias antes de la puesta en marcha.
                                     </p>
                                 </div>
-        
+
                                 <div class="accordion_item">
                                     <div class="accordion_header" onclick="toggleAccordion(this)">
                                         <h3 class="services_content_ours_process_text_subtitle">
@@ -159,7 +159,7 @@
                                         Activamos el sistema en condiciones reales, entrenamos a tu equipo de operación y entregamos documentación técnica completa.
                                     </p>
                                 </div>
-        
+
                                 <button class="services_content_info_button"><i class="fa fa-phone-alt"></i> Quiero Contactarlos</button>
                                 <button class="services_content_info_button"><i class="fa fa-whatsapp" aria-hidden="true"></i> Escríbenos</button>
                             </article>
@@ -168,7 +168,7 @@
                 </div>
             </div>
         </section>
-        
+
 
         <section class="services_content_benefits">
             <div class="container">
