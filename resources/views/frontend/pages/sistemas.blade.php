@@ -23,7 +23,7 @@
               Nuestro equipo técnico garantiza precisión, cumplimiento normativo y soluciones
               adaptadas a los requerimientos térmicos de cada aplicación. Confiabilidad, eficiencia y
               respaldo técnico desde el primer momento.</p>
-              <button class="services_start_button"><i class="fa fa-phone-alt"></i> Atencion
+              <button class="services_start_button"><i class="fa fa-phone-alt"></i> Atención
               Inmediata</button>
               <button class="services_start_button"><i class="fa fa-whatsapp"></i> Escribenos</button>
             </article>

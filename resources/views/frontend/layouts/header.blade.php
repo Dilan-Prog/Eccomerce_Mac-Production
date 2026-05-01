@@ -27,13 +27,7 @@
                 <div class="col-xl-5 col-3 col-md-3 col-lg-6">
                     <div class="wsus__call_icon_area">
                         <div class="wsus__call_area">
-                            <div class="wsus__call">
-                                <i class="fas fa-user-headset"></i>
-                            </div>
-                            <div class="wsus__call_text">
-                                <p style="line-height: 22px;text-transform: none;">contacto@macdelnorte.com</p>
-                                <p><a style="color: #fff;" target="_blank" href="https://wa.link/f28njw" onclick="dataLayer.push({'event': 'whatsapp_conversion', 'action': 'click', 'label': 'whatsapp-icon'});"><i class="fa fa-whatsapp" aria-hidden="true"></i> +81-35825559</a></p>
-                            </div>
+                            
                         </div>
                         <ul class="wsus__icon_area">
 
@@ -75,7 +69,7 @@
                 <h5>sub total <span id="mini_cart_subtotal">{{ $settings->currency_icon }}{{ formatCurrency(getCartTotal()) }}</span></h5>
                 <div class="wsus__minicart_btn_area">
                     <a class="common_btn" href="{{route('cart-details')}}">Ver Carrito</a>
-                    
+
                 </div>
             </div>
         </div>

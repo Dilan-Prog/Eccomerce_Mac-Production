@@ -11,7 +11,7 @@
                     <div class="col-4">
                         <img src="{{ asset('frontend/images/iconos/box-free-home.webp') }}" alt="Garantia">
                         <h4>Env&iacute;o gratis</h4>
-                        <p>Al comprar tus productos te proporcionamos envio gratis</p>
+                        <p>Al comprar tus productos te proporcionamos envío gratis</p>
                     </div>
                     <div class="col-4">
                         <img src="{{ asset('frontend/images/iconos/how-to-pay-home.webp') }}" alt="Formas de Pago">

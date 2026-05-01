@@ -20,7 +20,7 @@
                 <div class="row">
                     <div class="col-xl-12">
                         <div class="wsus__section_header rounded-0">
-                            <h3>Lo mas vendido</h3>
+                            <h3>Lo más vendido</h3>
                             {{-- <div class="wsus__offer_countdown">
                                 <span class="end_text">ends time :</span>
                                 <div class="simply-countdown simply-countdown-one"></div>

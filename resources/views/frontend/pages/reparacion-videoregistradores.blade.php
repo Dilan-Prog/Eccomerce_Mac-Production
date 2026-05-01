@@ -23,7 +23,7 @@
                                     Diagnóstico, corrección de fallas, calibración y pruebas funcionales para garantizar el
                                     restablecimiento completo del equipo y su reintegración a la operación industrial.
                                 </p>
-                                <button class="services_start_button"><i class="fa fa-phone-alt"></i> Atencion
+                                <button class="services_start_button"><i class="fa fa-phone-alt"></i> Atención
                                     Inmediata</button>
                                 <button class="services_start_button"><i class="fa fa-whatsapp"></i> Escribenos</button>
                             </article>
@@ -89,7 +89,7 @@
                             <article>
                                 <span class="services_content_ours_process_text_subtitle_one">Nuestro Proceso para</span>
                                 <h2 class="services_content_ours_process_text_title">Reparación de Videoregistradores Industriales</h2>
-        
+
                                 <div class="accordion_item">
                                     <div class="accordion_header" onclick="toggleAccordion(this)">
                                         <h3 class="services_content_ours_process_text_subtitle">
@@ -101,7 +101,7 @@
                                         Se realiza un diagnóstico completo del videoregistrador: revisión de circuitos, entradas analógicas, salidas, fuente de alimentación y módulos de almacenamiento. Identificamos errores de lectura, fallas de comunicación, o daños eléctricos.
                                     </p>
                                 </div>
-        
+
                                 <div class="accordion_item">
                                     <div class="accordion_header" onclick="toggleAccordion(this)">
                                         <h3 class="services_content_ours_process_text_subtitle">
@@ -113,7 +113,7 @@
                                         Entregamos un informe detallado con las fallas detectadas, piezas a reemplazar o reparar, tiempos estimados y costos. Solo procedemos con autorización del cliente.
                                     </p>
                                 </div>
-        
+
                                 <div class="accordion_item">
                                     <div class="accordion_header" onclick="toggleAccordion(this)">
                                         <h3 class="services_content_ours_process_text_subtitle">
@@ -125,7 +125,7 @@
                                         Reemplazamos o reparamos fuentes, tarjetas electrónicas, convertidores A/D, módulos de entradas/salidas, pantallas y otros componentes críticos, utilizando refacciones originales o equivalentes certificados.
                                     </p>
                                 </div>
-        
+
                                 <div class="accordion_item">
                                     <div class="accordion_header" onclick="toggleAccordion(this)">
                                         <h3 class="services_content_ours_process_text_subtitle">
@@ -137,7 +137,7 @@
                                         Configuramos nuevamente los rangos de medición, tipos de señales (RTD, T/C, mA), y calibramos el equipo según sus especificaciones originales o requerimientos del cliente.
                                     </p>
                                 </div>
-        
+
                                 <div class="accordion_item">
                                     <div class="accordion_header" onclick="toggleAccordion(this)">
                                         <h3 class="services_content_ours_process_text_subtitle">
@@ -149,7 +149,7 @@
                                         Realizamos pruebas de entradas analógicas, alarmas, almacenamiento de datos y comunicación (Ethernet, USB, RS-485, etc.), verificando el correcto funcionamiento del sistema antes de su entrega.
                                     </p>
                                 </div>
-        
+
                                 <div class="accordion_item">
                                     <div class="accordion_header" onclick="toggleAccordion(this)">
                                         <h3 class="services_content_ours_process_text_subtitle">
@@ -161,7 +161,7 @@
                                         Entregamos el videoregistrador reparado, con informe de servicio, parámetros restaurados y garantía por el trabajo realizado. Opcionalmente ofrecemos mantenimiento preventivo o capacitación técnica.
                                     </p>
                                 </div>
-        
+
                                 <button class="services_content_info_button"><i class="fa fa-phone-alt"></i> Quiero Contactarlos</button>
                                 <button class="services_content_info_button"><i class="fa fa-whatsapp" aria-hidden="true"></i> Escríbenos</button>
                             </article>
@@ -170,7 +170,7 @@
                 </div>
             </div>
         </section>
-        
+
 
 
         <section class="services_content_benefits">

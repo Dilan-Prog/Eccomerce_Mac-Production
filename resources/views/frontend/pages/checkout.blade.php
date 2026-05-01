@@ -76,7 +76,7 @@
                             <div class="wsus__order_details_summery">
                                 <p>subtotal: <span>{{ $settings->currency_icon }}{{ formatCurrency(getCartTotal()) }}</span></p>
                                 <p>Descuento de Cupon:<span>{{ $settings->currency_icon }}{{ getCartDiscount() }} </span></p>
-                                <p>Costo de envio: <span id="shipping_fee">{{ $settings->currency_icon }}0</span></p>
+                                <p>Costo de envío: <span id="shipping_fee">{{ $settings->currency_icon }}0</span></p>
                                 <p><b>total:</b> <span><b id="total_amount" data-id="{{ getMainCartTotal() }}">{{ $settings->currency_icon }}{{ formatCurrency(getMainCartTotal()) }}</b></span></p>
                             </div>
                             <div class="terms_area">
@@ -259,7 +259,7 @@
         $('#submitCheckoutForm').on('click', function(e){
             e.preventDefault();
             if($('#shipping_method_id').val() == ""){
-                toastr.error('Agrega un metodo de envio')
+                toastr.error('Agrega un metodo de envío')
             }else if($('#shipping_address_id').val() == ""){
                 toastr.error('Agrega una direccion de entrega')
             }else if(!$('.agree_term').prop('checked')){
@@ -289,11 +289,11 @@
                 })
 
             }
-            
+
         })
 
 
-        
+
 
         $('#saveAddressButton').on('click', function(e){
         e.preventDefault(); // Evita el envío del formulario de forma predeterminada
@@ -305,14 +305,14 @@
 
         $button.addClass('disabled').text('Enviando...'); // Desactiva el botón y cambia el texto
         $(this).closest('form').submit(); // Envía el formulario
-        
+
     });
 
-    
 
-        
 
-        
+
+
+
     });
 </script>
 

@@ -17,13 +17,13 @@
 
     <meta name="twitter:card" content="{{asset("frontend/images/logo/AVIAzul-Celeste.png")}}">
     <meta name="twitter:site" content="@MacdelNorte">
-    <meta name="twitter:title" content="Mac Del Norte:Distribuidora y Comercializadora de Productos Industriales y Especialistas en Instrumentacion">
-    <meta name="twitter:description" content="Soluciones innovadoras en instrumentacion, automatización, medición y control con el mejor precio de la industria">
+    <meta name="twitter:title" content="Mac Del Norte:Distribuidora y Comercializadora de Productos Industriales y Especialistas en Instrumentación">
+    <meta name="twitter:description" content="Soluciones innovadoras en instrumentación, automatización, medición y control con el mejor precio de la industria">
     <meta name="twitter:image" content="{{asset("frontend/images/logo/AVIAzul-Celeste.png")}}">
 
 
-    <meta property="og:title" content="Mac Del Norte: Comercializadoras de Productos Industriales de Clase Mundial">
-    <meta property="og:description" content="Soluciones innovadoras en instrumentacion, automatización, medición y control con el mejor precio de la industria">
+    <meta property="og:title" content="Mac Del Norte: Comercializadora de Productos Industriales de Clase Mundial">
+    <meta property="og:description" content="Soluciones innovadoras en instrumentación, automatización, medición y control con el mejor precio de la industria">
     <meta property="og:image" content="{{asset('frontend/images/logo/AVIAzul-Marino.png')}}">
     <meta property="og:url" content="https://www.macdelnorte.com/">
     <meta property="og:site_name" content="Mac Del Norte">
@@ -31,14 +31,79 @@
     <meta property="article:author" content="https://www.facebook.com/macdelnorteofficial">
     <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" fetchpriority="high" onload="this.onload=null;this.rel='stylesheet'">
     <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap"></noscript>
+    <style>
+        :root {
+        --azul-oscuro: #002856;
+        --blanco: #FFFFFF;
+        --amarillo-destacado: #F6AD1C;
+        }
+                /* Contenedor principal */
+        .top-bar {
+        background: var(--azul-oscuro); /* #002856 */
+        color: var(--blanco);           /* #FFFFFF */
+        font-size: 13px;
+        padding: 8px 0;
+        }
 
+        /* Fila interior (usa la clase .container + .top-bar-inner) */
+        .top-bar-inner {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 12px;
+        }
+
+        /* Grupo izquierdo (ícono + texto de contacto/ubicación) */
+        .top-bar-left {
+        display: flex;
+        gap: 22px;
+        flex-wrap: wrap;
+        }
+
+        /* Cada ítem individual (SVG + texto) */
+        .top-bar-item {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        opacity: 0.95;
+        }
+        .top-bar-item a {
+        color: var(--blanco)
+
+        }
+
+        /* Tamaño de los SVG dentro de cada ítem */
+        .top-bar-item svg {
+        width: 14px;
+        height: 14px;
+        }
+
+        /* Grupo derecho (links de soporte / asociados) */
+        .top-bar-right {
+        display: flex;
+        gap: 18px;
+        }
+
+        /* Links del grupo derecho */
+        .top-bar-right a {
+        color: var(--blanco);      /* #FFFFFF */
+        text-decoration: none;
+        font-weight: 600;
+        }
+
+        /* Hover de los links */
+        .top-bar-right a:hover, .top-bar-item a:hover {
+        color: var(--amarillo-destacado); /* #F6AD1C */
+        }
+    </style>
     <title>
         @yield('title')
     </title>
     @yield('meta_tags')
 
     <meta name="author" content="{{$settings->site_name}}">
-    <meta name="description" content="Distribuidora y Comercializadora de prouductos Industriales, Expertos en Instrumentacion y Automatizacion Industrial, Distribuidor Autorizado de productos Industriales.Servicios de Intrumentacion de Campo mas de 7 años de experiencia.">
+    <meta name="description" content="Distribuidora y Comercializadora de productos Industriales, Expertos en Instrumentación y Automatización Industrial, Distribuidor Autorizado de productos Industriales.Servicios de Instrumentación de Campo mas de 7 años de experiencia.">
     <meta name="keywords" content="Distribuidor autorizado Honeywell, especialistas en instrumentación, automatización industrial, proveedor Honeywell México, equipos de control industrial, Dominion Electrónica, Electrónica Universal, soluciones industriales, refacciones industriales, sensores industriales">
     <meta name="robots" content="all">
     <meta name="currency" content="MXN">
@@ -84,9 +149,6 @@
     <noscript><link rel="stylesheet" href="{{ asset('frontend/css/style.css') }}"></noscript>
     <link rel="stylesheet" href="{{ asset('frontend/css/responsive.css') }}">
     <script defer type="module" src="https://cdn.jsdelivr.net/npm/@justinribeiro/lite-youtube@1/lite-youtube.min.js"></script>
-    <head>
-  <meta charset="utf-8">
-  <title>Mi Sitio</title>
 
             <!-- Captura GCLID + UTM -->
             <script>
@@ -123,6 +185,7 @@
 </head>
 <body>
         <!--header-->
+        @include('frontend.layouts.top-bar')
         @include('frontend.layouts.header')
 
         <!--menu-->
@@ -464,8 +527,8 @@
         </script>
 
     {{-- Track Conversion ads --}}
-{{--     
-    <script>
+{{--
+ew    <script>
     const googleSheetsWebhook = 'https://script.google.com/macros/s/AKfycbwp8PQWscSciD7gc5c1DMiFntOr0HuAPraK9pfzwtzqCP_4DF9azi8Fy16HfEeqxK3T/exec
 ';
 

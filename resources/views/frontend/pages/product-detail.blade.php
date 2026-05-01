@@ -98,7 +98,7 @@
                                         @break
                                     @case('best_product')
                                         <span>
-                                            Mas Vendido
+                                            Más Vendido
                                             @if($selectedCombination)
                                                 | {{ $selectedCombination->qty }} piezas
                                             @else
@@ -136,7 +136,7 @@
                                         // Inicialización de variables de variantes y precios
                                         $variantNames = [];
                                         $sku = $product->sku;
-                                        
+
                                         // Validación de precio según price_personalizated
                                         if ($product->price_personalizated == 1) {
                                             // Precio personalizado (manual)
@@ -145,7 +145,7 @@
                                             // Precio de Aspel, pero si es null usar price como fallback
                                             $price = $product->aspel_price ?? $product->price;
                                         }
-                                        
+
                                         // Validación de precio de oferta según price_offert_personalizated
                                         if ($product->price_offert_personalizated == 1) {
                                             // Precio de oferta personalizado (manual)
@@ -212,7 +212,7 @@
                                                 <span class="in_stock" itemprop="availability" content="https://schema.org/OutOfStock">Agotado</span>
                                             </p>
                                         @endif
-                                         
+
                                         {{-- Final de llamadas PHP para la obtencion de datos de las variantes del producto --}}
                                     {{-- Si tiene el Producto Descuento se muestra el precio con descuento --}}
                                     @if (checkDiscount($product))
@@ -312,10 +312,10 @@
                             {{-- Envio Gratis y tiempo de envio --}}
                                 <div class="wsus__shipping">
                                     <p class="wsus__shipping-text-one"><i class="fas fa-shipping-fast" aria-hidden="true" style="color: #00a650;"></i><span > Env&iacute;o gratis</span> a partir de $2,299.00</p>
-                                    <p>La entrega se realiza en un plazo de 1 a 3 d&iacute;as h&aacute;biles. Envio a todo el pais.</p>
+                                    <p>La entrega se realiza en un plazo de 1 a 3 d&iacute;as h&aacute;biles. Envío a todo el pais.</p>
 
                                 </div>
-                            
+
                             @php
                                     // Prepara las combinaciones para JS
                                     $jsCombinations = [];
@@ -329,7 +329,7 @@
                                             'sku' => $comb->sku,
                                             // Puedes agregar más campos si necesitas
                                         ];
-                                        
+
                                     }
                                     $activeCombinationItems = [];
                                     foreach ($productCombinations->where('status', 1) as $comb) {
@@ -418,7 +418,7 @@
                             @endforeach
                             --}}
 
-                            
+
                             {{-- Formulario para agregar al carrito --}}
                             <form class="shopping-cart-form">
                                 <div class="wsus__quentity">
@@ -475,7 +475,7 @@
                                 </a>
                                 <a class="track-conversion" data-type="telefono" href="tel:8124738768" style="width: 100%;" onclick="dataLayer.push({'event': 'Telefono_Conversion', 'telefono': '8124738768'});">
                                     <ul class="wsus__button_area">
-                                        <li><button id="button_call_product_details" type="button" class="phone_number_cart_cotize"><i class="fa fa-phone-alt" aria-hidden="true"></i> Atencion Inmediata!</button></li>
+                                        <li><button id="button_call_product_details" type="button" class="phone_number_cart_cotize"><i class="fa fa-phone-alt" aria-hidden="true"></i> Atención Inmediata!</button></li>
                                     </ul>
                                 </a>
                             </div>

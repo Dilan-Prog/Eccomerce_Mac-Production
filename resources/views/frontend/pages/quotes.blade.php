@@ -7,7 +7,7 @@
 @section('content')
     <section class="quotes-personal">
         <div class="container">
-            <h1 class="text-center mt-5">Solicita una Cotizaci&oacute;n</h1>
+            <h1 class="text-center mt-5">Solicita una Cotización</h1>
             <form class="row g-3 m-5 p-0" action="https://formsubmit.co/dilanp270105@gmail.com" method="POST" style="font-family: 'Montserrat', sans-serif;">
 
                 <div class="row m-0 p-0">
@@ -90,7 +90,7 @@
                         <option >Servicio Sistemas De Control</option>
                         <option >Servicio Medici&oacute;n De Gas</option>
                         <option >Servicio Calibraci&oacute;n Y Puesta En Marcha</option>
-                        
+
                     </select>
                 </div>
 

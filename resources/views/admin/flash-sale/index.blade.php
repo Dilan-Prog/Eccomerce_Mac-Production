@@ -60,7 +60,7 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label>Mostrar En Inicio? (Productos Mas Vendidos)</label>
+                                    <label>Mostrar En Inicio? (Productos Más Vendidos)</label>
                                     <select name="show_at_home" id="" class="form-control">
                                         <option value="">Seleccionar</option>
                                         <option value="1">Si</option>

@@ -49,7 +49,7 @@
                         <div class="text-center" style="max-width: auto; overflow: auto;">
                             <h1 id="text-big">VISI&Oacute;N</h1>
                             <p id="text-small">Nos proyectamos como la empresa l&iacute;der en el &aacute;mbito industrial,
-                                respaldando a la industria de Automatizaci&oacute;n, Control y Sistemas de Combusti&oacute;n
+                                respaldando a la industria de Automatización, Control y Sistemas de Combusti&oacute;n
                                 con el talento y experiencia de nuestro equipo. Nos comprometemos a ofrecer productos y
                                 servicios de la m&aacute;s alta calidad, consolid&aacute;ndonos como el socio
                                 estrat&eacute;gico preferido en el sector industrial.</p>
@@ -70,5 +70,5 @@
 
         </div>
     </section>
-    
+
 @endsection
