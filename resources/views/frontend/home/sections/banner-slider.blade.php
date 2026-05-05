@@ -1,97 +1,60 @@
-
-
-<section id="wsus__banner">
+<section class="hero">
     <div class="container">
-        <div class="row">
-            <div class="col-xl-12">
-                <div class="wsus__banner_content">
-                    <div class="row banner_slider">
-                        @foreach ($sliders as $slider)
-                        <div class="col-12">
-                            <a href="{{ $slider->btn_url }}">
-                                @if ($loop->first)
-                                <!-- Primera imagen cargada inmediatamente -->
-                                    <img
-                                        class="wsus__single_slider"
-                                        alt="slider image"
-                                        decoding="sync"
-                                        fetchpriority="high"
-                                        loading="eager"
-                                        src="{{ asset($slider->banner) }}"
-                                        srcset="
-                                            {{ asset($slider->banner_phone) }} 370w,
-                                            {{ asset($slider->banner_tablet) }} 720w,
-                                            {{ asset($slider->banner_laptop) }} 1140w,
-                                            {{ asset($slider->banner) }} 1250w
-                                        "
-                                        sizes="
-                                            (max-width: 576px) 370px,
-                                            (max-width: 768px) 720px,
-                                            (max-width: 992px) 1140px,
-                                            100vw
-                                        "
-                                        >
-                                @else
-                                    <!-- Imágenes diferidas (puedes aplicar lazy-loading si lo deseas) -->
-                                    <img
-                                        class="wsus__single_slider lazy-image"
-                                        alt="slider image"
-                                        decoding="async"
-                                        fetchpriority="low"
-                                        loading="lazy"
-                                        data-src="{{ asset($slider->banner) }}"
-                                        data-srcset="
-                                            {{ asset($slider->banner_phone) }} 370w,
-                                            {{ asset($slider->banner_tablet) }} 720w,
-                                            {{ asset($slider->banner_laptop) }} 1140w,
-                                            {{ asset($slider->banner) }} 1250w
-                                        "
-                                        sizes="
-                                            (max-width: 576px) 370px,
-                                            (max-width: 768px) 720px,
-                                            (max-width: 992px) 1140px,
-                                            100vw
-                                        "
-                                        >
-                                @endif
-                            </a>
-                        </div>
-                        @endforeach
+        <div class="hero-grid">
+
+            <div class="hero-text">
+                <div class="hero-badge">
+                    <svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                    </svg>
+                    Distribuidor Autorizado Honeywell · 8 años en el mercado
+                </div>
+                <h1>Instrumentación industrial con <span class="hero-accent">respaldo técnico real</span> para tu planta.</h1>
+                <p class="hero-sub">Distribuidor autorizado de Honeywell, Resideo y McDonnell &amp; Miller. Más de +2000 productos en stock con envío a todo México y soporte de ingenieros certificados.</p>
+                <div class="hero-cta-group">
+                    <a href="{{ route('products.index') }}" class="hero-btn hero-btn-primary">
+                        Ver catálogo de productos
+                        <svg viewBox="0 0 20 20" fill="currentColor" width="18" height="18">
+                            <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                        </svg>
+                    </a>
+                    <a href="{{ route('contact') }}" class="hero-btn hero-btn-secondary">
+                        Cotización con ingeniero
+                    </a>
+                </div>
+            </div>
+            <div class="hero-card">
+                <div class="hero-card-header">
+                    <div class="hero-card-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="26" height="26">
+                            <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                            <path d="M9 12l2 2 4-4"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <div class="hero-card-title">Cotización en 2 horas</div>
+                        <div class="hero-card-sub">Respuesta de un ingeniero certificado</div>
+                    </div>
+                </div>
+                <div class="hero-stat-grid">
+                    <div class="hero-stat-box">
+                        <div class="hero-stat-num">+2000</div>
+                        <div class="hero-stat-label">Productos en stock</div>
+                    </div>
+                    <div class="hero-stat-box">
+                        <div class="hero-stat-num">48h</div>
+                        <div class="hero-stat-label">Entrega promedio</div>
+                    </div>
+                    <div class="hero-stat-box">
+                        <div class="hero-stat-num">7+</div>
+                        <div class="hero-stat-label">Años en el mercado</div>
+                    </div>
+                    <div class="hero-stat-box">
+                        <div class="hero-stat-num">98%</div>
+                        <div class="hero-stat-label">Clientes satisfechos</div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </section>
-
-@push('scripts')
-<script>
-document.addEventListener("DOMContentLoaded", () => {
-    const lazyImages = document.querySelectorAll(".lazy-image");
-
-    if ("IntersectionObserver" in window) {
-        const imageObserver = new IntersectionObserver((entries, observer) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    const img = entry.target;
-                    img.src = img.dataset.src;
-                    img.srcset = img.dataset.srcset;
-                    img.classList.remove("lazy-image");
-                    observer.unobserve(img);
-                }
-            });
-        });
-
-        lazyImages.forEach(image => {
-            imageObserver.observe(image);
-        });
-    } else {
-        lazyImages.forEach(img => {
-            img.src = img.dataset.src;
-            img.srcset = img.dataset.srcset;
-        });
-    }
-});
-</script>
-@endpush
-

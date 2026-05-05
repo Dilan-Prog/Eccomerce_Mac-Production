@@ -226,22 +226,59 @@
 </div>
 
 <style>
-    .google-reviews-section { padding: 1rem 0; }
-    .section-header h3 { margin: 0 0 0.75rem 0; font-size: 1.25rem; }
-    .review-card { background:#fff; border-radius:8px; padding:16px; box-shadow:0 2px 8px rgba(0,0,0,.06); height:100%; display:flex; flex-direction:column; }
-    .review-top { display:flex; gap:12px; align-items:center; }
-    .review-avatar { width:48px; height:48px; border-radius:50%; object-fit:cover; }
-    .review-meta { display:flex; flex-direction:column; }
-    .review-author { font-weight:600; }
-    .review-rating { display:flex; gap:4px; color:#f5b301; }
-    .review-rating .star { color:#ddd; }
-    .review-rating .star.filled { color:#f5b301; }
-    .review-body { margin-top:12px; flex:1 1 auto; }
-    .review-text { margin:0; color:#333; font-size:0.95rem; }
-    .review-footer { display:flex; justify-content:space-between; align-items:center; margin-top:12px; font-size:0.85rem; color:#666; }
-    .review-link { color:#1a73e8; text-decoration:none; }
-    .opinion-swiper .swiper-slide { height: auto; }
-    @media (min-width:768px){ .opinion-swiper .swiper-slide { height:100%; } }
+    /* ── sección ── */
+    .google-reviews-section { padding: 1rem 0 2rem; }
+    .section-header h3 { margin: 0 0 1.25rem 0; font-size: 1.35rem; font-weight: 700; }
+
+    /* ── CLAVE: igualar alturas en Swiper ── */
+    .opinion-swiper .swiper-wrapper {
+        align-items: stretch;   /* todos los slides al mismo alto */
+    }
+    .opinion-swiper .swiper-slide {
+        height: auto !important; /* deja que el contenido decida y se estire */
+        display: flex;
+        flex-direction: column;
+    }
+
+    /* ── tarjeta ── */
+    .review-card {
+        background: #fff;
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 2px 10px rgba(0,0,0,.07);
+        border: 1px solid #eee;
+        display: flex;
+        flex-direction: column;
+        flex: 1;               /* ocupa todo el alto del slide */
+    }
+
+    /* ── cabecera: avatar + nombre + estrellas ── */
+    .review-top { display: flex; gap: 12px; align-items: center; }
+    .review-top > .fas { font-size: 36px; color: #ccc; flex-shrink: 0; }
+    .review-meta { display: flex; flex-direction: column; gap: 3px; }
+    .review-author { font-weight: 700; font-size: 14px; color: #1a202c; line-height: 1.2; }
+    .review-rating { display: flex; gap: 2px; }
+    .review-rating .star { color: #ddd; }
+    .review-rating .star.filled { color: #f5b301; }
+
+    /* ── cuerpo: crece para empujar el footer abajo ── */
+    .review-body { margin-top: 14px; flex: 1; }
+    .review-text { margin: 0; color: #4a5568; font-size: 0.9rem; line-height: 1.6; }
+
+    /* ── pie: siempre pegado al fondo ── */
+    .review-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 16px;
+        padding-top: 12px;
+        border-top: 1px solid #f0f0f0;
+        font-size: 0.8rem;
+        color: #999;
+    }
+    .review-time { font-style: italic; }
+    .review-link { color: #1a73e8; text-decoration: none; font-weight: 600; white-space: nowrap; }
+    .review-link:hover { text-decoration: underline; }
 </style>
 
 <script src="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.js"></script>
