@@ -15,9 +15,10 @@ class RoleMiddleware
      */
     public function handle(Request $request, Closure $next, $role): Response
     {
-        if($request->user()->role !== $role){
+        $roles = explode('|', $role);
+        if(!in_array($request->user()->role, $roles)){
             if($request->user()->role == 'admin'){
-                return redirect()->route('admin.dashbaord');
+                return redirect()->route('admin.dashboard');
             }elseif($request->user()->role == 'associate'){
                 return redirect()->route('associate.dashboard');
             }elseif($request->user()->role == 'technician'){

@@ -25,14 +25,33 @@ class ServiceReportController extends Controller
 
     public function generateFolio()
     {
-        $date   = now()->format('Ymd');
-        $prefix = "MAC-{$date}-";
-        $last   = ServiceReport::where('folio', 'like', $prefix . '%')
+        $last = ServiceReport::whereRaw("folio REGEXP '^MAC-[0-9]{4}$'")
             ->orderBy('folio', 'desc')
             ->value('folio');
-        $seq    = $last ? (intval(substr($last, -4)) + 1) : 1;
 
-        return response()->json(['folio' => $prefix . str_pad($seq, 4, '0', STR_PAD_LEFT)]);
+        $seq = $last ? (intval(substr($last, 4)) + 1) : 1;
+
+        return response()->json(['folio' => 'MAC-' . str_pad($seq, 4, '0', STR_PAD_LEFT)]);
+    }
+
+    public function uploadFotos(Request $request, $id)
+    {
+        $report = ServiceReport::where('id', $id)
+            ->where('user_id', auth()->id())
+            ->firstOrFail();
+
+        $fotos  = $report->fotos ?? ['antes' => [], 'despues' => []];
+        $tipo   = in_array($request->input('tipo'), ['antes', 'despues']) ? $request->input('tipo') : 'antes';
+
+        foreach ($request->file('fotos', []) as $file) {
+            $path          = $file->store("service-reports/{$id}", 'public');
+            $fotos[$tipo][] = ['path' => $path, 'url' => asset('storage/' . $path)];
+        }
+
+        $report->fotos = $fotos;
+        $report->save();
+
+        return response()->json(['status' => 'ok', 'fotos' => $fotos]);
     }
 
     public function store(Request $request)
