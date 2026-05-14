@@ -112,16 +112,22 @@ $('#reportsTable').DataTable({
 const BASE = '{{ url("/technician/reports") }}';
 const CSRF = document.querySelector('meta[name="csrf-token"]').content;
 
-/* Convierte una URL de imagen a base64 para jsPDF */
+/* Convierte una URL de imagen a base64 JPEG usando canvas (más confiable que fetch) */
 function urlToBase64(url) {
-  return fetch(url)
-    .then(res => res.blob())
-    .then(blob => new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload  = () => resolve(reader.result);
-      reader.onerror = reject;
-      reader.readAsDataURL(blob);
-    }));
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => {
+      try {
+        const canvas = document.createElement('canvas');
+        canvas.width  = img.naturalWidth  || img.width;
+        canvas.height = img.naturalHeight || img.height;
+        canvas.getContext('2d').drawImage(img, 0, 0);
+        resolve(canvas.toDataURL('image/jpeg', 0.85));
+      } catch(e) { reject(e); }
+    };
+    img.onerror = () => reject(new Error('No se pudo cargar: ' + url));
+    img.src = url;
+  });
 }
 
 /* Enriquece report.fotos (URLs del servidor) → {data: base64} para el PDF */
