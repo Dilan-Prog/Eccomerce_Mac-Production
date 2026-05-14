@@ -52,7 +52,7 @@ class RouteServiceProvider extends ServiceProvider
                 ->as('associate.')
                 ->group(base_path('routes/associate.php'));
 
-            Route::middleware(['web','auth','role:technician'])//technician
+            Route::middleware(['web','auth','role:technician|admin'])//technician
                 ->prefix('technician')
                 ->as('technician.')
                 ->group(base_path('routes/technician.php'));

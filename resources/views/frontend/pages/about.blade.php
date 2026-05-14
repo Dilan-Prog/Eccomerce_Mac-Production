@@ -543,13 +543,13 @@
     letter-spacing: 0.5px;
     margin-bottom: 10px;
   }
-  .event-card h4 {
+  .event-card .event-tag-title {
     font-size: 18px;
     font-weight: 800;
     margin-bottom: 4px;
     line-height: 1.2;
   }
-  .event-card:nth-child(1) h4 { font-size: 24px; }
+  .event-card:nth-child(1) .event-tag-title { font-size: 24px; }
   .event-card p { font-size: 13px; opacity: 0.9; }
   .event-icon-bg {
     position: absolute;
@@ -987,7 +987,7 @@
         <div class="placeholder-tag">Foto Real</div>
         <div class="event-content">
           <span class="event-tag">Honeywell Connect</span>
-          <h4>Convención anual Honeywell</h4>
+          <h4 class="event-tag-title">Convención anual Honeywell</h4>
           <p>Capacitación oficial en nuevas tecnologías de instrumentación</p>
         </div>
       </div>

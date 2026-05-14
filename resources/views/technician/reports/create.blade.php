@@ -108,7 +108,38 @@
     padding: 4px 10px; font-size: 12px; cursor: pointer;
   }
 
-  /* ── Summary (Step 6) ───────────────────────────────── */
+  /* ── Photo upload ───────────────────────────────────── */
+  .photo-section { margin-bottom: 28px; }
+  .photo-section-title {
+    font-size: 14px; font-weight: 700; color: var(--navy);
+    margin-bottom: 12px; display: flex; align-items: center; gap: 8px;
+  }
+  .photo-section-title span { font-size: 11px; color: #6b7280; font-weight: 400; }
+  .photo-drop {
+    border: 2px dashed #d1d5db; border-radius: 10px; padding: 28px 20px;
+    text-align: center; cursor: pointer; transition: border-color .2s, background .2s;
+    background: #f9fafb;
+  }
+  .photo-drop:hover { border-color: var(--orange); background: #fff8f3; }
+  .photo-drop i { font-size: 28px; color: #9ca3af; margin-bottom: 8px; display: block; }
+  .photo-drop p { font-size: 13px; color: #6b7280; margin: 0; }
+  .photo-drop input[type=file] { display: none; }
+  .photo-thumbs {
+    display: flex; flex-wrap: wrap; gap: 10px; margin-top: 12px;
+  }
+  .photo-thumb {
+    position: relative; width: 100px; height: 80px;
+    border-radius: 8px; overflow: hidden; border: 1px solid #e5e7eb;
+  }
+  .photo-thumb img { width: 100%; height: 100%; object-fit: cover; }
+  .photo-thumb .del-thumb {
+    position: absolute; top: 3px; right: 3px;
+    background: rgba(239,68,68,.85); color: #fff; border: none;
+    border-radius: 50%; width: 20px; height: 20px; font-size: 11px;
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+  }
+
+  /* ── Summary (Step 7) ───────────────────────────────── */
   .summary-grid {
     display: grid; grid-template-columns: 1fr 1fr; gap: 8px 20px;
     font-size: 13px; margin-bottom: 20px;
@@ -188,10 +219,14 @@
       </div>
       <div class="ps-item" data-step="5">
         <div class="ps-dot">5</div>
-        <div class="ps-label">Observaciones</div>
+        <div class="ps-label">Fotografías</div>
       </div>
       <div class="ps-item" data-step="6">
         <div class="ps-dot">6</div>
+        <div class="ps-label">Observaciones</div>
+      </div>
+      <div class="ps-item" data-step="7">
+        <div class="ps-dot">7</div>
         <div class="ps-label">Firma y PDF</div>
       </div>
     </div>
@@ -204,13 +239,9 @@
         <div class="step-title"><i class="fas fa-info-circle"></i> Paso 1 — Datos Generales</div>
         <div class="row g-3">
           <div class="col-md-8">
-            <label class="form-label">Folio <span class="text-danger">*</span></label>
-            <div class="input-group">
-              <input type="text" id="folio" class="form-control" placeholder="MAC-YYYYMMDD-XXXX" required>
-              <button type="button" class="btn btn-secondary" onclick="autoFolio()" title="Auto-generar folio">
-                <i class="fas fa-magic"></i> Auto-generar
-              </button>
-            </div>
+            <label class="form-label">Folio</label>
+            <input type="text" id="folio" class="form-control" placeholder="Generando…"
+                   readonly style="background:#f9fafb;font-weight:700;color:var(--navy);letter-spacing:.5px" required>
           </div>
           <div class="col-md-4">
             <label class="form-label">Fecha de Servicio <span class="text-danger">*</span></label>
@@ -337,11 +368,53 @@
     </div>
 
     {{-- ══════════════════════════════════════════════════
-         PASO 5 — OBSERVACIONES
+         PASO 5 — FOTOGRAFÍAS
     ══════════════════════════════════════════════════ --}}
     <div class="step-panel" id="panel-5">
       <div class="step-card">
-        <div class="step-title"><i class="fas fa-comment-alt"></i> Paso 5 — Observaciones</div>
+        <div class="step-title"><i class="fas fa-camera"></i> Paso 5 — Fotografías del Servicio</div>
+        <p class="text-muted mb-4" style="font-size:13px">
+          Adjunta fotos del equipo <strong>antes</strong> y <strong>después</strong> del servicio. Este paso es opcional.
+        </p>
+
+        {{-- Antes --}}
+        <div class="photo-section">
+          <div class="photo-section-title">
+            <i class="fas fa-arrow-circle-right" style="color:var(--amber)"></i>
+            Antes del Servicio
+            <span>(máx. 10 fotos)</span>
+          </div>
+          <div class="photo-drop" id="dropAntes" onclick="document.getElementById('inputAntes').click()">
+            <i class="fas fa-cloud-upload-alt"></i>
+            <p>Haz clic para seleccionar fotos o arrastra y suelta aquí</p>
+            <input type="file" id="inputAntes" accept="image/*" multiple onchange="handleFiles(this, 'antes')">
+          </div>
+          <div class="photo-thumbs" id="thumbsAntes"></div>
+        </div>
+
+        {{-- Después --}}
+        <div class="photo-section">
+          <div class="photo-section-title">
+            <i class="fas fa-check-circle" style="color:var(--green)"></i>
+            Después del Servicio
+            <span>(máx. 10 fotos)</span>
+          </div>
+          <div class="photo-drop" id="dropDespues" onclick="document.getElementById('inputDespues').click()">
+            <i class="fas fa-cloud-upload-alt"></i>
+            <p>Haz clic para seleccionar fotos o arrastra y suelta aquí</p>
+            <input type="file" id="inputDespues" accept="image/*" multiple onchange="handleFiles(this, 'despues')">
+          </div>
+          <div class="photo-thumbs" id="thumbsDespues"></div>
+        </div>
+      </div>
+    </div>
+
+    {{-- ══════════════════════════════════════════════════
+         PASO 6 — OBSERVACIONES
+    ══════════════════════════════════════════════════ --}}
+    <div class="step-panel" id="panel-6">
+      <div class="step-card">
+        <div class="step-title"><i class="fas fa-comment-alt"></i> Paso 6 — Observaciones y Recomendaciones</div>
         <div class="row g-3">
           <div class="col-12">
             <label class="form-label">Observaciones</label>
@@ -358,9 +431,9 @@
     </div>
 
     {{-- ══════════════════════════════════════════════════
-         PASO 6 — FIRMA Y PDF
+         PASO 7 — FIRMA Y PDF
     ══════════════════════════════════════════════════ --}}
-    <div class="step-panel" id="panel-6">
+    <div class="step-panel" id="panel-7">
       {{-- Summary --}}
       <div class="step-card">
         <div class="step-title"><i class="fas fa-list-check"></i> Resumen del Reporte</div>
@@ -413,15 +486,22 @@
 /* ══════════════════════════════════════════════════════════════
    WIZARD STATE
 ══════════════════════════════════════════════════════════════ */
-const CSRF    = document.querySelector('meta[name="csrf-token"]').content;
-const BASE    = '{{ url("/technician/reports") }}';
+const CSRF      = document.querySelector('meta[name="csrf-token"]').content;
+const BASE      = '{{ url("/technician/reports") }}';
 const FOLIO_URL = '{{ route("technician.reports.folio") }}';
+const TOTAL_STEPS = 7;
 
 let currentStep = 1;
 let reportId    = null;
 
-/* Collected data per step (for summary & PDF) */
-let s1 = {}, s2 = {}, s3 = {}, s4 = [], s5 = {};
+let s1 = {}, s2 = {}, s3 = {}, s4 = [], s6 = {};
+/* s5 = photos stored per tipo */
+let s5 = { antes: [], despues: [] }; // [{data: base64, name, file}]
+
+/* ══════════════════════════════════════════════════════════════
+   AUTO-GENERATE FOLIO ON LOAD
+══════════════════════════════════════════════════════════════ */
+document.addEventListener('DOMContentLoaded', () => autoFolio());
 
 /* ══════════════════════════════════════════════════════════════
    UI HELPERS
@@ -453,17 +533,17 @@ function showStep(n) {
   document.querySelectorAll('.ps-item').forEach(item => {
     const s = parseInt(item.dataset.step);
     item.classList.remove('active', 'done');
-    if (s < n)      item.classList.add('done');
+    if (s < n)       item.classList.add('done');
     else if (s === n) item.classList.add('active');
   });
 
   document.getElementById('btnPrev').style.display   = n > 1 ? '' : 'none';
-  document.getElementById('btnNext').style.display   = n < 6 ? '' : 'none';
-  document.getElementById('btnFinish').style.display = n === 6 ? '' : 'none';
+  document.getElementById('btnNext').style.display   = n < TOTAL_STEPS ? '' : 'none';
+  document.getElementById('btnFinish').style.display = n === TOTAL_STEPS ? '' : 'none';
 
   currentStep = n;
 
-  if (n === 6) buildSummary();
+  if (n === TOTAL_STEPS) buildSummary();
   if (n === 4 && document.getElementById('medTbody').rows.length === 0) addMedRow();
 }
 
@@ -487,6 +567,7 @@ async function saveCurrentStep() {
     case 3: return await saveStep3();
     case 4: return await saveStep4();
     case 5: return await saveStep5();
+    case 6: return await saveStep6();
     default: return true;
   }
 }
@@ -508,7 +589,6 @@ async function saveStep1() {
 
   try {
     if (!reportId) {
-      /* Primera vez → POST */
       const res = await fetch(BASE, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': CSRF, 'Accept': 'application/json' },
@@ -521,11 +601,7 @@ async function saveStep1() {
       }
       const data = await res.json();
       reportId = data.id;
-      /* Bloquear folio después de creado */
-      document.getElementById('folio').setAttribute('readonly', true);
-      document.getElementById('folio').style.background = '#f9fafb';
     } else {
-      /* Regresó al paso 1 → PUT sin folio */
       const updateData = { fecha_servicio: fecha, tipo_servicio: tipo, tecnico_nombre: tecnico };
       await putReport(updateData);
     }
@@ -557,11 +633,11 @@ async function saveStep2() {
 /* ── Step 3 ────────────────────────────────────────────────── */
 async function saveStep3() {
   s3 = {
-    equipo_descripcion:  document.getElementById('equipo_descripcion').value.trim(),
-    equipo_marca:        document.getElementById('equipo_marca').value.trim(),
-    equipo_modelo:       document.getElementById('equipo_modelo').value.trim(),
-    equipo_serie:        document.getElementById('equipo_serie').value.trim(),
-    equipo_ubicacion_tag:document.getElementById('equipo_ubicacion_tag').value.trim(),
+    equipo_descripcion:   document.getElementById('equipo_descripcion').value.trim(),
+    equipo_marca:         document.getElementById('equipo_marca').value.trim(),
+    equipo_modelo:        document.getElementById('equipo_modelo').value.trim(),
+    equipo_serie:         document.getElementById('equipo_serie').value.trim(),
+    equipo_ubicacion_tag: document.getElementById('equipo_ubicacion_tag').value.trim(),
   };
   showOverlay('Guardando datos del equipo…');
   try { await putReport(s3); return true; }
@@ -578,15 +654,44 @@ async function saveStep4() {
   finally   { hideOverlay(); }
 }
 
-/* ── Step 5 ────────────────────────────────────────────────── */
+/* ── Step 5 — Fotografías ───────────────────────────────────── */
 async function saveStep5() {
-  s5 = {
+  if (!reportId) return true;
+  const totalFotos = s5.antes.length + s5.despues.length;
+  if (totalFotos === 0) return true; // fotos opcionales
+
+  showOverlay('Subiendo fotografías…');
+  try {
+    for (const tipo of ['antes', 'despues']) {
+      const fotos = s5[tipo];
+      if (fotos.length === 0) continue;
+      const fd = new FormData();
+      fd.append('tipo', tipo);
+      fotos.forEach(p => fd.append('fotos[]', p.file));
+      await fetch(`${BASE}/${reportId}/fotos`, {
+        method: 'POST',
+        headers: { 'X-CSRF-TOKEN': CSRF },
+        body: fd,
+      });
+    }
+    return true;
+  } catch(e) {
+    showAlert('Error al subir las fotografías. Puedes continuar sin ellas.');
+    return true; // no bloquear el wizard por fotos
+  } finally {
+    hideOverlay();
+  }
+}
+
+/* ── Step 6 — Observaciones ─────────────────────────────────── */
+async function saveStep6() {
+  s6 = {
     observaciones:   document.getElementById('observaciones').value.trim(),
     recomendaciones: document.getElementById('recomendaciones').value.trim(),
   };
   showOverlay('Guardando observaciones…');
-  try { await putReport(s5); return true; }
-  catch(e) { showAlert('Error al guardar el paso 5.'); return false; }
+  try { await putReport(s6); return true; }
+  catch(e) { showAlert('Error al guardar el paso 6.'); return false; }
   finally   { hideOverlay(); }
 }
 
@@ -638,16 +743,13 @@ function addMedRow() {
   tbody.appendChild(tr);
 }
 
-function delMedRow(btn) {
-  btn.closest('tr').remove();
-}
+function delMedRow(btn) { btn.closest('tr').remove(); }
 
 function calcError(input) {
   const row = input.closest('tr');
   const ref = parseFloat(row.querySelector('.m-ref').value) || 0;
   const med = parseFloat(row.querySelector('.m-med').value) || 0;
-  const err = row.querySelector('.m-err');
-  err.value = (med - ref).toFixed(4).replace(/\.?0+$/, '');
+  row.querySelector('.m-err').value = (med - ref).toFixed(4).replace(/\.?0+$/, '');
 }
 
 function colorRes(sel) {
@@ -669,15 +771,75 @@ function getMediciones() {
 }
 
 /* ══════════════════════════════════════════════════════════════
-   STEP 6 — SUMMARY
+   PHOTO HANDLING
+══════════════════════════════════════════════════════════════ */
+function readFileAsBase64(file) {
+  return new Promise(resolve => {
+    const reader = new FileReader();
+    reader.onload = e => resolve(e.target.result);
+    reader.readAsDataURL(file);
+  });
+}
+
+async function handleFiles(input, tipo) {
+  const files = Array.from(input.files);
+  const current = s5[tipo];
+  const thumbContainer = document.getElementById(tipo === 'antes' ? 'thumbsAntes' : 'thumbsDespues');
+
+  for (const file of files) {
+    if (current.length >= 10) break;
+    const data = await readFileAsBase64(file);
+    const idx  = current.length;
+    current.push({ data, name: file.name, file });
+
+    const div = document.createElement('div');
+    div.className = 'photo-thumb';
+    div.dataset.tipo = tipo;
+    div.dataset.idx  = idx;
+    div.innerHTML = `
+      <img src="${data}" alt="${file.name}">
+      <button type="button" class="del-thumb" onclick="removePhoto('${tipo}', ${idx}, this)" title="Eliminar">
+        <i class="fas fa-times"></i>
+      </button>`;
+    thumbContainer.appendChild(div);
+  }
+  input.value = ''; // reset so same file can be re-added
+}
+
+function removePhoto(tipo, idx, btn) {
+  s5[tipo].splice(idx, 1);
+  btn.closest('.photo-thumb').remove();
+  // Re-index remaining thumbs
+  const container = document.getElementById(tipo === 'antes' ? 'thumbsAntes' : 'thumbsDespues');
+  container.querySelectorAll('.photo-thumb').forEach((el, i) => {
+    el.dataset.idx = i;
+    el.querySelector('.del-thumb').setAttribute('onclick', `removePhoto('${tipo}', ${i}, this)`);
+  });
+}
+
+/* Drag-and-drop support */
+['dropAntes', 'dropDespues'].forEach(id => {
+  const el = document.getElementById(id);
+  const tipo = id === 'dropAntes' ? 'antes' : 'despues';
+  el.addEventListener('dragover',  e => { e.preventDefault(); el.style.borderColor = 'var(--orange)'; });
+  el.addEventListener('dragleave', () => { el.style.borderColor = '#d1d5db'; });
+  el.addEventListener('drop', async e => {
+    e.preventDefault();
+    el.style.borderColor = '#d1d5db';
+    const fakeInput = { files: e.dataTransfer.files };
+    await handleFiles(fakeInput, tipo);
+  });
+});
+
+/* ══════════════════════════════════════════════════════════════
+   STEP 7 — SUMMARY
 ══════════════════════════════════════════════════════════════ */
 function buildSummary() {
-  const medRows = getMediciones(); // snapshot before user edits canvas
+  const medRows = getMediciones();
   s4 = medRows;
 
-  const v = (x) => x || '<span class="text-muted">—</span>';
-
-  const resTag = (r) => {
+  const v = x => x || '<span class="text-muted">—</span>';
+  const resTag = r => {
     if (r === 'OK')    return `<span style="background:var(--green);color:#fff;padding:1px 8px;border-radius:4px;font-size:11px;font-weight:700">OK</span>`;
     if (r === 'NO OK') return `<span style="background:var(--red);color:#fff;padding:1px 8px;border-radius:4px;font-size:11px;font-weight:700">NO OK</span>`;
     if (r === 'N/A')   return `<span style="background:#e5e7eb;color:#6b7280;padding:1px 8px;border-radius:4px;font-size:11px">N/A</span>`;
@@ -706,6 +868,15 @@ function buildSummary() {
   } else {
     medHTML = '<p class="text-muted" style="font-size:13px">Sin mediciones registradas.</p>';
   }
+
+  const fotosAntes   = s5.antes.length;
+  const fotosDespues = s5.despues.length;
+  const fotosHTML    = (fotosAntes + fotosDespues) > 0
+    ? `<p style="font-size:13px;margin:0">
+        <strong>Antes:</strong> ${fotosAntes} foto(s) &nbsp;|&nbsp;
+        <strong>Después:</strong> ${fotosDespues} foto(s)
+       </p>`
+    : '<p class="text-muted" style="font-size:13px;margin:0">Sin fotografías adjuntas.</p>';
 
   document.getElementById('summaryContent').innerHTML = `
     <div class="summary-section">
@@ -743,9 +914,13 @@ function buildSummary() {
       ${medHTML}
     </div>
     <div class="summary-section">
-      <div class="summary-section-title">5. Observaciones y Recomendaciones</div>
-      <p style="font-size:13px"><strong>Observaciones:</strong><br>${v(s5.observaciones)}</p>
-      <p style="font-size:13px;margin:0"><strong>Recomendaciones:</strong><br>${v(s5.recomendaciones)}</p>
+      <div class="summary-section-title">5. Fotografías</div>
+      ${fotosHTML}
+    </div>
+    <div class="summary-section">
+      <div class="summary-section-title">6. Observaciones y Recomendaciones</div>
+      <p style="font-size:13px"><strong>Observaciones:</strong><br>${v(s6.observaciones)}</p>
+      <p style="font-size:13px;margin:0"><strong>Recomendaciones:</strong><br>${v(s6.recomendaciones)}</p>
     </div>
   `;
 }
@@ -805,17 +980,16 @@ function isCanvasBlank() {
 ══════════════════════════════════════════════════════════════ */
 async function finishReport() {
   if (!reportId) { showAlert('Error: el reporte no fue creado correctamente.'); return; }
-  if (isCanvasBlank()) { showAlert('Por favor, firma en el area de firma antes de continuar.'); return; }
+  if (isCanvasBlank()) { showAlert('Por favor, firma en el área de firma antes de continuar.'); return; }
 
   if (typeof window.jspdf === 'undefined') {
-    showAlert('La libreria PDF no esta disponible. Recarga la pagina e intenta de nuevo.');
+    showAlert('La librería PDF no está disponible. Recarga la página e intenta de nuevo.');
     return;
   }
 
   const canvas    = document.getElementById('signatureCanvas');
   const firmaData = canvas.toDataURL('image/png');
 
-  /* ── 1. Guardar en BD ── */
   showOverlay('Guardando firma y completando reporte...');
   let reportFull = null;
 
@@ -830,8 +1004,9 @@ async function finishReport() {
       throw new Error(errJson.message || 'HTTP ' + res.status);
     }
     const data = await res.json();
-    reportFull = Object.assign({}, data.report, s1, s2, s3, s5, {
+    reportFull = Object.assign({}, data.report, s1, s2, s3, s6, {
       mediciones:    Array.isArray(s4) ? s4 : [],
+      fotos:         s5,
       firma_tecnico: firmaData,
     });
   } catch(e) {
@@ -840,7 +1015,6 @@ async function finishReport() {
     return;
   }
 
-  /* ── 2. Generar PDF ── */
   hideOverlay();
   showOverlay('Generando PDF...');
 
@@ -858,175 +1032,245 @@ async function finishReport() {
 }
 
 /* ══════════════════════════════════════════════════════════════
-   PDF GENERATION (jsPDF 2.5.2)
+   PDF GENERATION (jsPDF 2.5.1)
 ══════════════════════════════════════════════════════════════ */
+function imgFormat(dataUrl) {
+  const mime = (dataUrl || '').split(';')[0].split(':')[1] || '';
+  if (mime === 'image/png')  return 'PNG';
+  if (mime === 'image/webp') return 'WEBP';
+  return 'JPEG';
+}
+
 function generatePDF(report) {
   const { jsPDF } = window.jspdf;
-  const doc    = new jsPDF({ unit: 'mm', format: 'a4' });
-  const pageW  = 210;
-  const margin = 14;
-  const bottom = 283;
-  let y = 0, pageNum = 1;
+  const doc = new jsPDF({ unit: 'mm', format: 'a4' });
+  const PW  = 210;
+  const M   = 14;
+  const BOT = 281; // safe bottom limit before footer
+  let y = 0;
 
+  /* ── Header ── */
   function addHeader() {
     doc.setFillColor(10, 22, 40);
-    doc.rect(0, 0, pageW, 27, 'F');
-    doc.setFont('helvetica', 'bold'); doc.setFontSize(16); doc.setTextColor(255, 255, 255);
-    doc.text('MAC DEL NORTE', margin, 12);
-    doc.setFontSize(7); doc.setFont('helvetica', 'normal');
-    doc.text('MONITOREO, AUTOMATIZACIÓN Y CONTROLES DEL NORTE, S.A.P.I. de C.V.  ·  RFC: NMA180313M46', margin, 19);
-    doc.text('C. Castaño 718, Ebanos Norte 2do Sector, Apodaca N.L. CP.66612  ·  +81-3582-5559  ·  contacto@macdelnorte.com', margin, 24);
+    doc.rect(0, 0, PW, 28, 'F');
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(15); doc.setTextColor(255, 255, 255);
+    doc.text('MAC DEL NORTE', M, 11);
+    doc.setFontSize(6.5); doc.setFont('helvetica', 'normal');
+    doc.text('MONITOREO, AUTOMATIZACIÓN Y CONTROLES DEL NORTE, S.A.P.I. de C.V.  ·  RFC: NMA180313M46', M, 18);
+    doc.text('C. Castaño 718, Ebanos Norte 2do Sector, Apodaca N.L. CP.66612  ·  +81-3582-5559  ·  contacto@macdelnorte.com', M, 23);
     doc.setFillColor(244, 121, 32);
-    doc.rect(0, 27, pageW, 2.5, 'F');
+    doc.rect(0, 28, PW, 2, 'F');
   }
 
-  function newPage() {
-    doc.addPage(); pageNum++; addHeader(); y = 34;
-  }
-
-  function chk(h) { if (y + h > bottom) newPage(); }
-
-  function secTitle(title) {
-    chk(12);
-    doc.setFillColor(10, 22, 40); doc.rect(margin, y, pageW - margin * 2, 7, 'F');
-    doc.setFont('helvetica', 'bold'); doc.setFontSize(9); doc.setTextColor(255, 255, 255);
-    doc.text(title, margin + 3, y + 5); y += 9;
-  }
-
-  function row2(l1, v1, l2, v2) {
-    chk(6);
-    doc.setFont('helvetica', 'bold'); doc.setFontSize(8); doc.setTextColor(80, 80, 80);
-    doc.text(l1 + ':', margin, y);
-    doc.setFont('helvetica', 'normal'); doc.setTextColor(0);
-    doc.text(String(v1 || '-'), margin + 32, y);
-    if (l2) {
-      doc.setFont('helvetica', 'bold'); doc.setTextColor(80, 80, 80);
-      doc.text(l2 + ':', 112, y);
-      doc.setFont('helvetica', 'normal'); doc.setTextColor(0);
-      doc.text(String(v2 || '-'), 145, y);
+  /* ── Footer (added at the end for all pages) ── */
+  function addFooters() {
+    const total = doc.getNumberOfPages();
+    for (let p = 1; p <= total; p++) {
+      doc.setPage(p);
+      doc.setFillColor(10, 22, 40);
+      doc.rect(0, 285, PW, 12, 'F');
+      doc.setFont('helvetica', 'normal'); doc.setFontSize(7); doc.setTextColor(255, 255, 255);
+      doc.text('MAC DEL NORTE  |  contacto@macdelnorte.com  |  www.macdelnorte.com', PW / 2, 290, { align: 'center' });
+      doc.text('Página ' + p + ' de ' + total, PW / 2, 294.5, { align: 'center' });
     }
-    y += 6;
   }
 
-  function row1(label, val) {
-    chk(6);
+  function newPage() { doc.addPage(); addHeader(); y = 35; }
+  function chk(h)    { if (y + h > BOT) newPage(); }
+
+  /* ── Section title bar ── */
+  function secTitle(num, label) {
+    chk(14);
+    doc.setFillColor(10, 22, 40);
+    doc.rect(M, y, PW - M * 2, 8, 'F');
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(8.5); doc.setTextColor(244, 121, 32);
+    doc.text(num + '.', M + 3, y + 5.5);
+    doc.setTextColor(255, 255, 255);
+    doc.text(label, M + 11, y + 5.5);
+    y += 11;
+  }
+
+  /* ── Two-column field row ── */
+  function row2(l1, v1, l2, v2) {
+    chk(8);
+    const half = (PW - M * 2) / 2;
+    [[l1, v1, M], [l2, v2, M + half]].forEach(([label, val, x]) => {
+      if (!label) return;
+      doc.setFont('helvetica', 'bold'); doc.setFontSize(7.5); doc.setTextColor(100, 100, 100);
+      doc.text(label + ':', x, y);
+      doc.setFont('helvetica', 'normal'); doc.setTextColor(20, 20, 20);
+      doc.text(String(val || '—').substring(0, 42), x, y + 4.5);
+    });
+    y += 10;
+  }
+
+  /* ── Full-width text block ── */
+  function textBlock(label, val) {
+    const lines = doc.splitTextToSize(String(val || 'Sin información.'), PW - M * 2);
+    chk(lines.length * 4.5 + 10);
     doc.setFont('helvetica', 'bold'); doc.setFontSize(8); doc.setTextColor(80, 80, 80);
-    doc.text(label + ':', margin, y);
-    doc.setFont('helvetica', 'normal'); doc.setTextColor(0);
-    const lines = doc.splitTextToSize(String(val || '-'), pageW - margin - 50);
-    doc.text(lines, margin + 32, y);
-    y += lines.length * 4.5 + 1.5;
+    doc.text(label + ':', M, y); y += 5;
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(8); doc.setTextColor(20, 20, 20);
+    doc.text(lines, M, y);
+    y += lines.length * 4.5 + 5;
   }
 
-  /* ── Page 1 ── */
-  addHeader(); y = 34;
-  doc.setFont('helvetica', 'bold'); doc.setFontSize(13); doc.setTextColor(10, 22, 40);
-  doc.text('REPORTE DE SERVICIO TÉCNICO', 105, y, { align: 'center' }); y += 9;
+  /* ══════════════════ PAGE 1 ══════════════════ */
+  addHeader(); y = 35;
 
-  secTitle('1. DATOS GENERALES');
+  /* Title */
+  doc.setFont('helvetica', 'bold'); doc.setFontSize(14); doc.setTextColor(10, 22, 40);
+  doc.text('REPORTE DE SERVICIO TÉCNICO', PW / 2, y, { align: 'center' }); y += 7;
+  doc.setFont('helvetica', 'bold'); doc.setFontSize(10); doc.setTextColor(244, 121, 32);
+  doc.text('Folio: ' + (report.folio || '—'), PW / 2, y, { align: 'center' }); y += 8;
+
+  /* 1. Datos Generales */
+  secTitle('1', 'DATOS GENERALES');
   const fecha = (report.fecha_servicio || '').toString().substring(0, 10);
   row2('Folio', report.folio, 'Fecha de Servicio', fecha);
-  row2('Tipo de Servicio', report.tipo_servicio, 'Técnico', report.tecnico_nombre);
-  y += 2;
+  row2('Tipo de Servicio', report.tipo_servicio, 'Técnico Responsable', report.tecnico_nombre);
 
-  secTitle('2. DATOS DEL CLIENTE');
+  /* 2. Cliente */
+  secTitle('2', 'DATOS DEL CLIENTE');
   row2('Nombre', report.cliente_nombre, 'Empresa', report.cliente_empresa);
   row2('RFC', report.cliente_rfc, 'Teléfono', report.cliente_telefono);
-  row1('Dirección', report.cliente_direccion);
-  row1('Email', report.cliente_email);
-  y += 2;
+  row2('Email', report.cliente_email, null, null);
+  textBlock('Dirección', report.cliente_direccion);
 
-  secTitle('3. DATOS DEL EQUIPO');
-  row1('Descripción', report.equipo_descripcion);
+  /* 3. Equipo */
+  secTitle('3', 'DATOS DEL EQUIPO');
+  textBlock('Descripción del Equipo', report.equipo_descripcion);
   row2('Marca', report.equipo_marca, 'Modelo', report.equipo_modelo);
-  row2('No. de Serie', report.equipo_serie, 'Ubicación/TAG', report.equipo_ubicacion_tag);
-  y += 2;
+  row2('No. de Serie', report.equipo_serie, 'Ubicación / TAG', report.equipo_ubicacion_tag);
 
-  /* ── Mediciones table (manual) ── */
-  secTitle('4. TABLA DE MEDICIONES');
+  /* 4. Mediciones */
+  secTitle('4', 'TABLA DE MEDICIONES');
   const meds = Array.isArray(report.mediciones) ? report.mediciones : [];
-  const colH = ['Punto', 'Val. Referencia', 'Val. Medido', 'Error', 'Tolerancia', 'Resultado'];
-  const cw   = [33, 27, 27, 22, 22, 25];
-  const rH   = 6.5, hH = 7;
-  let needMedHead = true;
 
-  function drawMedHead() {
-    chk(hH + rH);
-    let cx = margin;
-    colH.forEach((c, i) => {
-      doc.setFillColor(30, 51, 85); doc.rect(cx, y, cw[i], hH, 'F');
-      doc.setFont('helvetica', 'bold'); doc.setFontSize(7.5); doc.setTextColor(255, 255, 255);
-      doc.text(c, cx + 2, y + 5); cx += cw[i];
+  if (meds.length === 0) {
+    chk(8);
+    doc.setFont('helvetica', 'italic'); doc.setFontSize(8); doc.setTextColor(150, 150, 150);
+    doc.text('Sin mediciones registradas.', M, y); y += 8;
+  } else {
+    const cols = ['Punto', 'Val. Referencia', 'Val. Medido', 'Error', 'Tolerancia', 'Resultado'];
+    const cw   = [36, 28, 28, 22, 22, 26]; // total = 162 = PW - M*2
+    const rH   = 6.5, hH = 8;
+    let drawHead = true;
+
+    function medHead() {
+      chk(hH + rH);
+      let cx = M;
+      cols.forEach((c, i) => {
+        doc.setFillColor(30, 51, 85); doc.rect(cx, y, cw[i], hH, 'F');
+        doc.setFont('helvetica', 'bold'); doc.setFontSize(7.5); doc.setTextColor(255, 255, 255);
+        doc.text(c, cx + 2, y + 5.5); cx += cw[i];
+      });
+      y += hH; drawHead = false;
+    }
+    medHead();
+
+    meds.forEach((m, idx) => {
+      if (y + rH > BOT) { newPage(); drawHead = true; }
+      if (drawHead) medHead();
+      const cells = [m.punto, m.valor_referencia, m.valor_medido, m.error, m.tolerancia, m.resultado];
+      let cx = M;
+      cells.forEach((cell, i) => {
+        let bg = idx % 2 === 0 ? [248, 250, 252] : [237, 241, 245];
+        let tc = [20, 20, 20], fw = 'normal';
+        if (i === 5) {
+          if (cell === 'OK')    { bg = [16, 185, 129]; tc = [255, 255, 255]; fw = 'bold'; }
+          if (cell === 'NO OK') { bg = [239, 68, 68];  tc = [255, 255, 255]; fw = 'bold'; }
+          if (cell === 'N/A')   { bg = [200, 200, 200]; tc = [60, 60, 60]; }
+        }
+        doc.setFillColor(...bg); doc.setDrawColor(210, 210, 210); doc.setLineWidth(0.2);
+        doc.rect(cx, y, cw[i], rH, 'FD');
+        doc.setFont('helvetica', fw); doc.setFontSize(7.5); doc.setTextColor(...tc);
+        doc.text(String(cell || '—'), cx + 2, y + 4.5); cx += cw[i];
+      });
+      y += rH;
     });
-    y += hH; needMedHead = false;
+    y += 5;
   }
-  drawMedHead();
 
-  meds.forEach((m, idx) => {
-    if (y + rH > bottom) { newPage(); needMedHead = true; }
-    if (needMedHead) drawMedHead();
-    const cells = [m.punto, m.valor_referencia, m.valor_medido, m.error, m.tolerancia, m.resultado];
-    let cx = margin;
-    cells.forEach((cell, i) => {
-      let bg = idx % 2 === 0 ? [250, 250, 250] : [240, 242, 245];
-      let tc = [20, 20, 20], fw = 'normal';
-      if (i === 5) {
-        if (cell === 'OK')    { bg = [16, 185, 129]; tc = [255, 255, 255]; fw = 'bold'; }
-        if (cell === 'NO OK') { bg = [239, 68, 68];  tc = [255, 255, 255]; fw = 'bold'; }
-        if (cell === 'N/A')   { bg = [180, 180, 180]; tc = [60, 60, 60]; }
+  /* 5. Fotografías */
+  const fotosA = (report.fotos && Array.isArray(report.fotos.antes))   ? report.fotos.antes   : [];
+  const fotosD = (report.fotos && Array.isArray(report.fotos.despues)) ? report.fotos.despues : [];
+
+  secTitle('5', 'FOTOGRAFÍAS — ANTES Y DESPUÉS DEL SERVICIO');
+
+  if (fotosA.length === 0 && fotosD.length === 0) {
+    chk(8);
+    doc.setFont('helvetica', 'italic'); doc.setFontSize(8); doc.setTextColor(150, 150, 150);
+    doc.text('Sin fotografías adjuntas.', M, y); y += 8;
+  } else {
+    /* 3 images per row, maintain 4:3 aspect */
+    const perRow = 3;
+    const gap    = 3;
+    const iW     = (PW - M * 2 - gap * (perRow - 1)) / perRow; // ~57mm
+    const iH     = Math.round(iW * 0.72);                       // ~41mm
+
+    function photoGrid(groupLabel, photos) {
+      if (photos.length === 0) return;
+      chk(10);
+      doc.setFont('helvetica', 'bold'); doc.setFontSize(8.5); doc.setTextColor(50, 50, 50);
+      doc.text(groupLabel, M, y); y += 5;
+
+      for (let i = 0; i < photos.length; i++) {
+        const col = i % perRow;
+        /* Start of a new row — advance y first */
+        if (col === 0 && i > 0) y += iH + gap;
+        /* Ensure space for this row */
+        if (col === 0) chk(iH + gap + 4);
+        const cx = M + col * (iW + gap);
+        try {
+          const fmt = imgFormat(photos[i].data);
+          doc.addImage(photos[i].data, fmt, cx, y, iW, iH);
+          doc.setDrawColor(200, 200, 200); doc.setLineWidth(0.3);
+          doc.rect(cx, y, iW, iH); // thin border
+        } catch (e) {
+          /* skip unreadable image */
+          doc.setFillColor(240, 240, 240);
+          doc.rect(cx, y, iW, iH, 'F');
+          doc.setFont('helvetica', 'italic'); doc.setFontSize(7); doc.setTextColor(160, 160, 160);
+          doc.text('Imagen no disponible', cx + 2, y + iH / 2);
+        }
       }
-      doc.setFillColor(...bg); doc.setDrawColor(210, 210, 210);
-      doc.rect(cx, y, cw[i], rH, 'FD');
-      doc.setFont('helvetica', fw); doc.setFontSize(7.5); doc.setTextColor(...tc);
-      doc.text(String(cell || '-'), cx + 2, y + 4.5); cx += cw[i];
-    });
-    y += rH;
-  });
-  y += 4;
+      y += iH + gap + 6;
+    }
 
-  /* ── Section 5 ── */
-  secTitle('5. OBSERVACIONES Y RECOMENDACIONES');
-  doc.setFont('helvetica', 'bold'); doc.setFontSize(8); doc.setTextColor(60, 60, 60);
-  doc.text('Observaciones:', margin, y); y += 5;
-  doc.setFont('helvetica', 'normal'); doc.setTextColor(0);
-  const obsL = doc.splitTextToSize(report.observaciones || 'Sin observaciones.', pageW - margin * 2);
-  chk(obsL.length * 4.5); doc.text(obsL, margin, y); y += obsL.length * 4.5 + 4;
-  doc.setFont('helvetica', 'bold'); doc.setFontSize(8); doc.setTextColor(60, 60, 60);
-  doc.text('Recomendaciones:', margin, y); y += 5;
-  doc.setFont('helvetica', 'normal'); doc.setTextColor(0);
-  const recL = doc.splitTextToSize(report.recomendaciones || 'Sin recomendaciones.', pageW - margin * 2);
-  chk(recL.length * 4.5); doc.text(recL, margin, y); y += recL.length * 4.5 + 6;
+    photoGrid('Antes del Servicio:', fotosA);
+    photoGrid('Después del Servicio:', fotosD);
+  }
 
-  /* ── Section 6: Firmas ── */
-  chk(55); secTitle('6. FIRMAS');
+  /* 6. Observaciones */
+  secTitle('6', 'OBSERVACIONES Y RECOMENDACIONES');
+  textBlock('Observaciones', report.observaciones);
+  textBlock('Recomendaciones', report.recomendaciones);
+
+  /* 7. Firmas */
+  chk(52);
+  secTitle('7', 'FIRMAS');
   if (report.firma_tecnico) {
-    try { doc.addImage(report.firma_tecnico, 'PNG', margin, y, 82, 32); } catch(e) {}
+    try { doc.addImage(report.firma_tecnico, 'PNG', M, y, 82, 30); } catch (e) {}
   }
-  doc.setDrawColor(0);
-  doc.line(margin,     y + 32, margin + 82, y + 32);
-  doc.line(112,        y + 32, 196,         y + 32);
-  doc.setFont('helvetica', 'normal'); doc.setFontSize(8); doc.setTextColor(60, 60, 60);
-  doc.text('Firma y Sello del Técnico Responsable', margin,     y + 37);
-  doc.text('Firma y Sello del Cliente',             112,        y + 37);
-  y += 45;
+  doc.setDrawColor(80, 80, 80); doc.setLineWidth(0.5);
+  doc.line(M,   y + 30, M + 82, y + 30);
+  doc.line(112, y + 30, PW - M, y + 30);
+  doc.setFont('helvetica', 'normal'); doc.setFontSize(7.5); doc.setTextColor(80, 80, 80);
+  doc.text('Firma y Sello del Técnico Responsable', M,   y + 35);
+  doc.text('Firma y Sello del Cliente',                  112, y + 35);
+  y += 44;
 
-  /* ── Section 7: Garantía ── */
-  chk(30); secTitle('7. CLÁUSULA DE GARANTÍA (30 DÍAS)');
+  /* 8. Garantía */
+  chk(28);
+  secTitle('8', 'CLÁUSULA DE GARANTÍA (30 DÍAS)');
+  const gar = 'MAC DEL NORTE garantiza los servicios prestados en el presente reporte por un período de 30 (treinta) días naturales contados a partir de la fecha de servicio indicada. Esta garantía cubre exclusivamente los trabajos de mano de obra y los materiales suministrados por MAC DEL NORTE. No cubre daños causados por mal uso, negligencia, accidentes, modificaciones no autorizadas, desgaste natural o causas ajenas al servicio prestado. Contacto: contacto@macdelnorte.com  ·  +81-3582-5559.';
+  const garL = doc.splitTextToSize(gar, PW - M * 2);
+  chk(garL.length * 4);
   doc.setFont('helvetica', 'normal'); doc.setFontSize(7.5); doc.setTextColor(60, 60, 60);
-  const gar = 'MAC DEL NORTE garantiza los servicios prestados en el presente reporte por un período de 30 (treinta) días naturales contados a partir de la fecha de servicio indicada. Esta garantía cubre exclusivamente los trabajos de mano de obra y los materiales suministrados por MAC DEL NORTE. No cubre daños causados por mal uso, negligencia, accidentes, modificaciones no autorizadas, desgaste natural o causas ajenas al servicio prestado. Para hacer válida esta garantía, comuníquese a contacto@macdelnorte.com o llame al +81-3582-5559.';
-  const garL = doc.splitTextToSize(gar, pageW - margin * 2);
-  chk(garL.length * 4); doc.text(garL, margin, y);
+  doc.text(garL, M, y);
 
-  /* ── Footers en todas las páginas ── */
-  const total = doc.getNumberOfPages();
-  for (let p = 1; p <= total; p++) {
-    doc.setPage(p);
-    doc.setFillColor(10, 22, 40); doc.rect(0, 286, pageW, 11, 'F');
-    doc.setFont('helvetica', 'normal'); doc.setFontSize(7); doc.setTextColor(255, 255, 255);
-    doc.text('MAC DEL NORTE  |  contacto@macdelnorte.com  |  www.macdelnorte.com', 105, 291, { align: 'center' });
-    doc.text('Pagina ' + p + ' de ' + total, 105, 295, { align: 'center' });
-  }
-
+  addFooters();
   doc.save('Reporte_' + (report.folio || 'MAC') + '.pdf');
 }
 </script>
