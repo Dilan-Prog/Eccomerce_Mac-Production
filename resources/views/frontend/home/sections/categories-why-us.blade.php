@@ -365,10 +365,13 @@
   <div class="container">
     <div class="brands-bar-title">Distribuidor autorizado de las marcas líderes</div>
     <div class="brands-bar-list">
-      <div class="brand-logo-item honeywell">Honeywell</div>
+        @foreach ($brands as $brand)
+          <div class="brand-logo-item"><img src="{{ $brand->logo }}" alt="{{ $brand->name }}"></div>
+        @endforeach
+      {{-- <div class="brand-logo-item honeywell">Honeywell</div>
       <div class="brand-logo-item">Resideo</div>
       <div class="brand-logo-item">McDonnell &amp; Miller</div>
-      <div class="brand-logo-item">+ marcas</div>
+      <div class="brand-logo-item">+ marcas</div> --}}
     </div>
   </div>
 </section>

@@ -62,17 +62,15 @@ a,
 ul,
 ol,
 li,
-span :not(.hero-accent, .about-hero .about-hero-title .accent, .about-hero-sub, .intro-text h2, .intro-text h2 .accent, .why-content p) {
+span :not(.hero-accent, .about-hero .about-hero-title .accent, .about-hero-sub, .intro-text h2, .intro-text h2 .accent, .why-content p, .event-card .event-tag-title) {
   margin: 0;
   padding: 0;
-  color: #353535;
 }
 
 span:not(.hero-accent, .about-hero .about-hero-title .accent, .about-hero-sub,.intro-text h2, .intro-text h2 .accent, .why-content p, .section-sub),
 p:not(.hero-accent, .about-hero .about-hero-title .accent, .about-hero-sub,.intro-text h2, .intro-text h2 .accent, .why-content p, .section-sub) {
   font-size: 16px;
   font-weight: 400;
-  color: #5c5b5b;
   line-height: 27px;
 }
 
@@ -1452,7 +1450,7 @@ footer {
 }
 
 .wsus__footer_content .action,
-.wsus__footer_content p {
+.wsus__footer_content a {
   display: block;
   font-size: 15px;
   margin-top: 10px;

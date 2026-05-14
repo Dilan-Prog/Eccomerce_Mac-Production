@@ -14,6 +14,7 @@ Route::prefix('reports')->name('reports.')->group(function () {
     Route::post('/',             [ServiceReportController::class, 'store'])->name('store');
     Route::put('/{id}',          [ServiceReportController::class, 'update'])->name('update');
     Route::post('/{id}/complete',[ServiceReportController::class, 'complete'])->name('complete');
+    Route::post('/{id}/fotos',  [ServiceReportController::class, 'uploadFotos'])->name('fotos');
     Route::get('/{id}',          [ServiceReportController::class, 'show'])->name('show');
     Route::delete('/{id}',       [ServiceReportController::class, 'destroy'])->name('destroy');
 });
