@@ -276,7 +276,7 @@
                                                             @endif
                                                         </span>
                                                     </span>
-                                                        <span class="mdn_iva">IVA INCLUIDO</span>
+                                                    <span class="mdn_iva">IVA INCLUIDO</span>
                                                     </p>
 
                                                     <p>

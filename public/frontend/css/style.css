@@ -62,14 +62,14 @@ a,
 ul,
 ol,
 li,
-span {
+span :not(.hero-accent, .about-hero .about-hero-title .accent, .about-hero-sub, .intro-text h2, .intro-text h2 .accent, .why-content p) {
   margin: 0;
   padding: 0;
   color: #353535;
 }
 
-span:not(.hero-accent),
-p {
+span:not(.hero-accent, .about-hero .about-hero-title .accent, .about-hero-sub,.intro-text h2, .intro-text h2 .accent, .why-content p, .section-sub),
+p:not(.hero-accent, .about-hero .about-hero-title .accent, .about-hero-sub,.intro-text h2, .intro-text h2 .accent, .why-content p, .section-sub) {
   font-size: 16px;
   font-weight: 400;
   color: #5c5b5b;

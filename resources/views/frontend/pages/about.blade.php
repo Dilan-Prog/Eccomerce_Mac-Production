@@ -60,19 +60,21 @@
     letter-spacing: 1.5px;
     margin-bottom: 20px;
   }
-  .about-hero h1 {
+  .about-hero .about-hero-title {
     font-size: 52px;
     line-height: 1.1;
     font-weight: 800;
     margin-bottom: 20px;
     letter-spacing: -1.5px;
+    color: var(--blanco);
   }
-  .about-hero h1 .accent {
+  .about-hero .about-hero-title .accent {
     color: var(--amarillo-destacado);
     position: relative;
     white-space: nowrap;
+
   }
-  .about-hero h1 .accent::after {
+  .about-hero .about-hero-title .accent::after {
     content: '';
     position: absolute;
     bottom: -3px;
@@ -88,6 +90,7 @@
     opacity: 0.9;
     max-width: 700px;
     margin: 0 auto;
+    color: var(--blanco)
   }
 
   /* ========== INTRO QUIÉNES SOMOS ========== */
@@ -190,6 +193,7 @@
     margin-bottom: 12px;
   }
   .stats-section h3 {
+    color: var(--blanco)
     font-size: 32px;
     font-weight: 800;
     margin-bottom: 48px;
@@ -470,6 +474,19 @@
     color: var(--azul-principal);
     overflow: hidden;
   }
+  .map-embed {
+    width: 100%;
+    height: 100%;
+    border-radius: 12px;
+    overflow: hidden;
+    display: block;
+  }
+  .map-embed iframe {
+    width: 100%;
+    height: 100%;
+    border: 0;
+    display: block;
+  }
 
   /* ========== GALERÍA EVENTOS / CONVENCIONES ========== */
   .events-section {
@@ -594,11 +611,13 @@
     letter-spacing: -2px;
   }
   .why-content h4 {
+    color: var(--blanco);
     font-size: 18px;
     font-weight: 800;
     margin-bottom: 8px;
   }
   .why-content p {
+    color: var(--blanco);
     font-size: 14px;
     line-height: 1.6;
     opacity: 0.9;
@@ -699,7 +718,7 @@
   <div class="container">
     <div class="about-hero-inner">
       <div class="about-eyebrow">Quiénes somos</div>
-      <h1>7+ años respaldando a la <span class="accent">industria mexicana</span></h1>
+      <h1 class="about-hero-title">7+ años respaldando a la <span class="accent">industria mexicana</span></h1>
       <p class="about-hero-sub">
         Más que un distribuidor, somos el aliado técnico que tu planta necesita. Conoce al equipo que está detrás de cada cotización, cada envío y cada solución que entregamos.
       </p>
@@ -897,7 +916,10 @@
           </div>
           <div class="location-item-content">
             <h4>Dirección</h4>
-            <p>[Calle, Número, Colonia]<br>Monterrey, Nuevo León, C.P. [XXXXX]<br>México</p>
+            <p>C. Castaño No.718
+
+                Col. Ebanos Norte 2do Sector
+                Apodaca N.L. CP.66612</p>
           </div>
         </div>
 
@@ -934,9 +956,12 @@
 
       <div class="location-map">
         <div class="placeholder-tag">Mapa Real</div>
-        <div class="placeholder-content">
-          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.5 3l-.16.03L15 5.1 9 3 3.36 4.9c-.21.07-.36.25-.36.48V20.5c0 .28.22.5.5.5l.16-.03L9 18.9l6 2.1 5.64-1.9c.21-.07.36-.25.36-.48V3.5c0-.28-.22-.5-.5-.5zM10 5.47l4 1.4v11.66l-4-1.4V5.47zm-5 .99l3-1.01v11.7l-3 1.16V6.46zm14 11.08l-3 1.01V6.86l3-1.16v11.84z"/></svg>
-          <p>Mapa interactivo de Google<br>con la ubicación exacta</p>
+        <div class="map-embed" aria-label="Mapa de ubicación de Mac del Norte">
+          <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d4256.577954706007!2d-100.2386896883936!3d25.791539977238703!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8662edfface52d03%3A0x694b9c59e1a56759!2sMac%20del%20Norte!5e1!3m2!1ses-419!2smx!4v1778727380707!5m2!1ses-419!2smx" allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+          <noscript>
+            <p>Activa JavaScript para ver el mapa o <a href="https://maps.app.goo.gl/TNtHa1UAiSx8CcLf8" target="_blank" rel="noopener noreferrer">abrir en Google Maps</a>.</p>
+          </noscript>
+          <p style="margin-top:8px;font-size:13px;text-align:center;"><a href="https://maps.app.goo.gl/TNtHa1UAiSx8CcLf8" target="_blank" rel="noopener noreferrer">Abrir en Google Maps</a></p>
         </div>
       </div>
 
