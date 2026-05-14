@@ -12,12 +12,13 @@ class ServiceReport extends Model
         'cliente_nombre', 'cliente_empresa', 'cliente_rfc', 'cliente_direccion',
         'cliente_telefono', 'cliente_email',
         'equipo_descripcion', 'equipo_marca', 'equipo_modelo', 'equipo_serie', 'equipo_ubicacion_tag',
-        'mediciones', 'observaciones', 'recomendaciones', 'firma_tecnico', 'status',
+        'mediciones', 'fotos', 'observaciones', 'recomendaciones', 'firma_tecnico', 'status',
     ];
 
     protected $casts = [
-        'mediciones'      => 'array',
-        'fecha_servicio'  => 'date:Y-m-d',
+        'mediciones'     => 'array',
+        'fotos'          => 'array',
+        'fecha_servicio' => 'date:Y-m-d',
     ];
 
     public function user()
