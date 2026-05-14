@@ -24,3 +24,4 @@ notepad .gitignore
 /storage/**/*.log
 storage/laravel*.log
 *.log
+/.claude
