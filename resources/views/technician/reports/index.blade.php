@@ -5,7 +5,25 @@
 <link rel="stylesheet" href="//cdn.datatables.net/2.0.5/css/dataTables.bootstrap5.css">
 <style>
   :root {
-    --navy:#0A1628;--navy-mid:#1E3355;--orange:#F47920;--green:#10B981;--red:#EF4444;--amber:#F59E0B;
+    --Primary-Blue-Dark:#00468c;
+    --Secondaryy-Blue-Dark:#7fbae7;
+    --Tercer-Blue-Dark:#53bdfe;
+    --Secondary-Blue-Low:#bfdfff;
+    --Primary-Blue-Dark-Hover:#005ab5;
+    --Backgroud-pure-white:#ffffff;
+    --Background-black-2:#212121;
+    --Backgroud-black:#000000;
+    --Backgroud-Product:#ececec;
+    --Background:#f4f4f4;
+    --White-Box:#ffffff;
+    --Text-Primary-white:#ffffff;
+    --Text-Primary-black:#000000;
+    --Text-Secondary:#313131;
+    /* Aliases semánticos */
+    --navy:     var(--Primary-Blue-Dark);
+    --navy-mid: var(--Primary-Blue-Dark-Hover);
+    --orange:   var(--Tercer-Blue-Dark);
+    --green:#10B981;--red:#EF4444;--amber:#F59E0B;
   }
   .dt-search input { border:1px solid #ddd;border-radius:6px;padding:4px 10px; }
   #pdfModal .modal-header { background:var(--navy);color:#fff; }
@@ -27,7 +45,7 @@
     <div class="card-body">
       <div class="table-responsive">
         <table id="reportsTable" class="table table-striped table-hover w-100">
-          <thead style="background:var(--navy);color:#fff">
+          <thead >
             <tr>
               <th>Folio</th>
               <th>Fecha Servicio</th>
@@ -229,14 +247,14 @@ function generatePDF(report) {
   let y = 0;
 
   function addHeader() {
-    doc.setFillColor(10, 22, 40);
+    doc.setFillColor(0, 70, 140);
     doc.rect(0, 0, PW, 28, 'F');
     doc.setFont('helvetica', 'bold'); doc.setFontSize(15); doc.setTextColor(255, 255, 255);
     doc.text('MAC DEL NORTE', M, 11);
     doc.setFontSize(6.5); doc.setFont('helvetica', 'normal');
     doc.text('MONITOREO, AUTOMATIZACIÓN Y CONTROLES DEL NORTE, S.A.P.I. de C.V.  ·  RFC: NMA180313M46', M, 18);
     doc.text('C. Castaño 718, Ebanos Norte 2do Sector, Apodaca N.L. CP.66612  ·  +81-3582-5559  ·  contacto@macdelnorte.com', M, 23);
-    doc.setFillColor(244, 121, 32);
+    doc.setFillColor(83, 189, 254);
     doc.rect(0, 28, PW, 2, 'F');
   }
 
@@ -244,7 +262,7 @@ function generatePDF(report) {
     const total = doc.getNumberOfPages();
     for (let p = 1; p <= total; p++) {
       doc.setPage(p);
-      doc.setFillColor(10, 22, 40);
+      doc.setFillColor(0, 70, 140);
       doc.rect(0, 285, PW, 12, 'F');
       doc.setFont('helvetica', 'normal'); doc.setFontSize(7); doc.setTextColor(255, 255, 255);
       doc.text('MAC DEL NORTE  |  contacto@macdelnorte.com  |  www.macdelnorte.com', PW / 2, 290, { align: 'center' });
@@ -257,9 +275,9 @@ function generatePDF(report) {
 
   function secTitle(num, label) {
     chk(14);
-    doc.setFillColor(10, 22, 40);
+    doc.setFillColor(0, 70, 140);
     doc.rect(M, y, PW - M * 2, 8, 'F');
-    doc.setFont('helvetica', 'bold'); doc.setFontSize(8.5); doc.setTextColor(244, 121, 32);
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(8.5); doc.setTextColor(83, 189, 254);
     doc.text(num + '.', M + 3, y + 5.5);
     doc.setTextColor(255, 255, 255);
     doc.text(label, M + 11, y + 5.5);
@@ -294,7 +312,7 @@ function generatePDF(report) {
 
   doc.setFont('helvetica', 'bold'); doc.setFontSize(14); doc.setTextColor(10, 22, 40);
   doc.text('REPORTE DE SERVICIO TÉCNICO', PW / 2, y, { align: 'center' }); y += 7;
-  doc.setFont('helvetica', 'bold'); doc.setFontSize(10); doc.setTextColor(244, 121, 32);
+  doc.setFont('helvetica', 'bold'); doc.setFontSize(10); doc.setTextColor(83, 189, 254);
   doc.text('Folio: ' + (report.folio || '—'), PW / 2, y, { align: 'center' }); y += 8;
 
   /* 1. Datos Generales */
@@ -334,7 +352,7 @@ function generatePDF(report) {
       chk(hH + rH);
       let cx = M;
       cols.forEach((c, i) => {
-        doc.setFillColor(30, 51, 85); doc.rect(cx, y, cw[i], hH, 'F');
+        doc.setFillColor(0, 90, 181); doc.rect(cx, y, cw[i], hH, 'F');
         doc.setFont('helvetica', 'bold'); doc.setFontSize(7.5); doc.setTextColor(255, 255, 255);
         doc.text(c, cx + 2, y + 5.5); cx += cw[i];
       });

@@ -4,8 +4,26 @@
 @push('styles')
 <style>
   :root {
-    --navy:#0A1628;--navy-light:#162240;--navy-mid:#1E3355;
-    --orange:#F47920;--orange-hover:#E06810;
+    --Primary-Blue-Dark:#00468c;
+    --Secondaryy-Blue-Dark:#7fbae7;
+    --Tercer-Blue-Dark:#53bdfe;
+    --Secondary-Blue-Low:#bfdfff;
+    --Primary-Blue-Dark-Hover:#005ab5;
+    --Backgroud-pure-white:#ffffff;
+    --Background-black-2:#212121;
+    --Backgroud-black:#000000;
+    --Backgroud-Product:#ececec;
+    --Background:#f4f4f4;
+    --White-Box:#ffffff;
+    --Text-Primary-white:#ffffff;
+    --Text-Primary-black:#000000;
+    --Text-Secondary:#313131;
+    /* Aliases semánticos */
+    --navy:         var(--Primary-Blue-Dark);
+    --navy-light:   var(--Primary-Blue-Dark);
+    --navy-mid:     var(--Primary-Blue-Dark-Hover);
+    --orange:       var(--Tercer-Blue-Dark);
+    --orange-hover: var(--Primary-Blue-Dark-Hover);
     --green:#10B981;--red:#EF4444;--amber:#F59E0B;
   }
 
@@ -362,7 +380,7 @@
           </table>
         </div>
         <button type="button" class="btn-add-row" onclick="addMedRow()">
-          <i class="fas fa-plus"></i> Agregar fila
+          <i class="fas fa-plus"></i> Agregar punto
         </button>
       </div>
     </div>
@@ -1051,15 +1069,25 @@ function generatePDF(report) {
 
   /* ── Header ── */
   function addHeader() {
-    doc.setFillColor(10, 22, 40);
+    doc.setFillColor(0, 70, 140);
     doc.rect(0, 0, PW, 28, 'F');
     doc.setFont('helvetica', 'bold'); doc.setFontSize(15); doc.setTextColor(255, 255, 255);
     doc.text('MAC DEL NORTE', M, 11);
     doc.setFontSize(6.5); doc.setFont('helvetica', 'normal');
     doc.text('MONITOREO, AUTOMATIZACIÓN Y CONTROLES DEL NORTE, S.A.P.I. de C.V.  ·  RFC: NMA180313M46', M, 18);
     doc.text('C. Castaño 718, Ebanos Norte 2do Sector, Apodaca N.L. CP.66612  ·  +81-3582-5559  ·  contacto@macdelnorte.com', M, 23);
-    doc.setFillColor(244, 121, 32);
+    doc.setFillColor(83, 189, 254);
     doc.rect(0, 28, PW, 2, 'F');
+    /* Badge: upper-right corner — "REPORTE DE SERVICIO" + folio */
+    const bW = 54, bH = 20, bX = PW - 12 - bW, bY = 4;
+    doc.setFillColor(83, 189, 254);
+    doc.rect(bX, bY, bW, bH, 'F');
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(5.5); doc.setTextColor(0, 70, 140);
+    doc.text('REPORTE DE SERVICIO', bX + bW / 2, bY + 6, { align: 'center' });
+    doc.setDrawColor(0, 70, 140); doc.setLineWidth(0.3);
+    doc.line(bX + 4, bY + 8, bX + bW - 4, bY + 8);
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(9); doc.setTextColor(0, 70, 140);
+    doc.text(String(report.folio || '—'), bX + bW / 2, bY + 16, { align: 'center' });
   }
 
   /* ── Footer (added at the end for all pages) ── */
@@ -1067,7 +1095,7 @@ function generatePDF(report) {
     const total = doc.getNumberOfPages();
     for (let p = 1; p <= total; p++) {
       doc.setPage(p);
-      doc.setFillColor(10, 22, 40);
+      doc.setFillColor(0, 70, 140);
       doc.rect(0, 285, PW, 12, 'F');
       doc.setFont('helvetica', 'normal'); doc.setFontSize(7); doc.setTextColor(255, 255, 255);
       doc.text('MAC DEL NORTE  |  contacto@macdelnorte.com  |  www.macdelnorte.com', PW / 2, 290, { align: 'center' });
@@ -1081,27 +1109,30 @@ function generatePDF(report) {
   /* ── Section title bar ── */
   function secTitle(num, label) {
     chk(14);
-    doc.setFillColor(10, 22, 40);
+    doc.setFillColor(0, 70, 140);
     doc.rect(M, y, PW - M * 2, 8, 'F');
-    doc.setFont('helvetica', 'bold'); doc.setFontSize(8.5); doc.setTextColor(244, 121, 32);
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(8.5); doc.setTextColor(83, 189, 254);
     doc.text(num + '.', M + 3, y + 5.5);
     doc.setTextColor(255, 255, 255);
     doc.text(label, M + 11, y + 5.5);
     y += 11;
   }
 
-  /* ── Two-column field row ── */
+  /* ── Two-column field row (card style: label small/grey above, value dark below) ── */
   function row2(l1, v1, l2, v2) {
-    chk(8);
+    chk(16);
     const half = (PW - M * 2) / 2;
+    const cardW = half - 2;
     [[l1, v1, M], [l2, v2, M + half]].forEach(([label, val, x]) => {
       if (!label) return;
+      doc.setFillColor(248, 250, 252);
+      doc.rect(x, y, cardW, 14, 'F');
       doc.setFont('helvetica', 'bold'); doc.setFontSize(7.5); doc.setTextColor(100, 100, 100);
-      doc.text(label + ':', x, y);
+      doc.text(label + ':', x + 3, y + 4.5);
       doc.setFont('helvetica', 'normal'); doc.setTextColor(20, 20, 20);
-      doc.text(String(val || '—').substring(0, 42), x, y + 4.5);
+      doc.text(String(val || '—').substring(0, 38), x + 3, y + 10.5);
     });
-    y += 10;
+    y += 17;
   }
 
   /* ── Full-width text block ── */
@@ -1118,15 +1149,31 @@ function generatePDF(report) {
   /* ══════════════════ PAGE 1 ══════════════════ */
   addHeader(); y = 35;
 
-  /* Title */
-  doc.setFont('helvetica', 'bold'); doc.setFontSize(14); doc.setTextColor(10, 22, 40);
-  doc.text('REPORTE DE SERVICIO TÉCNICO', PW / 2, y, { align: 'center' }); y += 7;
-  doc.setFont('helvetica', 'bold'); doc.setFontSize(10); doc.setTextColor(244, 121, 32);
-  doc.text('Folio: ' + (report.folio || '—'), PW / 2, y, { align: 'center' }); y += 8;
+  /* ── Metadata bar: Fecha | Tipo de Servicio | Técnico ── */
+  const fecha = (report.fecha_servicio || '').toString().substring(0, 10);
+  const metaH = 14;
+  doc.setFillColor(241, 245, 249);
+  doc.rect(M, y, PW - M * 2, metaH, 'F');
+  const metaCW = (PW - M * 2) / 3;
+  [
+    { label: 'FECHA DE SERVICIO', value: fecha || '—' },
+    { label: 'TIPO DE SERVICIO',  value: report.tipo_servicio || '—' },
+    { label: 'TÉCNICO',           value: report.tecnico_nombre || '—' },
+  ].forEach((item, i) => {
+    const mx = M + i * metaCW;
+    if (i > 0) {
+      doc.setDrawColor(200, 210, 220); doc.setLineWidth(0.3);
+      doc.line(mx, y + 2, mx, y + metaH - 2);
+    }
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(6); doc.setTextColor(100, 120, 140);
+    doc.text(item.label, mx + metaCW / 2, y + 5, { align: 'center' });
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(7.5); doc.setTextColor(20, 20, 20);
+    doc.text(String(item.value).substring(0, 26), mx + metaCW / 2, y + 11, { align: 'center' });
+  });
+  y += metaH + 5;
 
   /* 1. Datos Generales */
   secTitle('1', 'DATOS GENERALES');
-  const fecha = (report.fecha_servicio || '').toString().substring(0, 10);
   row2('Folio', report.folio, 'Fecha de Servicio', fecha);
   row2('Tipo de Servicio', report.tipo_servicio, 'Técnico Responsable', report.tecnico_nombre);
 
@@ -1138,7 +1185,7 @@ function generatePDF(report) {
   textBlock('Dirección', report.cliente_direccion);
 
   /* 3. Equipo */
-  secTitle('3', 'DATOS DEL EQUIPO');
+  secTitle('3', 'DATOS DEL EQUIPO / INSTRUMENTO');
   textBlock('Descripción del Equipo', report.equipo_descripcion);
   row2('Marca', report.equipo_marca, 'Modelo', report.equipo_modelo);
   row2('No. de Serie', report.equipo_serie, 'Ubicación / TAG', report.equipo_ubicacion_tag);
@@ -1154,16 +1201,16 @@ function generatePDF(report) {
   } else {
     const cols = ['Punto', 'Val. Referencia', 'Val. Medido', 'Error', 'Tolerancia', 'Resultado'];
     const cw   = [36, 28, 28, 22, 22, 26]; // total = 162 = PW - M*2
-    const rH   = 6.5, hH = 8;
+    const rH   = 7, hH = 9; // increased row/header height for better padding
     let drawHead = true;
 
     function medHead() {
       chk(hH + rH);
       let cx = M;
       cols.forEach((c, i) => {
-        doc.setFillColor(30, 51, 85); doc.rect(cx, y, cw[i], hH, 'F');
+        doc.setFillColor(0, 90, 181); doc.rect(cx, y, cw[i], hH, 'F');
         doc.setFont('helvetica', 'bold'); doc.setFontSize(7.5); doc.setTextColor(255, 255, 255);
-        doc.text(c, cx + 2, y + 5.5); cx += cw[i];
+        doc.text(c, cx + 3, y + 6); cx += cw[i];
       });
       y += hH; drawHead = false;
     }
@@ -1185,18 +1232,34 @@ function generatePDF(report) {
         doc.setFillColor(...bg); doc.setDrawColor(210, 210, 210); doc.setLineWidth(0.2);
         doc.rect(cx, y, cw[i], rH, 'FD');
         doc.setFont('helvetica', fw); doc.setFontSize(7.5); doc.setTextColor(...tc);
-        doc.text(String(cell || '—'), cx + 2, y + 4.5); cx += cw[i];
+        doc.text(String(cell || '—'), cx + 3, y + 5); cx += cw[i];
       });
       y += rH;
     });
-    y += 5;
+
+    /* Result banner */
+    const hasNoOk = meds.some(m => m.resultado === 'NO OK');
+    const allOk   = meds.length > 0 && meds.every(m => m.resultado === 'OK' || m.resultado === 'N/A');
+    chk(12);
+    if (hasNoOk) {
+      doc.setFillColor(239, 68, 68);
+      doc.rect(M, y + 2, PW - M * 2, 8, 'F');
+      doc.setFont('helvetica', 'bold'); doc.setFontSize(7.5); doc.setTextColor(255, 255, 255);
+      doc.text('SE DETECTARON PUNTOS FUERA DE TOLERANCIA', PW / 2, y + 7.5, { align: 'center' });
+    } else if (allOk) {
+      doc.setFillColor(16, 185, 129);
+      doc.rect(M, y + 2, PW - M * 2, 8, 'F');
+      doc.setFont('helvetica', 'bold'); doc.setFontSize(7.5); doc.setTextColor(255, 255, 255);
+      doc.text('TODOS LOS PUNTOS DENTRO DE TOLERANCIA — EQUIPO CONFORME', PW / 2, y + 7.5, { align: 'center' });
+    }
+    y += 14;
   }
 
   /* 5. Fotografías */
   const fotosA = (report.fotos && Array.isArray(report.fotos.antes))   ? report.fotos.antes   : [];
   const fotosD = (report.fotos && Array.isArray(report.fotos.despues)) ? report.fotos.despues : [];
 
-  secTitle('5', 'FOTOGRAFÍAS — ANTES Y DESPUÉS DEL SERVICIO');
+  secTitle('5', 'FOTOGRAFÍAS');
 
   if (fotosA.length === 0 && fotosD.length === 0) {
     chk(8);
@@ -1208,6 +1271,7 @@ function generatePDF(report) {
     const gap    = 3;
     const iW     = (PW - M * 2 - gap * (perRow - 1)) / perRow; // ~57mm
     const iH     = Math.round(iW * 0.72);                       // ~41mm
+    const lblH   = 6; // vertical space reserved for "Foto N" label
 
     function photoGrid(groupLabel, photos) {
       if (photos.length === 0) return;
@@ -1218,9 +1282,9 @@ function generatePDF(report) {
       for (let i = 0; i < photos.length; i++) {
         const col = i % perRow;
         /* Start of a new row — advance y first */
-        if (col === 0 && i > 0) y += iH + gap;
-        /* Ensure space for this row */
-        if (col === 0) chk(iH + gap + 4);
+        if (col === 0 && i > 0) y += iH + lblH + gap;
+        /* Ensure space for this row + label */
+        if (col === 0) chk(iH + lblH + gap + 4);
         const cx = M + col * (iW + gap);
         try {
           const fmt = imgFormat(photos[i].data);
@@ -1234,8 +1298,11 @@ function generatePDF(report) {
           doc.setFont('helvetica', 'italic'); doc.setFontSize(7); doc.setTextColor(160, 160, 160);
           doc.text('Imagen no disponible', cx + 2, y + iH / 2);
         }
+        /* "Foto N" label centred below each image */
+        doc.setFont('helvetica', 'normal'); doc.setFontSize(7); doc.setTextColor(100, 100, 100);
+        doc.text('Foto ' + (i + 1), cx + iW / 2, y + iH + 4.5, { align: 'center' });
       }
-      y += iH + gap + 6;
+      y += iH + lblH + gap + 6;
     }
 
     photoGrid('Antes del Servicio:', fotosA);
@@ -1247,28 +1314,34 @@ function generatePDF(report) {
   textBlock('Observaciones', report.observaciones);
   textBlock('Recomendaciones', report.recomendaciones);
 
-  /* 7. Firmas */
+  /* 7. Firmas — técnico únicamente, centrado */
   chk(52);
   secTitle('7', 'FIRMAS');
+  const sigW = 90, sigH = 30;
+  const sigX = (PW - sigW) / 2;
   if (report.firma_tecnico) {
-    try { doc.addImage(report.firma_tecnico, 'PNG', M, y, 82, 30); } catch (e) {}
+    try { doc.addImage(report.firma_tecnico, 'PNG', sigX, y, sigW, sigH); } catch (e) {}
   }
   doc.setDrawColor(80, 80, 80); doc.setLineWidth(0.5);
-  doc.line(M,   y + 30, M + 82, y + 30);
-  doc.line(112, y + 30, PW - M, y + 30);
+  doc.line(sigX, y + sigH, sigX + sigW, y + sigH);
+  doc.setFont('helvetica', 'bold'); doc.setFontSize(7.5); doc.setTextColor(20, 20, 20);
+  doc.text(report.tecnico_nombre || 'Técnico Responsable', PW / 2, y + sigH + 6, { align: 'center' });
   doc.setFont('helvetica', 'normal'); doc.setFontSize(7.5); doc.setTextColor(80, 80, 80);
-  doc.text('Firma y Sello del Técnico Responsable', M,   y + 35);
-  doc.text('Firma y Sello del Cliente',                  112, y + 35);
-  y += 44;
+  doc.text('Firma del Técnico Responsable', PW / 2, y + sigH + 11, { align: 'center' });
+  y += sigH + 20;
 
-  /* 8. Garantía */
-  chk(28);
+  /* 8. Garantía — con recuadro de borde destacado */
+  chk(32);
   secTitle('8', 'CLÁUSULA DE GARANTÍA (30 DÍAS)');
   const gar = 'MAC DEL NORTE garantiza los servicios prestados en el presente reporte por un período de 30 (treinta) días naturales contados a partir de la fecha de servicio indicada. Esta garantía cubre exclusivamente los trabajos de mano de obra y los materiales suministrados por MAC DEL NORTE. No cubre daños causados por mal uso, negligencia, accidentes, modificaciones no autorizadas, desgaste natural o causas ajenas al servicio prestado. Contacto: contacto@macdelnorte.com  ·  +81-3582-5559.';
-  const garL = doc.splitTextToSize(gar, PW - M * 2);
-  chk(garL.length * 4);
+  const garL    = doc.splitTextToSize(gar, PW - M * 2 - 6);
+  const garBoxH = garL.length * 4.5 + 8;
+  chk(garBoxH + 4);
+  doc.setDrawColor(80, 80, 80); doc.setLineWidth(0.4);
+  doc.rect(M, y - 1, PW - M * 2, garBoxH, 'S');
   doc.setFont('helvetica', 'normal'); doc.setFontSize(7.5); doc.setTextColor(60, 60, 60);
-  doc.text(garL, M, y);
+  doc.text(garL, M + 3, y + 4);
+  y += garBoxH + 4;
 
   addFooters();
   doc.save('Reporte_' + (report.folio || 'MAC') + '.pdf');

@@ -16,25 +16,41 @@
 
   <style>
     :root {
-      --navy:         #0A1628;
-      --navy-light:   #162240;
-      --navy-mid:     #1E3355;
-      --orange:       #F47920;
-      --orange-hover: #E06810;
+      /* Paleta MAC DEL NORTE */
+      --Primary-Blue-Dark:       #00468c;
+      --Secondaryy-Blue-Dark:    #7fbae7;
+      --Tercer-Blue-Dark:        #53bdfe;
+      --Secondary-Blue-Low:      #bfdfff;
+      --Primary-Blue-Dark-Hover: #005ab5;
+      --Backgroud-pure-white:    #ffffff;
+      --Background-black-2:      #212121;
+      --Backgroud-black:         #000000;
+      --Backgroud-Product:       #ececec;
+      --Background:              #f4f4f4;
+      --White-Box:               #ffffff;
+      --Text-Primary-white:      #ffffff;
+      --Text-Primary-black:      #000000;
+      --Text-Secondary:          #313131;
+      /* Aliases semánticos */
+      --navy:         var(--Primary-Blue-Dark);
+      --navy-light:   var(--Primary-Blue-Dark);
+      --navy-mid:     var(--Primary-Blue-Dark-Hover);
+      --orange:       var(--Tercer-Blue-Dark);
+      --orange-hover: var(--Primary-Blue-Dark-Hover);
       --green:        #10B981;
       --red:          #EF4444;
       --amber:        #F59E0B;
     }
     .navbar-bg,
-    .main-navbar           { background: var(--navy) !important; }
-    .main-sidebar          { background: var(--navy-light) !important; }
-    .sidebar-brand a       { color: var(--orange) !important; font-weight: 700; letter-spacing: 1px; }
+    .main-navbar           { background: var(--Primary-Blue-Dark) !important; }
+    .main-sidebar          { background: var(--Primary-Blue-Dark) !important; }
+    .sidebar-brand a       { color: var(--Tercer-Blue-Dark) !important; font-weight: 700; letter-spacing: 1px; }
     .sidebar-menu li a     { color: #b0bec5 !important; }
     .sidebar-menu li a:hover,
-    .sidebar-menu li.active > a { color: #fff !important; background: var(--navy-mid) !important; }
-    .sidebar-menu .menu-header { color: var(--orange) !important; font-size: 11px; font-weight: 700; letter-spacing: 1px; }
+    .sidebar-menu li.active > a { color: #fff !important; background: var(--Primary-Blue-Dark-Hover) !important; }
+    .sidebar-menu .menu-header { color: var(--Tercer-Blue-Dark) !important; font-size: 11px; font-weight: 700; letter-spacing: 1px; }
     .nav-link-user         { color: #fff !important; }
-    .badge-orange          { background: var(--orange); color: #fff; }
+    .badge-orange          { background: var(--Tercer-Blue-Dark); color: #fff; }
   </style>
 </head>
 <body>
