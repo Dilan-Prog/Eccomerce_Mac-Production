@@ -1330,18 +1330,36 @@ function generatePDF(report) {
   doc.text('Firma del Técnico Responsable', PW / 2, y + sigH + 11, { align: 'center' });
   y += sigH + 20;
 
-  /* 8. Garantía — con recuadro de borde destacado */
-  chk(32);
-  secTitle('8', 'CLÁUSULA DE GARANTÍA (30 DÍAS)');
+  /* 8. Garantía — calcular altura primero para verificar espacio total de una vez */
   const gar = 'MAC DEL NORTE garantiza los servicios prestados en el presente reporte por un período de 30 (treinta) días naturales contados a partir de la fecha de servicio indicada. Esta garantía cubre exclusivamente los trabajos de mano de obra y los materiales suministrados por MAC DEL NORTE. No cubre daños causados por mal uso, negligencia, accidentes, modificaciones no autorizadas, desgaste natural o causas ajenas al servicio prestado. Contacto: contacto@macdelnorte.com  ·  +81-3582-5559.';
-  const garL    = doc.splitTextToSize(gar, PW - M * 2 - 6);
-  const garBoxH = garL.length * 4.5 + 8;
-  chk(garBoxH + 4);
-  doc.setDrawColor(80, 80, 80); doc.setLineWidth(0.4);
-  doc.rect(M, y - 1, PW - M * 2, garBoxH, 'S');
-  doc.setFont('helvetica', 'normal'); doc.setFontSize(7.5); doc.setTextColor(60, 60, 60);
-  doc.text(garL, M + 3, y + 4);
-  y += garBoxH + 4;
+  const garL = doc.splitTextToSize(gar, PW - M * 2 - 10);
+  const garH = garL.length * 4.5 + 16;
+  chk(11 + garH + 4); // secTitle (11mm) + recuadro + margen, todo junto para no partir entre páginas
+
+  // Fondo amarillo claro + borde ámbar
+  doc.setFillColor(255, 251, 235);
+  doc.setDrawColor(245, 158, 11);
+  doc.setLineWidth(0.8);
+  doc.roundedRect(M, y, PW - M * 2, garH, 2, 2, 'FD');
+
+  // Ícono de advertencia + título en ámbar bold
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(8.5);
+  doc.setTextColor(245, 158, 11);
+  doc.text('GARANTÍA DE SERVICIO — 30 DÍAS NATURALES', M + 5, y + 7);
+
+  // Línea separadora sutil
+  doc.setDrawColor(245, 158, 11);
+  doc.setLineWidth(0.3);
+  doc.line(M + 5, y + 9.5, M + PW - M * 2 - 5, y + 9.5);
+
+  // Texto del cuerpo en oscuro
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(7.5);
+  doc.setTextColor(60, 60, 60);
+  doc.text(garL, M + 5, y + 14);
+
+  y += garH + 4;
 
   addFooters();
   doc.save('Reporte_' + (report.folio || 'MAC') + '.pdf');
