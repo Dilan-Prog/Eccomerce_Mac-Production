@@ -25,13 +25,15 @@ class ServiceReportController extends Controller
 
     public function generateFolio()
     {
-        $last = ServiceReport::whereRaw("folio REGEXP '^MAC-[0-9]{4}$'")
-            ->orderBy('folio', 'desc')
+        $last = ServiceReport::whereRaw("folio REGEXP '^MAC-[0-9]{8}-[0-9]{4}$'")
+            ->orderBy('id', 'desc')
             ->value('folio');
 
-        $seq = $last ? (intval(substr($last, 4)) + 1) : 1;
+        $seq = $last ? (intval(substr($last, -4)) + 1) : 1;
 
-        return response()->json(['folio' => 'MAC-' . str_pad($seq, 4, '0', STR_PAD_LEFT)]);
+        $date = now()->format('Ymd');
+
+        return response()->json(['folio' => 'MAC-' . $date . '-' . str_pad($seq, 4, '0', STR_PAD_LEFT)]);
     }
 
     public function uploadFotos(Request $request, $id)

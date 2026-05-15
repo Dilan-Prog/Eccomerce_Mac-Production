@@ -61,7 +61,7 @@
         <div class="card-body p-0">
           <div class="table-responsive">
             <table class="table table-striped mb-0">
-              <thead style="background:var(--navy);color:#fff">
+              <thead>
                 <tr>
                   <th>Folio</th>
                   <th>Fecha</th>
