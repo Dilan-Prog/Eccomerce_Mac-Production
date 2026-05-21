@@ -130,22 +130,55 @@ $('#reportsTable').DataTable({
 const BASE = '{{ url("/technician/reports") }}';
 const CSRF = document.querySelector('meta[name="csrf-token"]').content;
 
-/* Convierte una URL de imagen a base64 JPEG usando canvas (más confiable que fetch) */
-function urlToBase64(url) {
-  return new Promise((resolve, reject) => {
-    const img = new Image();
-    img.onload = () => {
-      try {
-        const canvas = document.createElement('canvas');
-        canvas.width  = img.naturalWidth  || img.width;
-        canvas.height = img.naturalHeight || img.height;
-        canvas.getContext('2d').drawImage(img, 0, 0);
-        resolve(canvas.toDataURL('image/jpeg', 0.85));
-      } catch(e) { reject(e); }
-    };
-    img.onerror = () => reject(new Error('No se pudo cargar: ' + url));
-    img.src = url;
-  });
+let logoBase64 = null;
+async function loadLogo() {
+  try {
+    const res = await fetch('{{ asset("frontend/images/logo/Aviblnco-largo.png") }}');
+    const blob = await res.blob();
+    logoBase64 = await new Promise(r => {
+      const reader = new FileReader();
+      reader.onload = e => r(e.target.result);
+      reader.readAsDataURL(blob);
+    });
+  } catch(e) { /* logo no disponible, se usará texto */ }
+}
+loadLogo();
+
+/* Convierte una URL de imagen a base64 vía fetch (maneja espacios y guiones en nombre) */
+async function urlToBase64(url) {
+  // Encode espacios y caracteres especiales sin romper slashes
+  const safeUrl = url.split('/').map((seg, i) =>
+    i === 0 ? seg : encodeURIComponent(decodeURIComponent(seg))
+  ).join('/');
+
+  // Intento 1: fetch (funciona con "foto 1.jpg" y "foto-1.jpg")
+  try {
+    const res = await fetch(safeUrl);
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const blob = await res.blob();
+    return await new Promise(r => {
+      const reader = new FileReader();
+      reader.onload = e => r(e.target.result);
+      reader.readAsDataURL(blob);
+    });
+  } catch(fetchErr) {
+    // Intento 2: fallback canvas con crossOrigin
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      img.onload = () => {
+        try {
+          const canvas = document.createElement('canvas');
+          canvas.width  = img.naturalWidth  || img.width;
+          canvas.height = img.naturalHeight || img.height;
+          canvas.getContext('2d').drawImage(img, 0, 0);
+          resolve(canvas.toDataURL('image/jpeg', 0.85));
+        } catch(e) { reject(e); }
+      };
+      img.onerror = () => reject(new Error('No se pudo cargar: ' + safeUrl));
+      img.src = safeUrl;
+    });
+  }
 }
 
 /* Enriquece report.fotos (URLs del servidor) → {data: base64} para el PDF */
@@ -155,9 +188,11 @@ async function enrichFotos(fotos) {
   for (const tipo of ['antes', 'despues']) {
     for (const foto of (fotos[tipo] || [])) {
       try {
+        console.log('[PDF foto]', tipo, foto.url);
         const data = await urlToBase64(foto.url);
         result[tipo].push({ data });
       } catch(e) {
+        console.warn('[PDF foto ERROR]', foto.url, e.message);
         result[tipo].push({ data: null });
       }
     }
@@ -247,25 +282,41 @@ function generatePDF(report) {
   let y = 0;
 
   /* ── Header ── */
+  const HDR = 40; // altura total del header en mm
   function addHeader() {
-    doc.setFillColor(0, 70, 140);
-    doc.rect(0, 0, PW, 28, 'F');
-    doc.setFont('helvetica', 'bold'); doc.setFontSize(15); doc.setTextColor(255, 255, 255);
-    doc.text('MAC DEL NORTE', M, 11);
-    doc.setFontSize(6.5); doc.setFont('helvetica', 'normal');
-    doc.text('MONITOREO, AUTOMATIZACIÓN Y CONTROLES DEL NORTE, S.A.P.I. de C.V.  ·  RFC: NMA180313M46', M, 18);
-    doc.text('C. Castaño 718, Ebanos Norte 2do Sector, Apodaca N.L. CP.66612  ·  +81-3582-5559  ·  contacto@macdelnorte.com', M, 23);
-    doc.setFillColor(83, 189, 254);
-    doc.rect(0, 28, PW, 2, 'F');
-    /* Badge: upper-right corner — "REPORTE DE SERVICIO" + folio */
     const bW = 54, bH = 20, bX = PW - 12 - bW, bY = 4;
+
+    doc.setFillColor(0, 70, 140);
+    doc.rect(0, 0, PW, HDR, 'F');
+
+    if (logoBase64) {
+      /* Logo arriba al 25% del ancho disponible, proporcional */
+      const fullW = bX - M - 4;          // ancho "100%"
+      const lgW   = Math.round(fullW * 0.55); // 25%
+      const lgH   = Math.round(lgW * 22 / fullW); // proporcional
+      doc.addImage(logoBase64, 'PNG', M, 5, lgW, lgH);
+    } else {
+      doc.setFont('helvetica', 'bold'); doc.setFontSize(15); doc.setTextColor(255, 255, 255);
+      doc.text('MAC DEL NORTE', M, 14);
+    }
+
+    /* Texto de contacto debajo del logo, blanco */
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(6.5); doc.setTextColor(255, 255, 255);
+    doc.text('MONITOREO, AUTOMATIZACIÓN Y CONTROLES DEL NORTE, S.A.P.I. de C.V.  ·  RFC: NMA180313M46', M, 28);
+    doc.text('C. Castaño 718, Ebanos Norte 2do Sector, Apodaca N.L. CP.66612  ·  +81-3582-5559  ·  contacto@macdelnorte.com', M, 35);
+
+    /* Línea de acento azul claro */
     doc.setFillColor(83, 189, 254);
+    doc.rect(0, HDR, PW, 2, 'F');
+
+    /* Badge: upper-right — fondo naranja, letras blancas */
+    doc.setFillColor(247, 148, 29);
     doc.rect(bX, bY, bW, bH, 'F');
-    doc.setFont('helvetica', 'bold'); doc.setFontSize(5.5); doc.setTextColor(0, 70, 140);
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(5.5); doc.setTextColor(255, 255, 255);
     doc.text('REPORTE DE SERVICIO', bX + bW / 2, bY + 6, { align: 'center' });
-    doc.setDrawColor(0, 70, 140); doc.setLineWidth(0.3);
+    doc.setDrawColor(255, 255, 255); doc.setLineWidth(0.3);
     doc.line(bX + 4, bY + 8, bX + bW - 4, bY + 8);
-    doc.setFont('helvetica', 'bold'); doc.setFontSize(9); doc.setTextColor(0, 70, 140);
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(9); doc.setTextColor(255, 255, 255);
     doc.text(String(report.folio || '—'), bX + bW / 2, bY + 16, { align: 'center' });
   }
 
@@ -282,7 +333,7 @@ function generatePDF(report) {
     }
   }
 
-  function newPage() { doc.addPage(); addHeader(); y = 35; }
+  function newPage() { doc.addPage(); addHeader(); y = HDR + 7; }
   function chk(h)    { if (y + h > BOT) newPage(); }
 
   /* ── Section title bar ── */
@@ -326,7 +377,7 @@ function generatePDF(report) {
   }
 
   /* ══ PAGE 1 ══ */
-  addHeader(); y = 35;
+  addHeader(); y = HDR + 7;
 
   /* ── Metadata bar: Fecha | Tipo de Servicio | Técnico ── */
   const fecha = (report.fecha_servicio || '').toString().substring(0, 10);

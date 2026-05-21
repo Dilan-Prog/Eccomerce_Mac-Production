@@ -25,15 +25,24 @@ class ServiceReportController extends Controller
 
     public function generateFolio()
     {
-        $last = ServiceReport::whereRaw("folio REGEXP '^MAC-[0-9]{8}-[0-9]{4}$'")
+        $last = ServiceReport::whereRaw("folio REGEXP '^MAC-[0-9]{6}-M[0-9]{4}$'")
             ->orderBy('id', 'desc')
             ->value('folio');
 
-        $seq = $last ? (intval(substr($last, -4)) + 1) : 1;
+        $startSeq = 3537;
 
-        $date = now()->format('Ymd');
+        if ($last) {
+            preg_match('/M?([0-9]{1,})$/', $last, $m);
+            $lastNum = isset($m[1]) ? intval($m[1]) : 0;
+            $seq = $lastNum + 1;
+            if ($seq < $startSeq) $seq = $startSeq;
+        } else {
+            $seq = $startSeq;
+        }
 
-        return response()->json(['folio' => 'MAC-' . $date . '-' . str_pad($seq, 4, '0', STR_PAD_LEFT)]);
+        $date = now()->format('dmy');
+
+        return response()->json(['folio' => 'MAC-' . $date . '-M' . str_pad($seq, 4, '0', STR_PAD_LEFT)]);
     }
 
     public function uploadFotos(Request $request, $id)
@@ -114,6 +123,20 @@ class ServiceReportController extends Controller
         $report = ServiceReport::where('id', $id)
             ->where('user_id', auth()->id())
             ->firstOrFail();
+
+        // Regenerar URLs de fotos desde path (evita URLs stale de otro entorno)
+        if (!empty($report->fotos)) {
+            $fotos = $report->fotos;
+            foreach (['antes', 'despues'] as $tipo) {
+                foreach ($fotos[$tipo] ?? [] as &$foto) {
+                    if (!empty($foto['path'])) {
+                        $foto['url'] = asset('storage/' . $foto['path']);
+                    }
+                }
+                unset($foto);
+            }
+            $report->fotos = $fotos;
+        }
 
         return response()->json($report);
     }

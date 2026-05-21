@@ -1,511 +1,728 @@
 @extends('frontend.layouts.master')
 
 @section('title')
-{{$settings->site_name}} || Todos Los Productos
+{{ $settings->site_name }} || Todos Los Productos
 @endsection
 
+@push('styles')
+<style>
+  /* ===== PRODUCTS PAGE — page-specific styles ===== */
+
+  /* PAGE WRAPPER */
+  .products-page { background: var(--gris-fondo); padding: 28px 0 48px; }
+
+  /* PAGE HEADER */
+  .products-page-header {
+    background: var(--blanco); border-bottom: 1px solid var(--gris-borde);
+    padding: 14px 0;
+  }
+  .products-breadcrumb { display: flex; align-items: center; gap: 8px; font-size: 13px; flex-wrap: wrap; }
+  .products-breadcrumb a { color: var(--gris-claro-texto); text-decoration: none; font-weight: 600; }
+  .products-breadcrumb a:hover { color: var(--azul-principal); }
+  .breadcrumb-sep { color: var(--gris-borde); }
+  .breadcrumb-cur { color: var(--azul-principal); font-weight: 700; }
+
+  /* LAYOUT */
+  .products-page-layout {
+    display: grid;
+    grid-template-columns: 272px 1fr;
+    gap: 24px;
+    align-items: start;
+    margin-top: 24px;
+  }
+  .products-page-layout > * { min-width: 0; }
+
+  /* SIDEBAR */
+  .filters-sidebar {
+    background: var(--blanco);
+    border: 1px solid var(--gris-borde);
+    border-radius: 14px;
+    overflow: hidden;
+    position: sticky;
+    top: 80px;
+  }
+  .filters-sidebar-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--gris-borde);
+  }
+  .filters-sidebar-title {
+    font-size: 14px; font-weight: 800; color: var(--azul-principal);
+    text-transform: uppercase; letter-spacing: 0.8px;
+  }
+  .filters-clear-btn {
+    font-size: 12px; font-weight: 700; color: var(--accent-cta);
+    background: none; border: none; cursor: pointer; padding: 0;
+    text-decoration: underline;
+  }
+  .filters-clear-btn:hover { color: var(--accent-cta-hover); }
+
+  /* FILTER GROUP */
+  .filter-group { border-bottom: 1px solid var(--gris-borde); }
+  .filter-group:last-child { border-bottom: none; }
+  .filter-group-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 20px; cursor: pointer;
+    font-size: 13px; font-weight: 700; color: var(--azul-principal);
+    background: none; border: none; width: 100%; text-align: left;
+    transition: background 0.15s;
+  }
+  .filter-group-header:hover { background: var(--gris-fondo); }
+  .filter-group-chevron {
+    width: 16px; height: 16px; color: var(--gris-claro-texto);
+    transition: transform 0.2s;
+    flex-shrink: 0;
+  }
+  .filter-group-header.collapsed .filter-group-chevron { transform: rotate(-90deg); }
+  .filter-group-body { padding: 4px 20px 16px; }
+  .filter-group-body.hidden { display: none; }
+
+  /* FILTER OPTIONS */
+  .filter-option {
+    display: flex; align-items: center; gap: 10px;
+    padding: 6px 0; font-size: 13px; color: var(--gris-texto); text-decoration: none;
+    border-radius: 5px; transition: color 0.15s;
+  }
+  .filter-option:hover { color: var(--azul-principal); }
+  .filter-option.active { color: var(--azul-principal); font-weight: 700; }
+  .filter-option-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--gris-borde); flex-shrink: 0;
+    transition: background 0.15s;
+  }
+  .filter-option:hover .filter-option-dot,
+  .filter-option.active .filter-option-dot { background: var(--azul-principal); }
+
+  /* PRICE RANGE */
+  .filter-price-form { display: flex; flex-direction: column; gap: 10px; }
+  .filter-price-inputs { display: flex; gap: 8px; }
+  .filter-price-input {
+    flex: 1; padding: 7px 10px; border: 1px solid var(--gris-borde);
+    border-radius: 7px; font-size: 13px; color: var(--gris-texto);
+    background: var(--gris-fondo);
+  }
+  .filter-price-input:focus { outline: none; border-color: var(--azul-principal); }
+  .filter-apply-btn {
+    padding: 8px 0; background: var(--azul-principal); color: var(--blanco);
+    border: none; border-radius: 7px; font-size: 13px; font-weight: 700;
+    cursor: pointer; transition: background 0.2s;
+  }
+  .filter-apply-btn:hover { background: var(--azul-medio); }
+  .filter-slider-wrap { padding: 6px 0 4px; }
+
+  /* MAIN CONTENT */
+  .products-main { display: flex; flex-direction: column; gap: 16px; }
+
+  /* RESULTS HEADER */
+  .results-header {
+    display: flex; align-items: center; justify-content: space-between;
+    background: var(--blanco); border: 1px solid var(--gris-borde);
+    border-radius: 10px; padding: 12px 18px; gap: 12px; flex-wrap: wrap;
+  }
+  .results-count { font-size: 13px; color: var(--gris-texto); }
+  .results-count strong { color: var(--azul-principal); font-weight: 800; }
+  .results-header-right { display: flex; align-items: center; gap: 12px; }
+  .sort-label { font-size: 13px; color: var(--gris-claro-texto); white-space: nowrap; }
+  .sort-select {
+    padding: 7px 10px; border: 1px solid var(--gris-borde); border-radius: 7px;
+    font-size: 13px; color: var(--gris-texto); background: var(--gris-fondo);
+    cursor: pointer;
+  }
+  .sort-select:focus { outline: none; border-color: var(--azul-principal); }
+  .view-toggle { display: flex; gap: 4px; }
+  .view-btn {
+    width: 34px; height: 34px; display: flex; align-items: center; justify-content: center;
+    border: 1px solid var(--gris-borde); border-radius: 7px; background: var(--blanco);
+    cursor: pointer; color: var(--gris-claro-texto); transition: all 0.15s;
+  }
+  .view-btn:hover, .view-btn.active {
+    background: var(--azul-principal); color: var(--blanco); border-color: var(--azul-principal);
+  }
+  .view-btn svg { width: 15px; height: 15px; }
+
+  /* PRODUCTS GRID */
+  .products-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+  .products-grid > * { min-width: 0; }
+
+  /* PRODUCT CARD */
+  .product-card {
+    background: var(--blanco); border: 1px solid var(--gris-borde);
+    border-radius: 12px; overflow: hidden;
+    display: flex; flex-direction: column;
+    transition: box-shadow 0.2s, transform 0.2s;
+    position: relative;
+  }
+  .product-card:hover {
+    box-shadow: 0 8px 32px rgba(0,62,126,0.10);
+    transform: translateY(-2px);
+  }
+
+  /* CARD IMAGE */
+  .product-card-image {
+    position: relative;
+    aspect-ratio: 1;
+    background: linear-gradient(135deg, var(--gris-fondo) 0%, var(--blanco) 100%);
+    overflow: hidden;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .product-card-image img {
+    max-width: 100%; max-height: 100%; object-fit: contain; padding: 12px;
+    transition: transform 0.35s ease;
+  }
+  .product-card:hover .product-card-image img { transform: scale(1.05); }
+  .product-card-image .img-hover { display: none; }
+  .product-card:hover .product-card-image .img-hover { display: block; }
+  .product-card:hover .product-card-image .img-main { display: none; }
+
+  /* CARD BADGES */
+  .card-badge {
+    position: absolute; top: 10px; left: 10px;
+    font-size: 10px; font-weight: 800; padding: 3px 8px;
+    border-radius: 4px; text-transform: uppercase; letter-spacing: 0.5px;
+    color: var(--blanco); z-index: 2;
+  }
+  .card-badge--new { background: #2F855A; }
+  .card-badge--hot { background: #DC2626; }
+  .card-badge--best { background: var(--accent-cta); }
+  .card-badge--off {
+    position: absolute; top: 10px; right: 10px;
+    background: #FFF0E0; color: var(--accent-cta);
+    font-size: 11px; font-weight: 800; padding: 4px 8px; border-radius: 4px;
+    z-index: 2;
+  }
+  .card-hot-img {
+    position: absolute; top: 8px; right: 8px; width: 56px; z-index: 2;
+  }
+
+  /* CARD INFO */
+  .product-card-info {
+    flex: 1; padding: 14px 16px; display: flex; flex-direction: column; gap: 6px;
+    min-width: 0;
+  }
+  .card-category {
+    font-size: 11px; font-weight: 700; color: var(--gris-claro-texto);
+    text-transform: uppercase; letter-spacing: 0.6px; text-decoration: none;
+  }
+  .card-category:hover { color: var(--azul-principal); }
+  .card-name {
+    font-size: 14px; font-weight: 700; color: var(--azul-principal);
+    line-height: 1.35; text-decoration: none; display: -webkit-box;
+    -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+    word-break: break-word;
+  }
+  .card-name:hover { color: var(--azul-medio); }
+  .card-sku { font-size: 11px; color: var(--gris-claro-texto); font-family: monospace; }
+
+  /* CARD RATING */
+  .card-rating { display: flex; align-items: center; gap: 5px; }
+  .card-stars { display: flex; gap: 1px; font-size: 11px; color: #F6AD1C; }
+  .card-rating-count { font-size: 11px; color: var(--gris-claro-texto); }
+
+  /* CARD STOCK */
+  .card-stock { font-size: 12px; font-weight: 600; }
+  .card-stock--in { color: #2F855A; }
+  .card-stock--out { color: #DC2626; }
+  .card-stock--consult { color: var(--gris-claro-texto); }
+
+  /* CARD PRICE */
+  .card-price-block { margin-top: 2px; }
+  .card-price-del { font-size: 12px; color: var(--gris-claro-texto); text-decoration: line-through; }
+  .card-price-main {
+    font-size: 18px; font-weight: 800; color: var(--azul-principal);
+    line-height: 1.1; display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+  }
+  .card-price-off {
+    font-size: 11px; font-weight: 800; background: #FFF0E0; color: var(--accent-cta);
+    padding: 2px 6px; border-radius: 3px;
+  }
+  .card-price-iva { font-size: 11px; color: var(--gris-claro-texto); }
+  .card-free-shipping {
+    font-size: 11px; font-weight: 700; color: #2F855A;
+    display: flex; align-items: center; gap: 4px;
+  }
+  .card-price-na { font-size: 14px; color: var(--gris-claro-texto); font-style: italic; }
+
+  /* CARD ACTIONS */
+  .product-card-actions { padding: 0 16px 14px; }
+  .card-add-btn {
+    display: block; width: 100%; padding: 9px 0;
+    background: var(--azul-principal); color: var(--blanco);
+    border: none; border-radius: 7px; font-size: 13px; font-weight: 700;
+    cursor: pointer; transition: background 0.2s; text-align: center; text-decoration: none;
+  }
+  .card-add-btn:hover { background: var(--azul-medio); color: var(--blanco); }
+  .card-consult-btn {
+    display: block; width: 100%; padding: 9px 0;
+    background: var(--gris-fondo); color: var(--azul-principal);
+    border: 1px solid var(--gris-borde); border-radius: 7px;
+    font-size: 13px; font-weight: 700; cursor: pointer;
+    transition: all 0.2s; text-align: center; text-decoration: none;
+  }
+  .card-consult-btn:hover { background: var(--azul-claro); border-color: var(--azul-principal); }
+
+  /* EMPTY STATE */
+  .products-empty {
+    grid-column: 1 / -1; text-align: center;
+    padding: 60px 24px; background: var(--blanco);
+    border: 1px solid var(--gris-borde); border-radius: 12px;
+  }
+  .products-empty-icon { font-size: 52px; margin-bottom: 12px; opacity: 0.35; }
+  .products-empty h2 { font-size: 18px; font-weight: 800; color: var(--azul-principal); margin-bottom: 6px; }
+  .products-empty p { font-size: 14px; color: var(--gris-claro-texto); }
+
+  /* PAGINATION */
+  .products-pagination {
+    display: flex; justify-content: center; padding: 8px 0;
+  }
+
+  /* LIST VIEW */
+  .products-grid.list-view {
+    grid-template-columns: 1fr;
+  }
+  .products-grid.list-view .product-card {
+    flex-direction: row;
+  }
+  .products-grid.list-view .product-card-image {
+    width: 180px; min-width: 180px; aspect-ratio: auto; height: 180px;
+    border-right: 1px solid var(--gris-borde); border-radius: 0;
+  }
+  .products-grid.list-view .product-card-info {
+    flex-direction: column; justify-content: center;
+  }
+  .products-grid.list-view .card-name {
+    -webkit-line-clamp: 3; font-size: 15px;
+  }
+  .products-grid.list-view .card-price-main { font-size: 20px; }
+  .products-grid.list-view .product-card-actions { padding: 14px 16px 14px 0; display: flex; align-items: flex-end; }
+
+  /* RESPONSIVE */
+  @media (max-width: 1100px) {
+    .products-page-layout { grid-template-columns: 240px 1fr; }
+    .products-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 768px) {
+    .products-page-layout { grid-template-columns: 1fr; }
+    .filters-sidebar { position: static; }
+    .products-grid { grid-template-columns: repeat(2, 1fr); }
+    .products-grid.list-view .product-card { flex-direction: column; }
+    .products-grid.list-view .product-card-image { width: 100%; height: auto; aspect-ratio: 1; border-right: none; border-bottom: 1px solid var(--gris-borde); border-radius: 0; }
+    .mobile-filters-toggle {
+      display: flex; align-items: center; gap: 8px;
+      padding: 10px 16px; background: var(--blanco);
+      border: 1px solid var(--gris-borde); border-radius: 8px;
+      font-size: 13px; font-weight: 700; color: var(--azul-principal);
+      cursor: pointer; margin-bottom: 8px;
+    }
+    .filters-sidebar { display: none; }
+    .filters-sidebar.open { display: block; }
+  }
+  @media (max-width: 480px) {
+    .products-grid { grid-template-columns: 1fr; }
+    .results-header { flex-direction: column; align-items: flex-start; }
+  }
+</style>
+@endpush
+
 @section('content')
-    <!--============================
-        PRODUCT PAGE START
-    ==============================-->
-    <section id="wsus__product_page">
+
+    {{-- PAGE HEADER --}}
+    <div class="products-page-header">
         <div class="container">
-            <div class="row">
-                <div class="col-xl-12">
-                    {{-- banner --}}
-                </div>
-                <div class="col-xl-3 col-lg-4">
-                    <div class="wsus__sidebar_filter ">
-                        <p>filtros</p>
-                        <span class="wsus__filter_icon">
-                            <i class="far fa-minus" id="minus"></i>
-                            <i class="far fa-plus" id="plus"></i>
-                        </span>
-                    </div>
-                    <div class="wsus__product_sidebar" id="sticky_sidebar">
-                        <div class="accordion" id="accordionExample">
-                            <div class="accordion-item">
-                                <h2 class="accordion-header" id="headingOne">
-                                    <button class="accordion-button" type="button" data-bs-toggle="collapse"
-                                        data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-                                        Todas las Categorias
-                                    </button>
-                                </h2>
-                                <div id="collapseOne" class="accordion-collapse collapse show"
-                                    aria-labelledby="headingOne" data-bs-parent="#accordionExample">
-                                    <div class="accordion-body">
-                                        <ul>
-                                            @foreach ($categories as $category)
+            <nav class="products-breadcrumb" aria-label="Breadcrumb">
+                <a href="{{ route('index') }}">Inicio</a>
+                <span class="breadcrumb-sep">/</span>
+                @if(request()->has('category'))
+                    <a href="{{ route('products.index') }}">Productos</a>
+                    <span class="breadcrumb-sep">/</span>
+                    <span class="breadcrumb-cur">{{ request()->category }}</span>
+                @elseif(request()->has('brand'))
+                    <a href="{{ route('products.index') }}">Productos</a>
+                    <span class="breadcrumb-sep">/</span>
+                    <span class="breadcrumb-cur">{{ request()->brand }}</span>
+                @elseif(request()->has('search'))
+                    <a href="{{ route('products.index') }}">Productos</a>
+                    <span class="breadcrumb-sep">/</span>
+                    <span class="breadcrumb-cur">Búsqueda: "{{ request()->search }}"</span>
+                @else
+                    <span class="breadcrumb-cur">Todos los Productos</span>
+                @endif
+            </nav>
+        </div>
+    </div>
 
-                                            <li><a href="{{route('products.index', ['category' => $category->slug])}}">{{$category->name}}</a></li>
-                                            @endforeach
+    <section class="products-page">
+        <div class="container">
 
-                                        </ul>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="accordion-item">
-                                <h2 class="accordion-header" id="headingTwo">
-                                    <button class="accordion-button" type="button" data-bs-toggle="collapse"
-                                        data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-                                        Precio
-                                    </button>
-                                </h2>
-                                <div id="collapseTwo" class="accordion-collapse collapse show"
-                                    aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
-                                    <div class="accordion-body">
-                                        <div class="price_ranger">
-                                            <form action="{{url()->current()}}">
-                                                @foreach (request()->query() as $key => $value)
-                                                @if($key != 'range')
-                                                    <input type="hidden" name="{{$key}}" value="{{$value}}" />
-                                                @endif
-                                                @endforeach
-                                                <input type="hidden" id="slider_range" name="range" class="flat-slider" />
-                                                <button type="submit" class="common_btn">Filtros</button>
-                                            </form>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="accordion-item">
-                                <h2 class="accordion-header" id="headingThree3">
-                                    <button class="accordion-button" type="button" data-bs-toggle="collapse"
-                                        data-bs-target="#collapseThree3" aria-expanded="false"
-                                        aria-controls="collapseThree">
-                                        Marca
-                                    </button>
-                                </h2>
-                                <div id="collapseThree3" class="accordion-collapse collapse show"
-                                    aria-labelledby="headingThree3" data-bs-parent="#accordionExample">
-                                    <div class="accordion-body">
-                                        <ul>
-                                            @foreach ($brands  as $brand)
+            {{-- Mobile filters toggle --}}
+            <button class="mobile-filters-toggle d-md-none" id="mobile-filters-toggle" type="button" aria-expanded="false">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M1.5 1.5A.5.5 0 0 1 2 1h12a.5.5 0 0 1 .354.854l-4.5 4.5A.5.5 0 0 1 9.5 6.5v3.793l-3 3V6.5a.5.5 0 0 1-.146-.354L1.146 1.854A.5.5 0 0 1 1.5 1.5z"/>
+                </svg>
+                Filtros
+            </button>
 
-                                            <li><a href="{{route('products.index', ['brand' => $brand->name])}}">{{$brand->name}}</a></li>
-                                            @endforeach
+            <div class="products-page-layout">
 
-                                        </ul>
-                                    </div>
-                                </div>
-                            </div>
-
-
-                        </div>
-                    </div>
-                </div>
-                <div class="col-xl-9 col-lg-8">
-                    <div class="row">
-                        <div class="col-xl-12 d-none d-md-block mt-md-4 mt-lg-0">
-                            <div class="wsus__product_topbar">
-                                <div class="wsus__product_topbar_left">
-                                    <div class="nav nav-pills" id="v-pills-tab" role="tablist"
-                                        aria-orientation="vertical">
-                                        <button class="nav-link active: {{session()->has('product_list_style') && session()->get('product_list_style') == 'grid' ? 'active' : ''}} {{!session()->has('product_list_style') ? 'active' : ''}} list-view" data-id="grid" id="v-pills-home-tab" data-bs-toggle="pill"
-                                            data-bs-target="#v-pills-home" type="button" role="tab"
-                                            aria-controls="v-pills-home" aria-selected="true">
-                                            <i class="fas fa-th"></i>
-                                        {{-- </button>
-                                        <button class="nav-link list-view {{session()->has('product_list_style') && session()->get('product_list_style') == 'list' ? 'active' : ''}}" data-id="list" id="v-pills-profile-tab" data-bs-toggle="pill"
-                                            data-bs-target="#v-pills-profile" type="button" role="tab"
-                                            aria-controls="v-pills-profile" aria-selected="false">
-                                            <i class="fas fa-list-ul"></i>
-                                        </button> --}}
-                                    </div>
-
-                                </div>
-
-                            </div>
-                        </div>
-                        <div class="tab-content" id="v-pills-tabContent">
-                            <div class="tab-pane fade {{session()->has('product_list_style') && session()->get('product_list_style') == 'grid' ? 'show active' : ''}} {{!session()->has('product_list_style') ? 'show active' : ''}}" id="v-pills-home" role="tabpanel"
-                                aria-labelledby="v-pills-home-tab">
-                                <div class="row">
-
-
-                                    @foreach ($products as $product )
-                                    @php
-                                        $defaultCombination = $product->combinations->where('is_default', 1)->first();
-                                        $showCombination = $defaultCombination ?: null;
-
-                                        // Precios del producto base con lógica price_personalizated / aspel_price
-                                        $basePrice = $product->price_personalizated == 1
-                                            ? $product->price
-                                            : ($product->aspel_price ?? $product->price);
-                                        $baseOfferPrice = $product->price_offert_personalizated == 1
-                                            ? $product->offert_price
-                                            : ($product->aspel_offert_price ?? $product->offert_price);
-
-                                        // Precio a mostrar (combination si aplica, si no precio/oferta calculados)
-                                        $price = $showCombination
-                                            ? ($showCombination->offert_price ?? $showCombination->price)
-                                            : ($baseOfferPrice ?: $basePrice);
-
-                                        $qty = $showCombination
-                                        ? $showCombination->qty
-                                        : ($product->qty_personalizated == 0 ? $product->qty_aspel : $product->qty);
-                                        $sku = $showCombination ? $showCombination->sku : $product->sku;
-                                    @endphp
-                                    <div class="col-xl-4 col-sm-6 col-lg-4">
-                                        <div class="wsus__product_item" itemscope itemtype="http://schema.org/Product">
-
-                                            @switch($product->product_type)
-                                                    @case('new_arrival')
-                                                        <span class="wsus__new wsus__new--new-arrival" style="background: #00468c">Nuevo
-
-                                                        </span>
-                                                        @break
-                                                    @case('featured_product')
-                                                        <span class="wsus__new" style="display: none">
-
-                                                        </span>
-                                                        @break
-                                                    @case('top_product')
-                                                        <div id="hot-sale_wsus_new" style="position: absolute; top: 10px; right: 10px; z-index: 1; width: 70px;">
-                                                            <img src="{{asset('frontend/images/logo/hot_sale.png')}}" alt="Promocion de Hot Sale Industrial"style="width: 70px;">
-                                                        </div>
-                                                        <span class="wsus__new wsus__new--top-product" style="background: #FF0000">Hot sale
-                                                        </span>
-                                                        @break
-                                                    @case('best_product')
-                                                        <span class="wsus__new wsus__new--best-product" style="background: #fa7c04">Más Vendido
-
-                                                        </span>
-                                                        @break
-                                                    @default
-
-                                            @endswitch
-                                            @if (checkDiscount($product))
-
-                                            {{-- <span class="wsus__minus">-{{calculatedDiscountPercent($product->price, $product->offert_price)}}%</span> --}}
-
-                                            @endif
-                                            <a class="wsus__pro_link" href="{{route('product-detail', $product->slug)}}">
-                                                <img src="{{asset($product->thumb_image)}}" alt="product" class="img-fluid w-100 img_1" loading="lazy" />
-                                                <img src="
-                                                @if (isset($product->productImageGalleries[0]->image))
-                                                    {{asset($product->productImageGalleries[0]->image)}}
-                                                @else
-                                                    {{asset($product->thumb_image)}}
-                                                @endif
-                                                " class="img-fluid w-100 img_2" loading="lazy" />
-                                            </a>
-                                            <div class="wsus__product_details">
-                                                <a class="wsus__category" href="#" itemprop="category">{{$product->category->name}}</a>
-
-                                                @if ($price)
-                                                    @if ($qty > 0)
-                                                        <p class="wsus__stock_area"><span class="in_stock" itemprop="offers" itemtype="http://schema.org/Offer"><meta itemprop="availability" content="http://schema.org/InStock">Disponibles</span></p>
-                                                    @elseif ($qty === 0)
-                                                        <p class="wsus__stock_area"><span class="in_stock" itemprop="offers" itemtype="http://schema.org/Offer"><meta itemprop="availability" content="http://schema.org/OutOfStock">Agotado</span></p>
-                                                    @endif
-                                                    <p class="wsus__pro_rating">
-                                                        @php
-                                                            $averageRating = $product->reviews->avg('rating'); // Promedio de las calificaciones
-                                                            $reviewCount = $product->reviews->count(); // Número total de reviews
-                                                        @endphp
-
-                                                        @if ($reviewCount > 0)
-                                                            @for ($i = 1; $i <= 5; $i++)
-                                                                <i class="fas fa-star{{ $i <= $averageRating ? '' : '-half-alt' }}" aria-hidden="true"></i>
-                                                            @endfor
-                                                            <span>({{ $reviewCount }} Opinion)</span>
-                                                        @else
-                                                            @for ($i = 1; $i <= 5; $i++)
-                                                                <i class="far fa-star" aria-hidden="true"></i> <!-- Estrellas vacías -->
-                                                            @endfor
-                                                        @endif
-                                                    </p>
-                                                    <a class="wsus__pro_name" href="{{route('product-detail', $product->slug)}}" itemprop="name" content="{{$product->name}}">{{$product->name}}</a>
-                                                    @php
-                                                        $defaultCombination = $product->combinations->where('is_default', 1)->first();
-                                                        $showCombination = $defaultCombination ?: null;
-                                                        $combinationId = $showCombination ? $showCombination->id : '';
-                                                        $productModel = $showCombination ? ($showCombination->model ?? $product->productModel) : $product->productModel;
-                                                        // Mantén $price sin recalcular aquí; usaremos $finalPrice más abajo REVISAR ESTA LINEA
-                                                        $qty = $showCombination ? $showCombination->qty : $product->qty;
-
-
-                                                        $sku = $showCombination ? $showCombination->sku : $product->sku;
-                                                        $today = date('Y-m-d');
-
-                                                        if ($showCombination) {
-                                                            $offerPrice = $showCombination->offert_price;
-                                                            $normalPrice = $showCombination->price;
-                                                            $offerStart = $showCombination->offer_start_date;
-                                                            $offerEnd = $showCombination->offer_end_date;
-                                                            $hasDiscount = $offerPrice > 0
-                                                                && $offerStart && $offerEnd
-                                                                && $today >= $offerStart
-                                                                && $today <= $offerEnd
-                                                                && $offerPrice < $normalPrice;
-                                                        } else {
-                                                            // Lógica de precios para producto base respetando price_personalizated y aspel_price
-                                                            $normalPrice = $product->price_personalizated == 1
-                                                                ? $product->price
-                                                                : ($product->aspel_price ?? $product->price);
-
-                                                            $offerPrice = $product->price_offert_personalizated == 1
-                                                                ? $product->offert_price
-                                                                : ($product->aspel_offert_price ?? $product->offert_price);
-
-                                                            $offerStart = $product->offer_start_date;
-                                                            $offerEnd = $product->offer_end_date;
-                                                            $hasDiscount = $offerPrice > 0
-                                                                && $offerStart && $offerEnd
-                                                                && $today >= $offerStart
-                                                                && $today <= $offerEnd
-                                                                && $offerPrice < $normalPrice;
-                                                        }
-                                                        $finalPrice = $hasDiscount ? $offerPrice : $normalPrice;
-                                                        // Usa el precio final para consistencia en secciones siguientes
-                                                        $price = $finalPrice;
-                                                    @endphp
-                                                    <p itemscope itemtype="http://schema.org/Offer">
-                                                        <meta itemprop="priceCurrency" content="MXN">
-                                                        <span class="wsus__price" itemprop="price" content="{{ $finalPrice }}">
-                                                        @if($hasDiscount)
-                                                            <del>{{ $settings->currency_icon }}{{ number_format($normalPrice, 2, '.', ',') }} MXN</del>
-                                                        @endif
-                                                        <span style="color: #333; font-weight: 500;">
-                                                            {{ $settings->currency_icon }}{{ number_format($finalPrice, 2, '.', ',') }} MXN
-                                                            @if($hasDiscount)
-                                                                <span style="color: #00a650; font-weight: 600;">
-                                                                    {{ round((($normalPrice - $offerPrice) / $normalPrice) * 100) }}% OFF
-                                                                </span>
-                                                            @endif
-                                                        </span>
-                                                    </span>
-                                                    <span class="mdn_iva">IVA INCLUIDO</span>
-                                                    </p>
-
-                                                    <p>
-                                                        @if ($price >= $shippingRules->min_cost)
-                                                            <span class="free-shipping-text"><i class="fas fa-shipping-fast"></i> Envío Gratis </span>
-                                                        @endif
-                                                    </p>
-
-
-                                                @else
-                                                    <p class="wsus__stock_area"><span class="in_stock" itemprop="availability" content="http://schema.org/InStock" >Requiere Asesoria</span></p>
-                                                    <a class="wsus__pro_name" href="{{route('product-detail', $product->slug)}}">{{$product->name}}</a>
-
-                                                    <p class="wsus__price">N/A +<small> Requiere Asesoria</small> </p>
-                                                @endif
-
-                                                @php
-                                                    // Usar helpers personalizados para validar descuentos y fechas
-                                                    $defaultCombination = $product->combinations->where('is_default', 1)->first();
-                                                    $showCombination = $defaultCombination ?: null;
-
-                                                    $today = date('Y-m-d');
-
-                                                    if ($showCombination) {
-                                                        // Combinación: respeta lógica actual
-                                                        $hasDiscount = checkCombinationDiscount($showCombination);
-                                                        $offerPrice = $showCombination->offert_price;
-                                                        $normalPrice = $showCombination->price;
-                                                    } else {
-                                                        // Producto base: lógica price_personalizated / aspel_price
-                                                        $normalPrice = $product->price_personalizated == 1
-                                                            ? $product->price
-                                                            : ($product->aspel_price ?? $product->price);
-
-                                                        $offerPrice = $product->price_offert_personalizated == 1
-                                                            ? $product->offert_price
-                                                            : ($product->aspel_offert_price ?? $product->offert_price);
-
-                                                        $offerStart = $product->offer_start_date;
-                                                        $offerEnd = $product->offer_end_date;
-                                                        $hasDiscount = $offerPrice > 0
-                                                            && $offerStart && $offerEnd
-                                                            && $today >= $offerStart
-                                                            && $today <= $offerEnd
-                                                            && $offerPrice < $normalPrice;
-                                                    }
-
-                                                    $finalPrice = $hasDiscount ? $offerPrice : $normalPrice;
-                                                @endphp
-
-                                                <form class="shopping-cart-form">
-                                                    <input type="hidden" name="product_id" value="{{$product->id}}">
-                                                    <input type="hidden" name="combination_id" id="combination_id" value="{{ $combinationId ?? '' }}">
-                                                    <input type="hidden" name="brand_name" itemprop="brand" content="{{$product->brand->name}}" value="{{ $product->brand->name }}">
-                                                    <input type="hidden" name="sku" value="{{$sku}}">
-                                                    <input type="hidden" name="productModel" value="{{$productModel ?? ''}}">
-
-                                                    @if ($price)
-                                                        <button type="submit" class="
-
-                                                        " href="#">Agregar al Carrito</button>
-                                                    @else
-                                                        <a class="add_cart2" href="{{route('contact')}}">Requiere Asesoria</a>
-                                                    @endif
-
-                                                    <input name="qty" type="hidden" min="1" max="{{ $qty }}" value="1" />
-                                                </form>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    @endforeach
-
-                                </div>
-                            </div>
-                            {{-- list view --}}
-                            {{-- <div class="tab-pane fade {{session()->has('product_list_style') && session()->get('product_list_style') == 'list' ? 'show active' : ''}}" id="v-pills-profile" role="tabpanel"
-                                aria-labelledby="v-pills-profile-tab">
-                                <div class="row">
-                                    @foreach ($products as $product )
-                                    <div class="col-xl-12">
-                                        <div class="wsus__product_item wsus__list_view" itemscope itemtype="http://schema.org/Product">
-                                            <span class="wsus__new">{{productType($product->product_type)}}</span>
-
-                                            @if (checkDiscount($product))
-
-                                            <span class="wsus__minus">-{{calculatedDiscountPercent($product->price, $product->offert_price)}}%</span>
-
-                                            @endif
-                                            <a class="wsus__pro_link" href="{{route('product-detail', $product->slug)}}">
-                                                <img src="{{asset($product->thumb_image)}}" alt="product"
-                                                    class="img-fluid w-100 img_1" loading="lazy" />
-                                                <img src="
-                                                @if (isset($product->productImageGalleries[0]->image))
-                                                    {{asset($product->productImageGalleries[0]->image)}}
-                                                @else
-                                                    {{asset($product->thumb_image)}}
-                                                @endif
-                                                " alt="product"
-                                                    class="img-fluid w-100 img_2" loading="lazy" />
-                                            </a>
-                                            <div class="wsus__product_details">
-                                                <a class="wsus__category" href="#" itemprop="category">{{$product->category->name}} </a>
-
-                                                @if ($product->price)
-                                                    @if ($product->qty > 0)
-                                                        <p class="wsus__stock_area"><span class="in_stock" itemprop="offers" itemscope itemtype="http://schema.org/Offer"><meta itemprop="availability" content="http://schema.org/InStock">Disponible
-                                                        </span>{{$product->qty}} piezas</p>
-                                                        <small><strong>Ya incluye IVA</strong></small>
-                                                    @elseif ($product->qty === 0)
-                                                        <p class="wsus__stock_area"><span class="in_stock">Agotado</span></p>
-                                                    @endif
-                                                    <a class="wsus__pro_name" href="{{route('product-detail', $product->slug)}}">{{$product->name}}</a>
-
-                                                    @if (checkDiscount($product))
-
-                                                    <p class="wsus__price" content="{{$product->offert_price}}" itemscope itemtype="http://schema.org/Offer">
-                                                        <meta itemprop="priceCurrency" content="MXN">
-                                                        <span itemprop="price">
-                                                        {{$settings->currency_icon}}{{ number_format($product->offert_price, 2, ',', '.') }} MXN <del>{{$settings->currency_icon}}{{ number_format($product->price, 2, '.', ',') }} MXN</del>
-                                                        </span>
-                                                    </p>
-                                                    @else
-                                                        <p class="wsus__price" content="{{$product->price}}" itemscope itemtype="http://schema.org/Offer">
-                                                            <meta itemprop="priceCurrency" content="MXN">
-                                                            <span itemprop="price">
-                                                                {{$settings->currency_icon}}{{ number_format($product->price, 2, '.', ',') }}
-                                                            </span>
-                                                        </p>
-                                                    @endif
-
-                                                @else
-                                                    <p class="wsus__stock_area"><span class="in_stock">Disponible</span></p>
-                                                    <a class="wsus__pro_name" href="{{route('product-detail', $product->slug)}}">{{$product->name}}</a>
-
-                                                    <p class="wsus__price">N/A +<small> Solicita tu Cotizacion</small> </p>
-                                                @endif
-
-
-                                                <p class="list_description">{{$product->short_description}}</p>
-                                                    <form class="shopping-cart-form">
-                                                        <input type="hidden" name="product_id" value="{{$product->id}}">
-                                                        <input type="hidden" name="brand_name" value="{{ $product->brand->name }}">
-                                                        <input type="hidden" name="sku" value="{{$product->sku}}">
-                                                        <input type="hidden" name="model" value="{{$product->model}}">
-                                                        @if ($product->price)
-                                                        <button type="submit" class="add_cart" href="#">Agregar al Carrito</button>
-                                                        @else
-                                                        <a type="submit" class="add_cart2" href="{{route('contact')}}">Requiere Asesoria</a>
-                                                        @endif
-                                                        <input name="qty" type="hidden" min="1" max="100" value="1" />
-                                                    </form>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    @endforeach
-                                </div>
-                            </div> --}}
-                        </div>
-                    </div>
-                    @if (count($products) === 0)
-                    <div class="text-center mt-5">
-                        <div class="card">
-                            <div class="card-body">
-                                <h2>Productos Vacio</h2>
-                                <small>Estamos Trabajando para Brindarte los Mejores Productos</small>
-                                <br>
-                                <small>Intentalo mas tarde</small>
-                            </div>
-                        </div>
-                    </div>
-                    @endif
-                </div>
-
-
-
-                <div class="col-xl-12 text-center">
-                    <div class="mt-5" style="display:flex; justify-content:center">
-                        @if ($products->hasPages())
-                            {{$products->withQueryString()->links()}}
+                {{-- ===== SIDEBAR FILTERS ===== --}}
+                <aside class="filters-sidebar" id="filters-sidebar">
+                    <div class="filters-sidebar-header">
+                        <span class="filters-sidebar-title">Filtros</span>
+                        @if(request()->hasAny(['category','brand','subcategory','childcategory','range','search']))
+                            <a href="{{ route('products.index') }}" class="filters-clear-btn">Limpiar</a>
                         @endif
                     </div>
-                </div>
 
-            </div>
-        </div>
+                    {{-- CATEGORIES --}}
+                    <div class="filter-group">
+                        <button class="filter-group-header" type="button" data-filter-toggle="categories">
+                            Categorías
+                            <svg class="filter-group-chevron" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                            </svg>
+                        </button>
+                        <div class="filter-group-body" id="filter-categories">
+                            @foreach ($categories as $category)
+                                <a class="filter-option {{ request('category') == $category->slug ? 'active' : '' }}"
+                                   href="{{ route('products.index', ['category' => $category->slug]) }}">
+                                    <span class="filter-option-dot"></span>
+                                    {{ $category->name }}
+                                </a>
+                            @endforeach
+                        </div>
+                    </div>
+
+                    {{-- BRANDS --}}
+                    <div class="filter-group">
+                        <button class="filter-group-header" type="button" data-filter-toggle="brands">
+                            Marca
+                            <svg class="filter-group-chevron" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                            </svg>
+                        </button>
+                        <div class="filter-group-body" id="filter-brands">
+                            @foreach ($brands as $brand)
+                                <a class="filter-option {{ request('brand') == $brand->name ? 'active' : '' }}"
+                                   href="{{ route('products.index', ['brand' => $brand->name]) }}">
+                                    <span class="filter-option-dot"></span>
+                                    {{ $brand->name }}
+                                </a>
+                            @endforeach
+                        </div>
+                    </div>
+
+                    {{-- PRICE RANGE --}}
+                    <div class="filter-group">
+                        <button class="filter-group-header" type="button" data-filter-toggle="price">
+                            Precio
+                            <svg class="filter-group-chevron" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                            </svg>
+                        </button>
+                        <div class="filter-group-body" id="filter-price">
+                            <form class="filter-price-form" action="{{ url()->current() }}">
+                                @foreach (request()->query() as $key => $value)
+                                    @if($key != 'range')
+                                        <input type="hidden" name="{{ $key }}" value="{{ $value }}" />
+                                    @endif
+                                @endforeach
+                                <div class="filter-slider-wrap">
+                                    <input type="hidden" id="slider_range" name="range" class="flat-slider" />
+                                </div>
+                                <button type="submit" class="filter-apply-btn">Aplicar Filtro</button>
+                            </form>
+                        </div>
+                    </div>
+
+                </aside>
+
+                {{-- ===== MAIN CONTENT ===== --}}
+                <div class="products-main">
+
+                    {{-- RESULTS HEADER --}}
+                    <div class="results-header">
+                        <p class="results-count">
+                            <strong>{{ $products->total() }}</strong> productos encontrados
+                        </p>
+                        <div class="results-header-right">
+                            <div class="view-toggle" role="group" aria-label="Vista">
+                                <button class="view-btn {{ !session()->has('product_list_style') || session('product_list_style') == 'grid' ? 'active' : '' }}"
+                                        id="btn-view-grid" type="button" title="Vista cuadrícula" data-view="grid">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 16 16">
+                                        <path d="M1 2.5A1.5 1.5 0 0 1 2.5 1h3A1.5 1.5 0 0 1 7 2.5v3A1.5 1.5 0 0 1 5.5 7h-3A1.5 1.5 0 0 1 1 5.5zm8 0A1.5 1.5 0 0 1 10.5 1h3A1.5 1.5 0 0 1 15 2.5v3A1.5 1.5 0 0 1 13.5 7h-3A1.5 1.5 0 0 1 9 5.5zm-8 8A1.5 1.5 0 0 1 2.5 9h3A1.5 1.5 0 0 1 7 10.5v3A1.5 1.5 0 0 1 5.5 15h-3A1.5 1.5 0 0 1 1 13.5zm8 0A1.5 1.5 0 0 1 10.5 9h3A1.5 1.5 0 0 1 15 10.5v3A1.5 1.5 0 0 1 13.5 15h-3A1.5 1.5 0 0 1 9 13.5z"/>
+                                    </svg>
+                                </button>
+                                <button class="view-btn {{ session('product_list_style') == 'list' ? 'active' : '' }}"
+                                        id="btn-view-list" type="button" title="Vista lista" data-view="list">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 16 16">
+                                        <path fill-rule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- PRODUCTS GRID --}}
+                    <div class="products-grid {{ session('product_list_style') == 'list' ? 'list-view' : '' }}" id="products-grid">
+
+                        @forelse ($products as $product)
+                        @php
+                            $defaultCombination = $product->combinations->where('is_default', 1)->first();
+                            $showCombination = $defaultCombination ?: null;
+                            $combinationId   = $showCombination ? $showCombination->id : '';
+                            $productModel    = $showCombination ? ($showCombination->model ?? $product->productModel) : $product->productModel;
+                            $sku             = $showCombination ? $showCombination->sku : $product->sku;
+                            $qty             = $showCombination
+                                ? $showCombination->qty
+                                : ($product->qty_personalizated == 0 ? $product->qty_aspel : $product->qty);
+
+                            $today = date('Y-m-d');
+                            if ($showCombination) {
+                                $normalPrice = $showCombination->price;
+                                $offerPrice  = $showCombination->offert_price;
+                                $offerStart  = $showCombination->offer_start_date;
+                                $offerEnd    = $showCombination->offer_end_date;
+                                $hasDiscount = $offerPrice > 0
+                                    && $offerStart && $offerEnd
+                                    && $today >= $offerStart && $today <= $offerEnd
+                                    && $offerPrice < $normalPrice;
+                            } else {
+                                $normalPrice = $product->price_personalizated == 1
+                                    ? $product->price
+                                    : ($product->aspel_price ?? $product->price);
+                                $offerPrice  = $product->price_offert_personalizated == 1
+                                    ? $product->offert_price
+                                    : ($product->aspel_offert_price ?? $product->offert_price);
+                                $offerStart  = $product->offer_start_date;
+                                $offerEnd    = $product->offer_end_date;
+                                $hasDiscount = $offerPrice > 0
+                                    && $offerStart && $offerEnd
+                                    && $today >= $offerStart && $today <= $offerEnd
+                                    && $offerPrice < $normalPrice;
+                            }
+                            $finalPrice = $hasDiscount ? $offerPrice : $normalPrice;
+                            $discountPct = ($hasDiscount && $normalPrice > 0)
+                                ? round((($normalPrice - $offerPrice) / $normalPrice) * 100)
+                                : 0;
+                            $avgRating   = $product->reviews->avg('rating');
+                            $reviewCount = $product->reviews->count();
+                            $hoverImage  = $product->productImageGalleries[0]->image ?? null;
+                        @endphp
+
+                        <div class="product-card" itemscope itemtype="http://schema.org/Product">
+
+                            {{-- IMAGE --}}
+                            <a class="product-card-image" href="{{ route('product-detail', $product->slug) }}" aria-label="{{ $product->name }}">
+                                <img class="img-main" src="{{ asset($product->thumb_image) }}"
+                                     alt="{{ $product->name }}" loading="lazy" itemprop="image" />
+                                @if($hoverImage)
+                                    <img class="img-hover" src="{{ asset($hoverImage) }}"
+                                         alt="{{ $product->name }}" loading="lazy" />
+                                @endif
+
+                                {{-- TYPE BADGES --}}
+                                @switch($product->product_type)
+                                    @case('new_arrival')
+                                        <span class="card-badge card-badge--new">Nuevo</span>
+                                        @break
+                                    @case('top_product')
+                                        <img class="card-hot-img" src="{{ asset('frontend/images/logo/hot_sale.png') }}" alt="Hot Sale" />
+                                        <span class="card-badge card-badge--hot">Hot Sale</span>
+                                        @break
+                                    @case('best_product')
+                                        <span class="card-badge card-badge--best">Más Vendido</span>
+                                        @break
+                                @endswitch
+
+                                {{-- DISCOUNT BADGE --}}
+                                @if($hasDiscount && $discountPct > 0)
+                                    <span class="card-badge--off">-{{ $discountPct }}%</span>
+                                @endif
+                            </a>
+
+                            {{-- INFO --}}
+                            <div class="product-card-info">
+                                <a class="card-category" href="#" itemprop="category">{{ $product->category->name }}</a>
+
+                                <a class="card-name" href="{{ route('product-detail', $product->slug) }}"
+                                   itemprop="name">{{ $product->name }}</a>
+
+                                @if($sku)
+                                    <span class="card-sku">SKU: {{ $sku }}</span>
+                                @endif
+
+                                {{-- RATING --}}
+                                @if($reviewCount > 0)
+                                    <div class="card-rating">
+                                        <div class="card-stars">
+                                            @for($i = 1; $i <= 5; $i++)
+                                                <i class="fas fa-star{{ $i <= $avgRating ? '' : ($i - $avgRating < 1 ? '-half-alt' : '') }} fa-star{{ $i > ceil($avgRating) ? '' : '' }}"></i>
+                                            @endfor
+                                        </div>
+                                        <span class="card-rating-count">({{ $reviewCount }})</span>
+                                    </div>
+                                @endif
+
+                                {{-- PRICE --}}
+                                @if($finalPrice)
+                                    {{-- STOCK --}}
+                                    @if($qty > 0)
+                                        <span class="card-stock card-stock--in" itemprop="offers" itemscope itemtype="http://schema.org/Offer">
+                                            <meta itemprop="availability" content="http://schema.org/InStock">
+                                            ✓ Disponible
+                                        </span>
+                                    @else
+                                        <span class="card-stock card-stock--out" itemprop="offers" itemscope itemtype="http://schema.org/Offer">
+                                            <meta itemprop="availability" content="http://schema.org/OutOfStock">
+                                            Agotado
+                                        </span>
+                                    @endif
+
+                                    <div class="card-price-block" itemscope itemtype="http://schema.org/Offer">
+                                        <meta itemprop="priceCurrency" content="MXN">
+                                        @if($hasDiscount)
+                                            <div class="card-price-del">
+                                                {{ $settings->currency_icon }}{{ number_format($normalPrice, 2, '.', ',') }} MXN
+                                            </div>
+                                        @endif
+                                        <div class="card-price-main">
+                                            <span itemprop="price" content="{{ $finalPrice }}">
+                                                {{ $settings->currency_icon }}{{ number_format($finalPrice, 2, '.', ',') }} MXN
+                                            </span>
+                                            @if($hasDiscount && $discountPct > 0)
+                                                <span class="card-price-off">-{{ $discountPct }}% OFF</span>
+                                            @endif
+                                        </div>
+                                        <div class="card-price-iva">IVA incluido</div>
+                                    </div>
+
+                                    @if($shippingRules && $finalPrice >= $shippingRules->min_cost)
+                                        <div class="card-free-shipping">
+                                            <i class="fas fa-shipping-fast"></i> Envío Gratis
+                                        </div>
+                                    @endif
+                                @else
+                                    <span class="card-stock card-stock--consult">Requiere Asesoría</span>
+                                    <div class="card-price-na">Solicita tu cotización</div>
+                                @endif
+                            </div>
+
+                            {{-- ACTIONS --}}
+                            <div class="product-card-actions">
+                                <form class="shopping-cart-form">
+                                    <input type="hidden" name="product_id" value="{{ $product->id }}">
+                                    <input type="hidden" name="combination_id" value="{{ $combinationId }}">
+                                    <input type="hidden" name="brand_name" itemprop="brand" content="{{ $product->brand->name }}" value="{{ $product->brand->name }}">
+                                    <input type="hidden" name="sku" value="{{ $sku }}">
+                                    <input type="hidden" name="productModel" value="{{ $productModel ?? '' }}">
+                                    <input type="hidden" name="qty" value="1" min="1" max="{{ $qty }}">
+
+                                    @if($finalPrice)
+                                        <button type="submit" class="card-add-btn">
+                                            <i class="fas fa-shopping-cart" style="margin-right:6px;font-size:12px;"></i>
+                                            Agregar al Carrito
+                                        </button>
+                                    @else
+                                        <a href="{{ route('contact') }}" class="card-consult-btn">
+                                            Requiere Asesoría
+                                        </a>
+                                    @endif
+                                </form>
+                            </div>
+
+                        </div>
+
+                        @empty
+                        <div class="products-empty">
+                            <div class="products-empty-icon">📦</div>
+                            <h2>Sin productos</h2>
+                            <p>Estamos trabajando para brindarte los mejores productos. Intenta con otra búsqueda.</p>
+                        </div>
+                        @endforelse
+
+                    </div>
+
+                    {{-- PAGINATION --}}
+                    @if($products->hasPages())
+                        <div class="products-pagination">
+                            {{ $products->withQueryString()->links() }}
+                        </div>
+                    @endif
+
+                </div>{{-- /products-main --}}
+            </div>{{-- /products-page-layout --}}
+        </div>{{-- /container --}}
     </section>
-    <!--============================
-        PRODUCT PAGE END
-    ==============================-->
 
 @endsection
 
 @push('scripts')
-    <script>
-        $(document).ready(function(){
-            $('.list-view').on('click', function(){
-                let style = $(this).data('id');
-
-                $.ajax({
-                    method: 'GET',
-                    url: "{{route('change-product-list-view')}}",
-                    data: {style: style},
-                    success: function(data){
-
-                    }
-                })
-            })
-        })
-        @php
-            if(request()->has('range') && request()->range !=  ''){
-                $price = explode(';', request()->range);
-                $from = $price[0];
-                $to = $price[1];
-            }else {
-                $from = 0;
-                $to = 8000;
-            }
-        @endphp
-        jQuery(function () {
-        jQuery("#slider_range").flatslider({
-            min: 0, max: 10000,
-            step: 100,
-            values: [{{$from}}, {{$to}}],
+<script>
+(function () {
+    // Price range slider
+    @php
+        if(request()->has('range') && request()->range != ''){
+            $price = explode(';', request()->range);
+            $from = $price[0];
+            $to   = $price[1];
+        } else {
+            $from = 0;
+            $to   = 8000;
+        }
+    @endphp
+    jQuery(function () {
+        jQuery('#slider_range').flatslider({
+            min: 0, max: 10000, step: 100,
+            values: [{{ $from }}, {{ $to }}],
             range: true,
-            einheit: '{{$settings->currency_icon}}'
+            einheit: '{{ $settings->currency_icon }}'
         });
     });
-    </script>
+
+    // View toggle (grid / list)
+    document.querySelectorAll('.view-btn').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            var view = this.dataset.view;
+            document.querySelectorAll('.view-btn').forEach(function (b) { b.classList.remove('active'); });
+            this.classList.add('active');
+            var grid = document.getElementById('products-grid');
+            if (view === 'list') {
+                grid.classList.add('list-view');
+            } else {
+                grid.classList.remove('list-view');
+            }
+            $.ajax({
+                method: 'GET',
+                url: '{{ route('change-product-list-view') }}',
+                data: { style: view }
+            });
+        });
+    });
+
+    // Filter group collapse
+    document.querySelectorAll('.filter-group-header').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            var targetId = 'filter-' + this.dataset.filterToggle;
+            var body = document.getElementById(targetId);
+            if (!body) return;
+            var hidden = body.classList.toggle('hidden');
+            this.classList.toggle('collapsed', hidden);
+        });
+    });
+
+    // Mobile filters toggle
+    var mobileToggle = document.getElementById('mobile-filters-toggle');
+    var sidebar = document.getElementById('filters-sidebar');
+    if (mobileToggle && sidebar) {
+        mobileToggle.addEventListener('click', function () {
+            sidebar.classList.toggle('open');
+            var expanded = sidebar.classList.contains('open');
+            this.setAttribute('aria-expanded', expanded);
+        });
+    }
+})();
+</script>
 @endpush
-
-
