@@ -172,3 +172,13 @@ Route::group(['middleware' => ['auth','verified'], 'prefix' => 'user', 'as' => '
 
 /**brand-mark  */
 // Route::get('brands-mark', [BrandsMarkController::class , 'index'])->name('brands-mark');
+
+// ⚠️ RUTA TEMPORAL — eliminar después de ejecutar en producción
+Route::get('/run-storage-link', function () {
+    try {
+        Artisan::call('storage:link');
+        return response('<h2 style="color:green">✅ storage:link ejecutado correctamente.</h2><p>Elimina esta ruta de web.php después de usarla.</p>');
+    } catch (\Exception $e) {
+        return response('<h2 style="color:red">❌ Error: ' . $e->getMessage() . '</h2>');
+    }
+});

@@ -212,6 +212,8 @@ public function chageListView(Request $request)
 
         $averageRating = $reviews->avg('rating');
 
-        return view('frontend.pages.product-detail', compact('product','reviews', 'ratingCounts', 'averageRating', 'selectedCombination','hasCombinations', 'productCombinations'));
+        $shippingRules = ShippingRule::where('type', 'min_cost')->first();
+
+        return view('frontend.pages.product-detail', compact('product','reviews', 'ratingCounts', 'averageRating', 'selectedCombination','hasCombinations', 'productCombinations', 'shippingRules'));
     }
 }
