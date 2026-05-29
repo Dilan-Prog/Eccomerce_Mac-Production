@@ -787,7 +787,9 @@
                         utm_medium: localStorage.getItem('utm_medium') || '',
                         utm_campaign: localStorage.getItem('utm_campaign') || '',
                         landing_page: localStorage.getItem('landing_page') || window.location.pathname,
-                        type: type
+                        type: type,
+                        // Fecha en zona horaria de México (formato: YYYY-MM-DD HH:MM:SS)
+                        fecha: new Date().toLocaleString('sv-SE', { timeZone: 'America/Mexico_City' })
                     };
 
                     fetch(googleSheetsWebhook, {
@@ -826,7 +828,9 @@
                     utm_medium: localStorage.getItem('utm_medium') || null,
                     utm_campaign: localStorage.getItem('utm_campaign') || null,
                     landing_page: localStorage.getItem('landing_page') || window.location.pathname,
-                    type: type
+                    type: type,
+                    // Fecha en zona horaria de México (formato: YYYY-MM-DD HH:MM:SS)
+                    fecha: new Date().toLocaleString('sv-SE', { timeZone: 'America/Mexico_City' })
                 };
 
                 // Envía la info al backend usando fetch POST
@@ -1125,7 +1129,9 @@ document.addEventListener('DOMContentLoaded', () => {
           utm_medium: localStorage.getItem('utm_medium') || '',
           utm_campaign: localStorage.getItem('utm_campaign') || '',
           landing_page: localStorage.getItem('landing_page') || window.location.pathname,
-          type: type
+          type: type,
+          // Fecha en zona horaria de México (formato: YYYY-MM-DD HH:MM:SS)
+          fecha: new Date().toLocaleString('sv-SE', { timeZone: 'America/Mexico_City' })
         };
 
         // Envía a Google Sheets via webhook (sin-cors)

@@ -1,19 +1,11 @@
 @extends('admin.layouts.master')
 
 @section('content')
-
-
-
     <section class="section">
       <div class="section-header">
         <h1>Actualizar Producto</h1>
-
       </div>
-
-
       <div class="section-body">
-
-
         <div class="row">
           <div class="col-12">
             <div class="card">
@@ -83,10 +75,8 @@
                               <option {{$brand->id == $product->brand_id ? 'selected' : ''}} value="{{$brand->id}}">{{$brand->name}}</option>
 
                               @endforeach
-
                             </select>
                       </div>
-
                     <div class="form-group position-relative">
                       <label>Sku</label><small id="sku-status" class="form-text d-block mt-2"></small>
                       <input type="text" class="form-control sku-input" name="sku" value="{{ old('sku', $product->sku) }}" placeholder="Escribe el SKU para buscar">
@@ -229,8 +219,6 @@
                       <label>Descripción Larga</label>
                       <textarea type="text" name="long_description" class="form-control ">{!! $product->long_description!!}</textarea>
                   </div>
-
-
                   <div class="form-group">
                       <label for="inputState">Tipo De Producto</label>
                         <select id="inputState" class="form-control" name="product_type">
@@ -241,8 +229,6 @@
                           <option {{$product->product_type == 'best_product' ? 'selected' : ''}} value="best_product">Más Vendido</option>
                         </select>
                   </div>
-
-
                   <div class="form-group">
                       <label>Seo Titulo</label>
                       <input type="text" class="form-control" name="seo_title" value="{{$product->seo_title}}">
@@ -273,7 +259,7 @@
                           <input class="form-control" name="canonical_url" value="{{$product->canonical_url}}" placeholder="Poner URL Canonical en caso de no tener una afiliacion y ser unica dejar el campo vacio y posteriormente rellenarlo">
                       </div>
                     </div>
-                    
+
 
                     <button type="submit" class="btn btn-primary">Actualizar</button>
                 </form>
@@ -344,27 +330,27 @@
       })
 
     })
-    
+
     // Búsqueda automática de SKU con dropdown
     let skuSearchTimeout;
     let selectedSkuData = null;
-    
+
     $('.sku-input').on('keyup', function(){
       let sku = $(this).val().trim();
       let dropdown = $('#sku-dropdown');
       let statusElement = $('#sku-status');
-      
+
       clearTimeout(skuSearchTimeout);
-      
+
       if(sku.length < 1){
         dropdown.hide();
         statusElement.html('');
         selectedSkuData = null;
         return;
       }
-      
+
       statusElement.text('Buscando...').removeClass('text-success text-warning text-danger').addClass('text-muted');
-      
+
       skuSearchTimeout = setTimeout(function(){
         $.ajax({
           method: 'GET',
@@ -372,7 +358,7 @@
           data: { sku: sku },
           success: function(data){
             dropdown.html('');
-            
+
             // Si hay resultados
             if(data && data.length > 0){
               data.forEach(function(item, index){
@@ -400,29 +386,29 @@
         });
       }, 300);
     });
-    
+
     // Al hacer click en una opción del dropdown
     $(document).on('click', '.sku-option', function(e){
       e.preventDefault();
       let index = $(this).data('index');
       let data = window.skuResults[index];
-      
+
       // Establecer el valor en el input
       $('.sku-input').val(data.cve_art);
       $('#sku-dropdown').hide();
       selectedSkuData = data;
-      
+
       // Auto-llenar datos de Aspel
       if(data){
         // Auto-llenar cantidad Aspel
         $('input[name="qty_aspel"]').val(data.exist);
-        
+
         // Si hay precios de Aspel, mostrar en los campos correspondientes
         if(data.aspel_prices && data.aspel_prices.length > 0){
           // Para precio normal
           let precioInput = $('input[name="aspel_price"]');
           precioInput.val(data.aspel_prices[0].precio);
-          
+
           // Para precio oferta (si existe más de un precio)
           if(data.aspel_prices.length > 1){
             let ofertaInput = $('input[name="aspel_offert_price"]');
@@ -430,9 +416,9 @@
           }
         }
       }
-      
+
       let statusElement = $('#sku-status');
-      
+
       if(data.exists_in_products){
         // Si el SKU ya existe, solo mostrar el error
         statusElement.html('<div class="text-danger"><i class="fas fa-exclamation-triangle"></i> <strong>Este SKU ya existe en productos. No se puede crear.</strong></div>');
@@ -488,7 +474,7 @@
           }
       });
     });
-    
+
     // Cerrar dropdown al hacer click fuera
     $(document).on('click', function(e){
       if(!$(e.target).closest('.form-group').length){
