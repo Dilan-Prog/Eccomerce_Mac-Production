@@ -1,3 +1,155 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+/* =========================================================
+   VENDOR CSS — imported from public/frontend/css/
+   Vite resolves URL() references relative to each file's
+   location, so font/image paths remain correct.
+   ========================================================= */
+@import '../../public/frontend/css/all.min.css';
+@import '../../public/frontend/css/select2.min.css';
+@import '../../public/frontend/css/slick.css';
+@import '../../public/frontend/css/jquery.nice-number.min.css';
+@import '../../public/frontend/css/jquery.calendar.css';
+@import '../../public/frontend/css/add_row_custon.css';
+@import '../../public/frontend/css/mobile_menu.css';
+@import '../../public/frontend/css/jquery.exzoom.css';
+@import '../../public/frontend/css/multiple-image-video.css';
+@import '../../public/frontend/css/ranger_style.css';
+@import '../../public/frontend/css/jquery.classycountdown.css';
+@import '../../public/frontend/css/venobox.min.css';
+
+/* =========================================================
+   MAIN PROJECT STYLES
+   ========================================================= */
+@import '../../public/frontend/css/style.css';
+
+/* =========================================================
+   EXISTING RESPONSIVE STYLES
+   ========================================================= */
+@import '../../public/frontend/css/responsive.css';
+
+/* =========================================================
+   OVERRIDES — the old responsive.css assumed the <header>
+   was position:fixed (old layout). The new layout wraps
+   everything in a .sticky-wrapper that is position:sticky,
+   so the header must be reset to static on mobile/tablet.
+   These rules MUST come after the @import above.
+   ========================================================= */
+
+/* Tablet portrait and smaller (≤991px) */
+@media (max-width: 991.99px) {
+    /* Reset old fixed-header behaviour */
+    header {
+        position: static !important;
+        height: auto !important;
+        top: auto !important;
+        left: auto !important;
+        z-index: auto !important;
+        background: var(--blanco, #fff) !important;
+    }
+
+    /* The old responsive.css targeted #wsus__topbar (no longer in DOM),
+       but we also hide the new .top-bar to save vertical space on small screens */
+    .top-bar {
+        display: none;
+    }
+
+    /* Social-links / shipping bar — hidden on mobile (mobile menu covers it) */
+    .wsus__main_menu2 {
+        display: none;
+    }
+
+    /* Remove top-margin that was added to clear the old fixed header */
+    #wsus__banner,
+    #wsus__breadcrumb {
+        margin-top: 0 !important;
+    }
+}
+
+/* Phone landscape (≤767px) */
+@media (max-width: 767.99px) {
+    .header-inner {
+        gap: 10px;
+        padding: 8px 0;
+    }
+
+    .logo-img {
+        height: 36px;
+    }
+
+    .logo-sub {
+        display: none;
+    }
+
+    .header-actions {
+        gap: 10px;
+    }
+
+    /* Product grid: 2 columns on small tablets / large phones */
+    .wsus__product_area .col-6 {
+        padding-left: 6px;
+        padding-right: 6px;
+    }
+
+    /* Cart table: allow horizontal scroll instead of overflow */
+    .wsus__cart_list {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    /* Checkout / order details stacking */
+    .wsus__order_details .row > [class*="col-"] {
+        margin-bottom: 16px;
+    }
+
+    /* Filter sidebar button row */
+    .wsus__sidebar_filter {
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+}
+
+/* Phone portrait (≤575px) */
+@media (max-width: 575.99px) {
+    .header-inner {
+        gap: 6px;
+    }
+
+    .logo-img {
+        height: 30px;
+    }
+
+    /* Nav-secondary already hidden via d-none d-lg-block Bootstrap class */
+
+    /* Footer columns: force single column */
+    .wsus__footer_content {
+        text-align: center;
+    }
+
+    .wsus__footer_social {
+        justify-content: center;
+    }
+
+    /* Product detail: action buttons stack */
+    .wsus__button_area ul {
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    /* Modals: prevent overflow on very small screens */
+    .product_popup_modal .modal-dialog {
+        margin: 8px;
+    }
+
+    /* Hero section (from master.blade.php inline styles — reinforced here) */
+    .hero-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .hero-card {
+        display: none;
+    }
+
+    /* Search bar on mobile: shown inside mobile menu — hide any remnant */
+    .search-bar {
+        max-width: 100%;
+    }
+}
