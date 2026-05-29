@@ -124,30 +124,10 @@
     <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"></noscript>
 
     {{-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous"> --}}
-    <link rel="stylesheet" href="{{asset('frontend/css/all.min.css')}}" >
-    {{-- <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet" integrity="sha512-sVZ6X2KzNjzDqEtOoyArBPIzY+Z5tc+yjaNQvv3DxRKu+aO+4hBNfRPTPQkn+HkqFhR3LKaU1Y6T1V2kAUp+Zw==" crossorigin="anonymous" referrerpolicy="no-referrer" /> --}}
-    <script src="{{ asset('frontend/js/select2.min.js') }}"></script>
-    <link rel="stylesheet" href="{{asset('frontend/css/select2.min.css')}}" >
-
-    {{-- <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" /> --}}
-    <link rel="stylesheet" href="{{asset('frontend/css/slick.css')}}">
-    {{-- <link href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css" rel="stylesheet" /> --}}
-    <link rel="stylesheet" href="{{asset('frontend/css/jquery.nice-number.min.css')}}">
-    <link rel="stylesheet" href="{{asset('frontend/css/jquery.calendar.css')}}">
-    <link rel="stylesheet" href="{{asset('frontend/css/add_row_custon.css')}}">
-    <link rel="stylesheet"  href="{{ asset('frontend/css/mobile_menu.css') }}">
-    <link rel="stylesheet" href="{{asset('frontend/css/jquery.exzoom.css')}}">
-    <link rel="stylesheet" href="{{asset('frontend/css/multiple-image-video.css')}}">
-    <link rel="stylesheet" href="{{asset('frontend/css/ranger_style.css')}}">
-    <link rel="stylesheet"  href="{{ asset('frontend/css/jquery.classycountdown.css') }}">
-    <link rel="stylesheet" href="{{asset('frontend/css/venobox.min.css')}}">
+    @vite(['resources/css/app.css','resources/js/app.js'])
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
 
     <script src="https://www.google.com/recaptcha/api.js?render=6LfT84IrAAAAAKVhNXXrFPDAgMFAiCGdj1-tYz2B"></script>
-
-    <link rel="preload" fetchpriority="high" href="{{asset('frontend/css/style.css')}}" as="style" onload="this.onload=null;this.rel='stylesheet'">
-    <noscript><link rel="stylesheet" href="{{ asset('frontend/css/style.css') }}"></noscript>
-    <link rel="stylesheet" href="{{ asset('frontend/css/responsive.css') }}">
     <script defer type="module" src="https://cdn.jsdelivr.net/npm/@justinribeiro/lite-youtube@1/lite-youtube.min.js"></script>
 
             <!-- Captura GCLID + UTM -->
@@ -637,39 +617,7 @@
     ==============================-->
 
 
-    <script src="{{asset('frontend/js/jquery-3.6.0.min.js')}}"></script>
-    <!--bootstrap js-->
-    <script src="{{asset('frontend/js/bootstrap.bundle.min.js')}}"></script>
-    <!--font-awesome js-->
-    <script src="{{asset('frontend/js/Font-Awesome.js')}}" ></script>
-    <!--select2 js-->
-    <script src="{{asset('frontend/js/select2.min.js')}}" ></script>
-    <!--slick slider js-->
-    <script src="{{asset('frontend/js/slick.min.js')}}" ></script>
-    <!--simplyCountdown js-->
-    <script src="{{asset('frontend/js/simplyCountdown.js')}}" ></script>
-    <!--product zoomer js-->
-    <script src="{{asset('frontend/js/jquery.exzoom.js')}}" ></script>
-    <!--nice-number js-->
-    <script src="{{asset('frontend/js/jquery.nice-number.min.js')}}" ></script>
-    <!--counter js-->
-    <script src="{{asset('frontend/js/jquery.waypoints.min.js')}}"></script>
-    <script src="{{asset('frontend/js/jquery.countup.min.js')}}"></script>
-    <!--add row js-->
-    <script src="{{asset('frontend/js/add_row_custon.js')}}"></script>
-    <!--multiple-image-video js-->
-    <script src="{{asset('frontend/js/multiple-image-video.js')}}"></script>
-    <!--sticky sidebar js-->
-    <script src="{{asset('frontend/js/sticky_sidebar.js')}}"></script>
-    <!--price ranger js-->
-    <script src="{{asset('frontend/js/ranger_jquery-ui.min.js')}}"></script>
-    <script src="{{asset('frontend/js/ranger_slider.js')}}"></script>
-    <!--isotope js-->
-    <script src="{{asset('frontend/js/isotope.pkgd.min.js')}}"></script>
-    <!--venobox js-->
-    <script src="{{asset('frontend/js/venobox.min.js')}}"></script>
-    <!--classycountdown js-->
-    <script src="{{asset('frontend/js/jquery.classycountdown.js')}}"></script>
+    {{-- All jQuery/plugin scripts are now bundled via Vite (resources/js/app.js) --}}
     {{-- sweetalert js --}}
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
@@ -677,9 +625,7 @@
 
 
 
-    <!--main/custom js-->
-    <script src="{{asset('frontend/js/main.js')}}"></script>
-    <!--toast js-->
+    {{-- toastr js (CDN — not bundled) --}}
     <script src="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
 
 
