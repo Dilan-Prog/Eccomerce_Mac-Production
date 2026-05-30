@@ -1,0 +1,95 @@
+{
+  "public/frontend/webfonts/fa-brands-400.eot": {
+    "file": "assets/fa-brands-400-DClAY--T.eot",
+    "src": "public/frontend/webfonts/fa-brands-400.eot"
+  },
+  "public/frontend/webfonts/fa-brands-400.svg": {
+    "file": "assets/fa-brands-400-dmELoA3c.svg",
+    "src": "public/frontend/webfonts/fa-brands-400.svg"
+  },
+  "public/frontend/webfonts/fa-brands-400.ttf": {
+    "file": "assets/fa-brands-400-CIXgOpOQ.ttf",
+    "src": "public/frontend/webfonts/fa-brands-400.ttf"
+  },
+  "public/frontend/webfonts/fa-brands-400.woff": {
+    "file": "assets/fa-brands-400-Wx_b0Svh.woff",
+    "src": "public/frontend/webfonts/fa-brands-400.woff"
+  },
+  "public/frontend/webfonts/fa-brands-400.woff2": {
+    "file": "assets/fa-brands-400-F-vh2M2S.woff2",
+    "src": "public/frontend/webfonts/fa-brands-400.woff2"
+  },
+  "public/frontend/webfonts/fa-regular-400.eot": {
+    "file": "assets/fa-regular-400-wYdGl1tf.eot",
+    "src": "public/frontend/webfonts/fa-regular-400.eot"
+  },
+  "public/frontend/webfonts/fa-regular-400.svg": {
+    "file": "assets/fa-regular-400-DHKNVWDy.svg",
+    "src": "public/frontend/webfonts/fa-regular-400.svg"
+  },
+  "public/frontend/webfonts/fa-regular-400.ttf": {
+    "file": "assets/fa-regular-400-xJJZjenl.ttf",
+    "src": "public/frontend/webfonts/fa-regular-400.ttf"
+  },
+  "public/frontend/webfonts/fa-regular-400.woff": {
+    "file": "assets/fa-regular-400-D0I26DEG.woff",
+    "src": "public/frontend/webfonts/fa-regular-400.woff"
+  },
+  "public/frontend/webfonts/fa-regular-400.woff2": {
+    "file": "assets/fa-regular-400-nlupHwI1.woff2",
+    "src": "public/frontend/webfonts/fa-regular-400.woff2"
+  },
+  "public/frontend/webfonts/fa-solid-900.eot": {
+    "file": "assets/fa-solid-900-Ve_7YDOb.eot",
+    "src": "public/frontend/webfonts/fa-solid-900.eot"
+  },
+  "public/frontend/webfonts/fa-solid-900.svg": {
+    "file": "assets/fa-solid-900-CnTHMN-w.svg",
+    "src": "public/frontend/webfonts/fa-solid-900.svg"
+  },
+  "public/frontend/webfonts/fa-solid-900.ttf": {
+    "file": "assets/fa-solid-900-1A1aw3ks.ttf",
+    "src": "public/frontend/webfonts/fa-solid-900.ttf"
+  },
+  "public/frontend/webfonts/fa-solid-900.woff": {
+    "file": "assets/fa-solid-900-d08C2v-5.woff",
+    "src": "public/frontend/webfonts/fa-solid-900.woff"
+  },
+  "public/frontend/webfonts/fa-solid-900.woff2": {
+    "file": "assets/fa-solid-900-D3IoOn-o.woff2",
+    "src": "public/frontend/webfonts/fa-solid-900.woff2"
+  },
+  "resources/css/app.css": {
+    "file": "assets/app-Cyu11ZHX.css",
+    "src": "resources/css/app.css",
+    "isEntry": true
+  },
+  "resources/css/auth.css": {
+    "file": "assets/auth-sWCqNkmK.css",
+    "src": "resources/css/auth.css",
+    "isEntry": true
+  },
+  "resources/css/checkout.css": {
+    "file": "assets/checkout-CdvWt3FD.css",
+    "src": "resources/css/checkout.css",
+    "isEntry": true
+  },
+  "resources/js/app.js": {
+    "file": "assets/app-Bnn8M44n.js",
+    "name": "app",
+    "src": "resources/js/app.js",
+    "isEntry": true
+  },
+  "resources/js/auth.js": {
+    "file": "assets/auth-BmjtG_Zm.js",
+    "name": "auth",
+    "src": "resources/js/auth.js",
+    "isEntry": true
+  },
+  "resources/js/checkout.js": {
+    "file": "assets/checkout-DR-qHU25.js",
+    "name": "checkout",
+    "src": "resources/js/checkout.js",
+    "isEntry": true
+  }
+}
