@@ -1,0 +1,401 @@
+/* =========================================================
+   MEGA MENÚ DE NAVEGACIÓN — Mac Del Norte
+   Las variables CSS ya están definidas en :root (master.blade.php + app.css).
+   Se usan con fallback para máxima compatibilidad.
+   ========================================================= */
+
+/* =========================================================
+   FIX: DROPDOWN DE SERVICIOS — aparece justo debajo del link,
+   superpuesto sobre el main-nav azul (z-index mayor que el main-nav)
+   ========================================================= */
+
+/* nav-secondary crea un nuevo stacking context por encima del main-nav */
+.nav-secondary {
+    position: relative;
+    z-index: 210;
+}
+
+/* El dropdown aparece justo debajo de Servicios, sobre el main-nav */
+.nav-sec-dropdown {
+    z-index: 209 !important;
+}
+
+/* ── BARRA AZUL PRINCIPAL ── */
+nav.main-nav {
+    background: var(--azul-principal, #003E7E);
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+    position: relative;
+    z-index: 200;
+}
+
+.nav-inner {
+    display: flex;
+    align-items: stretch;
+    width: 100%;
+    padding: 0;
+}
+
+/* Grid de 6 columnas para las categorías */
+.nav-categories {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    flex: 1;
+}
+
+/* ── NAV ITEM ── */
+.nav-item {
+    position: static; /* el mega-menu se posiciona relativo a main-nav */
+    display: flex;
+}
+
+/* ── NAV LINK ── */
+.nav-link {
+    padding: 16px 10px;
+    text-decoration: none;
+    color: #fff;
+    font-size: 13px;
+    font-weight: 700;
+    white-space: nowrap;
+    transition: background 0.2s, border-bottom-color 0.2s;
+    border-bottom: 3px solid transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    width: 100%;
+    text-align: center;
+    font-family: 'Open Sans', sans-serif;
+    line-height: 1.2;
+}
+
+.nav-link:hover,
+.nav-item:hover > .nav-link {
+    background: var(--azul-oscuro, #002856);
+    border-bottom-color: var(--amarillo-destacado, #F6AD1C);
+    color: #fff;
+    text-decoration: none;
+}
+
+/* Icono FontAwesome dentro del nav-link */
+.nav-link .icon {
+    font-size: 15px;
+    opacity: 0.9;
+}
+
+/* Chevron animado */
+.nav-link .chevron {
+    width: 11px;
+    height: 11px;
+    opacity: 0.7;
+    transition: transform 0.2s;
+    flex-shrink: 0;
+}
+
+.nav-item:hover > .nav-link .chevron {
+    transform: rotate(180deg);
+}
+
+/* Categoría especial (última = brand) */
+.nav-link.brand-line {
+    background: rgba(246,173,28,0.08);
+    border-left: 3px solid var(--amarillo-destacado, #F6AD1C);
+}
+
+.nav-link.brand-line:hover,
+.nav-item:hover > .nav-link.brand-line {
+    background: rgba(246,173,28,0.15);
+    border-bottom-color: var(--amarillo-destacado, #F6AD1C);
+}
+
+/* ── REDES SOCIALES ── */
+.nav-social {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 0 16px;
+    border-left: 1px solid rgba(255,255,255,0.12);
+    flex-shrink: 0;
+}
+
+.nav-social-link {
+    width: 30px;
+    height: 30px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    text-decoration: none;
+    transition: background 0.2s, transform 0.2s, border-color 0.2s;
+    border: 1px solid rgba(255,255,255,0.10);
+}
+
+.nav-social-link:hover {
+    background: var(--accent-cta, #F7941D);
+    border-color: var(--accent-cta, #F7941D);
+    color: #fff;
+    transform: translateY(-2px);
+    text-decoration: none;
+}
+
+.nav-social-link.whatsapp:hover {
+    background: #25D366;
+    border-color: #25D366;
+}
+
+/* =========================================================
+   MEGA MENÚ — dropdown full-width
+   ========================================================= */
+.mega-menu {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 100%;
+    z-index: 300;
+    background: #fff;
+    box-shadow: 0 8px 32px rgba(0,62,126,0.15);
+    border-top: 3px solid var(--accent-cta, #F7941D);
+
+    /* Animación entrada */
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: opacity 0.22s ease, transform 0.22s ease, visibility 0.22s ease;
+    pointer-events: none;
+}
+
+.nav-item:hover .mega-menu,
+.mega-menu.is-open {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+    pointer-events: auto;
+}
+
+.mega-menu-inner {
+    display: flex;
+    align-items: flex-start;
+    gap: 0;
+    padding: 0;
+    min-height: 260px;
+}
+
+/* ── SIDEBAR DEL MEGA MENÚ ── */
+.mega-sidebar {
+    width: 220px;
+    flex-shrink: 0;
+    background: linear-gradient(160deg, var(--azul-oscuro, #002856) 0%, var(--azul-principal, #003E7E) 100%);
+    color: #fff;
+    padding: 28px 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    align-self: stretch;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Patrón cuadrícula en sidebar */
+.mega-sidebar::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+        linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px);
+    background-size: 28px 28px;
+    pointer-events: none;
+}
+
+/* Sidebar con estilo especial para última categoría (brand) */
+.mega-sidebar.brand {
+    background: linear-gradient(160deg, #1a1a2e 0%, #16213e 100%);
+}
+
+.mega-sidebar-icon {
+    position: relative;
+    z-index: 1;
+    width: 52px;
+    height: 52px;
+    background: rgba(255,255,255,0.12);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--amarillo-destacado, #F6AD1C);
+    font-size: 24px;
+    margin-bottom: 4px;
+}
+
+.mega-sidebar-brand-badge {
+    position: relative;
+    z-index: 1;
+    display: inline-block;
+    background: var(--amarillo-destacado, #F6AD1C);
+    color: var(--azul-oscuro, #002856);
+    font-size: 10px;
+    font-weight: 800;
+    padding: 3px 10px;
+    border-radius: 3px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.mega-sidebar h4 {
+    position: relative;
+    z-index: 1;
+    font-size: 16px;
+    font-weight: 800;
+    color: #fff;
+    line-height: 1.2;
+    margin: 0;
+}
+
+.mega-sidebar p {
+    position: relative;
+    z-index: 1;
+    font-size: 12px;
+    color: rgba(255,255,255,0.72);
+    line-height: 1.5;
+    margin: 0;
+    flex: 1;
+}
+
+.mega-sidebar-cta {
+    position: relative;
+    z-index: 1;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--accent-cta, #F7941D);
+    color: #fff;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 8px 14px;
+    border-radius: 6px;
+    text-decoration: none;
+    transition: background 0.2s, transform 0.2s;
+    margin-top: auto;
+    white-space: nowrap;
+}
+
+.mega-sidebar-cta:hover {
+    background: var(--accent-cta-hover, #E08416);
+    color: #fff;
+    transform: translateX(2px);
+    text-decoration: none;
+}
+
+/* ── COLUMNAS DE SUBCATEGORÍAS ── */
+.mega-cols {
+    flex: 1;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 0;
+    padding: 24px 20px;
+    align-items: start;
+}
+
+.mega-cols-4 {
+    grid-template-columns: repeat(4, 1fr);
+}
+
+.mega-col {
+    padding: 0 16px;
+    border-right: 1px solid var(--gris-borde, #DDE3EA);
+}
+
+.mega-col:last-child {
+    border-right: none;
+}
+
+.mega-col-title {
+    display: block;
+    font-size: 12px;
+    font-weight: 800;
+    color: var(--azul-principal, #003E7E);
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    margin-bottom: 10px;
+    padding-bottom: 6px;
+    border-bottom: 2px solid var(--accent-cta, #F7941D);
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.mega-col-title:hover {
+    color: var(--accent-cta, #F7941D);
+    text-decoration: none;
+}
+
+.mega-col-items {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.mega-col-items li {
+    margin-bottom: 4px;
+}
+
+.mega-col-items li a {
+    font-size: 13px;
+    color: var(--gris-texto, #4A5568);
+    text-decoration: none;
+    display: block;
+    padding: 3px 0;
+    transition: color 0.18s, padding-left 0.18s;
+    line-height: 1.4;
+}
+
+.mega-col-items li a:hover {
+    color: var(--azul-principal, #003E7E);
+    padding-left: 6px;
+    text-decoration: none;
+}
+
+.mega-col-more {
+    display: inline-block;
+    margin-top: 8px;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--accent-cta, #F7941D);
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.mega-col-more:hover {
+    color: var(--accent-cta-hover, #E08416);
+    text-decoration: underline;
+}
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+@media (max-width: 1100px) {
+    .nav-categories {
+        grid-template-columns: repeat(3, 1fr);
+    }
+    .nav-link {
+        font-size: 12px;
+        padding: 14px 8px;
+        gap: 4px;
+    }
+    .nav-link .icon { font-size: 13px; }
+    .nav-link .chevron { display: none; }
+    .nav-social { padding: 0 10px; gap: 4px; }
+    .nav-social-link { width: 26px; height: 26px; }
+    .mega-cols { grid-template-columns: repeat(3, 1fr); }
+    .mega-sidebar { width: 180px; }
+}
+
+@media (max-width: 960px) {
+    /* En tablet/móvil el mega menú CSS se oculta — el menú móvil existente
+       (wsus__mobile_menu accordion) cubre esta navegación. */
+    nav.main-nav {
+        display: none;
+    }
+}

@@ -25,6 +25,7 @@
    EXISTING RESPONSIVE STYLES
    ========================================================= */
 @import '../../public/frontend/css/responsive.css';
+@import './components/nav-megamenu.css';
 
 /* =========================================================
    OVERRIDES — the old responsive.css assumed the <header>
