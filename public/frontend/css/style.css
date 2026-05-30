@@ -67,13 +67,6 @@ span :not(.hero-accent, .about-hero .about-hero-title .accent, .about-hero-sub, 
   padding: 0;
 }
 
-span:not(.hero-accent, .about-hero .about-hero-title .accent, .about-hero-sub,.intro-text h2, .intro-text h2 .accent, .why-content p, .section-sub),
-p:not(.hero-accent, .about-hero .about-hero-title .accent, .about-hero-sub,.intro-text h2, .intro-text h2 .accent, .why-content p, .section-sub) {
-  font-size: 16px;
-  font-weight: 400;
-  line-height: 27px;
-}
-
 /*======================
 	COMMON CSS START
 ========================*/
