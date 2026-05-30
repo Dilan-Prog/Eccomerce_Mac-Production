@@ -30,3 +30,4 @@ import '../../public/frontend/js/isotope.pkgd.min.js';
 import '../../public/frontend/js/venobox.min.js';
 import '../../public/frontend/js/jquery.classycountdown.js';
 import '../../public/frontend/js/main.js';
+import './components/nav-megamenu.js';
