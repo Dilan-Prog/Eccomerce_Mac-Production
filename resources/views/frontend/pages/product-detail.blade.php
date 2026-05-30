@@ -583,6 +583,8 @@
 
                     @if ($finalPrice)
 
+                    @auth
+                    {{-- ── USUARIO AUTENTICADO: precio + carrito ── --}}
                     <div class="product-price-section">
                         @if ($hasDiscount)
                         <div class="price-del">
@@ -690,6 +692,57 @@
                             </a>
                         </div>
                     </form>
+
+                    @else
+                    {{-- ── GUEST: precio oculto + CTA de acceso ── --}}
+                    <div class="price-auth-required">
+                        <div class="price-auth-required-inner">
+                            <div class="price-auth-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="32" height="32">
+                                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                                    <path d="M7 11V7a5 5 0 0110 0v4"/>
+                                </svg>
+                            </div>
+                            <h4 class="price-auth-title">Precio disponible para clientes registrados</h4>
+                            <p class="price-auth-subtitle">
+                                Crea tu cuenta gratis o inicia sesión para ver precios,
+                                agregar al carrito y realizar tu compra.
+                            </p>
+                            <div class="price-auth-buttons">
+                                <a href="{{ route('register') }}" class="btn-register-cta">Crear cuenta gratis</a>
+                                <a href="{{ route('login') }}" class="btn-login-link">Ya tengo cuenta</a>
+                            </div>
+                            <div class="price-auth-divider">o contacta a un asesor</div>
+                            <div class="price-auth-contact">
+                                <a href="https://wa.link/f28njw" target="_blank" class="btn-contact-whatsapp">
+                                    <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413z"/></svg>
+                                    Chatear por WhatsApp
+                                </a>
+                                <a href="tel:8124738768" class="btn-contact-phone">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 8.81a19.79 19.79 0 01-3.07-8.63A2 2 0 012 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.91 7.91a16 16 0 006.29 6.29l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
+                                    Llamar: 81-3582-5559
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- Formulario de cotización rápida (guest) --}}
+                    <div class="quick-quote-form">
+                        <h4>¿Prefieres una cotización formal?</h4>
+                        <form method="POST" action="{{ route('contact') }}">
+                            @csrf
+                            <input type="hidden" name="product_name" value="{{ $product->name }}">
+                            <input type="hidden" name="product_sku"  value="{{ $sku }}">
+                            <div class="quote-form-row">
+                                <input type="text"  name="nombre"   placeholder="Tu nombre *" required class="quote-input">
+                                <input type="email" name="email"    placeholder="Tu correo *" required class="quote-input">
+                                <input type="tel"   name="telefono" placeholder="Teléfono"             class="quote-input">
+                            </div>
+                            <textarea name="mensaje" placeholder="Mensaje o cantidad requerida" class="quote-textarea" rows="3"></textarea>
+                            <button type="submit" class="btn-quote-submit">Enviar solicitud de cotización</button>
+                        </form>
+                    </div>
+                    @endauth
 
                     @else
                     {{-- SIN PRECIO — REQUIERE ASESORÍA --}}
@@ -1025,9 +1078,15 @@
                     <div class="related-info">
                         <div class="related-pn">{{ $related->sku }}</div>
                         <div class="related-name">{{ Str::limit($related->name, 55) }}</div>
+                        @auth
                         @if ($relPrice)
                         <div class="related-price">{{ $settings->currency_icon }}{{ number_format($relPrice, 2, '.', ',') }} <small>/ pza · IVA inc.</small></div>
                         @endif
+                        @else
+                        <div class="related-price" style="font-size:12px;color:var(--gris-claro-texto);">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="11" height="11"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg> Ver precio
+                        </div>
+                        @endauth
                         <div class="related-stock">
                             @if ($relQty > 0) ✓ {{ $relQty }} disponibles
                             @else <span style="color:var(--rojo-error);">Agotado</span>

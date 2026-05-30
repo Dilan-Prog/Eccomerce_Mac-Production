@@ -26,6 +26,7 @@
    ========================================================= */
 @import '../../public/frontend/css/responsive.css';
 @import './components/nav-megamenu.css';
+@import './components/price-visibility.css';
 
 /* =========================================================
    OVERRIDES — the old responsive.css assumed the <header>

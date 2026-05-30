@@ -1,0 +1,294 @@
+/* ═══════════════════════════════════════════════════════════════
+   PRICE VISIBILITY — control de visibilidad de precios por auth
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── Precio oculto (guest) en tarjeta de producto ─────────────── */
+.price-hidden-badge {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 9px 12px;
+    background: var(--azul-claro, #E6EFF8);
+    border-radius: 6px;
+    font-size: 12px;
+    color: var(--azul-principal, #003E7E);
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.btn-ver-precio {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    background: var(--azul-principal, #003E7E);
+    color: #fff !important;
+    text-align: center;
+    border-radius: 6px;
+    font-weight: 700;
+    font-size: 13px;
+    text-decoration: none;
+    transition: background 0.2s;
+}
+.btn-ver-precio:hover { background: var(--azul-oscuro, #002856); }
+
+/* ── Acciones guest (cotizar / whatsapp) en tarjeta ──────────── */
+.guest-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 7px;
+}
+.btn-cotizar,
+.btn-whatsapp {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    padding: 9px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 700;
+    text-decoration: none;
+    transition: all 0.2s;
+}
+.btn-cotizar {
+    background: var(--accent-cta, #F7941D);
+    color: #fff;
+}
+.btn-cotizar:hover { background: var(--accent-cta-hover, #E08416); color: #fff; }
+.btn-whatsapp {
+    background: #25D366;
+    color: #fff;
+}
+.btn-whatsapp:hover { background: #1ebe5d; color: #fff; }
+
+/* ── Bloque auth requerida en detalle de producto ─────────────── */
+.price-auth-required {
+    background: var(--gris-fondo, #F5F7FA);
+    border: 2px dashed var(--gris-borde, #DDE3EA);
+    border-radius: 12px;
+    margin-bottom: 16px;
+}
+.price-auth-required-inner {
+    padding: 28px 24px;
+    text-align: center;
+}
+.price-auth-icon {
+    width: 60px;
+    height: 60px;
+    background: var(--azul-claro, #E6EFF8);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 14px;
+    color: var(--azul-principal, #003E7E);
+}
+.price-auth-title {
+    font-size: 16px;
+    font-weight: 800;
+    color: var(--azul-principal, #003E7E);
+    margin-bottom: 8px;
+}
+.price-auth-subtitle {
+    font-size: 13px;
+    color: var(--gris-texto, #4A5568);
+    margin-bottom: 18px;
+    max-width: 360px;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: 1.6;
+}
+.price-auth-buttons {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+}
+.btn-register-cta {
+    padding: 11px 22px;
+    background: var(--accent-cta, #F7941D);
+    color: #fff;
+    border-radius: 6px;
+    font-weight: 800;
+    text-decoration: none;
+    font-size: 13px;
+    box-shadow: 0 4px 12px rgba(247,148,29,0.3);
+    transition: all 0.2s;
+}
+.btn-register-cta:hover {
+    background: var(--accent-cta-hover, #E08416);
+    color: #fff;
+    transform: translateY(-1px);
+}
+.btn-login-link {
+    padding: 11px 22px;
+    background: transparent;
+    color: var(--azul-principal, #003E7E);
+    border: 2px solid var(--azul-principal, #003E7E);
+    border-radius: 6px;
+    font-weight: 700;
+    text-decoration: none;
+    font-size: 13px;
+    transition: all 0.2s;
+}
+.btn-login-link:hover {
+    background: var(--azul-principal, #003E7E);
+    color: #fff;
+}
+.price-auth-divider {
+    font-size: 11px;
+    color: var(--gris-claro-texto, #718096);
+    margin: 12px 0;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 600;
+}
+.price-auth-contact {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+.btn-contact-whatsapp,
+.btn-contact-phone {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 9px 16px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 700;
+    text-decoration: none;
+    transition: all 0.2s;
+}
+.btn-contact-whatsapp { background: #25D366; color: #fff; }
+.btn-contact-whatsapp:hover { background: #1ebe5d; color: #fff; }
+.btn-contact-phone {
+    background: var(--azul-claro, #E6EFF8);
+    color: var(--azul-principal, #003E7E);
+}
+.btn-contact-phone:hover {
+    background: var(--azul-principal, #003E7E);
+    color: #fff;
+}
+
+/* ── Formulario cotización rápida (guest en detalle) ─────────── */
+.quick-quote-form {
+    background: #fff;
+    border: 1px solid var(--gris-borde, #DDE3EA);
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 14px;
+}
+.quick-quote-form h4 {
+    font-size: 14px;
+    font-weight: 800;
+    color: var(--azul-principal, #003E7E);
+    margin-bottom: 14px;
+}
+.quote-form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+.quote-input,
+.quote-textarea {
+    width: 100%;
+    padding: 9px 12px;
+    border: 1.5px solid var(--gris-borde, #DDE3EA);
+    border-radius: 6px;
+    font-size: 13px;
+    font-family: inherit;
+    color: var(--negro-texto, #1A202C);
+    box-sizing: border-box;
+}
+.quote-input:focus,
+.quote-textarea:focus {
+    outline: none;
+    border-color: var(--azul-principal, #003E7E);
+    box-shadow: 0 0 0 3px rgba(0,62,126,0.1);
+}
+.quote-textarea { resize: vertical; margin-bottom: 8px; }
+.btn-quote-submit {
+    width: 100%;
+    padding: 11px;
+    background: var(--azul-principal, #003E7E);
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-weight: 800;
+    font-size: 13px;
+    cursor: pointer;
+    font-family: inherit;
+    transition: background 0.2s;
+}
+.btn-quote-submit:hover { background: var(--azul-oscuro, #002856); }
+
+/* ── Banner info guest (sticky top) ──────────────────────────── */
+.guest-info-banner {
+    background: linear-gradient(135deg, var(--azul-principal, #003E7E), var(--azul-medio, #0057A8));
+    color: #fff;
+    padding: 9px 0;
+    font-size: 13px;
+    position: sticky;
+    top: 0;
+    z-index: 200;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+.guest-banner-inner {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+.guest-banner-inner > span { flex: 1; min-width: 180px; }
+.guest-banner-actions { display: flex; gap: 7px; flex-shrink: 0; }
+.banner-btn-register {
+    padding: 6px 14px;
+    background: var(--accent-cta, #F7941D);
+    color: #fff;
+    border-radius: 5px;
+    font-weight: 700;
+    text-decoration: none;
+    font-size: 12px;
+    white-space: nowrap;
+    transition: background 0.2s;
+}
+.banner-btn-register:hover { background: var(--accent-cta-hover, #E08416); color: #fff; }
+.banner-btn-login {
+    padding: 6px 14px;
+    background: transparent;
+    color: #fff;
+    border: 1.5px solid rgba(255,255,255,0.55);
+    border-radius: 5px;
+    font-weight: 700;
+    text-decoration: none;
+    font-size: 12px;
+    white-space: nowrap;
+    transition: all 0.2s;
+}
+.banner-btn-login:hover { background: rgba(255,255,255,0.12); color: #fff; }
+.banner-close {
+    background: none;
+    border: none;
+    color: rgba(255,255,255,0.65);
+    cursor: pointer;
+    font-size: 15px;
+    padding: 2px 6px;
+    transition: color 0.2s;
+    flex-shrink: 0;
+    line-height: 1;
+}
+.banner-close:hover { color: #fff; }
+
+/* ── Responsive ───────────────────────────────────────────────── */
+@media (max-width: 640px) {
+    .guest-actions       { grid-template-columns: 1fr; }
+    .quote-form-row      { grid-template-columns: 1fr; }
+    .price-auth-buttons  { flex-direction: column; }
+    .price-auth-contact  { flex-direction: column; }
+    .guest-banner-inner  { gap: 8px; }
+    .guest-banner-actions { width: 100%; }
+}

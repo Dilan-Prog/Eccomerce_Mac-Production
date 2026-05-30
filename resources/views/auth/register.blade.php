@@ -122,7 +122,7 @@
                     <div class="form-row">
                         <div class="form-group">
                             <label for="name">
-                                Nombre completo <span class="required" aria-hidden="true">*</span>
+                                Nombre <span class="required" aria-hidden="true">*</span>
                             </label>
                             <input
                                 id="name"

@@ -581,29 +581,38 @@
                                         </span>
                                     @endif
 
-                                    <div class="card-price-block" itemscope itemtype="http://schema.org/Offer">
-                                        <meta itemprop="priceCurrency" content="MXN">
-                                        @if($hasDiscount)
-                                            <div class="card-price-del">
-                                                {{ $settings->currency_icon }}{{ number_format($normalPrice, 2, '.', ',') }} MXN
+                                    @auth
+                                        {{-- Usuario autenticado: ve el precio completo --}}
+                                        <div class="card-price-block" itemscope itemtype="http://schema.org/Offer">
+                                            <meta itemprop="priceCurrency" content="MXN">
+                                            @if($hasDiscount)
+                                                <div class="card-price-del">
+                                                    {{ $settings->currency_icon }}{{ number_format($normalPrice, 2, '.', ',') }} MXN
+                                                </div>
+                                            @endif
+                                            <div class="card-price-main">
+                                                <span itemprop="price" content="{{ $finalPrice }}">
+                                                    {{ $settings->currency_icon }}{{ number_format($finalPrice, 2, '.', ',') }} MXN
+                                                </span>
+                                                @if($hasDiscount && $discountPct > 0)
+                                                    <span class="card-price-off">-{{ $discountPct }}% OFF</span>
+                                                @endif
+                                            </div>
+                                            <div class="card-price-iva">IVA incluido</div>
+                                        </div>
+                                        @if($shippingRules && $finalPrice >= $shippingRules->min_cost)
+                                            <div class="card-free-shipping">
+                                                <i class="fas fa-shipping-fast"></i> Envío Gratis
                                             </div>
                                         @endif
-                                        <div class="card-price-main">
-                                            <span itemprop="price" content="{{ $finalPrice }}">
-                                                {{ $settings->currency_icon }}{{ number_format($finalPrice, 2, '.', ',') }} MXN
-                                            </span>
-                                            @if($hasDiscount && $discountPct > 0)
-                                                <span class="card-price-off">-{{ $discountPct }}% OFF</span>
-                                            @endif
+                                    @else
+                                        {{-- Guest: precio oculto --}}
+                                        <div class="price-hidden-badge">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+                                            Precio disponible al iniciar sesión
                                         </div>
-                                        <div class="card-price-iva">IVA incluido</div>
-                                    </div>
-
-                                    @if($shippingRules && $finalPrice >= $shippingRules->min_cost)
-                                        <div class="card-free-shipping">
-                                            <i class="fas fa-shipping-fast"></i> Envío Gratis
-                                        </div>
-                                    @endif
+                                        <a href="{{ route('login') }}" class="btn-ver-precio">Ver precio</a>
+                                    @endauth
                                 @else
                                     <span class="card-stock card-stock--consult">Requiere Asesoría</span>
                                     <div class="card-price-na">Solicita tu cotización</div>
@@ -612,25 +621,36 @@
 
                             {{-- ACTIONS --}}
                             <div class="product-card-actions">
-                                <form class="shopping-cart-form">
-                                    <input type="hidden" name="product_id" value="{{ $product->id }}">
-                                    <input type="hidden" name="combination_id" value="{{ $combinationId }}">
-                                    <input type="hidden" name="brand_name" itemprop="brand" content="{{ $product->brand->name }}" value="{{ $product->brand->name }}">
-                                    <input type="hidden" name="sku" value="{{ $sku }}">
-                                    <input type="hidden" name="productModel" value="{{ $productModel ?? '' }}">
-                                    <input type="hidden" name="qty" value="1" min="1" max="{{ $qty }}">
-
-                                    @if($finalPrice)
-                                        <button type="submit" class="card-add-btn">
-                                            <i class="fas fa-shopping-cart" style="margin-right:6px;font-size:12px;"></i>
-                                            Agregar al Carrito
-                                        </button>
+                                @if($finalPrice)
+                                    @auth
+                                        <form class="shopping-cart-form">
+                                            <input type="hidden" name="product_id" value="{{ $product->id }}">
+                                            <input type="hidden" name="combination_id" value="{{ $combinationId }}">
+                                            <input type="hidden" name="brand_name" itemprop="brand" content="{{ $product->brand->name }}" value="{{ $product->brand->name }}">
+                                            <input type="hidden" name="sku" value="{{ $sku }}">
+                                            <input type="hidden" name="productModel" value="{{ $productModel ?? '' }}">
+                                            <input type="hidden" name="qty" value="1" min="1" max="{{ $qty }}">
+                                            <button type="submit" class="card-add-btn">
+                                                <i class="fas fa-shopping-cart" style="margin-right:6px;font-size:12px;"></i>
+                                                Agregar al Carrito
+                                            </button>
+                                        </form>
                                     @else
-                                        <a href="{{ route('contact') }}" class="card-consult-btn">
-                                            Requiere Asesoría
-                                        </a>
-                                    @endif
-                                </form>
+                                        {{-- Guest: acciones alternativas --}}
+                                        <div class="guest-actions">
+                                            <a href="{{ route('contact') }}" class="btn-cotizar">
+                                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                                                Cotizar
+                                            </a>
+                                            <a href="https://wa.link/f28njw" target="_blank" class="btn-whatsapp">
+                                                <svg viewBox="0 0 24 24" fill="currentColor" width="14" height="14"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413z"/></svg>
+                                                WhatsApp
+                                            </a>
+                                        </div>
+                                    @endauth
+                                @else
+                                    <a href="{{ route('contact') }}" class="card-consult-btn">Requiere Asesoría</a>
+                                @endif
                             </div>
 
                         </div>

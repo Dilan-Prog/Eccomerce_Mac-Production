@@ -601,6 +601,36 @@
         {{-- @include('frontend.layouts.chat-personal') --}}
 
         <!--content-->
+        @guest
+        <div class="guest-info-banner" id="guest-banner">
+            <div class="container">
+                <div class="guest-banner-inner">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16" style="flex-shrink:0">
+                        <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+                    </svg>
+                    <span>
+                        <strong>¿Buscas precios?</strong>
+                        Regístrate gratis o inicia sesión para ver precios, agregar al carrito y comprar.
+                    </span>
+                    <div class="guest-banner-actions">
+                        <a href="{{ route('register') }}" class="banner-btn-register">Crear cuenta</a>
+                        <a href="{{ route('login') }}"    class="banner-btn-login">Iniciar sesión</a>
+                    </div>
+                    <button class="banner-close" onclick="
+                        document.getElementById('guest-banner').style.display='none';
+                        sessionStorage.setItem('guest_banner_closed','1');
+                    " aria-label="Cerrar">✕</button>
+                </div>
+            </div>
+        </div>
+        <script>
+            if (sessionStorage.getItem('guest_banner_closed') === '1') {
+                var b = document.getElementById('guest-banner');
+                if (b) b.style.display = 'none';
+            }
+        </script>
+        @endguest
+
         @yield('content')
 
 
@@ -626,6 +656,8 @@
 
 
 
+    {{-- jQuery debe cargar antes que toastr y los scripts inline --}}
+    <script src="{{ asset('frontend/js/jquery-3.6.0.min.js') }}"></script>
     {{-- toastr js (CDN — not bundled) --}}
     <script src="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
 
