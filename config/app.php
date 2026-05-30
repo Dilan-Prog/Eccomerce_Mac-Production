@@ -59,6 +59,9 @@ return [
 
     'asset_url' => env('ASSET_URL'),
 
+    'whatsapp_number' => env('WHATSAPP_NUMBER', '528135825559'),
+    'phone_number'    => env('PHONE_NUMBER', '+528135825559'),
+
     /*
     |--------------------------------------------------------------------------
     | Application Timezone

@@ -24,8 +24,32 @@
                         toastr.error(data.message);
                     }
                 },
-                error: function(data) {
-
+                error: function(xhr) {
+                    if (xhr.status === 401) {
+                        try {
+                            var resp = JSON.parse(xhr.responseText);
+                            var msg  = resp.message || 'Inicia sesión para agregar productos al carrito.';
+                            var url  = resp.redirect || "{{ route('login') }}";
+                            if (typeof Swal !== 'undefined') {
+                                Swal.fire({
+                                    title: '¡Inicia sesión!',
+                                    text: msg,
+                                    icon: 'info',
+                                    showCancelButton: true,
+                                    confirmButtonText: 'Iniciar sesión',
+                                    cancelButtonText: 'Cancelar',
+                                    confirmButtonColor: '#003E7E',
+                                }).then(function(result) {
+                                    if (result.isConfirmed) window.location.href = url;
+                                });
+                            } else {
+                                toastr.warning(msg);
+                                setTimeout(function() { window.location.href = url; }, 2000);
+                            }
+                        } catch(e) {
+                            window.location.href = "{{ route('login') }}";
+                        }
+                    }
                 }
             })
         })

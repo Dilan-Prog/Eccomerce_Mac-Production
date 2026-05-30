@@ -29,6 +29,16 @@ class CartController extends Controller
 
     public function addToCart(Request $request)
     {
+        // Capa 3 de defensa: validación en controlador además del middleware
+        if (!auth()->check()) {
+            return response()->json([
+                'authenticated' => false,
+                'status'        => 'error',
+                'message'       => 'Debes iniciar sesión para agregar productos al carrito.',
+                'redirect'      => route('login'),
+            ], 401);
+        }
+
         // Si viene combination_id, busca la combinación, si no, el producto base
         if ($request->filled('combination_id')) {
             $combination = \App\Models\ProductVariantCombinations::findOrFail($request->combination_id);

@@ -50,7 +50,7 @@
                 <span>{{ $accountLabel }}</span>
             </a>
 
-            <a href="#" class="header-icon-btn wsus__cart_icon">
+            <a href="{{ route('cart-details') }}" class="header-icon-btn wsus__cart_icon">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <circle cx="9" cy="21" r="1"/>
                     <circle cx="20" cy="21" r="1"/>

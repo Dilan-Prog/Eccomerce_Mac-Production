@@ -115,6 +115,7 @@
                             
 
                 @if ($basePrice)
+                    @auth
                     <p itemscope itemtype="http://schema.org/Offer">
                         <meta itemprop="priceCurrency" content="MXN">
                         <span class="wsus__price" itemprop="price" content="{{ $price }}">
@@ -137,22 +138,32 @@
                             <span class="free-shipping-text"><i class="fas fa-shipping-fast"></i> Envío Gratis </span>
                         @endif
                     </p>
+                    @else
+                    <div class="price-hidden-badge" style="margin:6px 0;">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+                        Inicia sesión para ver el precio
+                    </div>
+                    @endauth
                 @else
                     <p class="wsus__price">N/A +<small> Requiere Asesoria</small> </p>
                 @endif
 
-                <form class="shopping-cart-form">
-                    <input type="hidden" name="product_id" value="{{$product->id}}">
-                    <input type="hidden" name="brand_name" value="{{ $product->brand->name }}">
-                    <input type="hidden" name="sku" value="{{$product->sku}}">
-                    <input type="hidden" name="productModel" value="{{$product->productModel}}">
-                    @if ($basePrice)
+                @if ($basePrice)
+                    @auth
+                    <form class="shopping-cart-form">
+                        <input type="hidden" name="product_id" value="{{$product->id}}">
+                        <input type="hidden" name="brand_name" value="{{ $product->brand->name }}">
+                        <input type="hidden" name="sku" value="{{$product->sku}}">
+                        <input type="hidden" name="productModel" value="{{$product->productModel}}">
                         <button type="submit" class="add_cart" href="#">Agregar al Carrito</button>
+                        <input name="qty" type="hidden" min="1" max="100" value="1" />
+                    </form>
                     @else
-                        <a class="add_cart2" href="{{route('contact')}}">Requiere Asesoria</a>
-                    @endif
-                    <input name="qty" type="hidden" min="1" max="100" value="1" />
-                </form>
+                    <a href="{{ route('login') }}" class="btn-ver-precio" style="display:block;text-align:center;padding:8px;margin-top:6px;">Ver precio e iniciar sesión</a>
+                    @endauth
+                @else
+                    <a class="add_cart2" href="{{route('contact')}}">Requiere Asesoria</a>
+                @endif
             </div>
                     </div>
                 </div>

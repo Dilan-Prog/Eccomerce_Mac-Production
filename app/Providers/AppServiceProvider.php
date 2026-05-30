@@ -5,6 +5,7 @@ namespace App\Providers;
 use App\Models\Category;
 use App\Models\GeneralSetting;
 use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\ServiceProvider;
@@ -26,6 +27,22 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Paginator::useBootstrap();
+
+        // Directiva: muestra el contenido SOLO a usuarios autenticados (para precios)
+        Blade::directive('guestprice', function () {
+            return "<?php if(auth()->check()): ?>";
+        });
+        Blade::directive('endguestprice', function () {
+            return "<?php endif; ?>";
+        });
+
+        // Directiva: muestra acciones SOLO a guests (cotizar, whatsapp)
+        Blade::directive('showguestactions', function () {
+            return "<?php if(!auth()->check()): ?>";
+        });
+        Blade::directive('endshowguestactions', function () {
+            return "<?php endif; ?>";
+        });
 
         /** Set Timezone */
         $generalSettings = GeneralSetting::first();
