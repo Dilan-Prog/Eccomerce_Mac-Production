@@ -108,7 +108,7 @@
 <div style="background:var(--blanco);border-bottom:1px solid var(--gris-borde);padding:14px 0;">
     <div class="container">
         <nav style="display:flex;align-items:center;gap:8px;font-size:13px;flex-wrap:wrap;">
-            <a href="{{ route('home') }}" style="color:var(--gris-claro-texto);text-decoration:none;font-weight:600;">Inicio</a>
+            <a href="{{ route('index') }}" style="color:var(--gris-claro-texto);text-decoration:none;font-weight:600;">Inicio</a>
             <span style="color:var(--gris-borde);">/</span>
             <span style="color:var(--azul-principal);font-weight:700;">@yield('legal-title')</span>
         </nav>
