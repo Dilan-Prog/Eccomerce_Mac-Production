@@ -1,0 +1,198 @@
+/* =========================================================
+   FOOTER — Mac Del Norte
+   ========================================================= */
+
+footer.site-footer {
+    background: var(--azul-oscuro, #002856);
+    color: rgba(255,255,255,0.8);
+    padding: 56px 0 20px;
+}
+
+.footer-grid {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr 1fr 1fr;
+    gap: 40px;
+    margin-bottom: 36px;
+}
+
+.footer-col h4 {
+    color: var(--blanco, #FFFFFF);
+    font-size: 13px;
+    font-weight: 800;
+    margin-bottom: 16px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+}
+
+.footer-col > a,
+.footer-col > p {
+    font-size: 14px;
+    line-height: 1.6;
+    margin-bottom: 10px;
+}
+
+.footer-col > a {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: rgba(255,255,255,0.7);
+    text-decoration: none;
+}
+
+.footer-col > a:hover {
+    color: var(--amarillo-destacado, #F6AD1C);
+    text-decoration: none;
+}
+
+/* Separador de sub-sección dentro de una col */
+.footer-col-subsection {
+    font-size: 11px;
+    font-weight: 700;
+    color: rgba(255,255,255,0.4);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin: 16px 0 8px;
+    padding-top: 16px;
+    border-top: 1px solid rgba(255,255,255,0.08);
+}
+
+/* Íconos de redes sociales en footer */
+.footer-social {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 16px;
+}
+
+.footer-social-link {
+    width: 32px;
+    height: 32px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    text-decoration: none;
+    border: 1px solid rgba(255,255,255,0.12);
+    transition: background 0.2s, border-color 0.2s, transform 0.2s;
+    flex-shrink: 0;
+}
+
+.footer-social-link:hover {
+    background: var(--accent-cta, #F7941D);
+    border-color: var(--accent-cta, #F7941D);
+    transform: translateY(-2px);
+    color: #fff;
+    text-decoration: none;
+}
+
+.footer-social-link.whatsapp:hover {
+    background: #25D366;
+    border-color: #25D366;
+}
+
+/* Fila de Honeywell entre footer-grid y footer-bottom */
+.footer-honeywell {
+    border-top: 1px solid rgba(255,255,255,0.08);
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    padding: 24px 0;
+    text-align: center;
+    margin-bottom: 24px;
+}
+
+.footer-honeywell a {
+    display: inline-flex;
+    align-items: center;
+    gap: 18px;
+    text-decoration: none;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.10);
+    border-radius: 8px;
+    padding: 14px 28px;
+    transition: background 0.2s, border-color 0.2s;
+}
+
+.footer-honeywell a:hover {
+    background: rgba(255,255,255,0.10);
+    border-color: rgba(255,255,255,0.20);
+}
+
+.footer-honeywell img {
+    height: 48px;
+    width: auto;
+    object-fit: contain;
+}
+
+.footer-honeywell-text {
+    text-align: left;
+}
+
+.footer-honeywell-title {
+    color: #fff;
+    font-weight: 800;
+    font-size: 14px;
+    display: block;
+}
+
+.footer-honeywell-sub {
+    color: rgba(255,255,255,0.55);
+    font-size: 12px;
+    display: block;
+    margin-top: 2px;
+}
+
+/* Footer bottom */
+.footer-bottom {
+    border-top: 1px solid rgba(255,255,255,0.1);
+    padding-top: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 13px;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.payment-icons {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.payment-icon {
+    background: var(--blanco, #FFFFFF);
+    padding: 4px 8px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 28px;
+}
+
+.payment-icon img {
+    height: 18px;
+    width: auto;
+    display: block;
+    object-fit: contain;
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 960px) {
+    .footer-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 28px;
+    }
+}
+
+@media (max-width: 560px) {
+    .footer-grid {
+        grid-template-columns: 1fr;
+        gap: 24px;
+    }
+    .footer-bottom {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}

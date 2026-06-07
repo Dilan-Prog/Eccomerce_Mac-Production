@@ -39,8 +39,14 @@
                           <option value="1">Activo</option>
                           <option value="0">Inactivo</option>
                         </select>
-                      </div>
-                      <button type="submit" class="btn btn-primary">Crear</button>
+                    </div>
+                    <div class="form-group">
+                        <label>Orden en el menú</label>
+                        <input type="number" class="form-control" name="sort_order" value="0" min="0"
+                               placeholder="1 = primero, 2 = segundo…">
+                        <small class="text-muted">Número más bajo aparece primero. Máximo 6 categorías visibles.</small>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Crear</button>
                 </form>
               </div>
 

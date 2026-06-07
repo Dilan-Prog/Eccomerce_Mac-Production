@@ -28,6 +28,7 @@ import '../../public/frontend/js/ranger_jquery-ui.min.js';
 import '../../public/frontend/js/ranger_slider.js';
 import '../../public/frontend/js/isotope.pkgd.min.js';
 import '../../public/frontend/js/venobox.min.js';
-import '../../public/frontend/js/jquery.classycountdown.js';
+// classycountdown removed from Vite bundle — loaded as a regular <script> in master.blade.php
+// after jQuery so its UMD wrapper finds window.jQuery (fails in ESM where `this` is undefined)
 import '../../public/frontend/js/main.js';
 import './components/nav-megamenu.js';

@@ -45,8 +45,15 @@
                           <option value="1" {{$category->status == 1 ? 'selected':''}}>Active</option>
                           <option value="0" {{$category->status == 0 ? 'selected':''}}>Inactive</option>
                         </select>
-                      </div>
-                      <button type="submit" class="btn btn-primary">Update</button>
+                    </div>
+                    <div class="form-group">
+                        <label>Orden en el menú</label>
+                        <input type="number" class="form-control" name="sort_order"
+                               value="{{ $category->sort_order }}" min="0"
+                               placeholder="1 = primero, 2 = segundo…">
+                        <small class="text-muted">Número más bajo aparece primero. Máximo 6 categorías visibles.</small>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Update</button>
                 </form>
               </div>
 

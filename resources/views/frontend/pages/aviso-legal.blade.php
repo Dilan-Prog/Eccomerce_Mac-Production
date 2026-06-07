@@ -40,7 +40,6 @@
 <p>Somos distribuidor autorizado de las siguientes marcas:</p>
 <ul>
     <li><strong>Honeywell</strong> · Instrumentación y automatización industrial</li>
-    <li><strong>Resideo</strong> · Control de combustión y gas</li>
     <li><strong>McDonnell &amp; Miller</strong> · Controles para calderas y vapor</li>
 </ul>
 <p>Todos los productos ofrecidos en este sitio son originales y cuentan con garantía de fábrica directamente del fabricante.</p>
@@ -66,7 +65,7 @@
 
 <h2 id="propiedad">6. Propiedad intelectual</h2>
 <p>Todo el contenido del sitio (textos, imágenes, logotipos, software) es propiedad de Mac Del Norte o sus licenciantes y está protegido por las leyes de propiedad intelectual. Queda prohibida su reproducción, distribución o modificación sin autorización expresa.</p>
-<p>Las marcas Honeywell, Resideo y McDonnell &amp; Miller son propiedad de sus respectivos titulares y se utilizan bajo autorización como distribuidor autorizado.</p>
+<p>Las marcas Honeywell y McDonnell &amp; Miller son propiedad de sus respectivos titulares y se utilizan bajo autorización como distribuidor autorizado.</p>
 
 <h2 id="enlaces">7. Enlaces a sitios externos</h2>
 <p>Este sitio puede contener enlaces a sitios web de terceros (fabricantes, autoridades fiscales, paqueterías). Mac Del Norte no se hace responsable del contenido, políticas de privacidad o prácticas de dichos sitios.</p>

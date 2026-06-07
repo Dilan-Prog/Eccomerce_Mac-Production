@@ -174,7 +174,7 @@
             Programa B2B Mac Del Norte
           </div>
           <h3>¿Eres revendedor o técnico? <span class="accent-yellow">Sé nuestro socio</span> y compra al mejor precio.</h3>
-          <p class="banner-b2b-text">Accede a precios mayoristas, ingeniero de aplicación dedicado, soporte prioritario y herramientas para que crezcas vendiendo equipo Honeywell, Resideo y McDonnell &amp; Miller con respaldo real.</p>
+          <p class="banner-b2b-text">Accede a precios mayoristas, ingeniero de aplicación dedicado, soporte prioritario y herramientas para que crezcas vendiendo equipo Honeywell y McDonnell &amp; Miller con respaldo real.</p>
 
           <div class="banner-b2b-perks">
             <div class="perk-item">

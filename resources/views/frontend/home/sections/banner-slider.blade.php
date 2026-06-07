@@ -10,7 +10,7 @@
                     Distribuidor Autorizado Honeywell · 8 años en el mercado
                 </div>
                 <h1>Instrumentación industrial con <span class="hero-accent">respaldo técnico real</span> para tu planta.</h1>
-                <p class="hero-sub">Distribuidor autorizado de Honeywell, Resideo y McDonnell &amp; Miller. Más de +2000 productos en stock con envío a todo México y soporte de ingenieros certificados.</p>
+                <p class="hero-sub">Distribuidor autorizado de Honeywell y McDonnell &amp; Miller. Más de +2000 productos en stock con envío a todo México y soporte de ingenieros certificados.</p>
                 <div class="hero-cta-group">
                     <a href="{{ route('products.index') }}" class="hero-btn hero-btn-primary">
                         Ver catálogo de productos
@@ -18,7 +18,7 @@
                             <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"/>
                         </svg>
                     </a>
-                    <a href="{{ route('contact') }}" class="hero-btn hero-btn-secondary">
+                    <a href="https://wa.link/f28njw" class="hero-btn hero-btn-secondary">
                         Cotización con ingeniero
                     </a>
                 </div>

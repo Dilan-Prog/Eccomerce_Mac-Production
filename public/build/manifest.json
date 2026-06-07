@@ -60,7 +60,7 @@
     "src": "public/frontend/webfonts/fa-solid-900.woff2"
   },
   "resources/css/app.css": {
-    "file": "assets/app-Cyu11ZHX.css",
+    "file": "assets/app-C6CihvOv.css",
     "src": "resources/css/app.css",
     "isEntry": true
   },
@@ -75,7 +75,7 @@
     "isEntry": true
   },
   "resources/js/app.js": {
-    "file": "assets/app-Bnn8M44n.js",
+    "file": "assets/app-BZ1sMe_x.js",
     "name": "app",
     "src": "resources/js/app.js",
     "isEntry": true
@@ -87,7 +87,7 @@
     "isEntry": true
   },
   "resources/js/checkout.js": {
-    "file": "assets/checkout-DR-qHU25.js",
+    "file": "assets/checkout-B9tQTjmq.js",
     "name": "checkout",
     "src": "resources/js/checkout.js",
     "isEntry": true

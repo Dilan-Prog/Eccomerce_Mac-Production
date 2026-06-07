@@ -427,7 +427,7 @@
                     <div class="form-checkbox">
                         <input type="checkbox" id="newsletter" name="newsletter" value="1" {{ old('newsletter', '1') ? 'checked' : '' }}>
                         <label for="newsletter">
-                            Quiero recibir ofertas y novedades sobre productos Honeywell, Resideo y McDonnell &amp; Miller por correo.
+                            Quiero recibir ofertas y novedades sobre productos Honeywell y McDonnell &amp; Miller por correo.
                         </label>
                     </div>
 

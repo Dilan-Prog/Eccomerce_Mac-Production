@@ -3,13 +3,16 @@
 namespace App\Http\Controllers\Frontend;
 
 use App\Http\Controllers\Controller;
+use App\Models\User;
+use App\Models\UserAddress;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class UserProfileController extends Controller
 {
     public function index(){
-        return view('frontend.dashboard.profile');
+        $addresses = UserAddress::where('user_id', Auth::user()->id)->get();
+        return view('frontend.dashboard.profile', compact('addresses'));
     }
 
     public function updateProfile(Request $request){
@@ -20,13 +23,11 @@ class UserProfileController extends Controller
             'image'=>['image','max:2048']
         ]);
 
+        /** @var User $user */
         $user = Auth::user();
 
-
-
-
-        $user->name = $request->name;
-        $user->email= $request->email;
+        $user->name  = $request->name;
+        $user->email = $request->email;
         $user->save();
 
 

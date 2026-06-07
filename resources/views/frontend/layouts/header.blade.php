@@ -29,26 +29,110 @@
 
         <div class="header-actions">
 
-            @php
-                if (auth()->check()) {
-                    $role = auth()->user()->role;
-                    $accountUrl = $role === 'admin'
-                        ? route('admin.dashboard')
-                        : ($role === 'associate' ? route('associate.dashboard') : route('user.profile'));
-                    $accountLabel = 'Mi cuenta';
-                } else {
-                    $accountUrl = route('login');
-                    $accountLabel = 'Iniciar sesión';
-                }
-            @endphp
+            @auth
+                @php $role = auth()->user()->role; @endphp
 
-            <a href="{{ $accountUrl }}" class="header-icon-btn">
+                @if($role === 'user')
+                {{-- Usuario regular: dropdown de cuenta --}}
+                <div class="account-dropdown-wrapper" id="account-dropdown-wrapper">
+
+                    <button class="header-icon-btn account-trigger" id="account-trigger"
+                            type="button" aria-expanded="false" aria-haspopup="true">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/>
+                            <circle cx="12" cy="7" r="4"/>
+                        </svg>
+                        <span>Mi cuenta</span>
+                    </button>
+
+                    <div class="account-dropdown" id="account-dropdown" role="menu" aria-hidden="true">
+
+                        <div class="account-dropdown-header">
+                            <div class="account-dropdown-name">{{ Auth::user()->name }}</div>
+                            <div class="account-dropdown-email">{{ Auth::user()->email }}</div>
+                        </div>
+
+                        {{-- Grupo 1: Cuenta --}}
+                        <div class="account-dropdown-group">
+                            <a href="{{ route('user.profile') }}" class="account-dropdown-item" role="menuitem">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                                Datos personales
+                            </a>
+                            <a href="{{ route('user.profile') }}#fiscal" class="account-dropdown-item" role="menuitem">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                                Datos fiscales
+                            </a>
+                            <a href="{{ route('user.profile') }}#password" class="account-dropdown-item" role="menuitem">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+                                Contraseña
+                            </a>
+                            {{-- TODO: crear tab de notificaciones en user.profile --}}
+                            <a href="{{ route('user.profile') }}#notifications" class="account-dropdown-item" role="menuitem">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+                                Notificaciones
+                            </a>
+                            {{-- TODO: crear tab de Plan B2B en user.profile --}}
+                            <a href="{{ route('user.profile') }}#b2b" class="account-dropdown-item" role="menuitem">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg>
+                                Plan B2B
+                            </a>
+                        </div>
+
+                        {{-- Grupo 2: Actividad --}}
+                        <div class="account-dropdown-group">
+                            <a href="{{ route('user.orders.index') }}" class="account-dropdown-item" role="menuitem">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+                                Mis compras
+                            </a>
+                            <a href="{{ route('user.address.index') }}" class="account-dropdown-item" role="menuitem">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                                Direcciones
+                            </a>
+                        </div>
+
+                        {{-- Grupo 3: Cerrar sesión --}}
+                        <div class="account-dropdown-group">
+                            <form action="{{ route('logout') }}" method="POST">
+                                @csrf
+                                <button type="submit" class="account-dropdown-item account-dropdown-logout" role="menuitem">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16,17 21,12 16,7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                                    Cerrar sesión
+                                </button>
+                            </form>
+                        </div>
+
+                    </div>
+                </div>
+
+                @elseif($role === 'admin')
+                <a href="{{ route('admin.dashboard') }}" class="header-icon-btn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/>
+                        <circle cx="12" cy="7" r="4"/>
+                    </svg>
+                    <span>Admin</span>
+                </a>
+
+                @else
+                <a href="{{ route('associate.dashboard') }}" class="header-icon-btn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/>
+                        <circle cx="12" cy="7" r="4"/>
+                    </svg>
+                    <span>Mi cuenta</span>
+                </a>
+                @endif
+
+            @else
+            {{-- Visitante: enlace directo al login --}}
+            <a href="{{ route('login') }}" class="header-icon-btn">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/>
                     <circle cx="12" cy="7" r="4"/>
                 </svg>
-                <span>{{ $accountLabel }}</span>
+                <span>Iniciar sesión</span>
             </a>
+            @endauth
 
             <a href="{{ route('cart-details') }}" class="header-icon-btn wsus__cart_icon">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
