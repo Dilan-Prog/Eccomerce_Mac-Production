@@ -180,6 +180,7 @@ nav.main-nav {
     gap: 0;
     padding: 0;
     min-height: 260px;
+    align-items: stretch;
 }
 
 /* ── SIDEBAR DEL MEGA MENÚ ── */
@@ -295,6 +296,7 @@ nav.main-nav {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
     gap: 0;
+    row-gap: 20px;
     padding: 24px 20px;
     align-items: start;
 }
@@ -308,6 +310,28 @@ nav.main-nav {
     border-right: 1px solid var(--gris-borde, #DDE3EA);
 }
 
+/* Sin borde en la última columna de cada fila (posición 5n) */
+.mega-cols .mega-col:nth-child(5n) {
+    border-right: none;
+}
+
+/* Sin borde en la última columna de cada fila (4 columnas) */
+.mega-cols-4 .mega-col:nth-child(4n) {
+    border-right: none;
+}
+
+/* Separador horizontal entre filas: los ítems de la 2ª fila en adelante */
+.mega-cols .mega-col:nth-child(n+6) {
+    padding-top: 20px;
+    border-top: 1px solid var(--gris-borde, #DDE3EA);
+}
+
+.mega-cols-4 .mega-col:nth-child(n+5) {
+    padding-top: 20px;
+    border-top: 1px solid var(--gris-borde, #DDE3EA);
+}
+
+/* Último ítem de la última fila sin borde-right aunque no sea nth(5n) */
 .mega-col:last-child {
     border-right: none;
 }

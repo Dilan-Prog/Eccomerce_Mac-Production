@@ -369,7 +369,7 @@
           <div class="brand-logo-item"><img src="{{ $brand->logo }}" alt="{{ $brand->name }}"></div>
         @endforeach
       {{-- <div class="brand-logo-item honeywell">Honeywell</div>
-      <div class="brand-logo-item">Resideo</div>
+      <div class="brand-logo-item"></div>
       <div class="brand-logo-item">McDonnell &amp; Miller</div>
       <div class="brand-logo-item">+ marcas</div> --}}
     </div>
@@ -515,8 +515,15 @@
           <p>No revendemos: somos canal oficial. Productos 100% originales, garantía de fábrica y certificados directos del fabricante.</p>
           <div class="why-us-card-stat">
             <div class="why-us-card-stat-num">3 marcas</div>
-            <div class="why-us-card-stat-label">Honeywell · Resideo · McDonnell &amp; Miller</div>
+            <div class="why-us-card-stat-label">Honeywell · McDonnell &amp; Miller</div>
           </div>
+          <a href="{{ route('distribuidor-oficial-honeywell') }}"
+             style="display:inline-flex;align-items:center;gap:6px;margin-top:12px;padding:8px 18px;background:#f6ad1c;color:#fff;border:none;border-radius:6px;font-size:0.875rem;font-weight:600;text-decoration:none;transition:background 0.2s;"
+             onmouseover="this.style.background='#ea6c0a';"
+             onmouseout="this.style.background='#f6ad1c';">
+            <svg viewBox="0 0 24 24" fill="currentColor" style="width:16px;height:16px;"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm-1 7V3.5L18.5 9H13zm-1 9H7v-2h5v2zm3-4H7v-2h7v2z"/></svg>
+            Ver documento
+          </a>
         </div>
       </div>
 

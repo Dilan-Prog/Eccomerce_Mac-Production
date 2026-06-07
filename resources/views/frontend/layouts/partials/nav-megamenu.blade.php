@@ -73,7 +73,7 @@
                             {{-- COLUMNAS DE SUBCATEGORÍAS --}}
                             <div class="mega-cols {{ $category->subCategories->count() <= 4 ? 'mega-cols-4' : '' }}">
 
-                                @foreach($category->subCategories->take(5) as $sub)
+                                @foreach($category->subCategories as $sub)
                                 <div class="mega-col">
                                     <a href="{{ route('products.index', ['subcategory' => $sub->slug]) }}"
                                        class="mega-col-title">

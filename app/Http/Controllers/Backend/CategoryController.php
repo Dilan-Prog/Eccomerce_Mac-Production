@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Category;
 use App\Models\Subcategory;
+use Illuminate\Support\Facades\Cache;
 use Str;
 
 class CategoryController extends Controller
@@ -36,17 +37,21 @@ class CategoryController extends Controller
         //
 
         $request->validate([
-            'icon'=>['nullable'],
-            'name'=>['required','max:200', 'unique:categories,name'],
-            'status'=>['required']
+            'icon'       => ['nullable'],
+            'name'       => ['required', 'max:200', 'unique:categories,name'],
+            'status'     => ['required'],
+            'sort_order' => ['required', 'integer', 'min:0'],
         ]);
-        
+
         $category = new Category();
-        $category->icon = $request->icon;
-        $category->name = $request->name;
-        $category->slug = Str::slug($request->name);
-        $category->status = $request->status;
+        $category->icon       = $request->icon;
+        $category->name       = $request->name;
+        $category->slug       = Str::slug($request->name);
+        $category->status     = $request->status;
+        $category->sort_order = $request->sort_order;
         $category->save();
+
+        Cache::forget('nav_categories');
         toastr('Categoria Creada Con exito');
         return redirect()->route('admin.category.index');
 
@@ -75,21 +80,23 @@ class CategoryController extends Controller
     public function update(Request $request, string $id)
     {
         $request->validate([
-            'icon'=>['nullable'],
-            'name'=>['required','max:200', 'unique:categories,name,'.$id],
-            'status'=>['required']
-
-
+            'icon'       => ['nullable'],
+            'name'       => ['required', 'max:200', 'unique:categories,name,' . $id],
+            'status'     => ['required'],
+            'sort_order' => ['required', 'integer', 'min:0'],
         ]);
 
         $category = Category::findOrFail($id);
 
-        $category->icon = $request->icon;
-        $category->name = $request->name;
-        $category->slug = Str::slug($request->name);
-        $category->status = $request->status;
+        $category->icon       = $request->icon;
+        $category->name       = $request->name;
+        $category->slug       = Str::slug($request->name);
+        $category->status     = $request->status;
+        $category->sort_order = $request->sort_order;
         $category->save();
-        toastr('Actualizacion con exito','success');
+
+        Cache::forget('nav_categories');
+        toastr('Actualizacion con exito', 'success');
         return redirect()->route('admin.category.index');
     }
 
@@ -105,6 +112,7 @@ class CategoryController extends Controller
         }
 
         $category->delete();
+        Cache::forget('nav_categories');
 
         return response(['status' => 'success', 'message' => 'Deleted Successfully!']);
     }

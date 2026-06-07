@@ -28,6 +28,7 @@ use App\Http\Controllers\Backend\TrackConversionController;
 use App\Http\Controllers\Backend\TransactionController;
 use App\Http\Controllers\Backend\TransferController;
 use App\Http\Controllers\Backend\UserManageController;
+use App\Http\Controllers\Backend\AdminCotizacionController;
 use App\Http\Controllers\Backend\ProductVariantCombinationsController;
 use App\Models\Subcategory;
 use Illuminate\Support\Facades\Route;
@@ -50,6 +51,10 @@ Route::delete('admin-list/{id}', [AdminListController::class, 'destory'])->name(
 /**manege User */
 Route::get('manage-user', [UserManageController::class, 'index'])->name('manage-user');
 Route::post('manage-user', [userManageController::class, 'create'])->name('manage-user.create');
+
+/** Cotizaciones */
+Route::get('cotizaciones',          [AdminCotizacionController::class, 'index'])->name('cotizaciones.index');
+Route::get('cotizaciones/{cotizacion}', [AdminCotizacionController::class, 'show'])->name('cotizaciones.show');
 
 /**Slider routes */
 Route::resource('slider',SliderController::class);

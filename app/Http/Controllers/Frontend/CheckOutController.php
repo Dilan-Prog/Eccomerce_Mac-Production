@@ -3,7 +3,10 @@
 namespace App\Http\Controllers\Frontend;
 
 use App\Http\Controllers\Controller;
+use App\Models\PaypalSetting;
 use App\Models\ShippingRule;
+use App\Models\StripeSetting;
+use App\Models\Transfer;
 use App\Models\UserAddress;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -13,10 +16,15 @@ class CheckOutController extends Controller
 {
     public function index(){
 
-        $addresses = UserAddress::where('user_id', Auth::user()->id)->get();
+        $addresses      = UserAddress::where('user_id', Auth::user()->id)->get();
         $shippingMethod = ShippingRule::where('status', 1)->get();
-        return view('frontend.pages.checkout', compact('addresses', 'shippingMethod'));
+        $transferInfo   = Transfer::first();
+        $paypalInfo     = PaypalSetting::first();
+        $stripeSetting  = StripeSetting::first();
 
+        return view('frontend.pages.checkout', compact(
+            'addresses', 'shippingMethod', 'transferInfo', 'paypalInfo', 'stripeSetting'
+        ));
     }
 
     public function createAddress(Request $request){
@@ -80,7 +88,10 @@ class CheckOutController extends Controller
             Session::put('address', $address);
         }
 
-        return response(['status' => 'success', 'redirect_url' => route('user.payment')]);
+        Session::put('payment_method', $request->input('payment_method', 'pending'));
+        Session::put('order_notes',    $request->input('order_notes', ''));
+
+        return response(['status' => 'session_saved']);
 
     }
 

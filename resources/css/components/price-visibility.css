@@ -226,15 +226,12 @@
 }
 .btn-quote-submit:hover { background: var(--azul-oscuro, #002856); }
 
-/* ── Banner info guest (sticky top) ──────────────────────────── */
+/* ── Banner info guest (dentro del sticky-wrapper) ───────────── */
 .guest-info-banner {
     background: linear-gradient(135deg, var(--azul-principal, #003E7E), var(--azul-medio, #0057A8));
     color: #fff;
     padding: 9px 0;
     font-size: 13px;
-    position: sticky;
-    top: 0;
-    z-index: 200;
     box-shadow: 0 2px 8px rgba(0,0,0,0.15);
 }
 .guest-banner-inner {

@@ -18,7 +18,6 @@
     </div>
     <div class="top-bar-right">
       <a href="https://wa.link/f28njw" target="_blank">Soporte técnico</a>
-      <a href="{{ route('associate') }}">Asociados y revendedores</a>
     </div>
   </div>
 </div>

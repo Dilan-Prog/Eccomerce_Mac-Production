@@ -53,6 +53,13 @@
                     <span>Transacciones</span></a>
             </li>
 
+            <li class="{{ setActive(['admin.cotizaciones.*']) }}">
+                <a class="nav-link" href="{{ route('admin.cotizaciones.index') }}">
+                    <i class="fas fa-file-invoice"></i>
+                    <span>Cotizaciones</span>
+                </a>
+            </li>
+
             <li
                 class="dropdown {{ setActive(['admin.category.*', 'admin.sub-category.*', 'admin.child-category.*']) }}">
                 <a href="#" class="nav-link has-dropdown" data-toggle="dropdown"><i class="fas fa-tags"></i>

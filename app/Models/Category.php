@@ -10,6 +10,8 @@ class Category extends Model
 {
     use HasFactory;
 
+    protected $fillable = ['name', 'slug', 'icon', 'status', 'sort_order'];
+
     /**
      * Subcategorías directas (nivel 1).
      */
@@ -48,16 +50,15 @@ class Category extends Model
                          'subCategories' => function ($q) {
                              $q->where('status', 1)
                                ->orderBy('name')
-                               ->limit(5)
                                ->with([
                                    'childCategories' => function ($q2) {
                                        $q2->where('status', 1)
-                                          ->orderBy('name')
-                                          ->limit(6);
+                                          ->orderBy('name');
                                    },
                                ]);
                          },
                      ])
+                     ->orderBy('sort_order')
                      ->orderBy('name')
                      ->limit(6);
     }

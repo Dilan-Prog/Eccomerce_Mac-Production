@@ -299,6 +299,62 @@
   .products-grid.list-view .card-price-main { font-size: 20px; }
   .products-grid.list-view .product-card-actions { padding: 14px 16px 14px 0; display: flex; align-items: flex-end; }
 
+  /* NESTED CATEGORY TREE */
+  .filter-cat-item { padding: 2px 0; }
+  .filter-cat-row { display: flex; align-items: center; justify-content: space-between; gap: 4px; }
+  .filter-cat-link {
+    flex: 1; padding: 5px 0; font-size: 13px; color: var(--gris-texto);
+    text-decoration: none; transition: color 0.15s;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .filter-cat-link::before {
+    content: ''; width: 8px; height: 8px; border-radius: 50%;
+    background: var(--gris-borde); flex-shrink: 0; transition: background 0.15s;
+  }
+  .filter-cat-link:hover { color: var(--azul-principal); }
+  .filter-cat-link:hover::before,
+  .filter-cat-link.active::before { background: var(--azul-principal); }
+  .filter-cat-link.active { color: var(--azul-principal); font-weight: 700; }
+
+  .filter-nest-chevron {
+    background: none; border: none; cursor: pointer;
+    color: var(--gris-claro-texto); padding: 2px 4px;
+    display: flex; align-items: center; transition: color 0.15s; flex-shrink: 0;
+  }
+  .filter-nest-chevron svg { width: 14px; height: 14px; transition: transform 0.2s; }
+  .filter-nest-chevron.open svg { transform: rotate(0deg); }
+  .filter-nest-chevron:not(.open) svg { transform: rotate(-90deg); }
+  .filter-nest-chevron:hover { color: var(--azul-principal); }
+
+  .filter-nest-list { padding-left: 14px; }
+  .filter-nest-list.hidden { display: none; }
+
+  .filter-sub-item { padding: 1px 0; }
+  .filter-sub-link {
+    flex: 1; padding: 4px 0; font-size: 12px; color: var(--gris-texto);
+    text-decoration: none; transition: color 0.15s;
+    display: flex; align-items: center; gap: 7px;
+  }
+  .filter-sub-link::before {
+    content: ''; width: 6px; height: 6px; border-radius: 50%;
+    background: var(--gris-borde); flex-shrink: 0; transition: background 0.15s;
+    border: 1px solid var(--gris-borde);
+  }
+  .filter-sub-link:hover { color: var(--azul-principal); }
+  .filter-sub-link:hover::before,
+  .filter-sub-link.active::before { background: var(--azul-medio); border-color: var(--azul-medio); }
+  .filter-sub-link.active { color: var(--azul-medio); font-weight: 700; }
+
+  .filter-child-link {
+    display: flex; align-items: center; gap: 6px;
+    padding: 3px 0; font-size: 11.5px; color: var(--gris-claro-texto);
+    text-decoration: none; transition: color 0.15s;
+  }
+  .filter-child-link::before { content: '—'; font-size: 10px; color: var(--gris-borde); flex-shrink: 0; }
+  .filter-child-link:hover { color: var(--azul-principal); }
+  .filter-child-link.active { color: var(--azul-principal); font-weight: 700; }
+  .filter-child-link.active::before { color: var(--azul-principal); }
+
   /* RESPONSIVE */
   @media (max-width: 1100px) {
     .products-page-layout { grid-template-columns: 240px 1fr; }
@@ -376,7 +432,7 @@
                         @endif
                     </div>
 
-                    {{-- CATEGORIES --}}
+                    {{-- CATEGORIES TREE --}}
                     <div class="filter-group">
                         <button class="filter-group-header" type="button" data-filter-toggle="categories">
                             Categorías
@@ -386,30 +442,74 @@
                         </button>
                         <div class="filter-group-body" id="filter-categories">
                             @foreach ($categories as $category)
-                                <a class="filter-option {{ request('category') == $category->slug ? 'active' : '' }}"
-                                   href="{{ route('products.index', ['category' => $category->slug]) }}">
-                                    <span class="filter-option-dot"></span>
-                                    {{ $category->name }}
-                                </a>
-                            @endforeach
-                        </div>
-                    </div>
+                                @php
+                                    $catActive   = request('category') == $category->slug;
+                                    $subOpen     = false;
+                                    foreach ($category->subCategories as $sub) {
+                                        if (request('subcategory') == $sub->slug) { $subOpen = true; break; }
+                                        foreach ($sub->childCategories as $child) {
+                                            if (request('childcategory') == $child->slug) { $subOpen = true; break 2; }
+                                        }
+                                    }
+                                    $catOpen = $catActive || $subOpen;
+                                @endphp
+                                <div class="filter-cat-item">
+                                    <div class="filter-cat-row">
+                                        <a class="filter-cat-link {{ $catActive ? 'active' : '' }}"
+                                           href="{{ route('products.index', ['category' => $category->slug]) }}">
+                                            {{ $category->name }}
+                                        </a>
+                                        @if($category->subCategories->count() > 0)
+                                        <button class="filter-nest-chevron {{ $catOpen ? 'open' : '' }}" type="button"
+                                                data-nest-target="cat-sub-{{ $category->id }}">
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                                            </svg>
+                                        </button>
+                                        @endif
+                                    </div>
 
-                    {{-- BRANDS --}}
-                    <div class="filter-group">
-                        <button class="filter-group-header" type="button" data-filter-toggle="brands">
-                            Marca
-                            <svg class="filter-group-chevron" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-                            </svg>
-                        </button>
-                        <div class="filter-group-body" id="filter-brands">
-                            @foreach ($brands as $brand)
-                                <a class="filter-option {{ request('brand') == $brand->name ? 'active' : '' }}"
-                                   href="{{ route('products.index', ['brand' => $brand->name]) }}">
-                                    <span class="filter-option-dot"></span>
-                                    {{ $brand->name }}
-                                </a>
+                                    @if($category->subCategories->count() > 0)
+                                    <div class="filter-nest-list {{ $catOpen ? '' : 'hidden' }}" id="cat-sub-{{ $category->id }}">
+                                        @foreach($category->subCategories as $sub)
+                                            @php
+                                                $thisSubActive   = request('subcategory') == $sub->slug;
+                                                $thisChildOpen   = false;
+                                                foreach ($sub->childCategories as $child) {
+                                                    if (request('childcategory') == $child->slug) { $thisChildOpen = true; break; }
+                                                }
+                                                $thisSubOpen = $thisSubActive || $thisChildOpen;
+                                            @endphp
+                                            <div class="filter-sub-item">
+                                                <div class="filter-cat-row">
+                                                    <a class="filter-sub-link {{ $thisSubActive ? 'active' : '' }}"
+                                                       href="{{ route('products.index', ['subcategory' => $sub->slug]) }}">
+                                                        {{ $sub->name }}
+                                                    </a>
+                                                    @if($sub->childCategories->count() > 0)
+                                                    <button class="filter-nest-chevron {{ $thisSubOpen ? 'open' : '' }}" type="button"
+                                                            data-nest-target="sub-child-{{ $sub->id }}">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                                                        </svg>
+                                                    </button>
+                                                    @endif
+                                                </div>
+                                                @if($sub->childCategories->count() > 0)
+                                                <div class="filter-nest-list {{ $thisSubOpen ? '' : 'hidden' }}" id="sub-child-{{ $sub->id }}">
+                                                    @foreach($sub->childCategories as $child)
+                                                    <a class="filter-child-link {{ request('childcategory') == $child->slug ? 'active' : '' }}"
+                                                       href="{{ route('products.index', ['childcategory' => $child->slug]) }}">
+                                                        {{ $child->name }}
+                                                    </a>
+                                                    @endforeach
+                                                </div>
+                                                @endif
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                    @endif
+                                </div>
                             @endforeach
                         </div>
                     </div>
@@ -730,6 +830,17 @@
             if (!body) return;
             var hidden = body.classList.toggle('hidden');
             this.classList.toggle('collapsed', hidden);
+        });
+    });
+
+    // Nested category tree chevrons
+    document.querySelectorAll('.filter-nest-chevron').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            var list = document.getElementById(this.dataset.nestTarget);
+            if (!list) return;
+            var closing = !list.classList.contains('hidden');
+            list.classList.toggle('hidden', closing);
+            this.classList.toggle('open', !closing);
         });
     });
 

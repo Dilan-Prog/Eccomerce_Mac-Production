@@ -4,267 +4,519 @@
 {{$settings->site_name}} || Contacto
 @endsection
 
+@push('styles')
+<style>
+/* ===== VARIABLES (complementan las del master) ===== */
+:root {
+  --negro-texto: #1A202C;
+  --verde-disponible: #2F855A;
+  --verde-claro: #F0FDF4;
+  --rojo-error: #DC2626;
+  --rojo-claro: #FEF2F2;
+  --amarillo-claro: #FFFBEB;
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-xl: 12px;
+  --radius-full: 999px;
+  --shadow-sm: 0 2px 4px rgba(0,0,0,0.04);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+  --shadow-lg: 0 12px 28px rgba(0,62,126,0.12);
+  --font-base: 'Open Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  --container-max: 1280px;
+}
+
+/* ===== RESET BÁSICO ===== */
+*, *::before, *::after { box-sizing: border-box; }
+
+/* ===== CONTAINER ===== */
+.mdn-container {
+  max-width: var(--container-max);
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* ===== BREADCRUMB ===== */
+.breadcrumb-mdn {
+  background: var(--blanco);
+  padding: 14px 0;
+  border-bottom: 1px solid var(--gris-borde);
+}
+.breadcrumb-list-mdn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  flex-wrap: wrap;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.breadcrumb-list-mdn a {
+  color: var(--gris-claro-texto);
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.2s;
+}
+.breadcrumb-list-mdn a:hover { color: var(--azul-principal); }
+.breadcrumb-separator-mdn { color: var(--gris-borde); font-size: 11px; }
+.breadcrumb-current-mdn { color: var(--azul-principal); font-weight: 700; }
+
+/* ===== PAGE HEADER ===== */
+.page-header-mdn {
+  background: linear-gradient(135deg, var(--azul-oscuro) 0%, var(--azul-principal) 60%, var(--azul-medio) 100%);
+  color: var(--blanco);
+  padding: 48px 0 40px;
+  position: relative;
+  overflow: hidden;
+}
+.page-header-mdn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px);
+  background-size: 50px 50px;
+}
+.page-header-content-mdn {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+}
+.page-eyebrow-mdn {
+  display: inline-block;
+  background: rgba(246,173,28,0.18);
+  border: 1px solid rgba(246,173,28,0.45);
+  color: var(--amarillo-destacado);
+  font-size: 12px;
+  font-weight: 800;
+  padding: 7px 14px;
+  border-radius: var(--radius-sm);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin-bottom: 16px;
+}
+.page-header-mdn h1 {
+  font-size: 32px;
+  font-weight: 800;
+  color: var(--blanco);
+  margin-bottom: 10px;
+  letter-spacing: -0.6px;
+}
+.page-header-sub-mdn {
+  font-size: 16px;
+  opacity: 0.92;
+  max-width: 640px;
+  margin: 0 auto;
+  color: var(--blanco);
+}
+
+/* ===== CONTACT PAGE ===== */
+.contact-page-mdn {
+  padding: 32px 0 64px;
+  background: var(--gris-fondo);
+}
+.contact-grid-mdn {
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: 32px;
+}
+
+/* ===== CONTACT FORM CARD ===== */
+.contact-form-card-mdn {
+  background: var(--blanco);
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--gris-borde);
+  padding: 32px;
+}
+.contact-form-card-mdn h2 {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--azul-principal);
+  margin-bottom: 6px;
+}
+.contact-form-card-mdn .subtitle-mdn {
+  font-size: 14px;
+  color: var(--gris-claro-texto);
+  margin-bottom: 24px;
+}
+
+/* ===== FORM ELEMENTS ===== */
+.form-row-mdn {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+.form-group-mdn { margin-bottom: 18px; }
+.form-group-mdn label {
+  display: block;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--azul-principal);
+  margin-bottom: 6px;
+}
+.form-group-mdn .required-mdn { color: var(--rojo-error); margin-left: 2px; }
+.form-group-mdn .optional-mdn { color: var(--gris-claro-texto); font-weight: 500; font-size: 12px; margin-left: 4px; }
+.form-input-mdn,
+.form-select-mdn,
+.form-textarea-mdn {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1.5px solid var(--gris-borde);
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  font-family: inherit;
+  color: var(--negro-texto);
+  background: var(--blanco);
+  transition: all 0.2s;
+}
+.form-input-mdn:focus,
+.form-select-mdn:focus,
+.form-textarea-mdn:focus {
+  outline: none;
+  border-color: var(--azul-principal);
+  box-shadow: 0 0 0 3px rgba(0,62,126,0.1);
+}
+.form-textarea-mdn { min-height: 120px; resize: vertical; }
+.form-select-mdn {
+  cursor: pointer;
+  appearance: none;
+  padding-right: 38px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23718096' stroke-width='2.5'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+}
+
+/* ===== CHECKBOX ===== */
+.filter-checkbox-mdn {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--gris-texto);
+  cursor: pointer;
+  padding: 4px 0;
+  margin-bottom: 18px;
+}
+.filter-checkbox-mdn input { width: 16px; height: 16px; accent-color: var(--azul-principal); cursor: pointer; flex-shrink: 0; margin-top: 2px; }
+
+/* ===== BTN ===== */
+.btn-mdn {
+  padding: 12px 22px;
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+  border: none;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.2s;
+  font-family: inherit;
+  white-space: nowrap;
+}
+.btn-mdn svg { width: 16px; height: 16px; }
+.btn-primary-mdn {
+  background: var(--accent-cta);
+  color: var(--blanco);
+  box-shadow: 0 4px 14px rgba(247,148,29,0.4);
+}
+.btn-primary-mdn:hover {
+  background: var(--accent-cta-hover);
+  transform: translateY(-1px);
+  color: var(--blanco);
+}
+.btn-block-mdn { width: 100%; }
+
+/* ===== CONTACT INFO ===== */
+.contact-info-mdn {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.contact-info-card-mdn {
+  background: var(--blanco);
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--gris-borde);
+  padding: 20px;
+}
+.contact-info-card-mdn.featured-mdn {
+  background: linear-gradient(135deg, var(--azul-oscuro) 0%, var(--azul-principal) 100%);
+  color: var(--blanco);
+  border: none;
+}
+.contact-info-card-mdn h3 {
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--azul-principal);
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 800;
+}
+.contact-info-card-mdn h3 svg { width: 18px; height: 18px; }
+.contact-info-card-mdn.featured-mdn h3 { color: var(--amarillo-destacado); }
+.contact-info-item-mdn {
+  display: flex;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--gris-borde);
+}
+.contact-info-card-mdn.featured-mdn .contact-info-item-mdn { border-color: rgba(255,255,255,0.15); }
+.contact-info-item-mdn:last-child { border-bottom: none; }
+.contact-info-icon-mdn {
+  width: 36px;
+  height: 36px;
+  background: var(--azul-claro);
+  color: var(--azul-principal);
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.contact-info-card-mdn.featured-mdn .contact-info-icon-mdn {
+  background: rgba(246,173,28,0.18);
+  color: var(--amarillo-destacado);
+}
+.contact-info-icon-mdn svg { width: 16px; height: 16px; }
+.contact-info-text-mdn { flex: 1; min-width: 0; }
+.contact-info-label-mdn {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--gris-claro-texto);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 2px;
+}
+.contact-info-card-mdn.featured-mdn .contact-info-label-mdn { color: rgba(255,255,255,0.7); }
+.contact-info-value-mdn { font-size: 14px; font-weight: 600; color: var(--negro-texto); }
+.contact-info-card-mdn.featured-mdn .contact-info-value-mdn { color: var(--blanco); }
+.contact-info-value-mdn a { color: inherit; text-decoration: none; }
+.contact-info-value-mdn a:hover { text-decoration: underline; }
+
+/* ===== CONTACT MAP ===== */
+.contact-map-mdn {
+  height: 200px;
+  background: linear-gradient(135deg, var(--azul-claro) 0%, var(--blanco) 100%);
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--gris-borde);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--azul-principal);
+  position: relative;
+  overflow: hidden;
+}
+.contact-map-mdn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(0,62,126,0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,62,126,0.05) 1px, transparent 1px);
+  background-size: 30px 30px;
+}
+.contact-map-pin-mdn {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+}
+.contact-map-pin-mdn svg { width: 48px; height: 48px; color: var(--accent-cta); margin-bottom: 8px; display: block; margin-left: auto; margin-right: auto; }
+.contact-map-pin-mdn strong { display: block; font-size: 14px; color: var(--azul-principal); margin-bottom: 4px; }
+.contact-map-pin-mdn span { font-size: 12px; color: var(--gris-claro-texto); }
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 1100px) {
+  .contact-grid-mdn { grid-template-columns: 1fr 320px; }
+}
+@media (max-width: 960px) {
+  .contact-grid-mdn { grid-template-columns: 1fr; }
+  .contact-form-card-mdn { padding: 24px; }
+}
+@media (max-width: 720px) {
+  .form-row-mdn { grid-template-columns: 1fr; }
+}
+</style>
+@endpush
+
 @section('content')
 
-<section id="contact-section">
-    <div class="container mt-5">
-        <div class="text-center m-4">
-            <h2 class="card-title" style="font-weight: bold">Contacto Oficina Matriz</h2>
-            <p class="card-text">Contáctanos estamos para servirle.</p>
-        </div>
-    
-        <div class="row justify-content-center">
-            <!-- Bloque 1 -->
-            <div class="col-md-6 col-lg-4 mb-4">
-                <div class="card" id="hover-contact">
-                    <a href="mailto:contacto@macdelnorte.com" onclick="dataLayer.push({'event':'correo_contact_action','action':'click', ' label':'correo_contacto'})" target="_blank">
-                        <div class="card-body d-flex align-items-center">
-                         <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="#00468c" class="bi bi-envelope-fill" viewBox="0 0 16 16">
-                            <path d="M.05 3.555A2 2 0 0 1 2 2h12a2 2 0 0 1 1.95 1.555L8 8.414zM0 4.697v7.104l5.803-3.558zM6.761 8.83l-6.57 4.027A2 2 0 0 0 2 14h12a2 2 0 0 0 1.808-1.144l-6.57-4.027L8 9.586zm3.436-.586L16 11.801V4.697z"/>
-                         </svg>
-                         <div class="d-flex flex-column ms-3">
-                            <h3 class="mb-0" style="font-family: 'Montserrat', sans-serif;
-                            font-weight: 600; color: black">Correo electronico </h3>
-                            <div class="ms-4" >
-                                <p class="mb-0" style="font-family: 'Montserrat', sans-serif;
-                                font-weight: 400; color: #313131">contacto@macdelnorte.com</p>
-    
-                            </div>
-                        </div>
-                    </div>
-                    </a>
-                </div>
-            </div>
-    
-            <!-- Bloque 2 -->
-            <div class="col-md-6 col-lg-4 mb-4">
-                <div class="card" id="hover-contact">
-                    <a href="https://wa.link/f28njw" 
-                    target="_blank" 
-                    id="whatsapp-link"
-                    onclick="dataLayer.push({'event': 'whatsapp_conversion', 'action': 'click', 'label': 'whatsapp-icon'});" >
-                        <div class="card-body d-flex align-items-center">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="#00468c" class="bi bi-whatsapp" viewBox="0 0 16 16">
-                                <path d="M13.601 2.326A7.85 7.85 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.9 7.9 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.9 7.9 0 0 0 13.6 2.326zM7.994 14.521a6.6 6.6 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.56 6.56 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592m3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.73.73 0 0 0-.529.247c-.182.198-.691.677-.691 1.654s.71 1.916.81 2.049c.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232"/>
-                            </svg>
-                            <div class="d-flex flex-column ms-3" >
-                                <a href=""></a><h3 class="mb-0" style="font-family: 'Montserrat', sans-serif;
-                                font-weight: 600; color: black">WhatsApp</h3>
-                                <div class="ms-4">
-                                    <p class="mb-0" style="font-family: 'Montserrat', sans-serif;
-                                    font-weight: 400; color: #313131">+81-35825559</p>
-        
-                                </div>
-                            </div>
-                        </div>
-                    </a>
-                </div>
-            </div>
-    
-        </div>
-    
-        <div class="row justify-content-center">
-    
-            <!-- Bloque 3 -->
-            <div class="col-md-6 col-lg-4 mb-4">
-                <div class="card" id="hover-contact">
-                    <a href="">
-                        <div class="card-body d-flex align-items-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="#00468c" class="bi bi-telephone-inbound-fill" viewBox="0 0 16 16">
-                            <path fill-rule="evenodd" d="M1.885.511a1.745 1.745 0 0 1 2.61.163L6.29 2.98c.329.423.445.974.315 1.494l-.547 2.19a.68.68 0 0 0 .178.643l2.457 2.457a.68.68 0 0 0 .644.178l2.189-.547a1.75 1.75 0 0 1 1.494.315l2.306 1.794c.829.645.905 1.87.163 2.611l-1.034 1.034c-.74.74-1.846 1.065-2.877.702a18.6 18.6 0 0 1-7.01-4.42 18.6 18.6 0 0 1-4.42-7.009c-.362-1.03-.037-2.137.703-2.877zM15.854.146a.5.5 0 0 1 0 .708L11.707 5H14.5a.5.5 0 0 1 0 1h-4a.5.5 0 0 1-.5-.5v-4a.5.5 0 0 1 1 0v2.793L15.146.146a.5.5 0 0 1 .708 0"/>
-                        </svg>
-                        <div class="d-flex flex-column ms-3">
-                            <h3 class="mb-0" style="font-family: 'Montserrat', sans-serif;
-                            font-weight: 600; color: black">Telefono</h3>
-                            <div class="ms-4">
-                                <p class="mb-0" style="font-family: 'Montserrat', sans-serif;
-                                font-weight: 600; color: black">81-2473-8744 / 81-2473-8768</p>
-    
-    
-                            </div>
-                        </div>
-    
-    
-                    </div>
-                    </a>
-                </div>
-            </div>
-    
-            <!-- Bloque 4 -->
-            <div class="col-md-6 col-lg-4 mb-4">
-                <div class="card" id="hover-contact">
-                    <a href="">
-                        <div class="card-body d-flex align-items-center">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="#00468c" class="bi bi-geo-alt-fill" viewBox="0 0 16 16">
-                                <path d="M8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10m0-7a3 3 0 1 1 0-6 3 3 0 0 1 0 6"/>
-                            </svg>
-                            <div class="d-flex flex-column ms-3">
-                                <h3 class="mb-0" style="font-family: 'Montserrat', sans-serif;
-                                font-weight: 600; color: black">Ubicaci&oacute;n</h3>
-                                <div class="ms-4">
-                                    <p class="mb-0" style="font-family: 'Montserrat', sans-serif;
-                                    font-weight: 400; color: #313131">Apodaca N.L. CP.66612</p>
-    
-                                </div>
-                            </div>
-                        </div>
-    
-    
-                    </a>
-                </div>
-            </div>
-    
-        </div>
+<div class="breadcrumb-mdn">
+  <div class="mdn-container">
+    <div class="breadcrumb-list-mdn">
+      <a href="{{ route('index') }}">Inicio</a>
+      <span class="breadcrumb-separator-mdn">›</span>
+      <span class="breadcrumb-current-mdn">Contacto</span>
     </div>
-    
-    <div class="container-flex ">
-    
-        <div class="row" id="google-map-div">
-          <div class="col-lg-6  d-flex justify-content-center align-items-center" style="max-width: 100%;" >
-            <div>
-                <h2 id="google-maps-title">Oficina Matriz</h2>
-                <p class="mb-0" id="google-maps-text">C. Castaño No.718</p>
-                <p class="mb-0" id="google-maps-text">Col. Ebanos Norte 2do Sector</p>
-                <p class="" id="google-maps-text">Apodaca N.L. CP.66612</p>
-            </div>
-          </div>
-          <div class="col-lg-6 " >
-            <div class="google-map" id="google-map">
-                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d14370.842519182363!2d-100.19980187739522!3d25.780119860140644!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8662ec0aba444135%3A0x6047a3f76e4cbabd!2sCabecera%20Municipal%20(Apodaca)%2C%20Apodaca%20Centro%2C%20Cd%20Apodaca%2C%20N.L.!5e0!3m2!1ses!2smx!4v1630797429181!5m2!1ses!2smx" allowfullscreen="" loading="lazy"></iframe>
-            </div>
-          </div>
-        </div>
-    </div>
-    
-    <div class="container mt-5">
-        <div class="text-center m-4">
-            <h2 class="card-title" style="font-weight: bold">Contacto Sucursal</h2>
-            <p class="card-text">Contáctanos estamos para servirle.</p>
-        </div>
-    
-        <div class="row justify-content-center">
-            <!-- Bloque 1 -->
-            <div class="col-md-6 col-lg-4 mb-4">
-                <div class="card" id="hover-contact">
-                    <a href="">
-                        <div class="card-body d-flex align-items-center">
-                         <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="#00468c" class="bi bi-envelope-fill" viewBox="0 0 16 16">
-                            <path d="M.05 3.555A2 2 0 0 1 2 2h12a2 2 0 0 1 1.95 1.555L8 8.414zM0 4.697v7.104l5.803-3.558zM6.761 8.83l-6.57 4.027A2 2 0 0 0 2 14h12a2 2 0 0 0 1.808-1.144l-6.57-4.027L8 9.586zm3.436-.586L16 11.801V4.697z"/>
-                         </svg>
-                         <div class="d-flex flex-column ms-3">
-                            <h3 class="mb-0" style="font-family: 'Montserrat', sans-serif;
-                            font-weight: 600; color: black">Correo electronico </h3>
-                            <div class="ms-4" >
-                                <p class="mb-0" style="font-family: 'Montserrat', sans-serif;
-                                font-weight: 400; color: #313131">ventasmty@macdelnorte.com</p>
-    
-                            </div>
-                        </div>
-                    </div>
-                    </a>
-                </div>
-            </div>
-    
-            <!-- Bloque 2 -->
-            <div class="col-md-6 col-lg-4 mb-4">
-                <div class="card" id="hover-contact">
-                    <a href="https://wa.link/f28njw">
-                        <div class="card-body d-flex align-items-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="#00468c" class="bi bi-whatsapp" viewBox="0 0 16 16">
-                            <path d="M13.601 2.326A7.85 7.85 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.9 7.9 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.9 7.9 0 0 0 13.6 2.326zM7.994 14.521a6.6 6.6 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.56 6.56 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592m3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.73.73 0 0 0-.529.247c-.182.198-.691.677-.691 1.654s.71 1.916.81 2.049c.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232"/>
-                        </svg>
-                        <div class="d-flex flex-column ms-3" >
-                            <h3 class="mb-0" style="font-family: 'Montserrat', sans-serif;
-                            font-weight: 600; color: black">WhatsApp</h3>
-                            <div class="ms-4">
-                                <p class="mb-0" style="font-family: 'Montserrat', sans-serif;
-                                font-weight: 400; color: #313131">+81-10946873</p>
-    
-                            </div>
-                        </div>
-                    </div>
-                    </a>
-                </div>
-            </div>
-    
-        </div>
-    
-        <div class="row justify-content-center">
-    
-            <!-- Bloque 3 -->
-            <div class="col-md-6 col-lg-4 mb-4">
-                <div class="card" id="hover-contact">
-                    <a href="">
-                        <div class="card-body d-flex align-items-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="#00468c" class="bi bi-telephone-inbound-fill" viewBox="0 0 16 16">
-                            <path fill-rule="evenodd" d="M1.885.511a1.745 1.745 0 0 1 2.61.163L6.29 2.98c.329.423.445.974.315 1.494l-.547 2.19a.68.68 0 0 0 .178.643l2.457 2.457a.68.68 0 0 0 .644.178l2.189-.547a1.75 1.75 0 0 1 1.494.315l2.306 1.794c.829.645.905 1.87.163 2.611l-1.034 1.034c-.74.74-1.846 1.065-2.877.702a18.6 18.6 0 0 1-7.01-4.42 18.6 18.6 0 0 1-4.42-7.009c-.362-1.03-.037-2.137.703-2.877zM15.854.146a.5.5 0 0 1 0 .708L11.707 5H14.5a.5.5 0 0 1 0 1h-4a.5.5 0 0 1-.5-.5v-4a.5.5 0 0 1 1 0v2.793L15.146.146a.5.5 0 0 1 .708 0"/>
-                        </svg>
-                        <div class="d-flex flex-column ms-3">
-                            <h3 class="mb-0" style="font-family: 'Montserrat', sans-serif;
-                            font-weight: 600; color: black">Telefono</h3>
-                            <div class="ms-4">
-                                <p class="mb-0" style="font-family: 'Montserrat', sans-serif;
-                                font-weight: 600; color: black">81-1094-6873 / 81-1094-6852</p>
-    
-    
-                            </div>
-                        </div>
-    
-    
-                    </div>
-                    </a>
-                </div>
-            </div>
-    
-            <!-- Bloque 4 -->
-            <div class="col-md-6 col-lg-4 mb-4">
-                <div class="card" id="hover-contact">
-                    <a href="">
-                        <div class="card-body d-flex align-items-center">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="#00468c" class="bi bi-geo-alt-fill" viewBox="0 0 16 16">
-                                <path d="M8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10m0-7a3 3 0 1 1 0-6 3 3 0 0 1 0 6"/>
-                            </svg>
-                            <div class="d-flex flex-column ms-3">
-                                <h3 class="mb-0" style="font-family: 'Montserrat', sans-serif;
-                                font-weight: 600; color: black">Ubicaci&oacute;n</h3>
-                                <div class="ms-4">
-                                    <p class="mb-0" style="font-family: 'Montserrat', sans-serif;
-                                    font-weight: 400; color: #313131">398 Plaza Ebano en calle Oaxaca</p>
-    
-                                </div>
-                            </div>
-                        </div>
-    
-    
-                    </a>
-                </div>
-            </div>
-    
-        </div>
-    </div>
-    
-    <div class="container-flex ">
-        <div class="row" id="google-map-div">
-            <div class="col-lg-6  d-flex justify-content-center align-items-center" style="max-width: 100%;" >
-              <div>
-                  <h2 id="google-maps-title">Sucursal Venta al Publico</h2>
-                  <p class="mb-0" id="google-maps-text">398 Plaza Ebano en calle Oaxaca</p>
-                  <p class="mb-0" id="google-maps-text">Esquina con padre mier en el</p>
-                  <p class="" id="google-maps-text">Centro De Apodaca N.L.</p>
-              </div>
-            </div>
-            <div class="col-lg-6 " >
-              <div class="google-map" id="google-map">
-                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3592.5370002547666!2d-100.1914711238637!3d25.78585230760537!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8662ec0c4e88f461%3A0x539ceac14f3faed3!2sOaxaca%20398%2C%20Cabecera%20Municipal%20(Apodaca)%2C%20Nuevo%20Apodaca%2C%2066600%20Cdad.%20Apodaca%2C%20N.L.!5e0!3m2!1ses-419!2smx!4v1717806549974!5m2!1ses-419!2smx" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
-              </div>
-            </div>
-        </div>
-    </div>
+  </div>
+</div>
 
+<section class="page-header-mdn">
+  <div class="mdn-container">
+    <div class="page-header-content-mdn">
+      <div class="page-eyebrow-mdn">Hablemos</div>
+      <h1>Estamos para servirte</h1>
+      <p class="page-header-sub-mdn">Cotizaciones en menos de 2 horas, soporte técnico con ingenieros reales y atención humana de lunes a viernes.</p>
+    </div>
+  </div>
 </section>
 
+<section class="contact-page-mdn">
+  <div class="mdn-container">
+    <div class="contact-grid-mdn">
 
+      <!-- FORMULARIO -->
+      <div class="contact-form-card-mdn">
+        <h2>Envíanos un mensaje</h2>
+        <p class="subtitle-mdn">Te respondemos en menos de 2 horas hábiles. Si es urgente, escríbenos por WhatsApp.</p>
 
+        <form id="contact-form">
 
+          <div class="form-row-mdn">
+            <div class="form-group-mdn">
+              <label>Nombre completo <span class="required-mdn">*</span></label>
+              <input type="text" class="form-input-mdn" placeholder="Tu nombre" required>
+            </div>
+            <div class="form-group-mdn">
+              <label>Empresa <span class="optional-mdn">(opcional)</span></label>
+              <input type="text" class="form-input-mdn" placeholder="Nombre de tu empresa">
+            </div>
+          </div>
+
+          <div class="form-row-mdn">
+            <div class="form-group-mdn">
+              <label>Correo electrónico <span class="required-mdn">*</span></label>
+              <input type="email" class="form-input-mdn" placeholder="tu@correo.com" required>
+            </div>
+            <div class="form-group-mdn">
+              <label>Teléfono <span class="required-mdn">*</span></label>
+              <input type="tel" class="form-input-mdn" placeholder="10 dígitos" required>
+            </div>
+          </div>
+
+          <div class="form-group-mdn">
+            <label>Tipo de consulta <span class="required-mdn">*</span></label>
+            <select class="form-select-mdn" required>
+              <option value="">Selecciona el tipo de consulta</option>
+              <option value="cotizacion">Solicitar cotización</option>
+              <option value="soporte">Soporte técnico</option>
+              <option value="ventas">Atención comercial</option>
+              <option value="b2b">Programa de revendedores B2B</option>
+              <option value="garantia">Garantías y devoluciones</option>
+              <option value="otro">Otra consulta</option>
+            </select>
+          </div>
+
+          <div class="form-group-mdn">
+            <label>Producto o número de parte <span class="optional-mdn">(opcional)</span></label>
+            <input type="text" class="form-input-mdn" placeholder="Ej. STT850-A1H7BB · Si tu consulta es sobre un producto específico">
+          </div>
+
+          <div class="form-group-mdn">
+            <label>Mensaje <span class="required-mdn">*</span></label>
+            <textarea class="form-textarea-mdn" placeholder="Cuéntanos en qué podemos ayudarte. Mientras más detalles nos des, más rápida será la respuesta." required></textarea>
+          </div>
+
+          <label class="filter-checkbox-mdn">
+            <input type="checkbox" required>
+            Acepto el <a href="#" style="color:var(--azul-medio);font-weight:700;">aviso de privacidad</a> y autorizo el uso de mis datos para esta consulta. <span class="required-mdn">*</span>
+          </label>
+
+          <button type="submit" class="btn-mdn btn-primary-mdn btn-block-mdn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+            Enviar mensaje
+          </button>
+        </form>
+      </div>
+
+      <!-- INFO DE CONTACTO -->
+      <div class="contact-info-mdn">
+
+        <div class="contact-info-card-mdn featured-mdn">
+          <h3>
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
+            Atención inmediata
+          </h3>
+          <div class="contact-info-item-mdn">
+            <div class="contact-info-icon-mdn">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
+            </div>
+            <div class="contact-info-text-mdn">
+              <div class="contact-info-label-mdn">WhatsApp Business</div>
+              <div class="contact-info-value-mdn"><a href="https://wa.me/528135825559">81 3582 5559</a></div>
+            </div>
+          </div>
+          <div class="contact-info-item-mdn">
+            <div class="contact-info-icon-mdn">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
+            </div>
+            <div class="contact-info-text-mdn">
+              <div class="contact-info-label-mdn">Soporte directo</div>
+              <div class="contact-info-value-mdn"><a href="tel:528124738768">81 2473 8768</a></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="contact-info-card-mdn">
+          <h3>
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+            Por correo
+          </h3>
+          <div class="contact-info-item-mdn">
+            <div class="contact-info-icon-mdn">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+            </div>
+            <div class="contact-info-text-mdn">
+              <div class="contact-info-label-mdn">Cotizaciones y ventas</div>
+              <div class="contact-info-value-mdn"><a href="mailto:ventasmty@macdelnorte.com">ventasmty@macdelnorte.com</a></div>
+              <div class="contact-info-value-mdn"><a href="mailto:ventas1@macdelnorte.com">ventas1@macdelnorte.com</a></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="contact-info-card-mdn">
+          <h3>
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+            Oficina matriz
+          </h3>
+          <div class="contact-info-item-mdn">
+            <div class="contact-info-icon-mdn">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+            </div>
+            <div class="contact-info-text-mdn">
+              <div class="contact-info-label-mdn">Dirección</div>
+              <div class="contact-info-value-mdn">C. Castaño No.718, Col. Ebanos Norte 2do Sector<br>Apodaca N.L. CP.66612</div>
+            </div>
+          </div>
+          <div class="contact-info-item-mdn">
+            <div class="contact-info-icon-mdn">
+              <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+            </div>
+            <div class="contact-info-text-mdn">
+              <div class="contact-info-label-mdn">Horario</div>
+              <div class="contact-info-value-mdn">Lunes a Viernes<br>8:30 AM a 6:00 PM</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="contact-map-mdn">
+          <div class="contact-map-pin-mdn">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+            <strong>Mac Del Norte</strong>
+            <span>Monterrey, N.L.</span>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+</section>
 
 @endsection

@@ -124,19 +124,23 @@ class FrontendProductController extends Controller
                     ->paginate(12);
             }
 
-            $categories = Cache::rememberForever('categories', function () {
-                return Category::where(['status' => 1])->get();
-            });
-
-            $brands = Cache::rememberForever('brand', function () {
-                return Brand::where(['status' => 1])->get();
+            $categories = Cache::rememberForever('categories_filter_tree', function () {
+                return Category::where('status', 1)
+                    ->with(['subCategories' => function ($q) {
+                        $q->where('status', 1)
+                          ->orderBy('name')
+                          ->with(['childCategories' => function ($q2) {
+                              $q2->where('status', 1)->orderBy('name');
+                          }]);
+                    }])
+                    ->orderBy('sort_order')
+                    ->orderBy('name')
+                    ->get();
             });
 
             $shippingRules = ShippingRule::where('type', 'min_cost')->first();
 
-
-
-        return view('frontend.pages.product', compact('products', 'categories', 'brands','shippingRules'));
+        return view('frontend.pages.product', compact('products', 'categories', 'shippingRules'));
     }
 
 public function chageListView(Request $request)

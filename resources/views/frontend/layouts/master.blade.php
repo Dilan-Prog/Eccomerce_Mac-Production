@@ -160,6 +160,79 @@
             --gris-claro-texto: #718096;
             --accent-cta: #F7941D;
             --accent-cta-hover: #E08416;
+            --rojo-error: #DC2626;
+            --rojo-claro: #FEE2E2;
+        }
+
+        /* ===== ACCOUNT DROPDOWN ===== */
+        .account-dropdown-wrapper { position: relative; z-index: 400; }
+
+        .account-dropdown {
+            position: absolute;
+            top: calc(100% + 10px);
+            right: 0;
+            width: 270px;
+            background: var(--blanco);
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0,62,126,0.15);
+            border: 1px solid var(--gris-borde);
+            z-index: 500;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-8px);
+            transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s;
+            overflow: hidden;
+        }
+        .account-dropdown.open {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+        .account-dropdown-header {
+            padding: 16px 18px;
+            background: var(--azul-claro);
+            border-bottom: 1px solid var(--gris-borde);
+        }
+        .account-dropdown-name {
+            font-size: 14px; font-weight: 800; color: var(--azul-principal);
+            margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        }
+        .account-dropdown-email {
+            font-size: 12px; color: var(--gris-claro-texto);
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        }
+        .account-dropdown-group {
+            padding: 6px 0;
+            border-bottom: 1px solid var(--gris-borde);
+        }
+        .account-dropdown-group:last-child { border-bottom: none; }
+        .account-dropdown-item {
+            display: flex; align-items: center; gap: 10px;
+            padding: 11px 18px; font-size: 13px; font-weight: 600;
+            color: var(--gris-texto); text-decoration: none;
+            transition: all 0.15s; width: 100%;
+            background: none; border: none; cursor: pointer;
+            font-family: inherit; text-align: left;
+        }
+        .account-dropdown-item svg {
+            width: 16px; height: 16px; flex-shrink: 0; color: var(--gris-claro-texto);
+        }
+        .account-dropdown-item:hover {
+            background: var(--azul-claro); color: var(--azul-principal);
+        }
+        .account-dropdown-item:hover svg { color: var(--azul-principal); }
+        .account-dropdown-logout { color: var(--rojo-error); }
+        .account-dropdown-logout svg { color: var(--rojo-error); }
+        .account-dropdown-logout:hover {
+            background: var(--rojo-claro); color: var(--rojo-error);
+        }
+        .account-trigger.active { color: var(--azul-principal); }
+
+        @media (max-width: 560px) {
+            .account-dropdown {
+                width: calc(100vw - 32px);
+                right: -16px;
+            }
         }
 
         /* ===== STICKY WRAPPER (top-bar + header + menu) ===== */
@@ -593,6 +666,35 @@
         <!--header sticky wrapper-->
         <div class="sticky-wrapper">
             @include('frontend.layouts.top-bar')
+            @guest
+            <div class="guest-info-banner" id="guest-banner">
+                <div class="container">
+                    <div class="guest-banner-inner">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16" style="flex-shrink:0">
+                            <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+                        </svg>
+                        <span>
+                            <strong>¿Buscas precios?</strong>
+                            Regístrate gratis o inicia sesión para ver precios, agregar al carrito y comprar.
+                        </span>
+                        <div class="guest-banner-actions">
+                            <a href="{{ route('register') }}" class="banner-btn-register">Crear cuenta</a>
+                            <a href="{{ route('login') }}"    class="banner-btn-login">Iniciar sesión</a>
+                        </div>
+                        <button class="banner-close" onclick="
+                            document.getElementById('guest-banner').style.display='none';
+                            sessionStorage.setItem('guest_banner_closed','1');
+                        " aria-label="Cerrar">✕</button>
+                    </div>
+                </div>
+            </div>
+            <script>
+                if (sessionStorage.getItem('guest_banner_closed') === '1') {
+                    var b = document.getElementById('guest-banner');
+                    if (b) b.style.display = 'none';
+                }
+            </script>
+            @endguest
             @include('frontend.layouts.header')
             @include('frontend.layouts.menu')
         </div>
@@ -601,35 +703,6 @@
         {{-- @include('frontend.layouts.chat-personal') --}}
 
         <!--content-->
-        @guest
-        <div class="guest-info-banner" id="guest-banner">
-            <div class="container">
-                <div class="guest-banner-inner">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16" style="flex-shrink:0">
-                        <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
-                    </svg>
-                    <span>
-                        <strong>¿Buscas precios?</strong>
-                        Regístrate gratis o inicia sesión para ver precios, agregar al carrito y comprar.
-                    </span>
-                    <div class="guest-banner-actions">
-                        <a href="{{ route('register') }}" class="banner-btn-register">Crear cuenta</a>
-                        <a href="{{ route('login') }}"    class="banner-btn-login">Iniciar sesión</a>
-                    </div>
-                    <button class="banner-close" onclick="
-                        document.getElementById('guest-banner').style.display='none';
-                        sessionStorage.setItem('guest_banner_closed','1');
-                    " aria-label="Cerrar">✕</button>
-                </div>
-            </div>
-        </div>
-        <script>
-            if (sessionStorage.getItem('guest_banner_closed') === '1') {
-                var b = document.getElementById('guest-banner');
-                if (b) b.style.display = 'none';
-            }
-        </script>
-        @endguest
 
         @yield('content')
 
@@ -658,6 +731,9 @@
 
     {{-- jQuery debe cargar antes que toastr y los scripts inline --}}
     <script src="{{ asset('frontend/js/jquery-3.6.0.min.js') }}"></script>
+    {{-- classycountdown: cargado aquí como script regular (fuera del bundle Vite)
+         porque su wrapper UMD usa `this.jQuery`; en ESM `this` es undefined --}}
+    <script src="{{ asset('frontend/js/jquery.classycountdown.js') }}"></script>
     {{-- toastr js (CDN — not bundled) --}}
     <script src="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
 
@@ -861,6 +937,43 @@
     </script>
 
 
+    <script>
+    (function () {
+        var trigger  = document.getElementById('account-trigger');
+        var dropdown = document.getElementById('account-dropdown');
+        var wrapper  = document.getElementById('account-dropdown-wrapper');
+        if (!trigger || !dropdown || !wrapper) return;
+
+        trigger.addEventListener('click', function (e) {
+            e.stopPropagation();
+            var isOpen = dropdown.classList.contains('open');
+            dropdown.classList.toggle('open', !isOpen);
+            trigger.setAttribute('aria-expanded', String(!isOpen));
+            dropdown.setAttribute('aria-hidden', String(isOpen));
+            trigger.classList.toggle('active', !isOpen);
+        });
+
+        document.addEventListener('click', function (e) {
+            if (!wrapper.contains(e.target)) {
+                dropdown.classList.remove('open');
+                trigger.setAttribute('aria-expanded', 'false');
+                dropdown.setAttribute('aria-hidden', 'true');
+                trigger.classList.remove('active');
+            }
+        });
+
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape' && dropdown.classList.contains('open')) {
+                dropdown.classList.remove('open');
+                trigger.setAttribute('aria-expanded', 'false');
+                dropdown.setAttribute('aria-hidden', 'true');
+                trigger.classList.remove('active');
+                trigger.focus();
+            }
+        });
+    })();
+    </script>
+
     @include('frontend.layouts.scripts')
     @stack('scripts')
 </body>
@@ -1046,6 +1159,7 @@ ew    <script>
     <script src="https://www.google.com/recaptcha/api.js?render=6LfT84IrAAAAAKVhNXXrFPDAgMFAiCGdj1-tYz2B"></script>
 
 <script>
+(function () {
 const siteKey = '6LfT84IrAAAAAKVhNXXrFPDAgMFAiCGdj1-tYz2B';
 const googleSheetsWebhook = 'https://script.google.com/macros/s/AKfycbwU_alwJ8RczaMMaRWUCcBD2Pc9exMGsG5vWGX-J7-h5BQajHC43VR3Ufk3QiGeQtZF/exec';
 
@@ -1133,4 +1247,5 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 });
+})();
 </script>

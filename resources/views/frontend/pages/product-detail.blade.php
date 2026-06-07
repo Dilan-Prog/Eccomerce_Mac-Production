@@ -549,10 +549,7 @@
                     </span>
                 </div>
 
-                {{-- Descripción corta --}}
-                @if ($product->short_description)
-                <p class="product-short-desc">{{ $product->short_description }}</p>
-                @endif
+                
 
                 {{-- Variantes --}}
                 @foreach ($product->variants as $variant)
@@ -694,6 +691,25 @@
                     </form>
 
                     @else
+                    {{-- ── GUEST: stock visible ── --}}
+                    @if ($stockQty > 0)
+                    <div class="product-availability in-stock" style="margin-bottom:12px;">
+                        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+                        <div class="avail-text">
+                            <strong>{{ $stockQty }} piezas en stock</strong>
+                            Envío inmediato · Entrega en 1–3 días hábiles a todo México
+                        </div>
+                    </div>
+                    @else
+                    <div class="product-availability out-of-stock" style="margin-bottom:12px;">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+                        <div class="avail-text">
+                            <strong>Agotado temporalmente</strong>
+                            Contáctanos para disponibilidad y tiempo de entrega
+                        </div>
+                    </div>
+                    @endif
+
                     {{-- ── GUEST: precio oculto + CTA de acceso ── --}}
                     <div class="price-auth-required">
                         <div class="price-auth-required-inner">

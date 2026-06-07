@@ -94,6 +94,16 @@ Route::post('email', [PaymentController::class, 'emailFormSend'])->name('email-f
 require __DIR__.'/auth.php';
 Route::get('flash-sale', [FlashSaleController::class, 'index'])->name('flash-sale');
 
+// ── COTIZACIONES FORMALES ────────────────────────────────────────────────────
+use App\Http\Controllers\Frontend\CotizacionController;
+
+Route::middleware(['auth'])->prefix('cotizacion')->as('cotizacion.')->group(function () {
+    Route::get('formulario',          [CotizacionController::class, 'formulario'])->name('formulario');
+    Route::post('formulario',         [CotizacionController::class, 'store'])->name('store');
+    Route::post('confirmar',          [CotizacionController::class, 'confirmar'])->name('confirmar');
+    Route::get('generada/{cotizacion}', [CotizacionController::class, 'generada'])->name('generada');
+});
+
 /**Products details */
 Route::controller(FrontendProductController::class)->group(function () {
     Route::get('products', 'productsIndex')->name('products.index');

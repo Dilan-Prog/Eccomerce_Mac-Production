@@ -486,6 +486,15 @@
                         Seguir comprando
                     </a>
 
+                    @if($itemCount > 0)
+                    <a href="{{ route('cotizacion.formulario') }}"
+                       class="checkout-btn"
+                       style="background:#F7941D;margin-bottom:0;">
+                        <i class="fas fa-file-invoice" style="font-size:13px;"></i>
+                        Generar Cotización Formal
+                    </a>
+                    @endif
+
                 </div>
 
                 <div class="b2b-cta-card">
