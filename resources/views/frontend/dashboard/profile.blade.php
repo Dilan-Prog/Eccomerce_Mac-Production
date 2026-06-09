@@ -542,27 +542,152 @@ table.dataTable tbody td { font-size:13px; color:var(--gris-texto); vertical-ali
 
                 {{-- ═══════════ PLAN B2B ═══════════ --}}
                 @if($activeTab === 'b2b')
-                <div class="profile-section-header">
-                    <h2>Plan B2B / Revendedor</h2>
-                    <p>Accede a precios especiales para revendedores y distribuidores</p>
+                @php $u = Auth::user(); @endphp
+                <div class="profile-section-header-row profile-section-header">
+                    <div>
+                        <h2>Información B2B / Empresarial</h2>
+                        <p>Datos de tu empresa para acceder a precios y condiciones especiales</p>
+                    </div>
+                    @if($u->account_type === 'b2b')
+                        @if($u->b2b_status === 'verified')
+                        <span style="display:inline-flex;align-items:center;gap:6px;background:var(--verde-claro);color:var(--verde-disponible);border:1px solid #BBF7D0;border-radius:999px;padding:5px 14px;font-size:12px;font-weight:700;">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="14" height="14"><polyline points="20 6 9 17 4 12"/></svg>
+                            Verificado
+                        </span>
+                        @else
+                        <span style="display:inline-flex;align-items:center;gap:6px;background:#FFFBEB;color:#92400E;border:1px solid #FDE68A;border-radius:999px;padding:5px 14px;font-size:12px;font-weight:700;">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="14" height="14"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                            Pendiente de verificación
+                        </span>
+                        @endif
+                    @endif
                 </div>
-                <div style="background:linear-gradient(135deg,var(--azul-oscuro) 0%,var(--azul-principal) 100%);color:var(--blanco);border-radius:12px;padding:28px;margin-bottom:24px;position:relative;overflow:hidden;">
-                    <div style="position:absolute;top:-30%;right:-5%;width:280px;height:280px;background:radial-gradient(circle,rgba(246,173,28,0.18) 0%,transparent 60%);pointer-events:none;"></div>
-                    <div style="position:relative;z-index:2;">
-                        <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:2px;color:var(--amarillo-destacado);margin-bottom:10px;">★ Programa de revendedores</div>
-                        <h3 style="color:var(--blanco);font-size:20px;margin:0 0 10px;">Accede a precios B2B exclusivos</h3>
-                        <p style="opacity:0.88;font-size:13px;margin:0 0 24px;line-height:1.65;max-width:480px;">Obtén descuentos de hasta 20% sobre precio público, línea de crédito empresarial, ingeniero dedicado y atención personalizada para tu empresa.</p>
-                        <a href="{{ route('contact') }}" class="mdn-btn mdn-btn-primary" style="display:inline-flex;background:var(--accent-cta);">Solicitar acceso B2B</a>
+
+                {{-- Banner beneficios --}}
+                <div style="background:linear-gradient(135deg,var(--azul-oscuro) 0%,var(--azul-principal) 100%);color:var(--blanco);border-radius:12px;padding:20px 24px;margin-bottom:24px;display:flex;align-items:center;gap:20px;flex-wrap:wrap;">
+                    <div style="flex:1;min-width:240px;">
+                        <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:2px;color:var(--amarillo-destacado);margin-bottom:6px;">★ Programa de revendedores</div>
+                        <p style="margin:0;font-size:13px;opacity:0.88;line-height:1.5;">Descuentos hasta 20%, crédito empresarial, ingeniero dedicado y cotizaciones con CFDI.</p>
+                    </div>
+                    <div style="display:flex;gap:16px;flex-shrink:0;flex-wrap:wrap;">
+                        @foreach([['Hasta 20%','Descuento B2B'],['30 días','Crédito'],['CFDI','Facturación']] as [$v,$l])
+                        <div style="text-align:center;">
+                            <div style="font-size:16px;font-weight:800;color:var(--amarillo-destacado);">{{ $v }}</div>
+                            <div style="font-size:11px;opacity:0.75;">{{ $l }}</div>
+                        </div>
+                        @endforeach
                     </div>
                 </div>
-                <div class="profile-info-grid">
-                    @foreach([['Descuento B2B','Hasta 20%'],['Crédito empresarial','30 días plazo'],['Ingeniero dedicado','Soporte prioritario'],['Cotizaciones','Con CFDI incluido']] as [$lbl,$val])
-                    <div class="profile-info-field">
-                        <span class="profile-info-label">{{ $lbl }}</span>
-                        <span class="profile-info-value">{{ $val }}</span>
+
+                {{-- Formulario B2B --}}
+                <form action="{{ route('user.profile.b2b.update') }}" method="POST" enctype="multipart/form-data">
+                    @csrf
+
+                    <div class="mdn-form-group">
+                        <label for="b2b-company">Nombre de empresa o razón social <span style="color:var(--rojo-error)">*</span></label>
+                        <input type="text" id="b2b-company" name="company" class="mdn-form-input {{ $errors->has('company') ? 'is-invalid' : '' }}"
+                               value="{{ old('company', $u->company) }}" placeholder="Ej. Industrias del Norte S.A. de C.V.">
+                        @error('company')<div class="mdn-form-error">{{ $message }}</div>@enderror
                     </div>
-                    @endforeach
-                </div>
+
+                    <div class="mdn-form-row">
+                        <div class="mdn-form-group" style="margin-bottom:0">
+                            <label for="b2b-rfc">RFC <span style="color:var(--rojo-error)">*</span></label>
+                            <input type="text" id="b2b-rfc" name="rfc" class="mdn-form-input {{ $errors->has('rfc') ? 'is-invalid' : '' }}"
+                                   value="{{ old('rfc', $u->rfc) }}" placeholder="ABC123456XYZ" maxlength="13"
+                                   style="text-transform:uppercase">
+                            <div class="mdn-form-help">13 caracteres · Validamos con SAT</div>
+                            @error('rfc')<div class="mdn-form-error">{{ $message }}</div>@enderror
+                        </div>
+                        <div class="mdn-form-group" style="margin-bottom:0">
+                            <label for="b2b-tipo">Tipo de cliente <span style="color:var(--rojo-error)">*</span></label>
+                            <select id="b2b-tipo" name="tipo_cliente" class="mdn-form-select {{ $errors->has('tipo_cliente') ? 'is-invalid' : '' }}">
+                                <option value="">Selecciona una opción</option>
+                                <option value="revendedor"  {{ old('tipo_cliente', $u->tipo_cliente) === 'revendedor'  ? 'selected' : '' }}>Revendedor</option>
+                                <option value="tecnico"     {{ old('tipo_cliente', $u->tipo_cliente) === 'tecnico'     ? 'selected' : '' }}>Técnico / Integrador</option>
+                                <option value="empresa"     {{ old('tipo_cliente', $u->tipo_cliente) === 'empresa'     ? 'selected' : '' }}>Empresa usuario final</option>
+                                <option value="contratista" {{ old('tipo_cliente', $u->tipo_cliente) === 'contratista' ? 'selected' : '' }}>Contratista</option>
+                            </select>
+                            @error('tipo_cliente')<div class="mdn-form-error">{{ $message }}</div>@enderror
+                        </div>
+                    </div>
+
+                    {{-- CSF Upload --}}
+                    <div class="mdn-form-group" style="margin-top:20px">
+                        <label>Constancia de Situación Fiscal
+                            <span style="color:var(--gris-claro-texto);font-weight:500;font-size:12px;">(recomendado)</span>
+                        </label>
+
+                        @if($u->csf_path)
+                        <div style="display:flex;align-items:center;gap:10px;padding:12px 14px;border:1.5px solid #BBF7D0;border-radius:8px;background:var(--verde-claro);margin-bottom:10px;">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20" style="color:var(--verde-disponible);flex-shrink:0;"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                            <span style="font-size:13px;font-weight:600;color:var(--verde-disponible);flex:1;">CSF cargado</span>
+                            <a href="{{ Storage::url($u->csf_path) }}" target="_blank" style="font-size:12px;color:var(--azul-principal);font-weight:700;text-decoration:none;">Ver archivo</a>
+                        </div>
+                        <div class="mdn-form-help" style="margin-bottom:8px;">Para reemplazarlo sube un nuevo archivo:</div>
+                        @endif
+
+                        <div id="b2b-csf-drop" style="border:2px dashed var(--gris-borde);border-radius:10px;padding:24px;text-align:center;background:var(--gris-fondo);cursor:pointer;transition:all 0.2s;">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="36" height="36" style="margin:0 auto 10px;display:block;color:var(--gris-claro-texto);"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                            <p style="font-size:13px;font-weight:700;color:var(--azul-principal);margin:0 0 4px;">
+                                Arrastra tu CSF aquí o <span style="color:var(--accent-cta);text-decoration:underline;cursor:pointer;" onclick="document.getElementById('b2b-csf-input').click()">selecciona un archivo</span>
+                            </p>
+                            <p style="font-size:12px;color:var(--gris-claro-texto);margin:0 0 10px;">Sube tu Constancia de Situación Fiscal actualizada</p>
+                            <span style="display:inline-flex;align-items:center;gap:5px;background:var(--blanco);border:1.5px solid var(--gris-borde);border-radius:6px;padding:5px 12px;font-size:11px;font-weight:700;color:var(--gris-texto);">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/></svg>
+                                Solo PDF · Máx. 5 MB
+                            </span>
+                            <div id="b2b-csf-name" style="margin-top:8px;font-size:12px;color:var(--verde-disponible);font-weight:600;display:none;"></div>
+                        </div>
+                        <input type="file" id="b2b-csf-input" name="constancia_fiscal" accept="application/pdf" style="display:none">
+                        @error('constancia_fiscal')<div class="mdn-form-error">{{ $message }}</div>@enderror
+
+                        <div style="margin-top:10px;display:flex;align-items:flex-start;gap:10px;padding:12px 14px;background:#EFF6FF;border:1px solid #BFDBFE;border-radius:8px;">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18" style="color:#3B82F6;flex-shrink:0;margin-top:1px;"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                            <p style="font-size:12px;color:#1E40AF;margin:0;line-height:1.5;"><strong>Subir tu CSF acelera tu validación de 48h a 24h.</strong> Tu documento se almacena cifrado. Obténla en <strong>sat.gob.mx</strong>.</p>
+                        </div>
+                    </div>
+
+                    <div class="mdn-form-row">
+                        <div class="mdn-form-group" style="margin-bottom:0">
+                            <label for="b2b-giro">Giro industrial
+                                <span style="color:var(--gris-claro-texto);font-weight:500;font-size:12px;">(opcional)</span>
+                            </label>
+                            <select id="b2b-giro" name="giro_industrial" class="mdn-form-select">
+                                <option value="">Selecciona</option>
+                                @foreach(['alimentaria'=>'Alimentaria','petroquimica'=>'Petroquímica','farmaceutica'=>'Farmacéutica','automotriz'=>'Automotriz','energia'=>'Energía','calderas'=>'Calderas y vapor','otro'=>'Otro'] as $val => $label)
+                                <option value="{{ $val }}" {{ old('giro_industrial', $u->giro_industrial) === $val ? 'selected' : '' }}>{{ $label }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="mdn-form-group" style="margin-bottom:0">
+                            <label for="b2b-volumen">Volumen estimado mensual
+                                <span style="color:var(--gris-claro-texto);font-weight:500;font-size:12px;">(opcional)</span>
+                            </label>
+                            <select id="b2b-volumen" name="volumen_mensual" class="mdn-form-select">
+                                <option value="">Selecciona</option>
+                                @foreach(['menos_20k'=>'Menos de $20,000 MXN','20k_100k'=>'$20,000 – $100,000 MXN','100k_500k'=>'$100,000 – $500,000 MXN','mas_500k'=>'Más de $500,000 MXN'] as $val => $label)
+                                <option value="{{ $val }}" {{ old('volumen_mensual', $u->volumen_mensual) === $val ? 'selected' : '' }}>{{ $label }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="mdn-form-group" style="margin-top:18px">
+                        <label for="b2b-ciudad">Ciudad <span style="color:var(--rojo-error)">*</span></label>
+                        <input type="text" id="b2b-ciudad" name="ciudad" class="mdn-form-input {{ $errors->has('ciudad') ? 'is-invalid' : '' }}"
+                               value="{{ old('ciudad', $u->ciudad) }}" placeholder="Ej. Monterrey, N.L.">
+                        @error('ciudad')<div class="mdn-form-error">{{ $message }}</div>@enderror
+                    </div>
+
+                    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:24px;">
+                        <button type="submit" class="mdn-btn mdn-btn-primary">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                            Guardar información B2B
+                        </button>
+                        <a href="{{ route('user.profile') }}?tab=b2b" class="mdn-btn mdn-btn-ghost">Cancelar</a>
+                    </div>
+                </form>
                 @endif
 
                 {{-- ═══════════ MIS PEDIDOS ═══════════ --}}
@@ -771,6 +896,46 @@ table.dataTable tbody td { font-size:13px; color:var(--gris-texto); vertical-ali
     document.querySelectorAll('.mdn-toggle').forEach(function (btn) {
         btn.addEventListener('click', function () { this.classList.toggle('on'); });
     });
+
+    /* ─── CSF DRAG & DROP ─────────────────────────────── */
+    (function () {
+        var drop  = document.getElementById('b2b-csf-drop');
+        var input = document.getElementById('b2b-csf-input');
+        var label = document.getElementById('b2b-csf-name');
+        if (!drop || !input) return;
+
+        function showFile(file) {
+            if (!file) return;
+            label.textContent = '✓ ' + file.name;
+            label.style.display = 'block';
+            drop.style.borderColor = 'var(--verde-disponible)';
+            drop.style.background  = 'var(--verde-claro)';
+        }
+
+        drop.addEventListener('dragover', function (e) {
+            e.preventDefault();
+            drop.style.borderColor = 'var(--azul-principal)';
+        });
+        drop.addEventListener('dragleave', function () {
+            drop.style.borderColor = 'var(--gris-borde)';
+        });
+        drop.addEventListener('drop', function (e) {
+            e.preventDefault();
+            var files = e.dataTransfer.files;
+            if (files.length) {
+                var dt = new DataTransfer();
+                dt.items.add(files[0]);
+                input.files = dt.files;
+                showFile(files[0]);
+            }
+        });
+        input.addEventListener('change', function () {
+            if (this.files.length) showFile(this.files[0]);
+        });
+        drop.addEventListener('click', function (e) {
+            if (e.target.tagName !== 'SPAN' && e.target.tagName !== 'A') input.click();
+        });
+    })();
 
     /* ─── DATATABLES (pedidos) ─────────────────────────── */
     @if($activeTab === 'orders')

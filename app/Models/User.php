@@ -26,6 +26,13 @@ class User extends Authenticatable
         'username',
         'company',
         'rfc',
+        'account_type',
+        'tipo_cliente',
+        'giro_industrial',
+        'volumen_mensual',
+        'ciudad',
+        'csf_path',
+        'b2b_status',
     ];
 
     /**

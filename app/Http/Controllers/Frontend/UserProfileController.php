@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Models\UserAddress;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class UserProfileController extends Controller
 {
@@ -51,6 +52,43 @@ class UserProfileController extends Controller
 
             toastr()->success('Contraseña Actualizada Correctamente');
             return redirect()->back();
+    }
+
+    public function updateB2bInfo(Request $request){
+
+        $request->validate([
+            'company'          => ['required', 'string', 'max:255'],
+            'rfc'              => ['required', 'string', 'size:13'],
+            'tipo_cliente'     => ['required', 'in:revendedor,tecnico,empresa,contratista'],
+            'giro_industrial'  => ['nullable', 'string', 'max:100'],
+            'volumen_mensual'  => ['nullable', 'string', 'max:50'],
+            'ciudad'           => ['required', 'string', 'max:100'],
+            'constancia_fiscal'=> ['nullable', 'file', 'mimes:pdf', 'max:5120'],
+        ]);
+
+        /** @var User $user */
+        $user = Auth::user();
+
+        $user->company         = $request->company;
+        $user->rfc             = strtoupper($request->rfc);
+        $user->tipo_cliente    = $request->tipo_cliente;
+        $user->giro_industrial = $request->giro_industrial;
+        $user->volumen_mensual = $request->volumen_mensual;
+        $user->ciudad          = $request->ciudad;
+        $user->account_type    = 'b2b';
+
+        if ($request->hasFile('constancia_fiscal')) {
+            if ($user->csf_path) {
+                Storage::disk('public')->delete($user->csf_path);
+            }
+            $user->csf_path   = $request->file('constancia_fiscal')->store('csf', 'public');
+            $user->b2b_status = 'pending';
+        }
+
+        $user->save();
+
+        toastr()->success('Información B2B actualizada correctamente');
+        return redirect()->route('user.profile', ['tab' => 'b2b']);
     }
 
 }
