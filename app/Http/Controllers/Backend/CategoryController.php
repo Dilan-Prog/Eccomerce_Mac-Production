@@ -123,6 +123,8 @@ class CategoryController extends Controller
         $category->status = $request->status == 'true' ? 1 : 0;
         $category->save();
 
+        Cache::forget('nav_categories');
+
         return response(['message' =>'Status Changed Successfully!']);
 
     }

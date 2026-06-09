@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\Models\ChildCategory;
 use App\Models\Subcategory;
 use App\Models\Category;
+use Illuminate\Support\Facades\Cache;
 use Str;
 
 class SubcategoryController extends Controller
@@ -48,6 +49,7 @@ class SubcategoryController extends Controller
         $subCategory->slug = Str::slug($request->name);
         $subCategory->status = $request->status;
         $subCategory->save();
+        Cache::forget('nav_categories');
         toastr('Sub Categoria Creada Con exito');
         return redirect()->route('admin.sub-category.index');
     }
@@ -90,6 +92,7 @@ class SubcategoryController extends Controller
         $subCategory->slug = Str::slug($request->name);
         $subCategory->status = $request->status;
         $subCategory->save();
+        Cache::forget('nav_categories');
         toastr('Sub Categoria Actualizada Con exito');
         return redirect()->route('admin.sub-category.index');
 
@@ -108,6 +111,7 @@ class SubcategoryController extends Controller
             return response(['status' => 'error', 'message' => 'Esta Categoria contiene Sub Categorias, Para eliminar esta Categoria elimina las Sub Categorias primero.']);     
         }
         $subCategory->delete();
+        Cache::forget('nav_categories');
 
         return response(['status' => 'success', 'message' => 'Deleted Successfully!']);
     }
@@ -116,6 +120,7 @@ class SubcategoryController extends Controller
         $category = Subcategory::findOrFail($request->id);
         $category->status = $request->status == 'true' ? 1 : 0;
         $category->save();
+        Cache::forget('nav_categories');
 
         return response(['message' =>'Status Changed Successfully!']);
     }

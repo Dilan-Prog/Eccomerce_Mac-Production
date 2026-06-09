@@ -9,6 +9,7 @@ use App\Models\ChildCategory;
 use App\Models\Subcategory;
 use App\Models\Category;
 use App\Models\Product;
+use Illuminate\Support\Facades\Cache;
 use Str;
 
 class ChildCategoryController extends Controller
@@ -58,6 +59,7 @@ class ChildCategoryController extends Controller
         $childCategory->slug = Str::slug($request->name);
         $childCategory->status = $request->status;
         $childCategory->save();
+        Cache::forget('nav_categories');
         toastr('Categoria Secundaria Creada Con Exito');
         return redirect()->route('admin.child-category.index');
 
@@ -102,6 +104,7 @@ class ChildCategoryController extends Controller
         $childCategory->slug = Str::slug($request->name);
         $childCategory->status = $request->status;
         $childCategory->save();
+        Cache::forget('nav_categories');
         toastr('Child Categoria Actualizada Con Exito');
         return redirect()->route('admin.child-category.index');
     }
@@ -116,6 +119,7 @@ class ChildCategoryController extends Controller
             return response(['status' => 'error', 'message' => 'This item contain relation can\'t delete it.']);
         }
         $childCategory->delete();
+        Cache::forget('nav_categories');
 
         return response(['status' => 'success', 'message' => 'Deleted Successfully!']);
     }
@@ -124,6 +128,7 @@ class ChildCategoryController extends Controller
         $category = ChildCategory::findOrFail($request->id);
         $category->status = $request->status == 'true' ? 1 : 0;
         $category->save();
+        Cache::forget('nav_categories');
 
         return response(['message' =>'Status Changed Successfully!']);
     }
