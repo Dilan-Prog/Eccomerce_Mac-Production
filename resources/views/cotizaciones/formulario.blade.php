@@ -190,7 +190,7 @@
 
                 {{-- CAMPOS PERSONA FÍSICA --}}
                 <div id="campos-fisica" class="{{ old('tipo_persona') !== 'fisica' ? 'hidden' : '' }}">
-                    <div class="form-group">
+                    <div class="form-group">`
                         <label>CURP <span class="req">*</span></label>
                         <input type="text" name="curp" class="form-input"
                                value="{{ old('curp') }}"
@@ -244,25 +244,46 @@
 @push('scripts')
 <script>
 (function () {
-    // Toggle tipo persona
-    var btns   = document.querySelectorAll('.cot-tipo-btn');
-    var input  = document.getElementById('tipo_persona_input');
-    var emp    = document.getElementById('campos-empresa');
-    var fis    = document.getElementById('campos-fisica');
+    var btns       = document.querySelectorAll('.cot-tipo-btn');
+    var tipoInput  = document.getElementById('tipo_persona_input');
+    var emp        = document.getElementById('campos-empresa');
+    var fis        = document.getElementById('campos-fisica');
+    var rfcEmp     = document.getElementById('rfc_empresa');
+    var rfcFis     = document.getElementById('rfc_fisica');
+
+    function activarTipo(tipo) {
+        btns.forEach(function (b) { b.classList.remove('active'); });
+        document.querySelector('.cot-tipo-btn[data-tipo="' + tipo + '"]').classList.add('active');
+        tipoInput.value = tipo;
+
+        if (tipo === 'empresa') {
+            emp.classList.remove('hidden');
+            fis.classList.add('hidden');
+            rfcEmp.setAttribute('name', 'rfc');
+            rfcFis.removeAttribute('name');
+        } else {
+            fis.classList.remove('hidden');
+            emp.classList.add('hidden');
+            rfcFis.setAttribute('name', 'rfc');
+            rfcEmp.removeAttribute('name');
+        }
+    }
+
+    // Estado inicial según old() del servidor
+    activarTipo(tipoInput.value || 'empresa');
 
     btns.forEach(function (btn) {
-        btn.addEventListener('click', function () {
-            btns.forEach(function (b) { b.classList.remove('active'); });
-            btn.classList.add('active');
-            var tipo = btn.dataset.tipo;
-            input.value = tipo;
-            if (tipo === 'empresa') {
-                emp.classList.remove('hidden');
-                fis.classList.add('hidden');
-            } else {
-                fis.classList.remove('hidden');
-                emp.classList.add('hidden');
-            }
+        btn.addEventListener('click', function () { activarTipo(btn.dataset.tipo); });
+    });
+
+    // Sanitización: mayúsculas y sin espacios en RFC y CURP
+    [rfcEmp, rfcFis, document.querySelector('input[name="curp"]')].forEach(function (el) {
+        if (!el) return;
+        el.addEventListener('input', function () {
+            this.value = this.value.replace(/\s/g, '').toUpperCase();
+        });
+        el.addEventListener('keydown', function (e) {
+            if (e.key === ' ') e.preventDefault();
         });
     });
 
