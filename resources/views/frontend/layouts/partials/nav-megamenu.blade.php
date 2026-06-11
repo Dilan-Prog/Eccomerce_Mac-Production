@@ -73,7 +73,7 @@
                                         <ul class="mega-col-items">
                                             @foreach($sub->childCategories->take(6) as $child)
                                             <li>
-                                                <a href="{{ route('products.index', ['subcategory' => $child->slug]) }}">
+                                                <a href="{{ route('products.index', ['childcategory' => $child->slug]) }}">
                                                     {{ $child->name }}
                                                 </a>
                                             </li>
