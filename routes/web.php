@@ -141,6 +141,7 @@ Route::group(['middleware' => ['auth','verified'], 'prefix' => 'user', 'as' => '
     Route::put('profile',[UserProfileController::class,'updateProfile'])->name('profile.update');//Update user
     Route::post('profile',[UserProfileController::class,'updatePassword'])->name('profile.update.password');//Update password
     Route::post('profile/b2b',[UserProfileController::class,'updateB2bInfo'])->name('profile.b2b.update');//Update B2B info
+    Route::get('profile/csf/view',[UserProfileController::class,'viewCsf'])->name('profile.csf.view');//View own CSF
     /**User Address */
     Route::resource('address', UserAddressController::class);
 

@@ -26,7 +26,7 @@
                     </div>
                 @endif
 
-                {{-- Botones Social Login (solo UI) --}}
+                {{-- Botones Social Login (solo UI)
                 <div class="social-buttons">
                     <button type="button" class="social-btn" aria-label="Continuar con Google">
                         <svg class="social-btn__icon" viewBox="0 0 24 24" aria-hidden="true">
@@ -45,7 +45,7 @@
                     </button>
                 </div>
 
-                <div class="auth-divider"><span class="auth-divider__text">O continúa con email </span></div>
+                <div class="auth-divider"><span class="auth-divider__text">O continúa con email </span></div> --}}
 
                 {{-- Formulario de Login --}}
                 <form id="login-form" method="POST" action="{{ route('login') }}" novalidate>

@@ -615,14 +615,18 @@ table.dataTable tbody td { font-size:13px; color:var(--gris-texto); vertical-ali
                     {{-- CSF Upload --}}
                     <div class="mdn-form-group" style="margin-top:20px">
                         <label>Constancia de Situación Fiscal
-                            <span style="color:var(--gris-claro-texto);font-weight:500;font-size:12px;">(recomendado)</span>
+                            @if(!Auth::user()->csf_path)
+                                <span style="color:var(--rojo-error)">*</span>
+                            @else
+                                <span style="color:var(--gris-claro-texto);font-weight:500;font-size:12px;">(actualizar)</span>
+                            @endif
                         </label>
 
                         @if($u->csf_path)
                         <div style="display:flex;align-items:center;gap:10px;padding:12px 14px;border:1.5px solid #BBF7D0;border-radius:8px;background:var(--verde-claro);margin-bottom:10px;">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20" style="color:var(--verde-disponible);flex-shrink:0;"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
                             <span style="font-size:13px;font-weight:600;color:var(--verde-disponible);flex:1;">CSF cargado</span>
-                            <a href="{{ Storage::url($u->csf_path) }}" target="_blank" style="font-size:12px;color:var(--azul-principal);font-weight:700;text-decoration:none;">Ver archivo</a>
+                            <a href="{{ route('user.profile.csf.view') }}" target="_blank" style="font-size:12px;color:var(--azul-principal);font-weight:700;text-decoration:none;">Ver archivo</a>
                         </div>
                         <div class="mdn-form-help" style="margin-bottom:8px;">Para reemplazarlo sube un nuevo archivo:</div>
                         @endif

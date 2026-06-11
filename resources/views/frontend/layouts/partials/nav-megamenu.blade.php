@@ -41,17 +41,6 @@
 
                             {{-- SIDEBAR IZQUIERDO --}}
                             <div class="mega-sidebar {{ $loop->last ? 'brand' : '' }}">
-
-                                <div class="mega-sidebar-icon" aria-hidden="true">
-                                    @if($category->icon)
-                                        <i class="{{ $category->icon }}"></i>
-                                    @else
-                                        <svg viewBox="0 0 24 24" fill="currentColor" width="32" height="32">
-                                            <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"/>
-                                        </svg>
-                                    @endif
-                                </div>
-
                                 @if($loop->last)
                                     <span class="mega-sidebar-brand-badge">Dist. autorizado</span>
                                 @endif

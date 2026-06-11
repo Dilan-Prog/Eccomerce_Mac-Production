@@ -43,6 +43,9 @@ Route::post('profile/update/password',[ProfileController::class, 'updatePassword
 /** coustomer list routes */
 Route::get('customer', [CustomerListController::class, 'index'])->name('customer.index');
 Route::put('customer/status-change', [CustomerListController::class, 'changeStatus'])->name('customer.status-change');
+Route::post('customer/{user}/csf', [CustomerListController::class, 'uploadCsf'])->name('customer.csf.upload');
+Route::get('customer/{user}/csf/view', [CustomerListController::class, 'viewCsf'])->name('customer.csf.view');
+Route::put('customer/{user}/b2b-status', [CustomerListController::class, 'b2bStatus'])->name('customer.b2b.status');
 
 /**Admin List */
 Route::get('admin-list', [AdminListController::class, 'index'])->name('admin-list.index');

@@ -399,6 +399,7 @@
                         <div class="payment-method-list">
 
                             {{-- ─ Tarjeta / Stripe ─ --}}
+                            @if($stripeSetting)
                             <label class="payment-option" id="pay-opt-stripe">
                                 <input type="radio" name="payment_radio" value="stripe">
                                 <div class="payment-radio"></div>
@@ -407,7 +408,12 @@
                                 </div>
                                 <div class="payment-option-info">
                                     <div class="payment-option-name">Tarjeta de crédito / débito</div>
-                                    <div class="payment-option-desc">Visa, Mastercard — pago seguro con Stripe</div>
+                                    <div class="payment-option-desc">
+                                        Visa, Mastercard — pago seguro con Stripe
+                                        @if($stripeSetting->mode == 0)
+                                            <span style="font-size:10px;color:#B45309;font-weight:700;">[SANDBOX]</span>
+                                        @endif
+                                    </div>
                                 </div>
                             </label>
 
@@ -426,8 +432,10 @@
                                     </p>
                                 </div>
                             </div>
+                            @endif
 
                             {{-- ─ PayPal ─ --}}
+                            @if($paypalInfo)
                             <label class="payment-option" id="pay-opt-paypal">
                                 <input type="radio" name="payment_radio" value="paypal">
                                 <div class="payment-radio"></div>
@@ -436,7 +444,12 @@
                                 </div>
                                 <div class="payment-option-info">
                                     <div class="payment-option-name">PayPal</div>
-                                    <div class="payment-option-desc">Paga con tu cuenta PayPal de forma segura</div>
+                                    <div class="payment-option-desc">
+                                        Paga con tu cuenta PayPal de forma segura
+                                        @if($paypalInfo->mode == 0)
+                                            <span style="font-size:10px;color:#B45309;font-weight:700;">[SANDBOX]</span>
+                                        @endif
+                                    </div>
                                 </div>
                             </label>
 
@@ -447,6 +460,7 @@
                                     <div id="paypal-button-container"></div>
                                 </div>
                             </div>
+                            @endif
 
                             {{-- ─ SPEI / BBVA ─ --}}
                             <label class="payment-option" id="pay-opt-spei">
@@ -668,9 +682,9 @@
 <script src="https://js.stripe.com/v3/"></script>
 @endif
 
-{{-- PayPal SDK --}}
+{{-- PayPal SDK: sandbox usa el mismo endpoint, el client_id determina el entorno --}}
 @if($paypalInfo)
-<script src="https://www.paypal.com/sdk/js?client-id={{ $paypalInfo->client_id }}&currency=MXN" defer></script>
+<script src="https://www.paypal.com/sdk/js?client-id={{ $paypalInfo->client_id }}&currency={{ $paypalInfo->currency_name }}&intent=capture{{ $paypalInfo->mode == 0 ? '&buyer-country=MX' : '' }}" defer></script>
 @endif
 
 @vite(['resources/js/checkout.js'])
@@ -707,21 +721,23 @@
 
 // ── STRIPE SETUP ────────────────────────────────────────────────────
 @if($stripeSetting)
-var stripe      = Stripe("{{ $stripeSetting->client_id }}");
-var stripeElems = stripe.elements();
-var cardElement = stripeElems.create('card', {
-    style: {
-        base: { fontSize: '14px', color: '#1A202C', '::placeholder': { color: '#A0AEC0' } },
-        invalid: { color: '#DC2626' }
-    }
-});
-// Monte se realiza cuando el panel es visible (lo hacemos en click del método)
-var stripeCardMounted = false;
-
-cardElement.on('change', function (event) {
-    var errDiv = document.getElementById('stripe-card-errors');
-    errDiv.textContent = event.error ? event.error.message : '';
-});
+var stripe = null, stripeElems = null, cardElement = null, stripeCardMounted = false;
+try {
+    stripe      = Stripe("{{ $stripeSetting->client_id }}");
+    stripeElems = stripe.elements();
+    cardElement = stripeElems.create('card', {
+        style: {
+            base: { fontSize: '14px', color: '#1A202C', '::placeholder': { color: '#A0AEC0' } },
+            invalid: { color: '#DC2626' }
+        }
+    });
+    cardElement.on('change', function (event) {
+        var errDiv = document.getElementById('stripe-card-errors');
+        errDiv.textContent = event.error ? event.error.message : '';
+    });
+} catch (e) {
+    console.warn('Stripe no disponible (requiere HTTPS):', e.message);
+}
 @endif
 
 // ── PAYPAL BUTTONS SETUP ────────────────────────────────────────────
@@ -864,7 +880,7 @@ $(document).ready(function () {
             $('#stripe-detail-panel').addClass('active');
             @if($stripeSetting)
             // Mount Stripe Elements on first open
-            if (!stripeCardMounted) {
+            if (cardElement && !stripeCardMounted) {
                 cardElement.mount('#stripe-card-element');
                 stripeCardMounted = true;
             }
@@ -986,6 +1002,12 @@ $(document).ready(function () {
 
             } else if (method === 'stripe') {
                 @if($stripeSetting)
+                if (!stripe || !cardElement) {
+                    toastr.error('Pago con tarjeta requiere HTTPS. Usa otro método de pago en local.');
+                    $btn.html('<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="16" height="16"><path d="M5 12h14M12 5l7 7-7 7"/></svg> Realizar pedido')
+                        .css({'opacity':'','pointer-events':''});
+                    return;
+                }
                 // Create Stripe token, then submit Stripe form
                 stripe.createToken(cardElement).then(function (result) {
                     if (result.error) {
