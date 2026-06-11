@@ -1,4 +1,4 @@
-@extends('layouts.guest')
+@extends('frontend.layouts.master')
 
 @section('title', 'Crear Cuenta')
 
@@ -93,7 +93,7 @@
                 @endif
 
                 {{-- Social login (solo UI) --}}
-                <div class="social-buttons">
+                {{-- <div class="social-buttons">
                     <button type="button" class="social-btn" aria-label="Continuar con Google">
                         <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
                             <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
@@ -107,9 +107,9 @@
                         <svg viewBox="0 0 24 24" width="18" height="18" fill="#1877F2" aria-hidden="true"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
                         Facebook
                     </button>
-                </div>
+                </div> --}}
 
-                <div class="auth-divider"><span>O regístrate con tu email</span></div>
+                {{-- <div class="auth-divider"><span>O regístrate con tu email</span></div> --}}
 
                 {{-- ── FORM ── --}}
                 <form method="POST" action="{{ route('register') }}" enctype="multipart/form-data" novalidate>
@@ -179,84 +179,7 @@
                             <span class="form-error" role="alert">{{ $message }}</span>
                         @enderror
                     </div>
-
-                    {{-- Contraseñas --}}
                     <div class="form-row">
-                        <div class="form-group">
-                            <label for="password">
-                                Contraseña <span class="required" aria-hidden="true">*</span>
-                            </label>
-                            <div class="form-input-wrap">
-                                <input
-                                    id="password"
-                                    type="password"
-                                    name="password"
-                                    class="form-input form-input--icon-right @error('password') is-invalid @enderror"
-                                    placeholder="Mínimo 8 caracteres"
-                                    required
-                                    autocomplete="new-password"
-                                    data-strength
-                                >
-                                <button type="button" class="input-icon-btn" data-toggle-password aria-label="Mostrar contraseña">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-                                </button>
-                            </div>
-                            <div class="password-strength" aria-hidden="true">
-                                <div class="strength-bar"></div>
-                                <div class="strength-bar"></div>
-                                <div class="strength-bar"></div>
-                            </div>
-                            <div class="form-help">Usa al menos 8 caracteres con números y símbolos</div>
-                            @error('password')
-                                <span class="form-error" role="alert">{{ $message }}</span>
-                            @enderror
-                        </div>
-
-                        <div class="form-group">
-                            <label for="password_confirmation">
-                                Confirmar contraseña <span class="required" aria-hidden="true">*</span>
-                            </label>
-                            <div class="form-input-wrap">
-                                <input
-                                    id="password_confirmation"
-                                    type="password"
-                                    name="password_confirmation"
-                                    class="form-input form-input--icon-right"
-                                    placeholder="Repite tu contraseña"
-                                    required
-                                    autocomplete="new-password"
-                                >
-                                <button type="button" class="input-icon-btn" data-toggle-password aria-label="Mostrar contraseña">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
-                    {{-- ══ CAMPOS B2B (ocultos por defecto, visibles con .b2b-active en form-container) ══ --}}
-                    <div class="b2b-fields">
-
-                        <div class="form-divider"><span>Datos de tu empresa</span></div>
-
-                        <div class="form-group">
-                            <label for="empresa">
-                                Nombre de empresa o razón social <span class="required" aria-hidden="true">*</span>
-                            </label>
-                            <input
-                                id="empresa"
-                                type="text"
-                                name="empresa"
-                                class="form-input @error('empresa') is-invalid @enderror"
-                                value="{{ old('empresa') }}"
-                                placeholder="Ej. Industrias del Norte S.A. de C.V."
-                                autocomplete="organization"
-                            >
-                            @error('empresa')
-                                <span class="form-error" role="alert">{{ $message }}</span>
-                            @enderror
-                        </div>
-
-                        <div class="form-row">
                             <div class="form-group">
                                 <label for="rfc">
                                     RFC <span class="required" aria-hidden="true">*</span>
@@ -298,7 +221,7 @@
                         <div class="form-group">
                             <label>
                                 Constancia de Situación Fiscal
-                                <span class="optional">(recomendado)</span>
+                                <span class="required" aria-hidden="true">*</span>
                             </label>
 
                             <div class="file-upload-wrapper">
@@ -408,8 +331,84 @@
                             @enderror
                         </div>
 
+                    {{-- Contraseñas --}}
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="password">
+                                Contraseña <span class="required" aria-hidden="true">*</span>
+                            </label>
+                            <div class="form-input-wrap">
+                                <input
+                                    id="password"
+                                    type="password"
+                                    name="password"
+                                    class="form-input form-input--icon-right @error('password') is-invalid @enderror"
+                                    placeholder="Mínimo 8 caracteres"
+                                    required
+                                    autocomplete="new-password"
+                                    data-strength
+                                >
+                                <button type="button" class="input-icon-btn" data-toggle-password aria-label="Mostrar contraseña">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                                </button>
+                            </div>
+                            <div class="password-strength" aria-hidden="true">
+                                <div class="strength-bar"></div>
+                                <div class="strength-bar"></div>
+                                <div class="strength-bar"></div>
+                            </div>
+                            <div class="form-help">Usa al menos 8 caracteres con números y símbolos</div>
+                            @error('password')
+                                <span class="form-error" role="alert">{{ $message }}</span>
+                            @enderror
+                        </div>
+
+                        <div class="form-group">
+                            <label for="password_confirmation">
+                                Confirmar contraseña <span class="required" aria-hidden="true">*</span>
+                            </label>
+                            <div class="form-input-wrap">
+                                <input
+                                    id="password_confirmation"
+                                    type="password"
+                                    name="password_confirmation"
+                                    class="form-input form-input--icon-right"
+                                    placeholder="Repite tu contraseña"
+                                    required
+                                    autocomplete="new-password"
+                                >
+                                <button type="button" class="input-icon-btn" data-toggle-password aria-label="Mostrar contraseña">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                                </button>
+                            </div>
+                        </div>
                     </div>
-                    {{-- ══ FIN CAMPOS B2B ══ --}}
+
+                    {{-- ══ CAMPO EXCLUSIVO B2B (solo visible al seleccionar cuenta B2B) ══ --}}
+                    <div class="b2b-fields">
+
+                        <div class="form-divider"><span>Datos de tu empresa</span></div>
+
+                        <div class="form-group">
+                            <label for="empresa">
+                                Nombre de empresa o razón social <span class="required" aria-hidden="true">*</span>
+                            </label>
+                            <input
+                                id="empresa"
+                                type="text"
+                                name="empresa"
+                                class="form-input @error('empresa') is-invalid @enderror"
+                                value="{{ old('empresa') }}"
+                                placeholder="Ej. Industrias del Norte S.A. de C.V."
+                                autocomplete="organization"
+                            >
+                            @error('empresa')
+                                <span class="form-error" role="alert">{{ $message }}</span>
+                            @enderror
+                        </div>
+
+                    </div>
+                    {{-- ══ FIN CAMPO B2B ══ --}}
 
                     {{-- Checkboxes --}}
                     <div class="form-checkbox">

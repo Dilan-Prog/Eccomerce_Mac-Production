@@ -19,8 +19,8 @@ class CheckOutController extends Controller
         $addresses      = UserAddress::where('user_id', Auth::user()->id)->get();
         $shippingMethod = ShippingRule::where('status', 1)->get();
         $transferInfo   = Transfer::first();
-        $paypalInfo     = PaypalSetting::first();
-        $stripeSetting  = StripeSetting::first();
+        $paypalInfo     = PaypalSetting::where('status', 1)->first();
+        $stripeSetting  = StripeSetting::where('status', 1)->first();
 
         return view('frontend.pages.checkout', compact(
             'addresses', 'shippingMethod', 'transferInfo', 'paypalInfo', 'stripeSetting'

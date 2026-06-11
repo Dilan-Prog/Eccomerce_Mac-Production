@@ -54,6 +54,19 @@ class UserProfileController extends Controller
             return redirect()->back();
     }
 
+    public function viewCsf()
+    {
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+
+        abort_unless($user->csf_path && Storage::exists($user->csf_path), 404);
+
+        return Storage::response($user->csf_path, null, [
+            'Content-Type'        => 'application/pdf',
+            'Content-Disposition' => 'inline',
+        ]);
+    }
+
     public function updateB2bInfo(Request $request){
 
         $request->validate([
@@ -63,7 +76,7 @@ class UserProfileController extends Controller
             'giro_industrial'  => ['nullable', 'string', 'max:100'],
             'volumen_mensual'  => ['nullable', 'string', 'max:50'],
             'ciudad'           => ['required', 'string', 'max:100'],
-            'constancia_fiscal'=> ['nullable', 'file', 'mimes:pdf', 'max:5120'],
+            'constancia_fiscal'=> [Auth::user()->csf_path ? 'nullable' : 'required', 'file', 'mimes:pdf', 'max:5120'],
         ]);
 
         /** @var User $user */
@@ -79,9 +92,9 @@ class UserProfileController extends Controller
 
         if ($request->hasFile('constancia_fiscal')) {
             if ($user->csf_path) {
-                Storage::disk('public')->delete($user->csf_path);
+                Storage::delete($user->csf_path);
             }
-            $user->csf_path   = $request->file('constancia_fiscal')->store('csf', 'public');
+            $user->csf_path   = $request->file('constancia_fiscal')->store('csf');
             $user->b2b_status = 'pending';
         }
 

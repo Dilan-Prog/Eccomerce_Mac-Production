@@ -142,14 +142,9 @@
         margin: 8px;
     }
 
-    /* Hero section (from master.blade.php inline styles — reinforced here) */
-    .hero-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .hero-card {
-        display: none;
-    }
+    /* Hero section responsive overrides */
+    .hero-stats-bar { flex-wrap: wrap; }
+    .hero-stat-item { flex: 0 0 50%; }
 
     /* Search bar on mobile: shown inside mobile menu — hide any remnant */
     .search-bar {

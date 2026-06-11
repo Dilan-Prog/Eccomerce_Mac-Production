@@ -10,7 +10,6 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rules;
 use Illuminate\View\View;
 
@@ -36,27 +35,27 @@ class RegisteredUserController extends Controller
         $isB2b = $request->account_type === 'b2b';
 
         $rules = [
-            'name'         => ['required', 'string', 'max:255'],
-            'email'        => ['required', 'string', 'email', 'max:255', 'unique:'.User::class],
-            'password'     => ['required', 'confirmed', Rules\Password::defaults()],
-            'account_type' => ['nullable', 'in:personal,b2b'],
+            'name'              => ['required', 'string', 'max:255'],
+            'email'             => ['required', 'string', 'email', 'max:255', 'unique:'.User::class],
+            'password'          => ['required', 'confirmed', Rules\Password::defaults()],
+            'account_type'      => ['nullable', 'in:personal,b2b'],
+            'rfc'               => ['required', 'string', 'size:13'],
+            'tipo_cliente'      => ['required', 'in:revendedor,tecnico,empresa,contratista'],
+            'constancia_fiscal' => ['required', 'file', 'mimes:pdf', 'max:5120'],
+            'giro_industrial'   => ['nullable', 'string', 'max:100'],
+            'volumen_mensual'   => ['nullable', 'string', 'max:50'],
+            'ciudad'            => ['required', 'string', 'max:100'],
         ];
 
         if ($isB2b) {
-            $rules['empresa']          = ['required', 'string', 'max:255'];
-            $rules['rfc']              = ['required', 'string', 'size:13'];
-            $rules['tipo_cliente']     = ['required', 'in:revendedor,tecnico,empresa,contratista'];
-            $rules['constancia_fiscal']= ['nullable', 'file', 'mimes:pdf', 'max:5120'];
-            $rules['giro_industrial']  = ['nullable', 'string', 'max:100'];
-            $rules['volumen_mensual']  = ['nullable', 'string', 'max:50'];
-            $rules['ciudad']           = ['required', 'string', 'max:100'];
+            $rules['empresa'] = ['required', 'string', 'max:255'];
         }
 
         $request->validate($rules);
 
         $csfPath = null;
-        if ($isB2b && $request->hasFile('constancia_fiscal')) {
-            $csfPath = $request->file('constancia_fiscal')->store('csf', 'public');
+        if ($request->hasFile('constancia_fiscal')) {
+            $csfPath = $request->file('constancia_fiscal')->store('csf');
         }
 
         $user = User::create([

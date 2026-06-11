@@ -22,6 +22,9 @@ class HomeController extends Controller
         $sliders = Cache::remember('sliders', 600, function() {
             return Slider::where('status', 1)->orderBy('serial', 'asc')->get();
         });
+
+        // Slider hero: el primero activo por serial
+        $slider = $sliders->first();
         // Caché para la fecha de la venta flash
         $flashSaleDate = Cache::rememberForever('flash_sale_date', function() {
             return FlashSale::first();
@@ -80,6 +83,7 @@ class HomeController extends Controller
 
         return view('frontend.home.home', compact(
             'sliders',
+            'slider',
             'flashSaleDate',
             'flashSaleItems',
             'brands',
