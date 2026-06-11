@@ -92,6 +92,9 @@
     {{ $dataTable->scripts(attributes: ['type' => 'module']) }}
 
     <script>
+        var CSF_BASE_URL = "{{ url('admin/customer') }}";
+        var CSRF_TOKEN   = "{{ csrf_token() }}";
+
         $(document).ready(function(){
 
             // Cambio de estado activo/inactivo
@@ -122,18 +125,18 @@
             });
 
             // Abrir modal de upload
-            $('body').on('click', '.btn-csf-upload', function(){
+            $(document).on('click', '.btn-csf-upload', function(){
                 var id   = $(this).data('id');
                 var name = $(this).data('name');
                 $('#csf-upload-form').data('user-id', id);
                 $('#csf-upload-customer-name').text('Cliente: ' + name);
                 $('#csf-file-input').val('');
-                $('.custom-file-label').text('Selecciona un PDF...');
+                $('#csf-file-input').next('.custom-file-label').text('Selecciona un PDF...');
                 $('#csf-upload-modal').modal('show');
             });
 
             // Mostrar nombre del archivo seleccionado
-            $('#csf-file-input').on('change', function(){
+            $(document).on('change', '#csf-file-input', function(){
                 var fileName = this.files.length ? this.files[0].name : 'Selecciona un PDF...';
                 $(this).next('.custom-file-label').text(fileName);
             });
@@ -143,16 +146,18 @@
                 e.preventDefault();
                 var userId = $(this).data('user-id');
                 var formData = new FormData(this);
+                formData.set('_token', CSRF_TOKEN);
                 var btn = $('#csf-upload-submit');
 
                 btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin mr-1"></i> Subiendo...');
 
                 $.ajax({
-                    url: '/admin/customer/' + userId + '/csf',
+                    url: CSF_BASE_URL + '/' + userId + '/csf',
                     method: 'POST',
                     data: formData,
                     processData: false,
                     contentType: false,
+                    headers: { 'X-CSRF-TOKEN': CSRF_TOKEN },
                     success: function(res){
                         toastr.success(res.message);
                         $('#csf-upload-modal').modal('hide');
@@ -161,8 +166,9 @@
                     error: function(xhr){
                         var msg = xhr.responseJSON && xhr.responseJSON.message
                             ? xhr.responseJSON.message
-                            : 'Error al subir el archivo.';
+                            : 'Error al subir el archivo. Código: ' + xhr.status;
                         toastr.error(msg);
+                        console.error(xhr.responseText);
                     },
                     complete: function(){
                         btn.prop('disabled', false).html('<i class="fas fa-upload mr-1"></i> Subir CSF');

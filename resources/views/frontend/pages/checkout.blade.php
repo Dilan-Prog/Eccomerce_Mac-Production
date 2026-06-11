@@ -35,7 +35,7 @@
   .section-badge.s-done    { background: #D1FAE5; color: #065F46; }
 
   /* ── PAYMENT OPTIONS ────────────────────────────────── */
-  .payment-method-list { display: flex; flex-direction: column; gap: 10px; }
+  .payment-method-list { display: flex; flex-direction: column; gap: 10px; position: relative; }
   .payment-option {
       display: flex; align-items: center; gap: 14px;
       border: 2px solid var(--gris-borde, #DDE3EA); border-radius: 10px;
@@ -75,6 +75,7 @@
   .payment-detail-panel {
       display: none; margin-top: 12px;
       border-radius: 10px; overflow: hidden;
+      position: relative;
   }
   .payment-detail-panel.active { display: block; }
 
@@ -92,12 +93,20 @@
   #stripe-card-element.StripeElement--focus { border-color: var(--azul-principal, #003E7E); box-shadow: 0 0 0 3px rgba(0,62,126,0.1); }
 
   /* PayPal panel */
+  #paypal-detail-panel {
+      position: relative;
+      isolation: isolate;
+      z-index: auto;
+      overflow: hidden;
+  }
   .paypal-panel-inner {
       border: 1.5px solid #E5E7EB; border-radius: 10px;
       padding: 18px; background: #FAFAFA; text-align: center;
+      position: relative;
+      isolation: isolate;
   }
   .paypal-panel-title { font-size: 13px; font-weight: 700; color: var(--azul-principal, #003E7E); margin-bottom: 14px; }
-  #paypal-button-container { max-width: 340px; margin: 0 auto; }
+  #paypal-button-container { max-width: 340px; margin: 0 auto; position: relative; overflow: hidden; }
 
   /* SPEI panel */
   .spei-panel-inner {
@@ -742,9 +751,11 @@ try {
 
 // ── PAYPAL BUTTONS SETUP ────────────────────────────────────────────
 @if($paypalInfo)
+window._paypalRendered = false;
 window.initPayPalButtons = function () {
     var container = document.getElementById('paypal-button-container');
-    if (!container || container.hasChildNodes()) return;
+    if (!container || window._paypalRendered) return;
+    window._paypalRendered = true;
 
     paypal.Buttons({
         createOrder: function (data, actions) {
