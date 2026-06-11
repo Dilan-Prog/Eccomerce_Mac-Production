@@ -98,10 +98,11 @@ Route::get('flash-sale', [FlashSaleController::class, 'index'])->name('flash-sal
 use App\Http\Controllers\Frontend\CotizacionController;
 
 Route::middleware(['auth'])->prefix('cotizacion')->as('cotizacion.')->group(function () {
-    Route::get('formulario',          [CotizacionController::class, 'formulario'])->name('formulario');
-    Route::post('formulario',         [CotizacionController::class, 'store'])->name('store');
-    Route::post('confirmar',          [CotizacionController::class, 'confirmar'])->name('confirmar');
+    Route::get('formulario',            [CotizacionController::class, 'formulario'])->name('formulario');
+    Route::post('formulario',           [CotizacionController::class, 'store'])->name('store');
+    Route::post('confirmar',            [CotizacionController::class, 'confirmar'])->name('confirmar');
     Route::get('generada/{cotizacion}', [CotizacionController::class, 'generada'])->name('generada');
+    Route::get('pdf/{cotizacion}',      [CotizacionController::class, 'pdf'])->name('pdf');
 });
 
 /**Products details */

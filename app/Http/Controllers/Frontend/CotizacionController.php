@@ -77,14 +77,30 @@ class CotizacionController extends Controller
      */
     public function generada(Cotizacion $cotizacion)
     {
-        // Solo el dueño puede ver su cotización
         abort_if($cotizacion->user_id !== auth()->id(), 403);
 
         $pdfUrl = $cotizacion->pdf_path
-            ? Storage::url($cotizacion->pdf_path)
+            ? route('cotizacion.pdf', $cotizacion->id)
             : null;
 
         return view('cotizaciones.generada', compact('cotizacion', 'pdfUrl'));
+    }
+
+    /**
+     * Sirve el PDF directamente desde storage (sin depender del symlink).
+     */
+    public function pdf(Cotizacion $cotizacion)
+    {
+        abort_if($cotizacion->user_id !== auth()->id(), 403);
+        abort_unless(
+            $cotizacion->pdf_path && Storage::disk('public')->exists($cotizacion->pdf_path),
+            404
+        );
+
+        return response()->file(
+            Storage::disk('public')->path($cotizacion->pdf_path),
+            ['Content-Type' => 'application/pdf']
+        );
     }
 
     // ─────────────────────────────────────────────────────────────────
