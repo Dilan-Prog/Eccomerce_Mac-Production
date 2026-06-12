@@ -1,5 +1,5 @@
 @if($slider && $slider->banner)
-    <section class="hero-home" style="background-image: linear-gradient(90deg, rgba(0,40,86,0.97) 0%, rgba(0,40,86,0.93) 38%, rgba(0,40,86,0.45) 62%, rgba(0,40,86,0) 100%), url('{{ asset($slider->banner) }}'); background-size: cover; background-position: center right;">
+    <section class="hero-home" style="--hero-bg: url('{{ asset($slider->banner) }}')">
 @else
     <section class="hero-home">
 @endif

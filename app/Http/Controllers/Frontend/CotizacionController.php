@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\CotizacionRequest;
 use App\Models\Cotizacion;
 use App\Models\CotizacionPerfil;
+use App\Models\Product;
+use App\Models\ProductVariantCombinations;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Cart;
 use Illuminate\Http\Request;
@@ -20,6 +22,32 @@ class CotizacionController extends Controller
     public function formulario(Request $request)
     {
         $user = auth()->user();
+
+        // Guardar producto en sesión cuando viene desde la página de detalle
+        if ($request->filled('producto_id')) {
+            $product = Product::with('brand')->find($request->producto_id);
+            if ($product) {
+                $cantidad = max(1, (int) $request->input('cantidad', 1));
+                $precio   = (float) $product->price;
+
+                if ($request->filled('comb_id')) {
+                    $comb = ProductVariantCombinations::find($request->comb_id);
+                    if ($comb && $comb->price) {
+                        $precio = (float) $comb->price;
+                    }
+                }
+
+                session(['cotizacion_productos' => [[
+                    'nombre'   => $product->name,
+                    'sku'      => $product->sku ?? '',
+                    'modelo'   => $product->productModel ?? '',
+                    'marca'    => optional($product->brand)->name ?? '',
+                    'precio'   => $precio,
+                    'cantidad' => $cantidad,
+                    'subtotal' => round($precio * $cantidad, 2),
+                ]]]);
+            }
+        }
 
         // Si viene con ?nuevo=1, forzamos el formulario sin importar si hay perfil
         if (! $request->boolean('nuevo')) {
@@ -112,22 +140,27 @@ class CotizacionController extends Controller
      */
     private function generarCotizacion($user, CotizacionPerfil $perfil, string $telefono = ''): Cotizacion
     {
-        $cartItems = Cart::content();
-        $subtotal  = (float) getMainCartTotal();
-        $total     = $subtotal;
+        // Si viene desde detalle de producto, usa la sesión; si no, usa el carrito
+        if (session()->has('cotizacion_productos')) {
+            $productos = session()->pull('cotizacion_productos');
+            $subtotal  = (float) collect($productos)->sum('subtotal');
+        } else {
+            $cartItems = Cart::content();
+            $subtotal  = (float) getMainCartTotal();
+            $productos = $cartItems->map(function ($item) {
+                return [
+                    'nombre'   => $item->name,
+                    'sku'      => $item->options->sku ?? '',
+                    'modelo'   => $item->options->productModel ?? '',
+                    'marca'    => $item->options->brand_name ?? '',
+                    'precio'   => $item->price,
+                    'cantidad' => $item->qty,
+                    'subtotal' => round($item->price * $item->qty, 2),
+                ];
+            })->values()->toArray();
+        }
 
-        // Snapshot del carrito
-        $productos = $cartItems->map(function ($item) {
-            return [
-                'nombre'     => $item->name,
-                'sku'        => $item->options->sku ?? '',
-                'modelo'     => $item->options->productModel ?? '',
-                'marca'      => $item->options->brand_name ?? '',
-                'precio'     => $item->price,
-                'cantidad'   => $item->qty,
-                'subtotal'   => round($item->price * $item->qty, 2),
-            ];
-        })->values()->toArray();
+        $total = $subtotal;
 
         // Folio provisional (se actualiza con el ID real)
         $cotizacion = Cotizacion::create([
