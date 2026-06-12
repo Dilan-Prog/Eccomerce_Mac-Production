@@ -29,6 +29,19 @@
 
         <div class="header-actions">
 
+            {{-- Botón búsqueda — visible solo en móvil/tablet (<992px) --}}
+            <button class="mobile-search-toggle d-lg-none"
+                    id="mobile-search-toggle"
+                    type="button"
+                    aria-label="Buscar"
+                    aria-expanded="false"
+                    aria-controls="mobile-search-bar">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"/>
+                    <path d="M21 21l-4.35-4.35"/>
+                </svg>
+            </button>
+
             @auth
                 @php $role = auth()->user()->role; @endphp
 
@@ -144,6 +157,24 @@
                 <span class="cart-badge" id="cart-count">{{ Cart::content()->count() }}</span>
             </a>
 
+        </div>
+    </div>
+
+    {{-- Barra de búsqueda expandible en móvil (< 992px) --}}
+    <div class="mobile-search-bar d-lg-none" id="mobile-search-bar" role="search">
+        <div class="container">
+            <form action="{{ route('products.index') }}" style="position:relative;">
+                <svg class="search-icon-abs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                    <circle cx="11" cy="11" r="8"/>
+                    <path d="M21 21l-4.35-4.35"/>
+                </svg>
+                <input type="text"
+                       name="search"
+                       value="{{ request()->search }}"
+                       placeholder="Busca por número de parte, marca o categoría…"
+                       autocomplete="off">
+                <button type="submit">Buscar</button>
+            </form>
         </div>
     </div>
 

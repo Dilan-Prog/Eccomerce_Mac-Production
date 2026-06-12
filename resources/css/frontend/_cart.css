@@ -1,0 +1,121 @@
+/* =========================================================
+   CART — carrito responsive
+   ========================================================= */
+
+/* ── LAYOUT PRINCIPAL ── */
+@media (max-width: 991.99px) {
+  .cart-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* ── ITEMS DEL CARRITO ── */
+@media (max-width: 639.99px) {
+  /* Reestructurar el grid del item */
+  .cart-item {
+    grid-template-columns: 76px 1fr !important;
+    grid-template-rows: auto auto;
+    gap: 12px !important;
+    padding: 16px !important;
+  }
+
+  /* La imagen queda en la fila 1, col 1 */
+  .cart-item-image {
+    width: 76px !important;
+    height: 76px !important;
+    grid-row: 1;
+    grid-column: 1;
+  }
+
+  /* Los detalles ocupan col 2 */
+  .cart-item-details {
+    grid-row: 1;
+    grid-column: 2;
+  }
+
+  /* Las acciones (precio + qty + remove) van en fila 2, span completo */
+  .cart-item-actions {
+    grid-row: 2;
+    grid-column: 1 / -1;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px !important;
+  }
+
+  .cart-item-price {
+    text-align: left !important;
+  }
+
+  .cart-item-price small {
+    display: inline !important;
+  }
+
+  .cart-item-subtotal {
+    text-align: left !important;
+  }
+}
+
+/* ── BOTONES DE CANTIDAD — touch-friendly ── */
+.qty-btn {
+  min-width: var(--touch-target, 44px) !important;
+  min-height: var(--touch-target, 44px) !important;
+  width: var(--touch-target, 44px) !important;
+  height: var(--touch-target, 44px) !important;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px !important;
+}
+
+.qty-input,
+.qty-control .qty-input {
+  height: var(--touch-target, 44px) !important;
+  min-width: 48px;
+  font-size: 16px !important;
+}
+
+/* ── RESUMEN STICKY EN MÓVIL ── */
+@media (max-width: 991.99px) {
+  .cart-summary-card {
+    /* En móvil el resumen aparece debajo de los items, sin sticky */
+    position: relative;
+    top: auto;
+  }
+}
+
+/* ── TABLA DEL CARRITO (wsus legacy) ── */
+.wsus__cart_list {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+@media (max-width: 767.99px) {
+  .wsus__cart_list table {
+    min-width: 560px;
+  }
+}
+
+/* ── CARRITO VACÍO ── */
+.wsus__cart_empty {
+  text-align: center;
+  padding: 40px 16px;
+}
+
+/* ── MINI CARRITO LATERAL ── */
+.wsus__mini_cart {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+.wsus__mini_cart .wsus__cart_text {
+  min-width: 0;
+  flex: 1;
+  overflow: hidden;
+}
+
+.wsus__mini_cart .wsus__cart_title {
+  overflow-wrap: break-word;
+  word-break: break-word;
+}

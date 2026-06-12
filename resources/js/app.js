@@ -32,3 +32,8 @@ import '../../public/frontend/js/venobox.min.js';
 // after jQuery so its UMD wrapper finds window.jQuery (fails in ESM where `this` is undefined)
 import '../../public/frontend/js/main.js';
 import './components/nav-megamenu.js';
+
+/* ── RESPONSIVE UI MODULES ── */
+import './frontend/navbar.js';
+import './frontend/filters.js';
+import './frontend/ui.js';

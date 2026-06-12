@@ -1,0 +1,83 @@
+/* =========================================================
+   BASE — resets responsive y globales
+   ========================================================= */
+
+/* Previene scroll horizontal en toda la app */
+html,
+body {
+  overflow-x: hidden;
+  max-width: 100%;
+}
+
+/* Box-sizing universal */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* Imágenes siempre responsivas */
+img,
+video,
+svg {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Font size mínimo 16px en inputs solo en móvil para evitar zoom en iOS */
+@media (max-width: 991.99px) {
+  input[type="text"],
+  input[type="email"],
+  input[type="tel"],
+  input[type="number"],
+  input[type="password"],
+  input[type="search"],
+  textarea,
+  select {
+    font-size: 16px !important;
+  }
+}
+
+/* Touch targets mínimos */
+button,
+[role="button"],
+a.btn,
+.btn,
+.nav-link,
+.account-dropdown-item,
+.header-icon-btn {
+  min-height: var(--touch-target, 44px);
+}
+
+/* Links en footer y menú no necesitan 44px de altura */
+.footer-col > a,
+.nav-secondary-link,
+.wsus__mobile_menu_main_menu ul li a {
+  min-height: auto;
+}
+
+/* Tablas: scroll horizontal en lugar de desborde */
+table {
+  width: 100%;
+}
+
+.table-responsive-wrapper {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Embedidos (videos, iframes) */
+.embed-responsive {
+  position: relative;
+  padding-bottom: 56.25%;
+  height: 0;
+  overflow: hidden;
+}
+
+.embed-responsive iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}

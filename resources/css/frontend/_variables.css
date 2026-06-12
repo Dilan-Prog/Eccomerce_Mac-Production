@@ -1,0 +1,49 @@
+/* =========================================================
+   VARIABLES — Mac Del Norte Responsive System
+   Breakpoints no pueden usarse en media queries con var(),
+   pero se documentan aquí como referencia del sistema.
+
+   Uso en media queries:
+     xs  375px  — iPhone SE
+     sm  640px  — móviles grandes
+     md  768px  — tablets portrait
+     lg  992px  — tablets landscape / laptops
+     xl  1200px — desktop
+   ========================================================= */
+
+:root {
+  /* Paleta (ya definida en master.blade.php — aquí como referencia)
+     --azul-oscuro:        #002856
+     --azul-principal:     #003E7E
+     --azul-medio:         #0057A8
+     --azul-claro:         #E6EFF8
+     --accent-cta:         #F7941D
+     --accent-cta-hover:   #E08416
+     --amarillo-destacado: #F6AD1C
+     --verde-disponible:   #2F855A
+     --rojo-error:         #DC2626
+     --gris-fondo:         #F5F7FA
+     --gris-borde:         #DDE3EA
+     --gris-texto:         #4A5568
+     --gris-claro-texto:   #718096
+     --blanco:             #FFFFFF
+     --negro-texto:        #1A202C
+  */
+
+  /* Z-index layers */
+  --z-mobile-menu:   1050;
+  --z-mobile-search: 1040;
+  --z-sticky-header: 100;
+  --z-dropdown:      400;
+  --z-overlay:       1030;
+
+  /* Espaciado táctil */
+  --touch-target:    44px;
+
+  /* Transición estándar */
+  --transition-base: 0.25s ease;
+
+  /* Contenedor */
+  --container-padding-mobile: 16px;
+  --container-padding-tablet: 24px;
+}

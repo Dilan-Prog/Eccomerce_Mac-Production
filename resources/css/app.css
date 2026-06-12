@@ -1,4 +1,27 @@
 /* =========================================================
+   RESPONSIVE SYSTEM — Mac Del Norte
+   Orden de carga:
+   1. Variables CSS
+   2. Base/reset
+   3. Layout helpers
+   4. Secciones (navbar, hero, products, etc.)
+   5. Vendor CSS (preserva especificidad existente)
+   6. Project styles
+   7. Overrides responsivos
+   ========================================================= */
+@import './frontend/_variables.css';
+@import './frontend/_base.css';
+@import './frontend/_layout.css';
+@import './frontend/_navbar.css';
+@import './frontend/_hero.css';
+@import './frontend/_products.css';
+@import './frontend/_filters.css';
+@import './frontend/_cart.css';
+@import './frontend/_checkout.css';
+@import './frontend/_footer.css';
+@import './frontend/_utilities.css';
+
+/* =========================================================
    VENDOR CSS — imported from public/frontend/css/
    Vite resolves URL() references relative to each file's
    location, so font/image paths remain correct.

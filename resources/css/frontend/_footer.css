@@ -1,0 +1,150 @@
+/* =========================================================
+   FOOTER — mejoras responsive + acordeón móvil
+   ========================================================= */
+
+/* ── EN DESKTOP: ocultar el div de acordeón, mostrar el h4 original ── */
+.footer-col-heading {
+  display: none;
+}
+
+/* Cuerpo siempre visible en desktop */
+.footer-col-body {
+  display: block;
+  max-height: none;
+  overflow: visible;
+}
+
+/* ── ACORDEÓN MÓVIL ── */
+/* En móvil, los grupos de links del footer colapsan */
+
+@media (max-width: 767.99px) {
+  /* Mostrar el heading de acordeón en mobile */
+  .footer-col-heading {
+    display: flex;
+  }
+
+  /* Columnas 2, 3, 4 tienen acordeón — col 1 (logo+social) siempre visible */
+  .footer-col:not(:first-child) .footer-col-heading {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 0;
+    margin-bottom: 0 !important;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .footer-col:not(:first-child) .footer-col-heading::after {
+    content: '';
+    width: 10px;
+    height: 10px;
+    border-right: 2px solid rgba(255,255,255,0.6);
+    border-bottom: 2px solid rgba(255,255,255,0.6);
+    transform: rotate(45deg) translateY(-3px);
+    transition: transform var(--transition-base);
+    flex-shrink: 0;
+  }
+
+  .footer-col:not(:first-child).is-open .footer-col-heading::after {
+    transform: rotate(-135deg) translateY(-3px);
+  }
+
+  /* Contenido colapsable */
+  .footer-col:not(:first-child) .footer-col-body {
+    display: block;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.35s ease;
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+
+  .footer-col:not(:first-child).is-open .footer-col-body {
+    max-height: 600px;
+    padding-top: 8px;
+    padding-bottom: 8px;
+  }
+
+  /* Links dentro del cuerpo colapsable */
+  .footer-col:not(:first-child) .footer-col-body > a {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 0;
+    font-size: 14px;
+    color: rgba(255,255,255,0.75);
+    text-decoration: none;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    min-height: var(--touch-target, 44px);
+  }
+
+  .footer-col:not(:first-child) .footer-col-body > a:last-child {
+    border-bottom: none;
+  }
+
+  .footer-col:not(:first-child) .footer-col-body > a:hover {
+    color: var(--amarillo-destacado, #F6AD1C);
+  }
+
+  /* Ocultar el h4 original — reemplazado por .footer-col-heading */
+  .footer-col:not(:first-child) h4 {
+    display: none;
+  }
+
+  /* Footer grid: 1 columna en móvil */
+  .footer-grid {
+    grid-template-columns: 1fr !important;
+    gap: 0 !important;
+  }
+
+  .footer-col:first-child {
+    margin-bottom: 20px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+  }
+
+  /* Footer bottom: apilar en columna */
+  .footer-bottom {
+    flex-direction: column !important;
+    align-items: center !important;
+    text-align: center;
+    gap: 14px !important;
+  }
+
+  .payment-icons {
+    justify-content: center;
+  }
+}
+
+/* ── TABLET ── */
+@media (min-width: 768px) and (max-width: 959.99px) {
+  .footer-grid {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 28px !important;
+  }
+}
+
+/* ── REDES SOCIALES ── */
+.footer-social-link {
+  min-width: 36px;
+  min-height: 36px;
+}
+
+/* ── ICONOS DE PAGO ── */
+@media (max-width: 575.99px) {
+  .payment-icons {
+    flex-wrap: wrap;
+    gap: 5px;
+  }
+
+  .payment-icon {
+    height: 24px;
+    padding: 3px 6px;
+  }
+
+  .payment-icon img {
+    height: 14px;
+  }
+}

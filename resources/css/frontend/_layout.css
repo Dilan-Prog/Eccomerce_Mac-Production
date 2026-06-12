@@ -1,0 +1,115 @@
+/* =========================================================
+   LAYOUT — contenedores y grids responsive
+   ========================================================= */
+
+/* Padding lateral del container en móvil */
+@media (max-width: 575.99px) {
+  .container,
+  .container-fluid {
+    padding-left: var(--container-padding-mobile, 16px);
+    padding-right: var(--container-padding-mobile, 16px);
+  }
+}
+
+/* ── GUEST INFO BANNER ── */
+.guest-info-banner {
+  background: var(--azul-claro, #E6EFF8);
+  border-bottom: 1px solid var(--azul-principal, #003E7E);
+  padding: 9px 0;
+  font-size: 13px;
+}
+
+.guest-banner-inner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.guest-banner-inner > span {
+  flex: 1;
+  min-width: 0;
+  color: var(--azul-principal, #003E7E);
+  line-height: 1.4;
+}
+
+.guest-banner-actions {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.banner-btn-register,
+.banner-btn-login {
+  padding: 6px 14px;
+  border-radius: 5px;
+  font-size: 12px;
+  font-weight: 700;
+  text-decoration: none;
+  white-space: nowrap;
+  display: inline-block;
+}
+
+.banner-btn-register {
+  background: var(--accent-cta, #F7941D);
+  color: #fff;
+}
+
+.banner-btn-login {
+  background: var(--azul-principal, #003E7E);
+  color: #fff;
+}
+
+.banner-close {
+  background: none;
+  border: none;
+  font-size: 16px;
+  color: var(--azul-principal, #003E7E);
+  cursor: pointer;
+  padding: 4px 8px;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+/* En móvil el banner se compacta */
+@media (max-width: 575.99px) {
+  .guest-banner-inner {
+    gap: 8px;
+  }
+
+  .guest-banner-inner > span {
+    font-size: 12px;
+    order: 1;
+    width: 100%;
+  }
+
+  .guest-banner-actions {
+    order: 2;
+    width: 100%;
+    justify-content: center;
+  }
+
+  .banner-close {
+    order: 0;
+    margin-left: auto;
+    position: absolute;
+    right: 16px;
+  }
+
+  .guest-banner-inner {
+    position: relative;
+  }
+}
+
+/* ── SCROLL-UP BUTTON ── */
+.wsus__scroll_btn {
+  bottom: 80px !important; /* evitar colisión con botón WhatsApp en móvil */
+}
+
+@media (max-width: 767.99px) {
+  .wsus__scroll_btn {
+    right: 14px !important;
+    width: 38px !important;
+    height: 38px !important;
+  }
+}

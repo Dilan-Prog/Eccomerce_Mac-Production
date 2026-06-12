@@ -1,0 +1,136 @@
+/* =========================================================
+   CHECKOUT — mejoras responsive adicionales
+   (checkout.css ya tiene breakpoints básicos)
+   ========================================================= */
+
+/* ── ADDRESS CARDS ── */
+@media (max-width: 575.99px) {
+  .address-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .address-card {
+    padding: 14px;
+  }
+}
+
+/* ── CHECKOUT STEPS — más compactos en móvil ── */
+@media (max-width: 575.99px) {
+  .checkout-steps {
+    gap: 0;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-bottom: 4px;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .checkout-step {
+    font-size: 11px;
+    flex-shrink: 0;
+  }
+
+  .checkout-step-dot {
+    width: 22px;
+    height: 22px;
+    font-size: 10px;
+  }
+
+  .checkout-step-divider {
+    width: 20px;
+  }
+}
+
+/* ── RESUMEN STICKY EN MÓVIL ── */
+@media (max-width: 1023.99px) {
+  .checkout-sidebar {
+    position: relative !important;
+    top: auto !important;
+  }
+}
+
+/* ── CHECKOUT HEADER ── */
+@media (max-width: 575.99px) {
+  .checkout-header {
+    padding: 28px 0;
+  }
+
+  .checkout-header h1 {
+    font-size: 20px;
+  }
+
+  .checkout-header p {
+    font-size: 13px;
+  }
+}
+
+/* ── FORMULARIOS ── */
+@media (max-width: 575.99px) {
+  .checkout-section-body {
+    padding: 16px !important;
+  }
+
+  .checkout-section-header {
+    padding: 14px 16px;
+  }
+
+  .panel-actions {
+    flex-direction: column;
+  }
+
+  .btn-save-address,
+  .btn-cancel-address {
+    width: 100%;
+    text-align: center;
+  }
+}
+
+/* ── MÉTODOS DE PAGO ── */
+@media (max-width: 575.99px) {
+  .shipping-option {
+    padding: 12px;
+    gap: 10px;
+  }
+
+  .shipping-icon {
+    width: 32px;
+    height: 32px;
+    font-size: 14px;
+  }
+}
+
+/* ── BOTÓN CONFIRMAR ── */
+.checkout-confirm-btn {
+  font-size: 15px;
+  padding: 14px;
+  min-height: var(--touch-target, 44px);
+}
+
+/* ── PÁGINA DE ÉXITO ── */
+@media (max-width: 767.99px) {
+  .success-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .info-grid {
+    grid-template-columns: 1fr 1fr !important;
+  }
+}
+
+@media (max-width: 575.99px) {
+  .success-hero {
+    padding: 36px 16px;
+  }
+
+  .success-hero h1 {
+    font-size: 20px;
+  }
+
+  .info-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .email-banner {
+    flex-direction: column;
+    gap: 10px;
+  }
+}

@@ -1,0 +1,228 @@
+/* =========================================================
+   PRODUCTS — grids, cards y detalles responsive
+   ========================================================= */
+
+/* ── GRID DE PRODUCTOS (catálogo) ── */
+
+/* Bootstrap col-xl-3 col-lg-4 col-md-4 col-sm-6 col-6 es el sistema existente.
+   Solo ajustamos padding para que en móvil las cards no estén demasiado juntas. */
+
+@media (max-width: 575.99px) {
+  /* En xs: 2 columnas, cada una ocupa 50% */
+  .wsus__product_area .row > [class*="col-6"],
+  .wsus__product_area .row > [class*="col-sm-6"] {
+    padding-left: 6px;
+    padding-right: 6px;
+  }
+
+  .wsus__product_area .row {
+    margin-left: -6px;
+    margin-right: -6px;
+  }
+}
+
+/* ── TARJETAS DE PRODUCTO ── */
+.wsus__product_single_item {
+  overflow: hidden;
+}
+
+/* Imagen del producto: ratio fijo para consistencia */
+.wsus__product_img {
+  position: relative;
+  overflow: hidden;
+}
+
+.wsus__product_img img {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1;
+  object-fit: contain;
+  display: block;
+}
+
+/* Touch target para botones de acción en cards */
+.wsus__product_single_item .wsus__button_area li a,
+.wsus__product_single_item .wsus__button_area li button {
+  min-width: var(--touch-target, 44px);
+  min-height: var(--touch-target, 44px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ── PÁGINA DE DETALLE DE PRODUCTO ── */
+
+/* Galería: en móvil apilar imagen principal arriba */
+@media (max-width: 767.99px) {
+  .product-grid {
+    grid-template-columns: 1fr !important;
+    gap: 20px !important;
+    padding: 16px !important;
+  }
+
+  .product-gallery {
+    flex-direction: column-reverse !important;
+  }
+
+  .gallery-thumbs {
+    flex-direction: row !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch;
+    gap: 8px !important;
+    padding-bottom: 4px;
+  }
+
+  .gallery-thumb {
+    flex-shrink: 0 !important;
+    width: 60px !important;
+    height: 60px !important;
+  }
+
+  .gallery-main {
+    aspect-ratio: 1 !important;
+    padding: 16px !important;
+  }
+
+  /* CTA sticky en móvil */
+  .product-buy .btn-mdn-block {
+    position: relative;
+  }
+}
+
+/* Botones de cantidad: touch-friendly */
+.qty-btn,
+.qty-btn.qty-btn {
+  min-width: var(--touch-target, 44px);
+  min-height: var(--touch-target, 44px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.qty-display,
+.qty-input {
+  min-height: var(--touch-target, 44px);
+}
+
+/* ── PRODUCTOS RELACIONADOS ── */
+@media (max-width: 575.99px) {
+  .related-grid {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 10px !important;
+  }
+
+  .related-image {
+    height: 110px !important;
+  }
+
+  .related-info {
+    padding: 10px !important;
+  }
+
+  .related-name {
+    font-size: 12px !important;
+    min-height: auto !important;
+  }
+}
+
+/* ── FLASH SALE / CONTADOR ── */
+.wsus__flash_sale_item {
+  overflow: hidden;
+}
+
+/* ── SECTION SHOP INFO ── */
+@media (max-width: 575.99px) {
+  .wsus__shop_info_single {
+    padding: 16px;
+  }
+}
+
+/* ── SLIDERS DE CATEGORÍA ── */
+.wsus__section_heading h2 {
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+
+/* ── SLIDER ARROWS ── */
+@media (max-width: 575.99px) {
+  .slick-prev,
+  .slick-next {
+    width: 36px;
+    height: 36px;
+  }
+}
+
+/* ── FILTROS SIDEBAR (vista catálogo) ── */
+@media (max-width: 767.99px) {
+  /* El sidebar de filtros se vuelve un drawer o se oculta */
+  .wsus__sidebar_main_area {
+    display: none;
+  }
+
+  .wsus__sidebar_main_area.is-open {
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: min(300px, 85vw);
+    height: 100vh;
+    z-index: var(--z-mobile-menu, 1050);
+    background: var(--blanco, #fff);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    box-shadow: 4px 0 24px rgba(0,0,0,0.18);
+    padding: 20px 16px 32px;
+    animation: slideInLeft 0.28s ease;
+  }
+
+  @keyframes slideInLeft {
+    from { transform: translateX(-100%); }
+    to   { transform: translateX(0); }
+  }
+
+  /* Overlay detrás del drawer */
+  .filter-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.45);
+    z-index: calc(var(--z-mobile-menu, 1050) - 1);
+  }
+
+  .filter-overlay.is-open {
+    display: block;
+  }
+}
+
+/* ── BOTÓN "FILTRAR" (visible solo en móvil) ── */
+.btn-open-filters {
+  display: none;
+}
+
+@media (max-width: 767.99px) {
+  .btn-open-filters {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 18px;
+    background: var(--azul-principal, #003E7E);
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    min-height: var(--touch-target, 44px);
+    font-family: inherit;
+    transition: background var(--transition-base);
+  }
+
+  .btn-open-filters:hover {
+    background: var(--azul-oscuro, #002856);
+  }
+
+  .btn-open-filters svg {
+    width: 16px;
+    height: 16px;
+  }
+}

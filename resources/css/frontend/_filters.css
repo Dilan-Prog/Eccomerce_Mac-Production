@@ -1,0 +1,102 @@
+/* =========================================================
+   FILTERS — sidebar / drawer en móvil
+   ========================================================= */
+
+/* ── HEADER DEL DRAWER ── */
+.filter-drawer-header {
+  display: none;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 14px;
+  margin-bottom: 16px;
+  border-bottom: 2px solid var(--gris-borde, #DDE3EA);
+}
+
+.filter-drawer-header h3 {
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--azul-principal, #003E7E);
+  margin: 0;
+}
+
+.filter-drawer-close {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--gris-texto, #4A5568);
+  padding: 6px;
+  border-radius: 50%;
+  min-width: var(--touch-target, 44px);
+  min-height: var(--touch-target, 44px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background var(--transition-base);
+}
+
+.filter-drawer-close:hover {
+  background: var(--gris-fondo, #F5F7FA);
+  color: var(--rojo-error, #DC2626);
+}
+
+.filter-drawer-close svg {
+  width: 20px;
+  height: 20px;
+}
+
+@media (max-width: 767.99px) {
+  .filter-drawer-header {
+    display: flex;
+  }
+
+  /* Rangos de precio: asegura que el slider no desborde */
+  .wsus__price_range_wrap {
+    padding: 0 8px;
+  }
+
+  /* Checkboxes de filtros: touch-friendly */
+  .wsus__check_box_item label {
+    min-height: 36px;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    gap: 8px;
+    padding: 4px 0;
+  }
+
+  .wsus__check_box_item input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+  }
+
+  /* Select de ordenamiento: full-width en móvil */
+  .wsus__shorting_right select,
+  .wsus__shorting select {
+    width: 100%;
+    font-size: 16px;
+    min-height: var(--touch-target, 44px);
+  }
+}
+
+/* ── BARRA DE HERRAMIENTAS (sort + filter button) ── */
+.catalog-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.catalog-toolbar-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.catalog-toolbar-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
