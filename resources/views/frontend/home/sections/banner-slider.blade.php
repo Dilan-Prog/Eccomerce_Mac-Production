@@ -1,9 +1,10 @@
 <section class="hero-home">
 
     {{-- Capas de foto (JS alterna entre ellas con crossfade) --}}
-    <div class="hero-bg-layer" id="hero-bg-a"></div>
-    <div class="hero-bg-layer" id="hero-bg-b" style="opacity:0"></div>
-
+    <div class="container">
+        <div class="hero-bg-layer" id="hero-bg-a"></div>
+        <div class="hero-bg-layer" id="hero-bg-b" style="opacity:0"></div>
+    </div>
     <div class="container">
 
         <div class="hero-badge-distribuidor">
