@@ -494,10 +494,9 @@
             background-color: #002856;
             position: relative;
             min-height: 520px;
-            height: 80vh;
+            height: 85vh;
             max-height: 700px;
             color: #fff;
-            overflow: hidden;
         }
         /* Container ocupa toda la altura del section */
         .hero-container {
@@ -519,7 +518,7 @@
             position: absolute;
             inset: 0;
             z-index: 1;
-            background: linear-gradient(90deg, rgba(0,40,86,0.97) 0%, rgba(0,40,86,0.93) 38%, rgba(0,40,86,0.45) 62%, rgba(0,40,86,0) 100%);
+            background: linear-gradient(90deg, rgba(0,40,86,0.97)25%, rgba(0,40,86,0.93) 10%, rgba(0,40,86,0.45) 45%, rgba(0,40,86,0) 100%);
             pointer-events: none;
         }
         /* Contenido sobre el gradiente */
