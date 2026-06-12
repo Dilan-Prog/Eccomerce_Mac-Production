@@ -194,7 +194,7 @@
                                     maxlength="13"
                                     style="text-transform:uppercase"
                                 >
-                                <div class="form-help">13 caracteres · Validamos con SAT</div>
+                                <div class="form-help">12 o 13 caracteres · Validamos con SAT</div>
                                 @error('rfc')
                                     <span class="form-error" role="alert">{{ $message }}</span>
                                 @enderror
