@@ -1,8 +1,8 @@
-@if($slider && $slider->banner)
-    <section class="hero-home" style="--hero-bg: url('{{ asset($slider->banner) }}')">
-@else
-    <section class="hero-home">
-@endif
+<section class="hero-home">
+
+    {{-- Capas de foto (JS alterna entre ellas con crossfade) --}}
+    <div class="hero-bg-layer" id="hero-bg-a"></div>
+    <div class="hero-bg-layer" id="hero-bg-b" style="opacity:0"></div>
 
     <div class="container">
 
@@ -32,6 +32,7 @@
                 Cotización con ingeniero
             </a>
         </div>
+
         <div class="hero-stats-bar">
 
             <div class="hero-stat-item">
@@ -81,6 +82,38 @@
 
         </div>
 
-
     </div>
 </section>
+
+@push('scripts')
+<script>
+(function () {
+    var banners = @json($sliders->map(fn($s) => asset($s->banner))->values());
+    if (!banners.length) return;
+
+    var bgA = document.getElementById('hero-bg-a');
+    var bgB = document.getElementById('hero-bg-b');
+
+    bgA.style.backgroundImage = "url('" + banners[0] + "')";
+
+    if (banners.length === 1) return;
+
+    // Pre-carga todas las imágenes para evitar flash en la primera transición
+    banners.forEach(function (src) {
+        (new Image()).src = src;
+    });
+
+    var current = 0;
+    var front   = bgA;
+    var back    = bgB;
+
+    setInterval(function () {
+        current = (current + 1) % banners.length;
+        back.style.backgroundImage = "url('" + banners[current] + "')";
+        back.style.opacity  = '1';
+        front.style.opacity = '0';
+        var tmp = front; front = back; back = tmp;
+    }, 4500);
+}());
+</script>
+@endpush
