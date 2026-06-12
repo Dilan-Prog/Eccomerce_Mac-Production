@@ -491,9 +491,16 @@
 
         /* ===== HERO SECTION ===== */
         .hero-home {
-            background: linear-gradient(135deg, #002856 0%, #003E7E 55%, #0057A8 100%);
+            background-color: #002856;
+            background-image:
+                linear-gradient(90deg, rgba(0,40,86,0.97) 0%, rgba(0,40,86,0.93) 38%, rgba(0,40,86,0.45) 62%, rgba(0,40,86,0) 100%),
+                var(--hero-bg, none);
             background-size: cover;
-            background-position: center right;
+            background-position: right center;
+            background-attachment: scroll;
+            min-height: 520px;
+            height: 80vh;
+            max-height: 700px;
             padding: 72px 0 0;
             color: #fff;
             overflow: hidden;
@@ -606,8 +613,20 @@
         }
 
         /* ===== HERO RESPONSIVE ===== */
+        @media (min-width: 769px) and (max-width: 1024px) {
+            .hero-home {
+                min-height: 460px;
+                height: 70vh;
+                background-position: 75% center;
+            }
+        }
         @media (max-width: 768px) {
-            .hero-home { padding: 52px 0 0; }
+            .hero-home {
+                background-image: linear-gradient(135deg, #002856 0%, #003E7E 55%, #0057A8 100%);
+                min-height: 420px;
+                height: auto;
+                padding: 52px 0 0;
+            }
             .hero-titulo { font-size: clamp(24px, 5vw, 34px); }
             .hero-subtitulo { font-size: 14px; margin-bottom: 28px; }
             .hero-cta-grupo { margin-bottom: 40px; }

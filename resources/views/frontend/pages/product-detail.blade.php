@@ -549,7 +549,7 @@
                     </span>
                 </div>
 
-                
+
 
                 {{-- Variantes --}}
                 @foreach ($product->variants as $variant)
@@ -669,9 +669,12 @@
                             @endif
 
                             <div class="btn-row-2">
-                                <a href="{{ route('contact') }}" class="btn-mdn btn-mdn-secondary">
+                                <a href="{{ route('cotizacion.formulario') }}"
+                                   id="btn-cotizar"
+                                   class="btn-mdn btn-mdn-secondary"
+                                   onclick="updateCotizarUrl()">
                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-                                    Solicitar cotización
+                                    Generar cotización
                                 </a>
                                 <a href="https://wa.link/f28njw" target="_blank"
                                    class="btn-mdn btn-mdn-wa track-conversion" data-type="whatsapp"
@@ -1153,7 +1156,20 @@ function changeQty(delta) {
     if (val > max) val = max;
     display.value = val;
     if (hidden) hidden.value = val;
+    updateCotizarUrl();
 }
+
+/* ===== COTIZAR URL ===== */
+function updateCotizarUrl() {
+    var btn = document.getElementById('btn-cotizar');
+    if (!btn) return;
+    var qty   = document.getElementById('qty-hidden');
+    var comb  = document.getElementById('combination_id');
+    var url   = '{{ route("cotizacion.formulario") }}?producto_id={{ $product->id }}&cantidad=' + (qty ? qty.value : 1);
+    if (comb && comb.value) url += '&comb_id=' + comb.value;
+    btn.href = url;
+}
+updateCotizarUrl();
 
 /* ===== GALERÍA ===== */
 function switchGalleryImage(thumb, src) {
