@@ -492,18 +492,37 @@
         /* ===== HERO SECTION ===== */
         .hero-home {
             background-color: #002856;
-            background-image:
-                linear-gradient(90deg, rgba(0,40,86,0.97) 0%, rgba(0,40,86,0.93) 38%, rgba(0,40,86,0.45) 62%, rgba(0,40,86,0) 100%),
-                var(--hero-bg, none);
-            background-size: cover;
-            background-position: right center;
-            background-attachment: scroll;
+            position: relative;
             min-height: 520px;
             height: 80vh;
             max-height: 700px;
             padding: 72px 0 0;
             color: #fff;
             overflow: hidden;
+        }
+        /* Gradiente siempre encima de la foto, debajo del contenido */
+        .hero-home::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            z-index: 1;
+            background: linear-gradient(90deg, rgba(0,40,86,0.97) 0%, rgba(0,40,86,0.93) 38%, rgba(0,40,86,0.45) 62%, rgba(0,40,86,0) 100%);
+            pointer-events: none;
+        }
+        /* Capas de foto (ping-pong JS) */
+        .hero-bg-layer {
+            position: absolute;
+            inset: 0;
+            z-index: 0;
+            background-size: cover;
+            background-position: right center;
+            background-repeat: no-repeat;
+            transition: opacity 0.8s ease-in-out;
+        }
+        /* Asegura que el contenido quede sobre el gradiente */
+        .hero-home > .container {
+            position: relative;
+            z-index: 2;
         }
         .hero-badge-distribuidor {
             display: inline-flex;
@@ -622,11 +641,13 @@
         }
         @media (max-width: 768px) {
             .hero-home {
-                background-image: linear-gradient(135deg, #002856 0%, #003E7E 55%, #0057A8 100%);
                 min-height: 420px;
                 height: auto;
                 padding: 52px 0 0;
             }
+            /* Mobile: oculta la foto, solo queda el color sólido */
+            .hero-bg-layer { display: none; }
+            .hero-home::before { display: none; }
             .hero-titulo { font-size: clamp(24px, 5vw, 34px); }
             .hero-subtitulo { font-size: 14px; margin-bottom: 28px; }
             .hero-cta-grupo { margin-bottom: 40px; }
