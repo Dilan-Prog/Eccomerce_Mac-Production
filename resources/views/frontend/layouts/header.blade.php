@@ -11,7 +11,7 @@
 
         <a href="{{ route('index') }}" class="logo">
             <img src="{{ asset('uploads/logo/webp-horizontal.webp') }}" alt="Mac Del Norte" class="logo-img" loading="eager">
-            
+
         </a>
 
         <div class="search-bar d-none d-lg-block">
