@@ -52,6 +52,7 @@ class CategoryController extends Controller
         $category->save();
 
         Cache::forget('nav_categories');
+        Cache::forget('categories_filter_tree');
         toastr('Categoria Creada Con exito');
         return redirect()->route('admin.category.index');
 
@@ -96,6 +97,7 @@ class CategoryController extends Controller
         $category->save();
 
         Cache::forget('nav_categories');
+        Cache::forget('categories_filter_tree');
         toastr('Actualizacion con exito', 'success');
         return redirect()->route('admin.category.index');
     }
@@ -113,6 +115,7 @@ class CategoryController extends Controller
 
         $category->delete();
         Cache::forget('nav_categories');
+        Cache::forget('categories_filter_tree');
 
         return response(['status' => 'success', 'message' => 'Deleted Successfully!']);
     }
@@ -124,6 +127,7 @@ class CategoryController extends Controller
         $category->save();
 
         Cache::forget('nav_categories');
+        Cache::forget('categories_filter_tree');
 
         return response(['message' =>'Status Changed Successfully!']);
 

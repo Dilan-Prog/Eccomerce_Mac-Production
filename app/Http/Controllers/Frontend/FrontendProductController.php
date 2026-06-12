@@ -124,7 +124,7 @@ class FrontendProductController extends Controller
                     ->paginate(12);
             }
 
-            $categories = Cache::rememberForever('categories_filter_tree', function () {
+            $categories = Cache::remember('categories_filter_tree', now()->addHours(2), function () {
                 return Category::where('status', 1)
                     ->with(['subCategories' => function ($q) {
                         $q->where('status', 1)

@@ -60,6 +60,7 @@ class ChildCategoryController extends Controller
         $childCategory->status = $request->status;
         $childCategory->save();
         Cache::forget('nav_categories');
+        Cache::forget('categories_filter_tree');
         toastr('Categoria Secundaria Creada Con Exito');
         return redirect()->route('admin.child-category.index');
 
@@ -105,6 +106,7 @@ class ChildCategoryController extends Controller
         $childCategory->status = $request->status;
         $childCategory->save();
         Cache::forget('nav_categories');
+        Cache::forget('categories_filter_tree');
         toastr('Child Categoria Actualizada Con Exito');
         return redirect()->route('admin.child-category.index');
     }
@@ -120,6 +122,7 @@ class ChildCategoryController extends Controller
         }
         $childCategory->delete();
         Cache::forget('nav_categories');
+        Cache::forget('categories_filter_tree');
 
         return response(['status' => 'success', 'message' => 'Deleted Successfully!']);
     }
@@ -129,6 +132,7 @@ class ChildCategoryController extends Controller
         $category->status = $request->status == 'true' ? 1 : 0;
         $category->save();
         Cache::forget('nav_categories');
+        Cache::forget('categories_filter_tree');
 
         return response(['message' =>'Status Changed Successfully!']);
     }

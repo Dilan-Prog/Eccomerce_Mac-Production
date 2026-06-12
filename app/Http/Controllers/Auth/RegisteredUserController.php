@@ -39,7 +39,7 @@ class RegisteredUserController extends Controller
             'email'             => ['required', 'string', 'email', 'max:255', 'unique:'.User::class],
             'password'          => ['required', 'confirmed', Rules\Password::defaults()],
             'account_type'      => ['nullable', 'in:personal,b2b'],
-            'rfc'               => ['required', 'string', 'size:13'],
+            'rfc'               => ['required', 'string', 'min:12', 'max:13'],
             'tipo_cliente'      => ['required', 'in:revendedor,tecnico,empresa,contratista'],
             'constancia_fiscal' => ['required', 'file', 'mimes:pdf', 'max:5120'],
             'giro_industrial'   => ['nullable', 'string', 'max:100'],
