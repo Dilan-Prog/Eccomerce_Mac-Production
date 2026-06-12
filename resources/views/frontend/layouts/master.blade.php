@@ -496,20 +496,15 @@
             min-height: 520px;
             height: 80vh;
             max-height: 700px;
-            padding: 72px 0 0;
             color: #fff;
             overflow: hidden;
         }
-        /* Gradiente siempre encima de la foto, debajo del contenido */
-        .hero-home::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            z-index: 1;
-            background: linear-gradient(90deg, rgba(0,40,86,0.97) 0%, rgba(0,40,86,0.93) 38%, rgba(0,40,86,0.45) 62%, rgba(0,40,86,0) 100%);
-            pointer-events: none;
+        /* Container ocupa toda la altura del section */
+        .hero-container {
+            position: relative;
+            height: 100%;
         }
-        /* Capas de foto (ping-pong JS) */
+        /* Capas de foto dentro del container (ping-pong JS) */
         .hero-bg-layer {
             position: absolute;
             inset: 0;
@@ -519,10 +514,19 @@
             background-repeat: no-repeat;
             transition: opacity 0.8s ease-in-out;
         }
-        /* Asegura que el contenido quede sobre el gradiente */
-        .hero-home > .container {
+        /* Gradiente sobre la foto, debajo del contenido */
+        .hero-grad-overlay {
+            position: absolute;
+            inset: 0;
+            z-index: 1;
+            background: linear-gradient(90deg, rgba(0,40,86,0.97) 0%, rgba(0,40,86,0.93) 38%, rgba(0,40,86,0.45) 62%, rgba(0,40,86,0) 100%);
+            pointer-events: none;
+        }
+        /* Contenido sobre el gradiente */
+        .hero-content-wrap {
             position: relative;
             z-index: 2;
+            padding-top: 72px;
         }
         .hero-badge-distribuidor {
             display: inline-flex;
@@ -643,11 +647,11 @@
             .hero-home {
                 min-height: 420px;
                 height: auto;
-                padding: 52px 0 0;
             }
-            /* Mobile: oculta la foto, solo queda el color sólido */
+            /* Mobile: oculta foto y gradiente, queda el azul sólido */
             .hero-bg-layer { display: none; }
-            .hero-home::before { display: none; }
+            .hero-grad-overlay { display: none; }
+            .hero-content-wrap { padding-top: 52px; }
             .hero-titulo { font-size: clamp(24px, 5vw, 34px); }
             .hero-subtitulo { font-size: 14px; margin-bottom: 28px; }
             .hero-cta-grupo { margin-bottom: 40px; }
