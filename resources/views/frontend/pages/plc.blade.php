@@ -24,9 +24,9 @@
                                     el diseño del proyecto hasta la puesta en marcha— para garantizar un control fiable y
                                     eficiente de tus procesos industriales.
                                 </p>
-                                <button class="services_start_button"><i class="fa fa-phone-alt"></i> Atención
-                                    Inmediata</button>
-                                <button class="services_start_button"><i class="fa fa-whatsapp"></i> Escribenos</button>
+                                <a href="tel:8124738768" class="services_start_button track-conversion" data-type="telefono_servicios"><i class="fa fa-phone-alt"></i> Atención
+                                    Inmediata</a>
+                                <a href="https://wa.link/f28njw" target="_blank" class="services_start_button track-conversion" data-type="whatsapp_servicios"><i class="fa fa-whatsapp"></i> Escribenos</a>
                             </article>
                         </div>
                     </div>
@@ -47,8 +47,8 @@
                                     evaluando protocolos, E/S digitales y analógicas, comunicaciones (Modbus, Profinet,
                                     EtherNet/IP) y redundancia para asegurar un sistema robusto y escalable.
                                 </p>
-                                <button class="services_content_info_button"><i class="fa fa-phone-alt"></i>
-                                    Contáctanos</button>
+                                <a href="tel:8124738768" class="services_content_info_button track-conversion" data-type="telefono_servicios"><i class="fa fa-phone-alt"></i>
+                                    Contáctanos</a>
                             </div>
                         </div>
                         <div class="col-12 col-md-4 col-lg-4 col-xl-4">
@@ -58,7 +58,7 @@
                                 <p class="wsus_content_info_description">
                                     Instalamos y configuramos PLC de las principales marcas (Honeywell,Siemens, Allen‑Bradley, Schneider, Mitsubishi), creando lógicas de control, pantallas HMI y comunicaciones con SCADA. Nos aseguramos de que tu sistema funcione sin conflictos y cumpla con normas IEC, UL y NOM.
                                 </p>
-                                <button class="services_content_info_button"><i class="fa fa-phone-alt"></i> Contáctanos</button>
+                                <a href="tel:8124738768" class="services_content_info_button track-conversion" data-type="telefono_servicios"><i class="fa fa-phone-alt"></i> Contáctanos</a>
                             </div>
 
 
@@ -160,8 +160,8 @@
                                     </p>
                                 </div>
 
-                                <button class="services_content_info_button"><i class="fa fa-phone-alt"></i> Quiero Contactarlos</button>
-                                <button class="services_content_info_button"><i class="fa fa-whatsapp" aria-hidden="true"></i> Escríbenos</button>
+                                <a href="tel:8124738768" class="services_content_info_button track-conversion" data-type="telefono_servicios"><i class="fa fa-phone-alt"></i> Quiero Contactarlos</a>
+                                <a href="https://wa.link/f28njw" target="_blank" class="services_content_info_button track-conversion" data-type="whatsapp_servicios"><i class="fa fa-whatsapp" aria-hidden="true"></i> Escríbenos</a>
                             </article>
                         </div>
                     </div>

@@ -23,9 +23,9 @@
                                     Diagnóstico, corrección de fallas, calibración y pruebas funcionales para garantizar el
                                     restablecimiento completo del equipo y su reintegración a la operación industrial.
                                 </p>
-                                <button class="services_start_button"><i class="fa fa-phone-alt"></i> Atención
-                                    Inmediata</button>
-                                <button class="services_start_button"><i class="fa fa-whatsapp"></i> Escribenos</button>
+                                <a href="tel:8124738768" class="services_start_button track-conversion" data-type="telefono_servicios"><i class="fa fa-phone-alt"></i> Atención
+                                    Inmediata</a>
+                                <a href="https://wa.link/f28njw" target="_blank" class="services_start_button track-conversion" data-type="whatsapp_servicios"><i class="fa fa-whatsapp"></i> Escribenos</a>
                             </article>
                         </div>
                     </div>
@@ -46,8 +46,8 @@
                                     almacenamiento o entradas analógicas. Trabajamos con equipos de marcas reconocidas como
                                     Honeywell, Yokogawa, Eurotherm, entre otras.
                                 </p>
-                                <button class="services_content_info_button"><i class="fa fa-phone-alt"></i>
-                                    Contáctanos</button>
+                                <a href="tel:8124738768" class="services_content_info_button track-conversion" data-type="telefono_servicios"><i class="fa fa-phone-alt"></i>
+                                    Contáctanos</a>
                             </div>
                         </div>
                         <div class="col-12 col-md-4 col-lg-4 col-xl-4">
@@ -60,8 +60,8 @@
                                     de entradas/salidas y comunicación con el sistema SCADA o DCS. Nuestro trabajo incluye
                                     calibración y respaldo de configuración.
                                 </p>
-                                <button class="services_content_info_button"><i class="fa fa-phone-alt"></i>
-                                    Contáctanos</button>
+                                <a href="tel:8124738768" class="services_content_info_button track-conversion" data-type="telefono_servicios"><i class="fa fa-phone-alt"></i>
+                                    Contáctanos</a>
                             </div>
 
 
@@ -162,8 +162,8 @@
                                     </p>
                                 </div>
 
-                                <button class="services_content_info_button"><i class="fa fa-phone-alt"></i> Quiero Contactarlos</button>
-                                <button class="services_content_info_button"><i class="fa fa-whatsapp" aria-hidden="true"></i> Escríbenos</button>
+                                <a href="tel:8124738768" class="services_content_info_button track-conversion" data-type="telefono_servicios"><i class="fa fa-phone-alt"></i> Quiero Contactarlos</a>
+                                <a href="https://wa.link/f28njw" target="_blank" class="services_content_info_button track-conversion" data-type="whatsapp_servicios"><i class="fa fa-whatsapp" aria-hidden="true"></i> Escríbenos</a>
                             </article>
                         </div>
                     </div>

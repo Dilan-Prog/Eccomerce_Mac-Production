@@ -23,9 +23,9 @@
               Nuestro equipo técnico garantiza precisión, cumplimiento normativo y soluciones
               adaptadas a los requerimientos térmicos de cada aplicación. Confiabilidad, eficiencia y
               respaldo técnico desde el primer momento.</p>
-              <button class="services_start_button"><i class="fa fa-phone-alt"></i> Atención
-              Inmediata</button>
-              <button class="services_start_button"><i class="fa fa-whatsapp"></i> Escribenos</button>
+              <a href="tel:8124738768" class="services_start_button track-conversion" data-type="telefono_servicios"><i class="fa fa-phone-alt"></i> Atención
+              Inmediata</a>
+              <a href="https://wa.link/f28njw" target="_blank" class="services_start_button track-conversion" data-type="whatsapp_servicios"><i class="fa fa-whatsapp"></i> Escribenos</a>
             </article>
           </div>
         </div>
@@ -45,7 +45,7 @@
           en el proceso o incluso fallas en la producción. Nosotros evaluamos cada variable del
           entorno (tipo de carga, sensores, salidas, comunicación con PLC o HMI) para garantizar
           un funcionamiento estable, seguro y continuo.</p>
-          <button class="services_content_info_button"><i class="fa fa-phone-alt"></i> Contactanos</button>
+          <a href="tel:8124738768" class="services_content_info_button track-conversion" data-type="telefono_servicios"><i class="fa fa-phone-alt"></i> Contactanos</a>
         </div>
         </div>
         <div class="col-12 col-md-4 col-lg-4 col-xl-4">
@@ -56,7 +56,7 @@
           sistemas con lógica compleja, comunicación Modbus, relés de estado sólido y más.
           Integramos equipos de marcas reconocidas como Honeywell,Omron, Autonics, Siemens, Novus o Delta.
           Nuestra prioridad es adaptar la tecnología a tu línea de producción, no al revés.</p>
-          <button class="services_content_info_button"> <i class="fa fa-phone-alt"></i> Contactanos</button>
+          <a href="tel:8124738768" class="services_content_info_button track-conversion" data-type="telefono_servicios"> <i class="fa fa-phone-alt"></i> Contactanos</a>
         </div>
         </div>
         <div class="col-12 col-md-4 col-lg-4 col-xl-4 content_img_service_personalizate">
@@ -153,8 +153,8 @@
             </p>
             </div>
             <!-- Puedes copiar este bloque para agregar más pasos -->
-            <button class="services_content_info_button"><i class="fa fa-phone-alt"></i> Quiero Contactarlos</button>
-            <button class="services_content_info_button"><i class="fa fa-whatsapp" aria-hidden="true"></i> Escribenos</button>
+            <a href="tel:8124738768" class="services_content_info_button track-conversion" data-type="telefono_servicios"><i class="fa fa-phone-alt"></i> Quiero Contactarlos</a>
+            <a href="https://wa.link/f28njw" target="_blank" class="services_content_info_button track-conversion" data-type="whatsapp_servicios"><i class="fa fa-whatsapp" aria-hidden="true"></i> Escribenos</a>
           </article>
         </div>
       </div>

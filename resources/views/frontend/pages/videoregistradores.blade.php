@@ -21,9 +21,9 @@
                                 <p class="services_content_description">Especialistas en sistemas de grabadores de variables
                                     analógicas. Ofrecemos instalación profesional de grabadores de datos para garantizar la
                                     confiabilidad y precisión de tus procesos industriales.</p>
-                                <button class="services_start_button"><i class="fa fa-phone-alt"></i> Atención
-                                    Inmediata</button>
-                                <button class="services_start_button"><i class="fa fa-whatsapp"></i> Escribenos</button>
+                                <a href="tel:8124738768" class="services_start_button track-conversion" data-type="telefono_servicios"><i class="fa fa-phone-alt"></i> Atención
+                                    Inmediata</a>
+                                <a href="https://wa.link/f28njw" target="_blank" class="services_start_button track-conversion" data-type="whatsapp_servicios"><i class="fa fa-whatsapp"></i> Escribenos</a>
                             </article>
                         </div>
                     </div>
@@ -45,8 +45,8 @@
                                     datos, conectividad con sistemas de gestión y redundancia de datos) para asegurar un
                                     sistema de grabadores de variables analógicas estable, seguro y eficiente, con respaldo
                                     continuo.</p>
-                                <button class="services_content_info_button"><i class="fa fa-phone-alt"></i>
-                                    Contactanos</button>
+                                <a href="tel:8124738768" class="services_content_info_button track-conversion" data-type="telefono_servicios"><i class="fa fa-phone-alt"></i>
+                                    Contactanos</a>
                             </div>
                         </div>
                         <div class="col-12 col-md-4 col-lg-4 col-xl-4">
@@ -59,8 +59,8 @@
                                     líderes en el sector como Honeywell, Omron, Siemens y Yokogawa para garantizar que tu
                                     solución de grabadores de variables se adapte perfectamente a las necesidades de tu
                                     proceso industrial.</p>
-                                <button class="services_content_info_button"> <i class="fa fa-phone-alt"></i>
-                                    Contactanos</button>
+                                <a href="tel:8124738768" class="services_content_info_button track-conversion" data-type="telefono_servicios"> <i class="fa fa-phone-alt"></i>
+                                    Contactanos</a>
                             </div>
 
                         </div>
@@ -171,10 +171,10 @@
                                     </p>
                                 </div>
                                 <!-- Puedes copiar este bloque para agregar más pasos -->
-                                <button class="services_content_info_button"><i class="fa fa-phone-alt"></i> Quiero
-                                    Contactarlos</button>
-                                <button class="services_content_info_button"><i class="fa fa-whatsapp"
-                                        aria-hidden="true"></i> Escribenos</button>
+                                <a href="tel:8124738768" class="services_content_info_button track-conversion" data-type="telefono_servicios"><i class="fa fa-phone-alt"></i> Quiero
+                                    Contactarlos</a>
+                                <a href="https://wa.link/f28njw" target="_blank" class="services_content_info_button track-conversion" data-type="whatsapp_servicios"><i class="fa fa-whatsapp"
+                                        aria-hidden="true"></i> Escribenos</a>
                             </article>
                         </div>
                     </div>

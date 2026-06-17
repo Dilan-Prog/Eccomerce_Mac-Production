@@ -21,9 +21,9 @@
                                 <p class="services_content_description">
                                     Especialistas en sistemas de medición de caudal. Ofrecemos instalación profesional de medidores de flujo industriales para garantizar precisión, eficiencia y trazabilidad en tus procesos productivos.
                                 </p>
-                                <button class="services_start_button"><i class="fa fa-phone-alt"></i> Atención
-                                    Inmediata</button>
-                                <button class="services_start_button"><i class="fa fa-whatsapp"></i> Escribenos</button>
+                                <a href="tel:8124738768" class="services_start_button track-conversion" data-type="telefono_servicios"><i class="fa fa-phone-alt"></i> Atención
+                                    Inmediata</a>
+                                <a href="https://wa.link/f28njw" target="_blank" class="services_start_button track-conversion" data-type="whatsapp_servicios"><i class="fa fa-whatsapp"></i> Escribenos</a>
                             </article>
                         </div>
                     </div>
@@ -41,7 +41,7 @@
                                 <p class="wsus_content_info_description">
                                     En entornos industriales, una instalación incorrecta de medidores de flujo puede afectar directamente la eficiencia, calidad y seguridad del proceso. Evaluamos cuidadosamente cada variable operativa (tipo de fluido, presión, temperatura, caudal esperado, compatibilidad con PLCs y SCADA) para asegurar un sistema de medición confiable, preciso y alineado a los estándares normativos.
                                 </p>
-                                <button class="services_content_info_button"><i class="fa fa-phone-alt"></i> Contactanos</button>
+                                <a href="tel:8124738768" class="services_content_info_button track-conversion" data-type="telefono_servicios"><i class="fa fa-phone-alt"></i> Contactanos</a>
                             </div>
                         </div>
                         <div class="col-12 col-md-4 col-lg-4 col-xl-4">
@@ -51,7 +51,7 @@
                                 <p class="wsus_content_info_description">
                                     Instalamos medidores de flujo industriales de última generación, desde tecnologías electromagnéticas y ultrasónicas hasta vortex y Coriolis, con opciones de salida analógica, digital o por protocolo industrial. Nos aseguramos de que el sistema quede calibrado, probado y listo para su operación, integrándolo sin conflictos a tu sistema SCADA, HMI o control local.
                                 </p>
-                                <button class="services_content_info_button"><i class="fa fa-phone-alt"></i> Contactanos</button>
+                                <a href="tel:8124738768" class="services_content_info_button track-conversion" data-type="telefono_servicios"><i class="fa fa-phone-alt"></i> Contactanos</a>
                             </div>
 
                         </div>
@@ -151,8 +151,8 @@
                                     </p>
                                 </div>
 
-                                <button class="services_content_info_button"><i class="fa fa-phone-alt"></i> Quiero Contactarlos</button>
-                                <button class="services_content_info_button"><i class="fa fa-whatsapp" aria-hidden="true"></i> Escríbenos</button>
+                                <a href="tel:8124738768" class="services_content_info_button track-conversion" data-type="telefono_servicios"><i class="fa fa-phone-alt"></i> Quiero Contactarlos</a>
+                                <a href="https://wa.link/f28njw" target="_blank" class="services_content_info_button track-conversion" data-type="whatsapp_servicios"><i class="fa fa-whatsapp" aria-hidden="true"></i> Escríbenos</a>
                             </article>
                         </div>
                     </div>

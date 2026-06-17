@@ -20,14 +20,13 @@
             </div>
 
             <h1 class="hero-titulo">
-                Instrumentación industrial con
-                <span class="highlight">respaldo técnico real</span>
-                para tu planta.
+                 Instrumentación, control y combustión industrial
+                <span class="highlight">para procesos </span>
+                donde fallar no es opción
             </h1>
 
             <p class="hero-subtitulo">
-                Distribuidor autorizado de Honeywell y McDonnell &amp; Miller. Más de +2000 productos
-                en stock con envío a todo México y soporte de ingenieros certificados.
+                Suministro especializado de instrumentación, control y combustión industrial Honeywell, Maxon y McDonnell & Miller, con inventario disponible y soporte técnico para seleccionar correctamente desde el primer contacto.
             </p>
 
             <div class="hero-cta-grupo">
@@ -103,15 +102,28 @@
     var bgA = document.getElementById('hero-bg-a');
     var bgB = document.getElementById('hero-bg-b');
 
+    // Primera imagen: fetchPriority high (es el LCP de la página)
+    var firstImg = new Image();
+    firstImg.fetchPriority = 'high';
+    firstImg.src = banners[0];
     bgA.style.backgroundImage = "url('" + banners[0] + "')";
 
     if (banners.length === 1) return;
 
-    banners.forEach(function (src) { (new Image()).src = src; });
-
     var current = 0;
     var front   = bgA;
     var back    = bgB;
+
+    // Carga lazy: precarga la siguiente imagen justo antes de mostrarla
+    function preloadLazy(index) {
+        var img = new Image();
+        img.loading      = 'lazy';
+        img.fetchPriority = 'low';
+        img.src = banners[index];
+    }
+
+    // Precarga la segunda imagen después de que la primera ya cargó
+    setTimeout(function () { preloadLazy(1); }, 1500);
 
     setInterval(function () {
         current = (current + 1) % banners.length;
@@ -119,6 +131,10 @@
         back.style.opacity  = '1';
         front.style.opacity = '0';
         var tmp = front; front = back; back = tmp;
+
+        // Precarga la siguiente en la rotación (lazy, baja prioridad)
+        var nextIndex = (current + 1) % banners.length;
+        preloadLazy(nextIndex);
     }, 4500);
 }());
 </script>

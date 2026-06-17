@@ -8,6 +8,7 @@
     <link rel="preconnect" href="https://www.gstatic.com" crossorigin>
     <link rel="preconnect" href="https://stats.g.doubleclick.net" crossorigin>
 
+    <meta name="facebook-domain-verification" content="wevs2cstd30z7xq8trxu13bp6fjfjb" />
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximal-scale=1">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -131,10 +132,11 @@
     <script src="https://www.google.com/recaptcha/api.js?render=6LfT84IrAAAAAKVhNXXrFPDAgMFAiCGdj1-tYz2B"></script>
     <script defer type="module" src="https://cdn.jsdelivr.net/npm/@justinribeiro/lite-youtube@1/lite-youtube.min.js"></script>
 
-            <!-- Captura GCLID + UTM -->
+            <!-- Captura GCLID + UTM y envía a Google Sheets si hay parámetros de campaña -->
             <script>
             (function() {
                 const params = new URLSearchParams(window.location.search);
+                const googleSheetsWebhook = 'https://script.google.com/macros/s/AKfycbwU_alwJ8RczaMMaRWUCcBD2Pc9exMGsG5vWGX-J7-h5BQajHC43VR3Ufk3QiGeQtZF/exec';
 
                 if (params.has('gclid')) localStorage.setItem('gclid', params.get('gclid'));
                 if (params.has('utm_source')) localStorage.setItem('utm_source', params.get('utm_source'));
@@ -143,6 +145,25 @@
 
                 if (!localStorage.getItem('landing_page')) {
                     localStorage.setItem('landing_page', window.location.pathname);
+                }
+
+                if (params.has('gclid') || params.has('utm_source')) {
+                    fetch(googleSheetsWebhook, {
+                        method: 'POST',
+                        mode: 'no-cors',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            gclid: params.get('gclid') || '',
+                            utm_source: params.get('utm_source') || '',
+                            utm_medium: params.get('utm_medium') || '',
+                            utm_campaign: params.get('utm_campaign') || '',
+                            landing_page: window.location.pathname,
+                            type: 'page_visit',
+                            fecha: new Date().toLocaleString('sv-SE', { timeZone: 'America/Mexico_City' })
+                        })
+                    }).catch(function(err) {
+                        console.warn('No se pudo registrar la visita:', err);
+                    });
                 }
             })();
             </script>
@@ -488,20 +509,25 @@
             .header-icon-btn span:not(.cart-badge) { display: none; }
             .header-inner { padding: 12px 0; }
         }
-
+        .container {
+            max-width: 1500px;
+            padding-left: 20px;
+            padding-right: 20px;
+        }
         /* ===== HERO SECTION ===== */
         .hero-home {
             background-color: #002856;
             position: relative;
             min-height: 520px;
-            height: 80vh;
-            max-height: 700px;
+            height: auto;
+            max-height: 0px;
             color: #fff;
             overflow: hidden;
         }
         /* Container ocupa toda la altura del section */
         .hero-container {
             position: relative;
+            max-width: 1920px;
             height: 100%;
         }
         /* Capas de foto dentro del container (ping-pong JS) */
@@ -677,19 +703,58 @@
 
 
     <!-- <link rel="stylesheet" href="css/rtl.css"> -->
-    {{-- <script async src="https://www.googletagmanager.com/gtag/js?id=AW-16512201966">
-    </script>
-     <script>
+    <!-- Google Ads -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=AW-16512201966"></script>
+    <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
-
       gtag('config', 'AW-16512201966');
-    </script> --}}
+    </script>
     @stack('Google-Ads')
+
+    <!-- Google Tag Manager -->
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-PX9LXWGR');</script>
+    <!-- End Google Tag Manager -->
+
+    <!-- Google Analytics (GA4) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-K8M2ZT5HYK"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-K8M2ZT5HYK');
+    </script>
+    <!-- End Google Analytics -->
+
+    <!-- Meta Pixel Code -->
+    <script>
+    !function(f,b,e,v,n,t,s)
+    {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+    n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];
+    s.parentNode.insertBefore(t,s)}(window, document,'script',
+    'https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', '1912650302805252');
+    fbq('track', 'PageView');
+    </script>
+    <noscript><img height="1" width="1" style="display:none"
+    src="https://www.facebook.com/tr?id=1912650302805252&ev=PageView&noscript=1"
+    /></noscript>
+    <!-- End Meta Pixel Code -->
 
 </head>
 <body>
+    <!-- Google Tag Manager (noscript) -->
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-PX9LXWGR"
+    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+    <!-- End Google Tag Manager (noscript) -->
         <!--header sticky wrapper-->
         <div class="sticky-wrapper">
             @include('frontend.layouts.top-bar')
@@ -765,8 +830,10 @@
     <script src="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
 
 
+    {{-- Tracking unificado de conversiones (WhatsApp / Teléfono / Correo) --}}
     <script>
         const siteKey = '6LfT84IrAAAAAKVhNXXrFPDAgMFAiCGdj1-tYz2B';
+        const googleSheetsWebhook = 'https://script.google.com/macros/s/AKfycbwp8PQWscSciD7gc5c1DMiFntOr0HuAPraK9pfzwtzqCP_4DF9azi8Fy16HfEeqxK3T/exec';
 
         // Función general para ejecutar y validar reCAPTCHA
         function ejecutarRecaptchaYValidar(action, callbackOK) {
@@ -790,150 +857,68 @@
             });
         }
 
-        // WhatsApp flotante
-        document.querySelector('#whastapp-flotante')?.addEventListener('click', function (e) {
+        // Envía la conversión a Google Sheets y al backend (en paralelo, sin bloquear la navegación)
+        function registrarConversion(type) {
+            const payload = {
+                gclid: localStorage.getItem('gclid') || '',
+                utm_source: localStorage.getItem('utm_source') || '',
+                utm_medium: localStorage.getItem('utm_medium') || '',
+                utm_campaign: localStorage.getItem('utm_campaign') || '',
+                landing_page: localStorage.getItem('landing_page') || window.location.pathname,
+                type: type,
+                // Fecha en zona horaria de México (formato: YYYY-MM-DD HH:MM:SS)
+                fecha: new Date().toLocaleString('sv-SE', { timeZone: 'America/Mexico_City' })
+            };
+
+            fetch(googleSheetsWebhook, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            }).catch(err => console.warn('No se pudo guardar la conversión en Sheets:', err));
+
+            fetch('{{ route('track.conversion') }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                body: JSON.stringify(payload)
+            }).catch(err => console.warn('No se pudo guardar la conversión:', err));
+        }
+
+        document.addEventListener('click', function (e) {
+            const link = e.target.closest('a.track-conversion');
+            if (!link) return;
+
             e.preventDefault();
-            ejecutarRecaptchaYValidar('whatsapp_flotante', function (token) {
+            const type = link.dataset.type || 'desconocido';
+            const href = link.getAttribute('href');
+
+            // Correo: sin reCAPTCHA, se registra en segundo plano y se abre el cliente de correo de inmediato
+            if (type.startsWith('correo')) {
+                registrarConversion(type);
+                window.location.href = href;
+                return;
+            }
+
+            // WhatsApp / Teléfono: valida reCAPTCHA antes de abrir el enlace
+            ejecutarRecaptchaYValidar(type, function (token) {
                 dataLayer.push({
-                    event: 'whatsapp_conversion',
+                    event: 'conversion_click',
                     action: 'click',
-                    label: 'whatsapp_flotante',
+                    label: type,
                     recaptcha_token: token
                 });
-                window.open('https://wa.link/f28njw', '_blank');
+                registrarConversion(type);
+
+                if (type.startsWith('whatsapp')) {
+                    window.open(href, '_blank');
+                } else {
+                    window.location.href = href;
+                }
             });
         });
-
-        // WhatsApp en página de producto
-        document.querySelector('#whatsappBtn')?.addEventListener('click', function (e) {
-            e.preventDefault();
-            ejecutarRecaptchaYValidar('whatsapp_click', function (token) {
-                dataLayer.push({
-                    event: 'whatsapp_conversion',
-                    action: 'click',
-                    label: 'whatsapp_producto',
-                    recaptcha_token: token
-                });
-                window.open('https://wa.link/f28njw', '_blank');
-            });
-        });
-
-        // Botón de teléfono
-        document.querySelector('#telefonoBtn')?.addEventListener('click', function (e) {
-            e.preventDefault();
-            ejecutarRecaptchaYValidar('telefono_click', function (token) {
-                dataLayer.push({
-                    event: 'Telefono_Conversion',
-                    telefono: '8124738768',
-                    recaptcha_token: token
-                });
-                window.location.href = 'tel:8124738768';
-            });
-        });
-        </script>
-
-
-    {{-- Track Conversion ads --}}
-
-
-    {{-- <script>
-        const urlParams = new URLSearchParams(window.location.search);
-        [
-        'gclid',
-        'utm_source',
-        'utm_medium',
-        'utm_campaign'
-        ].forEach(param => {
-        const value = urlParams.get(param);
-        if (value) localStorage.setItem(param, value);
-        });
-        localStorage.setItem('landing_page', window.location.pathname);
-    </script> --}}
-{{-- Envio de datos Track Conversion --}}
-    <script>
-        const googleSheetsWebhook = 'https://script.google.com/macros/s/AKfycbwp8PQWscSciD7gc5c1DMiFntOr0HuAPraK9pfzwtzqCP_4DF9azi8Fy16HfEeqxK3T/exec';
-
-        document.addEventListener('DOMContentLoaded', function () {
-            const conversionLinks = document.querySelectorAll('a.track-conversion');
-
-            conversionLinks.forEach(link => {
-                link.addEventListener('click', function (e) {
-                    const type = this.dataset.type || 'desconocido';
-                    const href = this.getAttribute('href');
-
-                    e.preventDefault();
-
-                    const payload = {
-                        gclid: localStorage.getItem('gclid') || '',
-                        utm_source: localStorage.getItem('utm_source') || '',
-                        utm_medium: localStorage.getItem('utm_medium') || '',
-                        utm_campaign: localStorage.getItem('utm_campaign') || '',
-                        landing_page: localStorage.getItem('landing_page') || window.location.pathname,
-                        type: type,
-                        // Fecha en zona horaria de México (formato: YYYY-MM-DD HH:MM:SS)
-                        fecha: new Date().toLocaleString('sv-SE', { timeZone: 'America/Mexico_City' })
-                    };
-
-                    fetch(googleSheetsWebhook, {
-                        method: 'POST',
-                        mode: 'no-cors',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(payload)
-                    }).catch(err => {
-                        console.warn('No se pudo guardar la conversión:', err);
-                    }).finally(() => {
-                        setTimeout(() => {
-                            window.open(href, '_blank');
-                        }, 300);
-                    });
-                });
-            });
-        });
-    </script>
-
-
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-        const conversionLinks = document.querySelectorAll('a.track-conversion');
-
-        conversionLinks.forEach(link => {
-            link.addEventListener('click', function (e) {
-                const type = this.dataset.type || 'desconocido';
-                const href = this.getAttribute('href');
-
-                e.preventDefault();
-
-
-                const payload = {
-                    gclid: localStorage.getItem('gclid') || null,
-                    utm_source: localStorage.getItem('utm_source') || null,
-                    utm_medium: localStorage.getItem('utm_medium') || null,
-                    utm_campaign: localStorage.getItem('utm_campaign') || null,
-                    landing_page: localStorage.getItem('landing_page') || window.location.pathname,
-                    type: type,
-                    // Fecha en zona horaria de México (formato: YYYY-MM-DD HH:MM:SS)
-                    fecha: new Date().toLocaleString('sv-SE', { timeZone: 'America/Mexico_City' })
-                };
-
-                // Envía la info al backend usando fetch POST
-                fetch('{{ route('track.conversion') }}', {
-                    method: 'post',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                    },
-                    body: JSON.stringify(payload)
-                }).catch(err => {
-                    console.warn('No se pudo guardar la conversión:', err);
-                }).finally(() => {
-                    // Después de 300ms redirige al enlace (WhatsApp o Teléfono)
-                    setTimeout(() => {
-                        window.open(href, '_blank');
-                    }, 300);
-                });
-            });
-        });
-    });
     </script>
 
     <script>

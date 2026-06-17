@@ -25,9 +25,9 @@
                                     analógicas y medidores de flujo industriales. Asegura la trazabilidad, confiabilidad y
                                     cumplimiento normativo de tus instrumentos de medición.
                                 </p>
-                                <button class="services_start_button"><i class="fa fa-phone-alt"></i> Atención
-                                    Inmediata</button>
-                                <button class="services_start_button"><i class="fa fa-whatsapp"></i> Escribenos</button>
+                                <a href="tel:8124738768" class="services_start_button track-conversion" data-type="telefono_servicios"><i class="fa fa-phone-alt"></i> Atención
+                                    Inmediata</a>
+                                <a href="https://wa.link/f28njw" target="_blank" class="services_start_button track-conversion" data-type="whatsapp_servicios"><i class="fa fa-whatsapp"></i> Escribenos</a>
                             </article>
                         </div>
                     </div>
@@ -48,8 +48,8 @@
                                     señales eléctricas. Emitimos certificados válidos ante auditorías ISO 9001, IATF, NOM y
                                     clientes con requerimientos internacionales.
                                 </p>
-                                <button class="services_content_info_button"><i class="fa fa-phone-alt"></i>
-                                    Contáctanos</button>
+                                <a href="tel:8124738768" class="services_content_info_button track-conversion" data-type="telefono_servicios"><i class="fa fa-phone-alt"></i>
+                                    Contáctanos</a>
                             </div>
                         </div>
                         <div class="col-12 col-md-4 col-lg-4 col-xl-4">
@@ -62,8 +62,8 @@
                                     exactitud en tus mediciones para procesos industriales, comerciales o de calidad,
                                     asegurando cumplimiento ante PROFECO, ISO e industria farmacéutica o alimentaria.
                                 </p>
-                                <button class="services_content_info_button"><i class="fa fa-phone-alt"></i>
-                                    Contáctanos</button>
+                                <a href="tel:8124738768" class="services_content_info_button track-conversion" data-type="telefono_servicios"><i class="fa fa-phone-alt"></i>
+                                    Contáctanos</a>
                             </div>
 
 
@@ -180,10 +180,10 @@
                                     </p>
                                 </div>
 
-                                <button class="services_content_info_button"><i class="fa fa-phone-alt"></i> Quiero
-                                    Contactarlos</button>
-                                <button class="services_content_info_button"><i class="fa fa-whatsapp"
-                                        aria-hidden="true"></i> Escríbenos</button>
+                                <a href="tel:8124738768" class="services_content_info_button track-conversion" data-type="telefono_servicios"><i class="fa fa-phone-alt"></i> Quiero
+                                    Contactarlos</a>
+                                <a href="https://wa.link/f28njw" target="_blank" class="services_content_info_button track-conversion" data-type="whatsapp_servicios"><i class="fa fa-whatsapp"
+                                        aria-hidden="true"></i> Escríbenos</a>
                             </article>
                         </div>
                     </div>
