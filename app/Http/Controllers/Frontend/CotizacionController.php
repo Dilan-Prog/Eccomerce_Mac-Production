@@ -76,7 +76,6 @@ class CotizacionController extends Controller
             'user_id'          => $user->id,
             'tipo_persona'     => $request->tipo_persona,
             'razon_social'     => $request->tipo_persona === 'empresa' ? $request->razon_social : null,
-            'curp'             => $request->tipo_persona === 'fisica' ? $request->curp : null,
             'rfc'              => strtoupper($request->rfc),
             'direccion_fiscal' => $request->direccion_fiscal,
             'cif_path'         => $cifPath,

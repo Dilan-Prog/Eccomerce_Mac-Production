@@ -134,12 +134,13 @@
         <tr>
             <td class="lbl">RFC:</td>
             <td class="val">{{ $perfil->rfc }}</td>
-            <td class="lbl">
-                {{ $perfil->tipo_persona === 'empresa' ? 'Razón Social:' : 'CURP:' }}
-            </td>
-            <td class="val">
-                {{ $perfil->tipo_persona === 'empresa' ? ($perfil->razon_social ?? '—') : ($perfil->curp ?? '—') }}
-            </td>
+            @if($perfil->tipo_persona === 'empresa')
+                <td class="lbl">Razón Social:</td>
+                <td class="val">{{ $perfil->razon_social ?? '—' }}</td>
+            @else
+                <td class="lbl"></td>
+                <td class="val"></td>
+            @endif
         </tr>
         <tr>
             <td class="lbl">Dirección fiscal:</td>

@@ -190,14 +190,6 @@
 
                 {{-- CAMPOS PERSONA FÍSICA --}}
                 <div id="campos-fisica" class="{{ old('tipo_persona') !== 'fisica' ? 'hidden' : '' }}">
-                    <div class="form-group">`
-                        <label>CURP <span class="req">*</span></label>
-                        <input type="text" name="curp" class="form-input"
-                               value="{{ old('curp') }}"
-                               placeholder="GOML850102HDFNRS09" maxlength="18"
-                               style="text-transform:uppercase;">
-                        @error('curp') <span class="form-error">{{ $message }}</span> @enderror
-                    </div>
                     <div class="form-group">
                         <label>RFC (13 caracteres) <span class="req">*</span></label>
                         <input type="text" name="rfc" id="rfc_fisica" class="form-input"
@@ -276,8 +268,8 @@
         btn.addEventListener('click', function () { activarTipo(btn.dataset.tipo); });
     });
 
-    // Sanitización: mayúsculas y sin espacios en RFC y CURP
-    [rfcEmp, rfcFis, document.querySelector('input[name="curp"]')].forEach(function (el) {
+    // Sanitización: mayúsculas y sin espacios en RFC
+    [rfcEmp, rfcFis].forEach(function (el) {
         if (!el) return;
         el.addEventListener('input', function () {
             this.value = this.value.replace(/\s/g, '').toUpperCase();

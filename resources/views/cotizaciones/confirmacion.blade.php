@@ -110,12 +110,6 @@
                     <span class="value">{{ $perfil->razon_social }}</span>
                 </div>
                 @endif
-                @if($perfil->tipo_persona === 'fisica' && $perfil->curp)
-                <div class="perfil-row">
-                    <span class="label">CURP</span>
-                    <span class="value">{{ $perfil->curp }}</span>
-                </div>
-                @endif
                 <div class="perfil-row">
                     <span class="label">Dirección fiscal</span>
                     <span class="value" style="text-align:right;max-width:340px;">{{ $perfil->direccion_fiscal }}</span>
