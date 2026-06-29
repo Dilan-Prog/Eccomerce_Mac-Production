@@ -155,6 +155,15 @@ class HomeController extends Controller
     public function  distribuidorHoneywell(){
         return view('frontend.pages.honeywell-oficial');
     }
+    public function  catalogo(){
+        return view('frontend.pages.catalogo');
+    }
+    public function  categorias(){
+        return view('frontend.pages.categorias');
+    }
+    public function  categoriaProductos($categoria){
+        return view('frontend.pages.categoria-productos', ['categoriaSlug' => $categoria]);
+    }
 
 
 

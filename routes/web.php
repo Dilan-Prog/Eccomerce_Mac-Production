@@ -46,6 +46,9 @@ Route::get('servicio-reparacion-videoregistradores', [HomeController::class, 'se
 Route::get('paypal-msi-info', [HomeController::class, 'paypalInfo'])->name('paypal-msi-info');
 Route::get('servicio-calibracion-ema', [HomeController::class, 'servicesCalibrationEMA'])->name('servicio-calibracion-ema');
 Route::get('medicion', [HomeController::class, 'servicesMedicion'])->name('medicion');
+Route::get('catalogo-productos', [HomeController::class, 'catalogo'])->name('catalogo');
+Route::get('categorias', [HomeController::class, 'categorias'])->name('categorias');
+Route::get('categorias/{categoria}', [HomeController::class, 'categoriaProductos'])->name('categorias.productos');
 
 Route::get('Terminos-Condiciones', [HomeController::class, 'terminosCondiciones'])->name('Terminos-Condiciones');
 Route::get('Aviso-Legal', [HomeController::class, 'avisoLegal'])->name('Aviso-Legal');
