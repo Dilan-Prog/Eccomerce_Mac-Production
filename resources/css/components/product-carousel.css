@@ -1,0 +1,59 @@
+/* =========================================================
+   PRODUCT CAROUSEL — CSS scroll-snap + JS puro (sin jQuery/Slick).
+   Usado por las secciones "category-product-slider-*" del home.
+   ========================================================= */
+.cps-carousel { position: relative; padding: 0 44px; }
+
+.cps-track {
+    display: flex;
+    gap: 16px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    padding-bottom: 6px;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+.cps-track::-webkit-scrollbar { display: none; }
+
+.cps-slide {
+    flex: 0 0 calc((100% - 3 * 16px) / 4);
+    max-width: calc((100% - 3 * 16px) / 4);
+    scroll-snap-align: start;
+    display: flex;
+}
+.cps-slide > .product-card { width: 100%; }
+
+.cps-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 5;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    border: 1px solid var(--gris-borde, #DDE3EA);
+    background: var(--blanco, #fff);
+    color: var(--azul-principal, #003E7E);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.12);
+    transition: background 0.2s, color 0.2s;
+}
+.cps-arrow:hover { background: var(--azul-principal, #003E7E); color: var(--blanco, #fff); }
+.cps-arrow--prev { left: 0; }
+.cps-arrow--next { right: 0; }
+
+@media (max-width: 1199px) {
+    .cps-slide { flex-basis: calc((100% - 2 * 16px) / 3); max-width: calc((100% - 2 * 16px) / 3); }
+}
+@media (max-width: 767px) {
+    .cps-carousel { padding: 0 38px; }
+    .cps-slide { flex-basis: calc((100% - 16px) / 2); max-width: calc((100% - 16px) / 2); }
+}
+@media (max-width: 479px) {
+    .cps-carousel { padding: 0 34px; }
+    .cps-slide { flex-basis: 100%; max-width: 100%; }
+}

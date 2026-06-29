@@ -376,8 +376,9 @@
   </div>
 </section>
 
+@include('frontend.home.sections.category-product-slider-one')
 <!-- ============ SECCIÓN DE 6 CATEGORÍAS PRINCIPALES ============ -->
-<section class="categories-hero-section">
+{{-- <section class="categories-hero-section">
   <div class="container">
     <div class="home-section-header">
       <div class="home-section-eyebrow">Catálogo</div>
@@ -492,7 +493,9 @@
 
     </div>
   </div>
-</section>
+</section> --}}
+
+
 
 <!-- ============ SECCIÓN POR QUÉ ELEGIRNOS ============ -->
 <section class="why-us-section">

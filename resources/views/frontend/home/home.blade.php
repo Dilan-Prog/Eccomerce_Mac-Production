@@ -10,5 +10,8 @@
         @include('frontend.home.sections.section-shop-info')
         @include('frontend.home.sections.opinion-google')
         @include('frontend.home.sections.categories-why-us')
+        @include('frontend.home.sections.category-product-slider-one')
+        @include('frontend.home.sections.category-product-slider-two')
+        @include('frontend.home.sections.category-product-slider-three')
     @include('frontend.home.sections.banner-b2b')
 @endsection

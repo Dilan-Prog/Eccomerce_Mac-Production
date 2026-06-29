@@ -33,7 +33,7 @@ class HomeController extends Controller
         $brands = Cache::remember('brand', 600, function(){
             return Brand::where('status', 1)->get();
         });
-        
+
 
         // Caché para los artículos de la venta flash
         Cache::forget('flash_sale_date');
@@ -50,8 +50,9 @@ class HomeController extends Controller
         //Carrusel Category One
         Cache::forget('category_product_section_one');
         $categoryProductsSectionsOne = Cache::remember('category_product_section_one', 600, function() {
-            return Product::with(['productImageGalleries', 'category','reviews']) // Corrige aquí las relaciones
+            return Product::with(['productImageGalleries', 'category', 'reviews', 'brand', 'combinations']) // Corrige aquí las relaciones
                 ->where('status', 1)
+                ->where('price' )
                 ->whereIn('category_id', [ 2, 4, 12, 9]) // Categorías específicas
                 ->inRandomOrder() // Ordenar de forma aleatoria
                 ->take(12)
@@ -61,7 +62,7 @@ class HomeController extends Controller
         //Carrusel Category two
         Cache::forget('category_product_section_two');
         $categoryProductsSectionsTwo = Cache::remember('category_product_section_two', 600, function() {
-            return Product::with(['productImageGalleries', 'category','reviews']) // Corrige aquí las relaciones
+            return Product::with(['productImageGalleries', 'category', 'reviews', 'brand', 'combinations']) // Corrige aquí las relaciones
                 ->where('status', 1)
                 ->whereIn('category_id', [20, 5, 6, 7]) // Categorías específicas
                 ->inRandomOrder() // Ordenar de forma aleatoria
@@ -73,7 +74,7 @@ class HomeController extends Controller
         // Carrusel Category Three
         Cache::forget('category_product_section_three');
         $categoryProductsSectionsThree = Cache::remember('category_product_section_three', 600, function() {
-            return Product::with(['productImageGalleries', 'category','reviews']) // Corrige aquí las relaciones
+            return Product::with(['productImageGalleries', 'category', 'reviews', 'brand', 'combinations']) // Corrige aquí las relaciones
                 ->where('status', 1)
                 ->whereIn('category_id', [ 2, 4]) // Categorías específicas
                 ->inRandomOrder() // Ordenar de forma aleatoria
@@ -117,7 +118,7 @@ class HomeController extends Controller
     public function servicesMedicion(){
         return view('frontend.pages.medicion');
     }
-    
+
     public function  associatePage(){
         return view('frontend.pages.associate_page');
     }

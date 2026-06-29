@@ -512,7 +512,7 @@
                 </div>
 
                 {{-- Título --}}
-                <h1 class="product-title" itemprop="name">{{ $fullProductName }}</h1>
+                <h1 class="product-title" itemprop="name" >{{ $fullProductName }}</h1>
 
                 {{-- Códigos P/N --}}
                 <div class="product-codes">

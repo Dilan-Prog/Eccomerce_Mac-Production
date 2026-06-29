@@ -18,7 +18,7 @@ class CotizacionRequest extends FormRequest
 
         // RFC: empresa = 3 letras + 6 dígitos + 3 alfanuméricos = 12 chars
         //       física  = 4 letras + 6 dígitos + 3 alfanuméricos = 13 chars
-        $rfcSize  = $tipo === 'fisica' ? 13 : 12;
+        $rfcSize  = $tipo === 'fisica' ? 13 : a12;
         $rfcRegex = $tipo === 'fisica'
             ? 'regex:/^[A-ZÑ&]{4}\d{6}[A-Z0-9]{3}$/i'
             : 'regex:/^[A-ZÑ&]{3}\d{6}[A-Z0-9]{3}$/i';
