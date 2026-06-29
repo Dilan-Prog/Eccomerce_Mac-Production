@@ -2,38 +2,72 @@
 
 /**
  * Página de Categorías de Productos (diseño puro, sin layout).
- * Los datos de categorías son estáticos por ahora; cuando se conecte al
- * backend, reemplazar CATEGORIAS por un fetch() a una ruta de Laravel
- * (p.ej. /api/categorias) y volver a llamar a renderCategorias().
+ * Las categorías (con sus subcategorías y child categorías) vienen de
+ * Laravel (modelos Category/Subcategory/ChildCategory) inyectadas en
+ * window.CATALOGO_DATA.categorias desde el Blade.
  */
 
-// Equivalente a "const [categorias] = useState([...])" en React: datos estáticos.
-var CATEGORIAS = [
-    { slug: 'controladores-programadores', nombre: 'Controladores y Programadores', productos: 4 },
-    { slug: 'automatizacion-control', nombre: 'Automatización y Control', productos: 3 },
-    { slug: 'combustion-gas', nombre: 'Combustión y Gas', productos: 4 },
-    { slug: 'videoregistradores', nombre: 'Videoregistradores', productos: 3 },
-    { slug: 'termopares-rtd', nombre: 'Termopares y RTD', productos: 4 },
-    { slug: 'limit-switch', nombre: 'Limit Switch', productos: 3 },
-    { slug: 'transductores-presion', nombre: 'Transductores de Presión', productos: 4 },
-    { slug: 'sensores-proximidad', nombre: 'Sensores de Proximidad', productos: 3 },
-    { slug: 'micro-switch', nombre: 'Micro Switch', productos: 3 },
-    { slug: 'relevadores-ssr', nombre: 'Relevadores y SSR', productos: 4 },
-    { slug: 'valvulas-mcdonnell-miller', nombre: 'Válvulas (McDonnell & Miller)', productos: 4 },
-    { slug: 'timer-relays-contadores', nombre: 'Timer Relays y Contadores', productos: 4 }
-];
+// Datos reales inyectados por el Blade desde el Controller (ver categorias.blade.php).
+var CATEGORIAS = (window.CATALOGO_DATA && window.CATALOGO_DATA.categorias) || [];
 
 var ARROW_ICON_SVG = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="categorias__card-arrow"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>';
+var CHEVRON_ICON_SVG = '<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"></path></svg>';
+
+// Genera el <li> de una subcategoría, con su propio dropdown de child categorías si tiene.
+function renderSubcategoriaItem(sub) {
+    var tieneHijas = sub.childCategorias && sub.childCategorias.length > 0;
+
+    var hijasHtml = '';
+    if (tieneHijas) {
+        hijasHtml = '<ul class="categorias__childcats-list">' +
+            sub.childCategorias.map(function (child) {
+                return '<li><a href="' + child.url + '">' + child.nombre + '</a></li>';
+            }).join('') +
+        '</ul>';
+    }
+
+    var toggleHtml = tieneHijas
+        ? '<button type="button" class="categorias__childcats-toggle" data-action="toggle-childcats" aria-expanded="false" aria-label="Ver subcategorías de ' + sub.nombre + '">' + CHEVRON_ICON_SVG + '</button>'
+        : '';
+
+    return (
+        '<li class="categorias__subcat">' +
+            '<div class="categorias__subcat-row">' +
+                '<a href="' + sub.url + '" class="categorias__subcat-link">' + sub.nombre + '</a>' +
+                toggleHtml +
+            '</div>' +
+            hijasHtml +
+        '</li>'
+    );
+}
 
 // Equivalente a un componente presentacional de React: genera el HTML de una tarjeta.
 function renderCategoriaCard(categoria) {
+    var tieneSubcategorias = categoria.subcategorias && categoria.subcategorias.length > 0;
+
+    var subcatsHtml = '';
+    if (tieneSubcategorias) {
+        subcatsHtml =
+            '<details class="categorias__card-subcats">' +
+                '<summary class="categorias__card-subcats-summary">' +
+                    CHEVRON_ICON_SVG + ' Subcategorías' +
+                '</summary>' +
+                '<ul class="categorias__subcats-list">' +
+                    categoria.subcategorias.map(renderSubcategoriaItem).join('') +
+                '</ul>' +
+            '</details>';
+    }
+
     return (
-        '<button type="button" class="categorias__card" data-slug="' + categoria.slug + '" data-action="ir-categoria">' +
-            '<div class="categorias__card-thumb"></div>' +
-            '<p class="categorias__card-name">' + categoria.nombre + '</p>' +
-            '<p class="categorias__card-count">' + categoria.productos + ' producto' + (categoria.productos === 1 ? '' : 's') + '</p>' +
-            '<div class="categorias__card-arrow-row">' + ARROW_ICON_SVG + '</div>' +
-        '</button>'
+        '<div class="categorias__card-wrap">' +
+            '<a href="' + categoria.url + '" class="categorias__card" data-action="ir-categoria">' +
+                '<div class="categorias__card-thumb"></div>' +
+                '<p class="categorias__card-name">' + categoria.nombre + '</p>' +
+                '<p class="categorias__card-count">' + categoria.productos + ' producto' + (categoria.productos === 1 ? '' : 's') + '</p>' +
+                '<div class="categorias__card-arrow-row">' + ARROW_ICON_SVG + '</div>' +
+            '</a>' +
+            subcatsHtml +
+        '</div>'
     );
 }
 
@@ -66,13 +100,20 @@ document.addEventListener('DOMContentLoaded', function () {
         renderCategorias(filtrarCategorias(searchInput.value), grid, emptyState);
     });
 
-    // Delegación de eventos: una sola escucha para todas las tarjetas, ya que se re-renderizan.
+    // Delegación de eventos: el grid se re-renderiza al buscar, así que una sola
+    // escucha en el contenedor cubre el dropdown de child categorías de cada subcategoría.
     grid.addEventListener('click', function (e) {
-        var card = e.target.closest('[data-action="ir-categoria"]');
-        if (!card) {
+        var toggle = e.target.closest('[data-action="toggle-childcats"]');
+        if (!toggle) {
             return;
         }
-        window.location.href = '/categorias/' + card.dataset.slug;
+        var lista = toggle.closest('.categorias__subcat').querySelector('.categorias__childcats-list');
+        if (!lista) {
+            return;
+        }
+        var isOpen = lista.classList.toggle('is-open');
+        toggle.classList.toggle('is-open', isOpen);
+        toggle.setAttribute('aria-expanded', String(isOpen));
     });
 
     if (menuBtn) {

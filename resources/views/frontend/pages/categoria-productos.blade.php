@@ -3,11 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Productos por Categoría | Mac Del Norte</title>
+  <title>{{ $category->name }} | Mac Del Norte</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&family=Inter:wght@400;500;600;700&family=Roboto+Mono:wght@400&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="{{ asset('css/categoria-productos.css') }}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="{{ asset('css/categoria-productos.css') }}?v={{ filemtime(public_path('css/categoria-productos.css')) }}">
 </head>
 <body>
   <div class="cat-prod">
@@ -48,7 +49,7 @@
           <span class="cat-prod__sidebar-brand-icon">
             <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="16" height="16" x="4" y="4" rx="2"></rect><rect width="6" height="6" x="9" y="9" rx="1"></rect><path d="M15 2v2"></path><path d="M15 20v2"></path><path d="M2 15h2"></path><path d="M2 9h2"></path><path d="M20 15h2"></path><path d="M20 9h2"></path><path d="M9 2v2"></path><path d="M9 20v2"></path></svg>
           </span>
-          <span class="cat-prod__sidebar-brand-text">Catálogo 2025</span>
+          <span class="cat-prod__sidebar-brand-text">Catálogo de Productos</span>
         </div>
         <nav class="cat-prod__sidebar-nav" id="catProdSidebarNav"></nav>
       </aside>
@@ -60,6 +61,7 @@
           <span class="cat-prod__breadcrumb-sep">&rsaquo;</span>
           <a href="{{ route('categorias') }}">Categorías</a>
           <span class="cat-prod__breadcrumb-sep">&rsaquo;</span>
+          <span id="catProdBreadcrumbParent"></span>
           <span class="cat-prod__breadcrumb-current" id="catProdBreadcrumbCurrent">&nbsp;</span>
         </p>
 
@@ -91,9 +93,11 @@
 
   <script>
     window.CATALOGO_DATA = {
-        categoriaSlug: @json($categoriaSlug)
+        categoria: @json($categoriaData),
+        sidebarCategorias: @json($sidebarCategoriasData),
+        productos: @json($productosData)
     };
   </script>
-  <script src="{{ asset('js/categoria-productos.js') }}" defer></script>
+  <script src="{{ asset('js/categoria-productos.js') }}?v={{ filemtime(public_path('js/categoria-productos.js')) }}" defer></script>
 </body>
 </html>

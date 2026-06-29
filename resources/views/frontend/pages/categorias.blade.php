@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="{{ asset('css/categorias.css') }}">
+  <link rel="stylesheet" href="{{ asset('css/categorias.css') }}?v={{ filemtime(public_path('css/categorias.css')) }}">
 </head>
 <body>
   <div class="categorias">
@@ -22,7 +22,7 @@
         </a>
 
         <nav class="categorias__nav">
-          <button type="button" class="categorias__nav-link categorias__nav-link--active" data-action="ir-catalogo">Catálogo</button>
+          <a href="{{ route('catalogo') }}" class="categorias__nav-link categorias__nav-link--active">Catálogo</a>
           <a href="{{ route('contact') }}" class="categorias__nav-link">Contacto</a>
           <div class="categorias__nav-contact">
             <span class="categorias__nav-contact-line">+52 (81) 0000-0000</span>
@@ -66,6 +66,11 @@
 
   </div>
 
-  <script src="{{ asset('js/categorias.js') }}" defer></script>
+  <script>
+    window.CATALOGO_DATA = {
+        categorias: @json($categoriasData)
+    };
+  </script>
+  <script src="{{ asset('js/categorias.js') }}?v={{ filemtime(public_path('js/categorias.js')) }}" defer></script>
 </body>
 </html>
