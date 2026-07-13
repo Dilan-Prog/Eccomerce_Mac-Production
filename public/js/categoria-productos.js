@@ -92,7 +92,6 @@ function renderProductoCard(producto) {
                 '<div class="cat-prod__card-body">' +
                     (producto.modelo ? '<p class="cat-prod__card-modelo">Modelo: ' + producto.modelo + '</p>' : '') +
                     '<h3 class="cat-prod__card-nombre">' + producto.nombre + '</h3>' +
-                    '<p class="cat-prod__card-desc">' + (producto.descripcion || '') + '</p>' +
                     masModelos +
                     marca +
                 '</div>' +
@@ -104,11 +103,21 @@ function renderProductoCard(producto) {
     );
 }
 
+// Renderiza un grupo de productos: si tiene nombre (subcategoría), antepone un
+// separador de título que ocupa todo el ancho del grid; si no, solo las cards.
+function renderGrupoProductos(grupo) {
+    var header = grupo.nombre
+        ? '<div class="cat-prod__group-header"><span class="cat-prod__group-title">' + grupo.nombre + '</span></div>'
+        : '';
+    return header + grupo.productos.map(renderProductoCard).join('');
+}
+
 document.addEventListener('DOMContentLoaded', function () {
     var data = window.CATALOGO_DATA || {};
     var categoria = data.categoria || {};
     var sidebarCategorias = data.sidebarCategorias || [];
-    var productos = data.productos || [];
+    // Cada elemento es un grupo { nombre: <subcategoría o null>, productos: [...] }.
+    var gruposProductos = data.productos || [];
 
     document.getElementById('catProdHeaderTitle').textContent = categoria.nombre || '';
     document.getElementById('catProdBreadcrumbCurrent').textContent = categoria.nombre || '';
@@ -147,8 +156,8 @@ document.addEventListener('DOMContentLoaded', function () {
     var grid = document.getElementById('catProdGrid');
     var emptyState = document.getElementById('catProdEmpty');
 
-    grid.innerHTML = productos.map(renderProductoCard).join('');
-    emptyState.hidden = productos.length > 0;
+    grid.innerHTML = gruposProductos.map(renderGrupoProductos).join('');
+    emptyState.hidden = gruposProductos.length > 0;
 
     // Delegación de eventos para los botones "Solicitar Cotización" de cada tarjeta.
     grid.addEventListener('click', function (e) {

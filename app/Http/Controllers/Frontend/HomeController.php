@@ -288,9 +288,61 @@ class HomeController extends Controller
             ];
         }
 
-        $productosData = [];
+        if ($filtroNombre) {
+            // Ya viene filtrado a una sola subcategoría/child categoría: un solo grupo, sin encabezado
+            // (el nombre del filtro ya se muestra en el banner de arriba).
+            $productosData = [[
+                'nombre' => null,
+                'productos' => $this->mapProductosParaVista($products),
+            ]];
+        } else {
+            // Vista de la categoría completa: agrupar por subcategoría, omitiendo las que no tengan productos.
+            $subcategoriasCategoria = Subcategory::where('category_id', $category->id)
+                ->where('status', 1)
+                ->orderBy('name')
+                ->get();
+
+            $productosPorSubcategoria = $products->groupBy('sub_category_id');
+
+            $productosData = [];
+            foreach ($subcategoriasCategoria as $sub) {
+                $productosSub = $productosPorSubcategoria->get($sub->id);
+                if (!$productosSub || $productosSub->isEmpty()) {
+                    continue;
+                }
+
+                $productosData[] = [
+                    'nombre' => $sub->name,
+                    'productos' => $this->mapProductosParaVista($productosSub),
+                ];
+            }
+
+            // Productos de la categoría sin subcategoría asignada (o con una inactiva).
+            $idsSubcategoriasActivas = $subcategoriasCategoria->pluck('id')->all();
+            $productosSinSubcategoria = $products->filter(function ($product) use ($idsSubcategoriasActivas) {
+                return !in_array($product->sub_category_id, $idsSubcategoriasActivas);
+            });
+
+            if ($productosSinSubcategoria->isNotEmpty()) {
+                $productosData[] = [
+                    'nombre' => 'Otros productos',
+                    'productos' => $this->mapProductosParaVista($productosSinSubcategoria),
+                ];
+            }
+        }
+
+        return view('frontend.pages.categoria-productos', [
+            'category' => $category,
+            'categoriaData' => $categoriaData,
+            'sidebarCategoriasData' => $sidebarCategoriasData,
+            'productosData' => $productosData,
+        ]);
+    }
+
+    private function mapProductosParaVista($products){
+        $data = [];
         foreach ($products as $product) {
-            $productosData[] = [
+            $data[] = [
                 'modelo' => $product->productModel ?: $product->sku,
                 'nombre' => $product->name,
                 'descripcion' => $product->short_description,
@@ -300,13 +352,7 @@ class HomeController extends Controller
                 'url' => route('product-detail', $product->slug),
             ];
         }
-
-        return view('frontend.pages.categoria-productos', [
-            'category' => $category,
-            'categoriaData' => $categoriaData,
-            'sidebarCategoriasData' => $sidebarCategoriasData,
-            'productosData' => $productosData,
-        ]);
+        return $data;
     }
 
 

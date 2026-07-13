@@ -475,6 +475,40 @@
     }
 }
 
+/* ===== SEPARADOR DE GRUPO (subcategoría) DENTRO DEL GRID ===== */
+.cat-prod__group-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 8px 0 4px;
+}
+
+@media (min-width: 1024px) {
+    .cat-prod__group-header {
+        grid-column: 1 / -1;
+        margin: 12px 0 4px;
+    }
+
+    .cat-prod__grid > .cat-prod__group-header:first-child {
+        margin-top: 0;
+    }
+}
+
+.cat-prod__group-title {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    color: #0D1F4E;
+    white-space: nowrap;
+}
+
+.cat-prod__group-header::after {
+    content: '';
+    flex: 1;
+    height: 2px;
+    background-color: #F5A623;
+}
+
 .cat-prod__card {
     background-color: #fff;
     border-radius: 16px;
