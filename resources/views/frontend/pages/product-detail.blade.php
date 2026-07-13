@@ -68,16 +68,6 @@
   }
   .gallery-badge.badge-new { background: var(--verde-disponible); }
   .gallery-badge.badge-brand { background: var(--azul-oscuro); }
-  .image-zoom-btn {
-    position: absolute; bottom: 14px; right: 14px;
-    width: 38px; height: 38px; background: var(--blanco); border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    color: var(--azul-principal); cursor: pointer; border: none;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1); z-index: 3; transition: all 0.2s;
-  }
-  .image-zoom-btn:hover { background: var(--azul-principal); color: var(--blanco); transform: scale(1.08); }
-  .image-zoom-btn svg { width: 16px; height: 16px; }
-
   /* PRODUCT INFO */
   .product-info { display: flex; flex-direction: column; gap: 0; min-width: 0; overflow: visible; }
   .product-brand-badge {
@@ -492,13 +482,6 @@
                          src="{{ asset($product->thumb_image) }}"
                          alt="{{ $product->name }}"
                          itemprop="image">
-
-                    <button type="button" class="image-zoom-btn" onclick="openImageZoom()" title="Ver imagen grande">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
-                            <line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/>
-                        </svg>
-                    </button>
                 </div>
             </div>
 
@@ -1176,12 +1159,6 @@ function switchGalleryImage(thumb, src) {
     document.getElementById('gallery-main-img').src = src;
     document.querySelectorAll('.gallery-thumb').forEach(function(t) { t.classList.remove('active'); });
     thumb.classList.add('active');
-}
-
-function openImageZoom() {
-    var src = document.getElementById('gallery-main-img').src;
-    var w = window.open('', '_blank', 'width=900,height=700,scrollbars=yes');
-    if (w) w.document.write('<body style="margin:0;background:#111;display:flex;align-items:center;justify-content:center;min-height:100vh;"><img src="' + src + '" style="max-width:100%;max-height:100vh;object-fit:contain;"></body>');
 }
 
 /* ===== ESTRELLAS REVIEW ===== */
