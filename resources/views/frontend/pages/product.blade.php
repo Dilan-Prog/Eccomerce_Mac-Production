@@ -178,6 +178,13 @@
   .product-card:hover .product-card-image .img-hover { display: block; }
   .product-card:hover .product-card-image .img-main { display: none; }
 
+  /* PROTECCIÓN DE IMÁGENES: evita copiar/arrastrar (ver también script anti-copia) */
+  .product-card-image img {
+    -webkit-user-select: none; user-select: none;
+    -webkit-user-drag: none; user-drag: none;
+    -webkit-touch-callout: none;
+  }
+
   /* CARD BADGES */
   .card-badge {
     position: absolute; top: 10px; left: 10px;
@@ -781,6 +788,13 @@
 
 @push('scripts')
 <script>
+document.addEventListener('contextmenu', function(e) {
+    if (e.target.closest('.product-card-image')) e.preventDefault();
+});
+document.addEventListener('dragstart', function(e) {
+    if (e.target.tagName === 'IMG' && e.target.closest('.product-card-image')) e.preventDefault();
+});
+
 (function () {
     // Price range slider
     @php

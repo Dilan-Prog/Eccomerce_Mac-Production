@@ -1,9 +1,11 @@
 <?php
 namespace App\Traits;
+use App\Support\UploadPath;
 use Illuminate\Http\Request;
 use Intervention\Image\ImageManager;
 use Intervention\Image\Drivers\Gd\Driver;
 use Intervention\Image\EncodedImage;
+use Intervention\Image\Interfaces\ImageInterface;
 use Illuminate\Support\Facades\File;
 
 // use File;
@@ -11,6 +13,59 @@ use Intervention\Image\Drivers\Gd\Encoders\WebpEncoder;
 use Illuminate\Support\Str;
 trait ImageUploadTrait{
 
+    /**
+     * Superpone el logo configurado como marca de agua, repetido en cuadrícula y
+     * rotado en diagonal, sobre la imagen dada (patrón tipo "banco de imágenes").
+     * No hace nada si config('watermark.enabled') es false o el archivo no existe.
+     */
+    protected function applyWatermark(ImageInterface $img): ImageInterface
+    {
+        if (!config('watermark.enabled')) {
+            return $img;
+        }
+
+        $watermarkPath = UploadPath::full(config('watermark.image'));
+        if (!file_exists($watermarkPath)) {
+            return $img;
+        }
+
+        $manager = new ImageManager(new Driver());
+        $watermark = $manager->read($watermarkPath);
+
+        // Tamaño de cada repetición en función del lado más corto, para que la
+        // densidad del patrón se vea igual sin importar la proporción de la imagen.
+        $shortSide = min($img->width(), $img->height());
+        $tileWidth = (int) round($shortSide * (config('watermark.tile_scale_percent', 22) / 100));
+        if ($tileWidth < 1) {
+            return $img;
+        }
+        $watermark->scale(width: $tileWidth);
+        $watermark->rotate((float) config('watermark.rotation', -30), 'transparent');
+
+        $spacing = $watermark->width() * (float) config('watermark.spacing_factor', 1.4);
+        $cols = max(2, (int) ceil($img->width() / $spacing) + 1);
+        $rows = max(2, (int) ceil($img->height() / $spacing) + 1);
+
+        // Los offsets se mantienen siempre dentro del lienzo (0..usable) para que GD
+        // no tenga que copiar regiones fuera de los límites de la imagen base.
+        $usableWidth = max(0, $img->width() - $watermark->width());
+        $usableHeight = max(0, $img->height() - $watermark->height());
+        $stepX = $cols > 1 ? $usableWidth / ($cols - 1) : 0;
+        $stepY = $rows > 1 ? $usableHeight / ($rows - 1) : 0;
+        $opacity = (int) config('watermark.opacity', 30);
+
+        for ($row = 0; $row < $rows; $row++) {
+            $stagger = ($row % 2 === 0) ? 0 : min($stepX / 2, $usableWidth);
+            for ($col = 0; $col < $cols; $col++) {
+                $offsetX = (int) round(min($col * $stepX + $stagger, $usableWidth));
+                $offsetY = (int) round(min($row * $stepY, $usableHeight));
+
+                $img->place($watermark, 'top-left', $offsetX, $offsetY, $opacity);
+            }
+        }
+
+        return $img;
+    }
 
     public function uploadImageAsPng(Request $request, $inputName, $path, $width = null, $height = null)
     {
@@ -26,7 +81,7 @@ trait ImageUploadTrait{
                 $img->resize($width, $height);
             }
 
-            $uploadPath = public_path($path . '/');
+            $uploadPath = UploadPath::full($path . '/');
             if (!file_exists($uploadPath)) {
                 mkdir($uploadPath, 0755, true);
             }
@@ -39,7 +94,7 @@ trait ImageUploadTrait{
         return null;
     }
     /**Multi - image */
-    public function uploadMultiImage(Request $request,$inputName,$path){
+    public function uploadMultiImage(Request $request,$inputName,$path,$watermark = false){
 
         $imagePaths = [];
 
@@ -49,12 +104,25 @@ trait ImageUploadTrait{
             $images = $request->{$inputName};
             foreach($images as $image){
 
-                $ext = $image->getClientOriginalName();
-                $imageName = 'media_'.uniqid().'.'.$ext;
+                if ($watermark) {
+                    $manager = new ImageManager(new Driver());
+                    $imageName = 'media_' . uniqid() . '.webp';
 
-                $image->move(public_path($path),$imageName);
+                    $img = $manager->read($image->getRealPath());
+                    $img = $this->applyWatermark($img);
+                    $img->encode(new WebpEncoder(quality: 75));
 
+                    $uploadPath = UploadPath::full($path . '/');
+                    if (!file_exists($uploadPath)) {
+                        mkdir($uploadPath, 0755, true);
+                    }
+                    $img->save($uploadPath . $imageName);
+                } else {
+                    $ext = $image->getClientOriginalName();
+                    $imageName = 'media_'.uniqid().'.'.$ext;
 
+                    $image->move(UploadPath::full($path),$imageName);
+                }
 
                 $imagePaths[] = $path.'/'.$imageName;
             }
@@ -77,7 +145,7 @@ trait ImageUploadTrait{
                 $ext = $image->getClientOriginalExtension();
                 $imageName = 'media_'.uniqid().'.'.$ext;
 
-                $image->move(public_path($path), $imageName);
+                $image->move(UploadPath::full($path), $imageName);
 
                 $imagePaths[] =  $path.'/'.$imageName;
             }
@@ -87,7 +155,7 @@ trait ImageUploadTrait{
     }
 
     /*One image*/
-    public function uploadImage(Request $request,$inputName,$path,$width,$height){
+    public function uploadImage(Request $request,$inputName,$path,$width = null,$height = null,$watermark = false){
 
         if ($request->hasFile($inputName)) {
             $image = $request->{$inputName};
@@ -101,11 +169,17 @@ trait ImageUploadTrait{
 
             // Procesar la imagen con ImageManager
             $img = $manager->read($image->getRealPath());
-            $img->resize($width, $height);
+            if ($width && $height) {
+                $img->resize($width, $height);
+            }
+
+            if ($watermark) {
+                $img = $this->applyWatermark($img);
+            }
 
             $img->encode(new WebpEncoder(quality:75));
 
-            $uploadPath = public_path($path . '/');
+            $uploadPath = UploadPath::full($path . '/');
             if (!file_exists($uploadPath)) {
                 mkdir($uploadPath, 0755, true);
             }
@@ -120,13 +194,13 @@ trait ImageUploadTrait{
 
     }
 
-    public function updateImage(Request $request, $inputName, $path, $oldaPath = null, $width, $height)
+    public function updateImage(Request $request, $inputName, $path, $oldaPath = null, $width = null, $height = null, $watermark = false)
 {
     if ($request->hasFile($inputName)) {
 
         // Eliminar imagen anterior si existe
-        if ($oldaPath && File::exists(public_path($oldaPath))) {
-            File::delete(public_path($oldaPath));
+        if ($oldaPath && File::exists(UploadPath::full($oldaPath))) {
+            File::delete(UploadPath::full($oldaPath));
         }
 
         // Procesar imagen nueva
@@ -140,11 +214,18 @@ trait ImageUploadTrait{
 
         // Leer, redimensionar y codificar la imagen
         $img = $manager->read($image->getRealPath());
-        $img->resize($width, $height);
+        if ($width && $height) {
+            $img->resize($width, $height);
+        }
+
+        if ($watermark) {
+            $img = $this->applyWatermark($img);
+        }
+
         $img->encode(new WebpEncoder(quality: 75));
 
         // Crear carpeta si no existe
-        $uploadPath = public_path($path . '/');
+        $uploadPath = UploadPath::full($path . '/');
         if (!file_exists($uploadPath)) {
             mkdir($uploadPath, 0755, true);
         }
@@ -181,7 +262,7 @@ trait ImageUploadTrait{
     // Limpia posibles barras iniciales
     $relativePath = ltrim($relativePath, '/');
 
-    $fullPath = public_path($relativePath);
+    $fullPath = UploadPath::full($relativePath);
 
     if (File::exists($fullPath)) {
         File::delete($fullPath);

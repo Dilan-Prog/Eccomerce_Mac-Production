@@ -10,12 +10,8 @@
 
             {{-- ── COL 1: Logo + Redes Sociales ── --}}
             <div class="footer-col">
-                <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
-                    <div class="logo-symbol" style="width:36px;height:36px;font-size:18px;">M</div>
-                    <div>
-                        <div style="color:#fff;font-weight:800;font-size:16px;">Mac Del Norte</div>
-                        <div style="font-size:11px;color:rgba(255,255,255,0.6);font-style:italic;">No somos una opción, somos la elección correcta</div>
-                    </div>
+                <div style="display:flex;align-items:center;margin-bottom:14px;">
+                    <img src="{{ asset('uploads/logo/2k-blanco-azul.png') }}" alt="Mac Del Norte" style="width:250px;height:auto;object-fit:contain;">
                 </div>
                 <p style="font-size:12px;line-height:1.6;">Distribuidor autorizado Honeywell en México.</p>
 

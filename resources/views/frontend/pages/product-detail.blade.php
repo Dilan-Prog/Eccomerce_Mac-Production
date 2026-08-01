@@ -68,6 +68,14 @@
   }
   .gallery-badge.badge-new { background: var(--verde-disponible); }
   .gallery-badge.badge-brand { background: var(--azul-oscuro); }
+
+  /* PROTECCIÓN DE IMÁGENES: evita copiar/arrastrar (ver también script anti-copia) */
+  .product-gallery img, .related-image img {
+    -webkit-user-select: none; user-select: none;
+    -webkit-user-drag: none; user-drag: none;
+    -webkit-touch-callout: none;
+  }
+
   /* PRODUCT INFO */
   .product-info { display: flex; flex-direction: column; gap: 0; min-width: 0; overflow: visible; }
   .product-brand-badge {
@@ -1160,6 +1168,14 @@ function switchGalleryImage(thumb, src) {
     document.querySelectorAll('.gallery-thumb').forEach(function(t) { t.classList.remove('active'); });
     thumb.classList.add('active');
 }
+
+/* ===== PROTECCIÓN DE IMÁGENES (anti-copia) ===== */
+document.addEventListener('contextmenu', function(e) {
+    if (e.target.closest('.product-gallery, .related-image')) e.preventDefault();
+});
+document.addEventListener('dragstart', function(e) {
+    if (e.target.tagName === 'IMG' && e.target.closest('.product-gallery, .related-image')) e.preventDefault();
+});
 
 /* ===== ESTRELLAS REVIEW ===== */
 function setRating(rating) {

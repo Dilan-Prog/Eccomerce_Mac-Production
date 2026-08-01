@@ -81,11 +81,11 @@ class ProductController extends Controller
         $category = Category::findOrFail($request->category);
         $brand = Brand::findOrFail($request->brand);
         /**Handle the image upload */
-        $imagePath =  $this->uploadImage($request,'image','uploads/product/' . Str::slug($brand->name) . '/webp/computers/', 1200, 1200);
-        $imagePath =  $this->uploadImage($request,'image','uploads/product/' . Str::slug($brand->name) .'/webp/laptop', 1000, 1000);
-        $imagePath =  $this->uploadImage($request,'image','uploads/product/' . Str::slug($brand->name) .'/webp/tablet', 800, 800);
-        $imagePath =  $this->uploadImage($request,'image','uploads/product/' . Str::slug($brand->name) .'/webp/phone', 600, 600);
-        $imagePath =  $this->uploadImage($request,'image','uploads/product/' . Str::slug($brand->name) .'/webp/carrusel', 600, 600);
+        $imagePath =  $this->uploadImage($request,'image','uploads/product/' . Str::slug($brand->name) . '/webp/computers/', 1200, 1200, true);
+        $imagePath =  $this->uploadImage($request,'image','uploads/product/' . Str::slug($brand->name) .'/webp/laptop', 1000, 1000, true);
+        $imagePath =  $this->uploadImage($request,'image','uploads/product/' . Str::slug($brand->name) .'/webp/tablet', 800, 800, true);
+        $imagePath =  $this->uploadImage($request,'image','uploads/product/' . Str::slug($brand->name) .'/webp/phone', 600, 600, true);
+        $imagePath =  $this->uploadImage($request,'image','uploads/product/' . Str::slug($brand->name) .'/webp/carrusel', 600, 600, true);
 
         $product->thumb_image = $imagePath;
         $product->name = $request->name;
@@ -227,7 +227,7 @@ class ProductController extends Controller
         $product = Product::findOrFail($id);
 
         /**Handle the image upload */
-        $imagePath =  $this->updateImage($request, 'image', 'uploads', $product->thumb_image, 800, 800);
+        $imagePath =  $this->updateImage($request, 'image', 'uploads', $product->thumb_image, 800, 800, true);
 
         $product->thumb_image = empty(!$imagePath) ? $imagePath : $product->thumb_image;
         $product->name = $request->name;
