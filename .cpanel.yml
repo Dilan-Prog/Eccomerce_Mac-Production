@@ -1,0 +1,15 @@
+---
+deployment:
+  tasks:
+    - export DEPLOYPATH=/home/macdelno/public_html
+    - export PHP_BIN=$(command -v php || echo /opt/cpanel/ea-php83/root/usr/bin/php)
+    - export COMPOSER_BIN=$(command -v composer || echo /opt/cpanel/composer/bin/composer)
+    - cd $DEPLOYPATH && $PHP_BIN $COMPOSER_BIN dump-autoload --optimize --no-dev
+    - /bin/rm -f $DEPLOYPATH/bootstrap/cache/*.php
+    - /bin/mkdir -p $DEPLOYPATH/storage/framework/sessions $DEPLOYPATH/storage/framework/views $DEPLOYPATH/storage/framework/cache/data $DEPLOYPATH/storage/logs $DEPLOYPATH/storage/app/public
+    - /bin/chmod -R 775 $DEPLOYPATH/storage $DEPLOYPATH/bootstrap/cache
+    - cd $DEPLOYPATH && $PHP_BIN artisan optimize:clear
+    - cd $DEPLOYPATH && ( [ -L public/storage ] || $PHP_BIN artisan storage:link )
+    - cd $DEPLOYPATH && $PHP_BIN artisan config:cache
+    - cd $DEPLOYPATH && $PHP_BIN artisan route:cache
+    - cd $DEPLOYPATH && $PHP_BIN artisan view:cache
