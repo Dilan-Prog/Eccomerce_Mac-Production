@@ -31,7 +31,7 @@ storage/laravel*.log
 # dev needs the full install. Ignoring these paths means a regular local
 # `composer install` won't make git status/VS Code think they're new files
 # to commit (that's what bloated the repo and broke the last deploy).
-/vendor/barryvdh
+/vendor/barryvdh/laravel-debugbar
 /vendor/bin/phpunit*
 /vendor/bin/pint*
 /vendor/bin/sail*
