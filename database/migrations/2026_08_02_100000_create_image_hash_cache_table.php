@@ -16,7 +16,7 @@ return new class extends Migration
             $table->unsignedBigInteger('file_mtime');
             $table->char('image_hash', 16);
             $table->unsignedTinyInteger('hash_algo_version')->default(1);
-            $table->timestamp('last_hashed_at');
+            $table->timestamp('last_hashed_at')->useCurrent();
             $table->timestamps();
 
             $table->unique('path_hash');

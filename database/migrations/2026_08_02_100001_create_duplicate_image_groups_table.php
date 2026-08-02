@@ -15,8 +15,8 @@ return new class extends Migration
             $table->unsignedSmallInteger('member_count')->default(0);
             $table->unsignedBigInteger('total_bytes')->nullable();
             $table->unsignedBigInteger('recoverable_bytes')->nullable();
-            $table->timestamp('first_seen_at');
-            $table->timestamp('last_seen_at');
+            $table->timestamp('first_seen_at')->useCurrent();
+            $table->timestamp('last_seen_at')->useCurrent();
             $table->timestamp('discarded_at')->nullable();
             $table->timestamp('resolved_at')->nullable();
             $table->timestamps();
