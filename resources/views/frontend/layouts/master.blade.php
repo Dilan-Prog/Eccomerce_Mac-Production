@@ -520,13 +520,8 @@
             background-color: #002856;
             position: relative;
             min-height: 520px;
-<<<<<<< HEAD
             height: 85vh;
             max-height: 700px;
-=======
-            height: auto;
-            max-height: 850px;
->>>>>>> c482de177cb634e21d9752987046d39872468d40
             color: #fff;
         }
         /* Container ocupa toda la altura del section */
