@@ -54,11 +54,11 @@ class AppServiceProvider extends ServiceProvider
         });
 
         /**
-         * Share $navCategories solo con el partial del menú.
+         * Share $navCategories con el partial del menú y el header (drawer móvil).
          * Cache de 1 hora — invalida con Cache::forget('nav_categories')
          * cuando se actualicen categorías desde el admin.
          */
-        View::composer('frontend.layouts.menu', function ($view) {
+        View::composer(['frontend.layouts.menu', 'frontend.layouts.header'], function ($view) {
             $navCategories = Cache::remember('nav_categories', 3600, function () {
                 return Category::forMenu()->get();
             });

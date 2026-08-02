@@ -13,7 +13,7 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule): void
     {
         $schedule->command('app:sync-aspel-qty --batch=1000')
-        ->everyOneHours()
+        ->hourly()
         ->withoutOverlapping()
         ->runInBackground();
 

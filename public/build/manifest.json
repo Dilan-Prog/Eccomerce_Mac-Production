@@ -60,7 +60,7 @@
     "src": "public/frontend/webfonts/fa-solid-900.woff2"
   },
   "resources/css/app.css": {
-    "file": "assets/app-C6CihvOv.css",
+    "file": "assets/app-RAH8boWO.css",
     "src": "resources/css/app.css",
     "isEntry": true
   },
@@ -75,7 +75,7 @@
     "isEntry": true
   },
   "resources/js/app.js": {
-    "file": "assets/app-BZ1sMe_x.js",
+    "file": "assets/app-BqPOf-pA.js",
     "name": "app",
     "src": "resources/js/app.js",
     "isEntry": true

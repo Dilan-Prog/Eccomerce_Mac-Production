@@ -17,7 +17,7 @@
       </div>
     </div>
     <div class="top-bar-right">
-      <a href="https://wa.link/f28njw" target="_blank">Soporte técnico</a>
+      <a href="https://wa.link/f28njw" target="_blank" class="track-conversion" data-type="whatsapp_topbar_soporte">Soporte técnico</a>
     </div>
   </div>
 </div>

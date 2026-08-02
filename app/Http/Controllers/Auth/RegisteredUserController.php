@@ -39,7 +39,7 @@ class RegisteredUserController extends Controller
             'email'             => ['required', 'string', 'email', 'max:255', 'unique:'.User::class],
             'password'          => ['required', 'confirmed', Rules\Password::defaults()],
             'account_type'      => ['nullable', 'in:personal,b2b'],
-            'rfc'               => ['required', 'string', 'min:12', 'max:13'],
+            'rfc'               => ['required', 'string', 'min:12', 'max:13', 'unique:users,rfc'],
             'tipo_cliente'      => ['required', 'in:revendedor,tecnico,empresa,contratista'],
             'constancia_fiscal' => ['required', 'file', 'mimes:pdf', 'max:5120'],
             'giro_industrial'   => ['nullable', 'string', 'max:100'],
@@ -51,7 +51,27 @@ class RegisteredUserController extends Controller
             $rules['empresa'] = ['required', 'string', 'max:255'];
         }
 
-        $request->validate($rules);
+        $messages = [
+            'name.required'              => 'El nombre es obligatorio.',
+            'email.required'             => 'El correo electrónico es obligatorio.',
+            'email.email'                => 'Ingresa un correo electrónico válido.',
+            'email.unique'                => 'Ya existe una cuenta registrada con este correo.',
+            'password.required'          => 'La contraseña es obligatoria.',
+            'password.confirmed'         => 'La confirmación de contraseña no coincide.',
+            'rfc.required'               => 'El RFC es obligatorio.',
+            'rfc.min'                    => 'El RFC debe tener 12 o 13 caracteres.',
+            'rfc.max'                    => 'El RFC debe tener 12 o 13 caracteres.',
+            'rfc.unique'                  => 'Este RFC ya está registrado en nuestro sistema.',
+            'tipo_cliente.required'      => 'Selecciona un tipo de cliente.',
+            'tipo_cliente.in'            => 'El tipo de cliente seleccionado no es válido.',
+            'constancia_fiscal.required' => 'Debes subir tu Constancia de Situación Fiscal.',
+            'constancia_fiscal.mimes'    => 'La Constancia de Situación Fiscal debe ser un archivo PDF.',
+            'constancia_fiscal.max'      => 'La Constancia de Situación Fiscal no debe pesar más de 5 MB.',
+            'ciudad.required'            => 'La ciudad es obligatoria.',
+            'empresa.required'           => 'El nombre de la empresa o razón social es obligatorio.',
+        ];
+
+        $request->validate($rules, $messages);
 
         $csfPath = null;
         if ($request->hasFile('constancia_fiscal')) {

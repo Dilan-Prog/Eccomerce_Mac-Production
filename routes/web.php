@@ -17,6 +17,7 @@ use App\Http\Controllers\Frontend\PaymentController;
 use App\Http\Controllers\Frontend\ReviewController;
 use App\Http\Controllers\Frontend\UserOrderController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\UploadsServeController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Artisan;
 use App\Http\Controllers\Backend\ReCaptchaController;
@@ -46,6 +47,9 @@ Route::get('servicio-reparacion-videoregistradores', [HomeController::class, 'se
 Route::get('paypal-msi-info', [HomeController::class, 'paypalInfo'])->name('paypal-msi-info');
 Route::get('servicio-calibracion-ema', [HomeController::class, 'servicesCalibrationEMA'])->name('servicio-calibracion-ema');
 Route::get('medicion', [HomeController::class, 'servicesMedicion'])->name('medicion');
+Route::get('catalogo-productos', [HomeController::class, 'catalogo'])->name('catalogo');
+Route::get('categorias', [HomeController::class, 'categorias'])->name('categorias');
+Route::get('categorias/{categoria}', [HomeController::class, 'categoriaProductos'])->name('categorias.productos');
 
 Route::get('Terminos-Condiciones', [HomeController::class, 'terminosCondiciones'])->name('Terminos-Condiciones');
 Route::get('Aviso-Legal', [HomeController::class, 'avisoLegal'])->name('Aviso-Legal');
@@ -56,6 +60,14 @@ Route::get('/googgle-feed_macdelnorte-facebook',[ProductController::class, 'gene
 
 Route::post('/recaptcha-validar', [ReCaptchaController::class, 'verify']);
 Route::post('/track-conversion', [TrackConversionController::class, 'store'])->name('track.conversion');
+
+// Sirve /uploads/{path} desde UploadPath::base() cuando el archivo ya no
+// existe físicamente en public/uploads (ver app/Support/UploadPath.php).
+// Debe quedar fuera de cualquier grupo con middleware de auth: son los
+// mismos assets públicos que antes servía Apache directamente.
+Route::get('/uploads/{path}', [UploadsServeController::class, 'show'])
+    ->where('path', '.*')
+    ->name('uploads.show');
 
 
 Route::get('/aplicar-descuento-dc1200', function () {
@@ -195,6 +207,23 @@ Route::get('/run-storage-link', function () {
     try {
         Artisan::call('storage:link');
         return response('<h2 style="color:green">✅ storage:link ejecutado correctamente.</h2><p>Elimina esta ruta de web.php después de usarla.</p>');
+    } catch (\Exception $e) {
+        return response('<h2 style="color:red">❌ Error: ' . $e->getMessage() . '</h2>');
+    }
+});
+
+// ⚠️ RUTA TEMPORAL, SIN AUTENTICACIÓN — sobrescribe imágenes reales del catálogo. Eliminar después de usarla.
+// Solo procesa los SKUs listados en skus-sin-marca.txt (raíz del proyecto), no todo el catálogo.
+// Agrega ?dry=1 a la URL para probar sin escribir nada primero.
+Route::get('/waterimage', function () {
+    try {
+        $options = ['--sku-file' => base_path('skus-sin-marca.txt')];
+        if (request()->boolean('dry')) {
+            $options['--dry-run'] = true;
+        }
+        Artisan::call('product-images:watermark', $options);
+        $output = nl2br(e(Artisan::output()));
+        return response("<h2 style=\"color:green\">✅ Comando ejecutado.</h2><pre>{$output}</pre><p>Elimina esta ruta de web.php después de usarla.</p>");
     } catch (\Exception $e) {
         return response('<h2 style="color:red">❌ Error: ' . $e->getMessage() . '</h2>');
     }

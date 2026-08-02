@@ -22,7 +22,7 @@ class ApplyDC1200Discount extends Command
         $skippedNullExist = 0;
 
         DB::table('products as p')
-            ->join('aspel_products as ap', 'ap.sku', '=', 'p.sku')
+            ->join('aspel_products as ap', 'ap.cve_art', '=', 'p.sku')
             ->select('p.id', 'p.qty_personalizated', 'p.status', 'ap.exist')
             ->orderBy('p.id')
             ->chunkById(1000, function ($rows) use ($dryRun, &$updated, &$skippedPersonalized, &$skippedInactive, &$skippedNullExist) {

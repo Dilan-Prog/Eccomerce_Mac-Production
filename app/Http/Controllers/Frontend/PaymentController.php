@@ -23,6 +23,8 @@ use Illuminate\Support\Facades\Notification;
 use Srmklive\PayPal\Services\PayPal as PayPalClient;
 use Stripe\Charge;
 use Stripe\Stripe;
+use Stripe\Exception\ApiErrorException;
+use Stripe\Exception\CardException;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Log;
@@ -354,18 +356,43 @@ class PaymentController extends Controller
 
         // calculate payable amount depending on currency rate
         $stripeSetting = StripeSetting::first();
+        if (!$stripeSetting || !$request->filled('stripe_token')) {
+            Log::error('Stripe: configuración o token de tarjeta faltante.', [
+                'has_stripe_setting' => (bool) $stripeSetting,
+                'has_stripe_token' => $request->filled('stripe_token'),
+            ]);
+            toastr('No se pudo procesar el pago. Intenta de nuevo o usa otro método.', 'error', 'Error');
+            return redirect()->route('user.payment');
+        }
+
         // $total = getFinalPayableAmount();
         // $payableAmount = round($total * $stripeSetting->currency_rate, 2);
         $payableAmount = getFinalPayableAmount();
         /**Get Final Ammount */
 
-        Stripe::setApiKey($stripeSetting->secret_key);
-        $response = Charge::create([
-            "amount" => $payableAmount * 100,
-            "currency" => $stripeSetting->currency_name,
-            "source" => $request->stripe_token,
-            "description" => "Venta Por Web Macdelnorte"
-        ]);
+        try {
+            Stripe::setApiKey($stripeSetting->secret_key);
+            $response = Charge::create([
+                // round() evita errores de punto flotante (ej. 1999.9999999999998) que Stripe rechaza por no ser entero
+                "amount" => (int) round($payableAmount * 100),
+                "currency" => trim($stripeSetting->currency_name),
+                "source" => $request->stripe_token,
+                "description" => "Venta Por Web Macdelnorte"
+            ]);
+        } catch (CardException $e) {
+            // Errores de tarjeta (rechazada, fondos insuficientes, etc.) son seguros de mostrar al cliente
+            Log::warning('Stripe: tarjeta rechazada - ' . $e->getMessage(), ['payable_amount' => $payableAmount]);
+            toastr('No se pudo procesar el pago: ' . $e->getMessage(), 'error', 'Error');
+            return redirect()->route('user.payment');
+        } catch (ApiErrorException $e) {
+            // Errores de configuración/API (llaves, moneda, conexión) no deben exponerse al cliente
+            Log::error('Error de Stripe al cobrar: ' . $e->getMessage(), [
+                'stripe_error_type' => get_class($e),
+                'payable_amount' => $payableAmount,
+            ]);
+            toastr('No se pudo procesar el pago con tarjeta. Intenta de nuevo o usa otro método.', 'error', 'Error');
+            return redirect()->route('user.payment');
+        }
 
         if ($response->status === 'succeeded') {
             $this->storeOrder(null, 'stripe', 1, $response->id, $payableAmount, $stripeSetting->currency_name);

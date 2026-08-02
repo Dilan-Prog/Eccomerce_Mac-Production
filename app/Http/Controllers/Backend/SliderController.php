@@ -53,7 +53,7 @@ class SliderController extends Controller
         $imagePathLaptop = $this->uploadImage($request,'banner','uploads/slider/webp/laptop',1140,380);
         $imagePathTablet = $this->uploadImage($request,'banner','uploads/slider/webp/tablet',720,240);
         $imagePathPhone = $this->uploadImage($request,'banner','uploads/slider/webp/phone',370,125);
-        
+
         $slider->banner=$imagePathComputers;
         $slider->banner_laptop=$imagePathLaptop;
         $slider->banner_tablet=$imagePathTablet;
@@ -128,7 +128,7 @@ class SliderController extends Controller
             }
 
             // Subir nuevas imágenes
-            $slider->banner = $this->uploadImage($request, 'banner', 'uploads/slider/webp/computers', 1320, 450);
+            $slider->banner = $this->uploadImage($request, 'banner', 'uploads/slider/webp/computers', 1320, 700);
             $slider->banner_laptop = $this->uploadImage($request, 'banner', 'uploads/slider/webp/laptop', 1140, 380);
             $slider->banner_tablet = $this->uploadImage($request, 'banner', 'uploads/slider/webp/tablet', 720, 240);
             $slider->banner_phone = $this->uploadImage($request, 'banner', 'uploads/slider/webp/phone', 370, 125);

@@ -12,7 +12,6 @@ class CotizacionPerfil extends Model
         'user_id',
         'tipo_persona',
         'razon_social',
-        'curp',
         'rfc',
         'direccion_fiscal',
         'cif_path',

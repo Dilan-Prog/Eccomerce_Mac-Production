@@ -1,0 +1,120 @@
+/* =========================================================
+   PRODUCT CARD — shared component used by the products page
+   grid and the home page category carousels.
+   ========================================================= */
+
+.product-card {
+  background: var(--blanco); border: 1px solid var(--gris-borde);
+  border-radius: 12px; overflow: hidden;
+  display: flex; flex-direction: column;
+  transition: box-shadow 0.2s, transform 0.2s;
+  position: relative;
+  height: 100%;
+}
+.product-card:hover {
+  box-shadow: 0 8px 32px rgba(0,62,126,0.10);
+  transform: translateY(-2px);
+}
+
+/* CARD IMAGE */
+.product-card-image {
+  position: relative;
+  aspect-ratio: 1;
+  background: linear-gradient(135deg, var(--gris-fondo) 0%, var(--blanco) 100%);
+  overflow: hidden;
+  display: flex; align-items: center; justify-content: center;
+}
+.product-card-image img {
+  max-width: 100%; max-height: 100%; object-fit: contain; padding: 12px;
+  transition: transform 0.35s ease;
+}
+.product-card:hover .product-card-image img { transform: scale(1.05); }
+.product-card-image .img-hover { display: none; }
+.product-card:hover .product-card-image .img-hover { display: block; }
+.product-card:hover .product-card-image .img-main { display: none; }
+
+/* CARD BADGES */
+.card-badge {
+  position: absolute; top: 10px; left: 10px;
+  font-size: 10px; font-weight: 800; padding: 3px 8px;
+  border-radius: 4px; text-transform: uppercase; letter-spacing: 0.5px;
+  color: var(--blanco); z-index: 2;
+}
+.card-badge--new { background: #2F855A; }
+.card-badge--hot { background: #DC2626; }
+.card-badge--best { background: var(--accent-cta); }
+.card-badge--off {
+  position: absolute; top: 10px; right: 10px;
+  background: #FFF0E0; color: var(--accent-cta);
+  font-size: 11px; font-weight: 800; padding: 4px 8px; border-radius: 4px;
+  z-index: 2;
+}
+.card-hot-img {
+  position: absolute; top: 8px; right: 8px; width: 56px; z-index: 2;
+}
+
+/* CARD INFO */
+.product-card-info {
+  flex: 1; padding: 14px 16px; display: flex; flex-direction: column; gap: 6px;
+  min-width: 0;
+}
+.card-category {
+  font-size: 11px; font-weight: 700; color: var(--gris-claro-texto);
+  text-transform: uppercase; letter-spacing: 0.6px; text-decoration: none;
+}
+.card-category:hover { color: var(--azul-principal); }
+.card-name {
+  font-size: 14px; font-weight: 700; color: var(--azul-principal);
+  line-height: 1.35; text-decoration: none; display: -webkit-box;
+  -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+  word-break: break-word;
+}
+.card-name:hover { color: var(--azul-medio); }
+.card-sku { font-size: 11px; color: var(--gris-claro-texto); font-family: monospace; }
+
+/* CARD RATING */
+.card-rating { display: flex; align-items: center; gap: 5px; }
+.card-stars { display: flex; gap: 1px; font-size: 11px; color: #F6AD1C; }
+.card-rating-count { font-size: 11px; color: var(--gris-claro-texto); }
+
+/* CARD STOCK */
+.card-stock { font-size: 12px; font-weight: 600; }
+.card-stock--in { color: #2F855A; }
+.card-stock--out { color: #DC2626; }
+.card-stock--consult { color: var(--gris-claro-texto); }
+
+/* CARD PRICE */
+.card-price-block { margin-top: 2px; }
+.card-price-del { font-size: 12px; color: var(--gris-claro-texto); text-decoration: line-through; }
+.card-price-main {
+  font-size: 18px; font-weight: 800; color: var(--azul-principal);
+  line-height: 1.1; display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+}
+.card-price-off {
+  font-size: 11px; font-weight: 800; background: #FFF0E0; color: var(--accent-cta);
+  padding: 2px 6px; border-radius: 3px;
+}
+.card-price-iva { font-size: 11px; color: var(--gris-claro-texto); }
+.card-free-shipping {
+  font-size: 11px; font-weight: 700; color: #2F855A;
+  display: flex; align-items: center; gap: 4px;
+}
+.card-price-na { font-size: 14px; color: var(--gris-claro-texto); font-style: italic; }
+
+/* CARD ACTIONS */
+.product-card-actions { padding: 0 16px 14px; margin-top: auto; }
+.card-add-btn {
+  display: block; width: 100%; padding: 9px 0;
+  background: var(--azul-principal); color: var(--blanco);
+  border: none; border-radius: 7px; font-size: 13px; font-weight: 700;
+  cursor: pointer; transition: background 0.2s; text-align: center; text-decoration: none;
+}
+.card-add-btn:hover { background: var(--azul-medio); color: var(--blanco); }
+.card-consult-btn {
+  display: block; width: 100%; padding: 9px 0;
+  background: var(--gris-fondo); color: var(--azul-principal);
+  border: 1px solid var(--gris-borde); border-radius: 7px;
+  font-size: 13px; font-weight: 700; cursor: pointer;
+  transition: all 0.2s; text-align: center; text-decoration: none;
+}
+.card-consult-btn:hover { background: var(--azul-claro); border-color: var(--azul-principal); }

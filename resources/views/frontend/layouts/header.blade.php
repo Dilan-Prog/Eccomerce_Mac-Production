@@ -6,8 +6,124 @@
 
         {{-- Botón menú móvil — solo visible en pantallas pequeñas --}}
         <div class="wsus__mobile_menu_area d-lg-none me-2">
-            <span class="wsus__mobile_menu_icon"><i class="fal fa-bars"></i></span>
+            <button id="mobileMenuToggle" class="mobile-menu-btn" type="button" aria-label="Abrir menú" aria-expanded="false" aria-controls="mobileMenuPanel">
+                <span class="burger-line"></span>
+                <span class="burger-line"></span>
+                <span class="burger-line"></span>
+            </button>
         </div>
+
+        {{-- Fondo oscuro del menú móvil --}}
+        <div id="mobileMenuOverlay" class="mob-overlay" aria-hidden="true"></div>
+
+        {{-- Panel lateral (drawer) del menú móvil --}}
+        <nav id="mobileMenuPanel" class="mob-panel" aria-hidden="true" aria-label="Menú principal">
+            <div class="mob-panel__header">
+                <a href="{{ route('index') }}" class="mob-panel__logo">
+                    <img src="{{ asset('uploads/logo/webp-horizontal.webp') }}" alt="Mac Del Norte" loading="lazy">
+                </a>
+                <button id="mobileMenuClose" class="mob-panel__close" type="button" aria-label="Cerrar menú">
+                    <i class="fal fa-times"></i>
+                </button>
+            </div>
+
+            @php $mobNavCategories = $navCategories ?? collect(); @endphp
+
+            <ul class="mob-panel__nav">
+                <li><a href="{{ route('index') }}" class="{{ request()->routeIs('index') ? 'active' : '' }}">Inicio</a></li>
+
+                <li class="mob-panel__has-submenu">
+                    <div class="mob-cat-row">
+                        <a href="{{ route('products.index') }}">Productos</a>
+                        @if($mobNavCategories->isNotEmpty())
+                            <button type="button" class="mob-cat-toggle" aria-expanded="false" aria-label="Mostrar categorías">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
+                            </button>
+                        @endif
+                    </div>
+
+                    @if($mobNavCategories->isNotEmpty())
+                    <ul class="mob-cat-children">
+                        @foreach($mobNavCategories as $category)
+                        <li>
+                            <div class="mob-cat-row">
+                                <a href="{{ route('products.index', ['category' => $category->slug]) }}">
+                                    @if($category->icon)<i class="{{ $category->icon }}"></i>@endif
+                                    {{ $category->name }}
+                                </a>
+                                @if($category->subCategories->isNotEmpty())
+                                    <button type="button" class="mob-cat-toggle" aria-expanded="false" aria-label="Mostrar subcategorías de {{ $category->name }}">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
+                                    </button>
+                                @endif
+                            </div>
+
+                            @if($category->subCategories->isNotEmpty())
+                            <ul class="mob-cat-children">
+                                @foreach($category->subCategories as $sub)
+                                <li>
+                                    <div class="mob-cat-row">
+                                        <a href="{{ route('products.index', ['subcategory' => $sub->slug]) }}">{{ $sub->name }}</a>
+                                        @if($sub->childCategories->isNotEmpty())
+                                            <button type="button" class="mob-cat-toggle" aria-expanded="false" aria-label="Mostrar categorías de {{ $sub->name }}">
+                                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
+                                            </button>
+                                        @endif
+                                    </div>
+
+                                    @if($sub->childCategories->isNotEmpty())
+                                    <ul class="mob-cat-children">
+                                        @foreach($sub->childCategories as $child)
+                                        <li>
+                                            <a href="{{ route('products.index', ['childcategory' => $child->slug]) }}">{{ $child->name }}</a>
+                                        </li>
+                                        @endforeach
+                                    </ul>
+                                    @endif
+                                </li>
+                                @endforeach
+                            </ul>
+                            @endif
+                        </li>
+                        @endforeach
+                    </ul>
+                    @endif
+                </li>
+
+                <li><a href="{{ route('about') }}" class="{{ request()->routeIs('about') ? 'active' : '' }}">Nosotros</a></li>
+                <li class="mob-panel__has-submenu">
+                    <details>
+                        <summary>Servicios</summary>
+                        <ul class="mob-panel__submenu">
+                            <li><a href="{{ route('servicio-controladores-temperatura') }}">Instalación de Controladores</a></li>
+                            <li><a href="{{ route('servicio-instalacion-videoregistradores') }}">Instalación de Videoregistradores</a></li>
+                            <li><a href="{{ route('servicio-instalacion-medidoresdeflujo') }}">Instalación de Medidores de Flujo</a></li>
+                            <li><a href="{{ route('servicio-instalacion-plc') }}">PLC — Configuración, Instalación y Llave en mano</a></li>
+                            <li><a href="{{ route('servicio-reparacion-videoregistradores') }}">Reparación de Videoregistradores</a></li>
+                            <li><a href="{{ route('servicio-calibracion-ema') }}">Calibraciones EMA</a></li>
+                        </ul>
+                    </details>
+                </li>
+                <li><a href="{{ route('contact') }}" class="{{ request()->routeIs('contact') ? 'active' : '' }}">Contacto</a></li>
+                <li><a href="{{ route('associate') }}" class="{{ request()->routeIs('associate') ? 'active' : '' }}">Asociados y Revendedores</a></li>
+                <li><a href="https://wa.link/f28njw" target="_blank" class="track-conversion" data-type="whatsapp_menu_cotizacion">Solicitar cotización</a></li>
+
+                @auth
+                    @php $role = auth()->user()->role; @endphp
+                    @if($role === 'user')
+                        <li><a href="{{ route('user.profile') }}">Mi cuenta</a></li>
+                    @elseif($role === 'admin')
+                        <li><a href="{{ route('admin.dashboard') }}">Admin</a></li>
+                    @else
+                        <li><a href="{{ route('associate.dashboard') }}">Mi cuenta</a></li>
+                    @endif
+                @else
+                    <li><a href="{{ route('login') }}">Iniciar sesión</a></li>
+                @endauth
+
+                <li><a href="{{ route('cart-details') }}">Carrito</a></li>
+            </ul>
+        </nav>
 
         <a href="{{ route('index') }}" class="logo">
             <img src="{{ asset('uploads/logo/webp-horizontal.webp') }}" alt="Mac Del Norte" class="logo-img" loading="eager">

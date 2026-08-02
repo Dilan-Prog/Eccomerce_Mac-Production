@@ -132,6 +132,11 @@
     overflow: hidden;
     box-shadow: 0 20px 50px rgba(0,62,126,0.15);
   }
+  .intro-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
   .placeholder-tag {
     position: absolute;
     top: 16px;
@@ -564,6 +569,14 @@
     height: 80px;
     color: var(--blanco);
   }
+  .event-photo {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 0;
+  }
 
   /* ========== POR QUÉ NOS ELIGEN ========== */
   .why-section {
@@ -744,11 +757,7 @@
       </div>
 
       <div class="intro-image">
-        <div class="placeholder-tag">Foto Real</div>
-        <div class="placeholder-content">
-          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 3H5c-1.66 0-3 1.34-3 3v12c0 1.66 1.34 3 3 3h14c1.66 0 3-1.34 3-3V6c0-1.66-1.34-3-3-3zm-3 7c0 1.1-.9 2-2 2s-2-.9-2-2 .9-2 2-2 2 .9 2 2zm-7 4l3 4 3-4 4 5H5l4-5z"/></svg>
-          <p>Foto del equipo de Mac Del Norte<br>en oficinas de Monterrey</p>
-        </div>
+        <img src="{{ asset('uploads/about/formato vertical.png') }}" alt="Foto del equipo de Mac Del Norte en oficinas de Monterrey">
       </div>
     </div>
   </div>
@@ -981,10 +990,7 @@
     <div class="events-grid">
 
       <div class="event-card">
-        <div class="event-icon-bg">
-          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 7V3H2v18h20V7H12zM6 19H4v-2h2v2zm0-4H4v-2h2v2zm0-4H4V9h2v2zm0-4H4V5h2v2zm4 12H8v-2h2v2zm0-4H8v-2h2v2zm0-4H8V9h2v2zm0-4H8V5h2v2zm10 12h-8v-2h2v-2h-2v-2h2v-2h-2V9h8v10zm-2-8h-2v2h2v-2zm0 4h-2v2h2v-2z"/></svg>
-        </div>
-        <div class="placeholder-tag">Foto Real</div>
+        <img class="event-photo" src="{{ asset('uploads/about/convencionanualhoneywell.png') }}" alt="Convención anual Honeywell">
         <div class="event-content">
           <span class="event-tag">Honeywell Connect</span>
           <h4 class="event-tag-title">Convención anual Honeywell</h4>
@@ -993,10 +999,7 @@
       </div>
 
       <div class="event-card">
-        <div class="event-icon-bg">
-          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 3H5c-1.11 0-2 .89-2 2v14c0 1.1.89 2 2 2h14c1.11 0 2-.9 2-2V5c0-1.11-.89-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/></svg>
-        </div>
-        <div class="placeholder-tag">Foto Real</div>
+        <img class="event-photo" src="{{ asset('uploads/about/elevate.png') }}" alt="Expo Manufactura">
         <div class="event-content">
           <span class="event-tag">Expo industrial</span>
           <h4>Expo Manufactura</h4>
@@ -1005,13 +1008,10 @@
       </div>
 
       <div class="event-card">
-        <div class="event-icon-bg">
-          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
-        </div>
-        <div class="placeholder-tag">Foto Real</div>
+        <img class="event-photo" src="{{ asset('uploads/about/demo-campo.png') }}" alt="Expo Manufactura">
         <div class="event-content">
-          <span class="event-tag">Capacitación</span>
-          <h4>Training técnico</h4>
+          <span class="event-tag">Demostración</span>
+          <h4>Demostración en campo</h4>
           <p>Equipo certificado en sistemas Honeywell</p>
         </div>
       </div>

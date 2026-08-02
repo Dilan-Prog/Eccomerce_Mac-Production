@@ -21,6 +21,14 @@ class Category extends Model
     }
 
     /**
+     * Productos asociados directamente a esta categoría (category_id).
+     */
+    public function products()
+    {
+        return $this->hasMany(Product::class);
+    }
+
+    /**
      * Subcategorías activas ordenadas por nombre (alias limpio).
      */
     public function activeSubCategories()

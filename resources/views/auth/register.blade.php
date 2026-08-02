@@ -191,8 +191,10 @@
                                     class="form-input @error('rfc') is-invalid @enderror"
                                     value="{{ old('rfc') }}"
                                     placeholder="ABC123456XYZ"
+                                    minlength="12"
                                     maxlength="13"
                                     style="text-transform:uppercase"
+                                    required
                                 >
                                 <div class="form-help">12 o 13 caracteres · Validamos con SAT</div>
                                 @error('rfc')
@@ -204,7 +206,7 @@
                                 <label for="tipo_cliente">
                                     Tipo de cliente <span class="required" aria-hidden="true">*</span>
                                 </label>
-                                <select id="tipo_cliente" name="tipo_cliente" class="form-select">
+                                <select id="tipo_cliente" name="tipo_cliente" class="form-select" required>
                                     <option value="">Selecciona una opción</option>
                                     <option value="revendedor"   {{ old('tipo_cliente') === 'revendedor'   ? 'selected' : '' }}>Revendedor / Distribuidor</option>
                                     <option value="tecnico"      {{ old('tipo_cliente') === 'tecnico'      ? 'selected' : '' }}>Técnico independiente</option>
@@ -233,6 +235,7 @@
                                         accept="application/pdf,.pdf"
                                         class="file-upload-input"
                                         aria-label="Subir Constancia de Situación Fiscal en PDF"
+                                        required
                                     >
 
                                     {{-- Estado: vacío --}}
@@ -325,6 +328,7 @@
                                 class="form-input @error('ciudad') is-invalid @enderror"
                                 value="{{ old('ciudad') }}"
                                 placeholder="Ej. Monterrey, N.L."
+                                required
                             >
                             @error('ciudad')
                                 <span class="form-error" role="alert">{{ $message }}</span>

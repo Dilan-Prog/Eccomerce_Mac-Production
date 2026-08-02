@@ -8,6 +8,7 @@
     <link rel="preconnect" href="https://www.gstatic.com" crossorigin>
     <link rel="preconnect" href="https://stats.g.doubleclick.net" crossorigin>
 
+    <meta name="facebook-domain-verification" content="wevs2cstd30z7xq8trxu13bp6fjfjb" />
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximal-scale=1">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -131,10 +132,11 @@
     <script src="https://www.google.com/recaptcha/api.js?render=6LfT84IrAAAAAKVhNXXrFPDAgMFAiCGdj1-tYz2B"></script>
     <script defer type="module" src="https://cdn.jsdelivr.net/npm/@justinribeiro/lite-youtube@1/lite-youtube.min.js"></script>
 
-            <!-- Captura GCLID + UTM -->
+            <!-- Captura GCLID + UTM y envía a Google Sheets si hay parámetros de campaña -->
             <script>
             (function() {
                 const params = new URLSearchParams(window.location.search);
+                const googleSheetsWebhook = 'https://script.google.com/macros/s/AKfycbwU_alwJ8RczaMMaRWUCcBD2Pc9exMGsG5vWGX-J7-h5BQajHC43VR3Ufk3QiGeQtZF/exec';
 
                 if (params.has('gclid')) localStorage.setItem('gclid', params.get('gclid'));
                 if (params.has('utm_source')) localStorage.setItem('utm_source', params.get('utm_source'));
@@ -143,6 +145,25 @@
 
                 if (!localStorage.getItem('landing_page')) {
                     localStorage.setItem('landing_page', window.location.pathname);
+                }
+
+                if (params.has('gclid') || params.has('utm_source')) {
+                    fetch(googleSheetsWebhook, {
+                        method: 'POST',
+                        mode: 'no-cors',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            gclid: params.get('gclid') || '',
+                            utm_source: params.get('utm_source') || '',
+                            utm_medium: params.get('utm_medium') || '',
+                            utm_campaign: params.get('utm_campaign') || '',
+                            landing_page: window.location.pathname,
+                            type: 'page_visit',
+                            fecha: new Date().toLocaleString('sv-SE', { timeZone: 'America/Mexico_City' })
+                        })
+                    }).catch(function(err) {
+                        console.warn('No se pudo registrar la visita:', err);
+                    });
                 }
             })();
             </script>
@@ -486,21 +507,32 @@
         }
         @media (max-width: 560px) {
             .header-icon-btn span:not(.cart-badge) { display: none; }
-            .header-inner { padding: 12px 0; }
+            .header-inner { padding: 12px 0; gap: 0px; }
+            .logo-img {height: 35px; width: auto; }
         }
-
+        .container {
+            max-width: 1500px;
+            padding-left: 20px;
+            padding-right: 20px;
+        }
         /* ===== HERO SECTION ===== */
         .hero-home {
             background-color: #002856;
             position: relative;
             min-height: 520px;
+<<<<<<< HEAD
             height: 85vh;
             max-height: 700px;
+=======
+            height: auto;
+            max-height: 850px;
+>>>>>>> c482de177cb634e21d9752987046d39872468d40
             color: #fff;
         }
         /* Container ocupa toda la altura del section */
         .hero-container {
             position: relative;
+            max-width: 1920px;
             height: 100%;
         }
         /* Capas de foto dentro del container (ping-pong JS) */
@@ -669,26 +701,279 @@
             .hero-home .btn-primary,
             .hero-home .btn-secondary { text-align: center; width: 100%; }
             .hero-stat-numero { font-size: 24px; }
+            .wsus__mobile_menu_icon{margin-top: 0px;}
+            .wsus__cart_icon { display: block !important; margin-top: 1px;}
         }
     </style>
+
+    @push('styles')
+    <style>
+        /* ===== MENÚ MÓVIL (drawer) ===== */
+        .mobile-menu-btn {
+            width: 44px;
+            height: 44px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            background: none;
+            border: none;
+            padding: 0;
+            cursor: pointer;
+        }
+        .mobile-menu-btn .burger-line {
+            display: block;
+            width: 24px;
+            height: 2px;
+            background: var(--azul-principal, #003E7E);
+            border-radius: 2px;
+            transition: transform 0.25s ease, opacity 0.25s ease;
+        }
+        .mobile-menu-btn.is-open .burger-line:nth-child(1) {
+            transform: translateY(7px) rotate(45deg);
+        }
+        .mobile-menu-btn.is-open .burger-line:nth-child(2) {
+            opacity: 0;
+        }
+        .mobile-menu-btn.is-open .burger-line:nth-child(3) {
+            transform: translateY(-7px) rotate(-45deg);
+        }
+
+        .mob-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.45);
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.25s ease, visibility 0.25s ease;
+            z-index: 1040;
+        }
+        .mob-overlay.is-open {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .mob-panel {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: min(80vw, 320px);
+            background: #ffffff;
+            transform: translateX(-100%);
+            transition: transform 0.3s ease;
+            z-index: 1050;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+            overflow-y: auto;
+            box-shadow: 4px 0 24px rgba(0, 0, 0, 0.18);
+        }
+        .mob-panel.is-open {
+            transform: translateX(0);
+        }
+        .mob-panel__header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--gris-borde, #DDE3EA);
+            flex-shrink: 0;
+        }
+        .mob-panel__logo img {
+            height: 34px;
+            width: auto;
+            display: block;
+        }
+        .mob-panel__close {
+            background: none;
+            border: none;
+            color: var(--gris-texto, #4A5568);
+            font-size: 20px;
+            cursor: pointer;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .mob-panel__nav {
+            list-style: none;
+            margin: 0;
+            padding: 8px 0;
+        }
+        .mob-panel__nav li {
+            border-bottom: 1px solid var(--gris-borde, #DDE3EA);
+        }
+        .mob-panel__nav li a,
+        .mob-panel__nav li summary {
+            display: block;
+            padding: 13px 24px;
+            color: var(--gris-texto, #4A5568);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            list-style: none;
+        }
+        .mob-panel__nav li a:hover,
+        .mob-panel__nav li summary:hover,
+        .mob-panel__nav li a.active {
+            background: var(--azul-claro, #E6EFF8);
+            color: var(--azul-principal, #003E7E);
+        }
+        .mob-panel__nav li summary::-webkit-details-marker {
+            display: none;
+        }
+        .mob-panel__submenu {
+            list-style: none;
+            margin: 0;
+            padding: 4px 0 8px;
+            background: var(--gris-fondo, #F5F7FA);
+        }
+        .mob-panel__submenu li a {
+            padding: 10px 36px;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--gris-texto, #4A5568);
+        }
+
+        /* ===== SUBMENÚ DE CATEGORÍAS (Productos) — 3 niveles ===== */
+        .mob-cat-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .mob-panel__nav .mob-cat-row a {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            min-width: 0;
+        }
+        .mob-cat-toggle {
+            background: none;
+            border: none;
+            width: 44px;
+            height: 44px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--gris-claro-texto, #718096);
+            cursor: pointer;
+        }
+        .mob-cat-toggle svg {
+            width: 16px;
+            height: 16px;
+            transition: transform 0.2s ease;
+        }
+        .mob-cat-toggle.is-open svg {
+            transform: rotate(180deg);
+        }
+        .mob-cat-children {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            background: var(--gris-fondo, #F5F7FA);
+            display: none;
+        }
+        .mob-cat-children.is-open {
+            display: block;
+        }
+        .mob-cat-children > li {
+            border-bottom: 1px solid var(--gris-borde, #DDE3EA);
+        }
+        .mob-cat-children .mob-cat-row a,
+        .mob-cat-children li > a {
+            padding: 10px 24px 10px 36px;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--gris-texto, #4A5568);
+        }
+        .mob-cat-children .mob-cat-row a:hover,
+        .mob-cat-children li > a:hover {
+            color: var(--azul-principal, #003E7E);
+        }
+        .mob-cat-children .mob-cat-children {
+            background: #ffffff;
+        }
+        .mob-cat-children .mob-cat-children .mob-cat-row a,
+        .mob-cat-children .mob-cat-children li > a {
+            padding-left: 48px;
+        }
+
+        body.mob-menu-open {
+            overflow: hidden;
+        }
+
+        @media (min-width: 992px) {
+            .mob-overlay,
+            .mob-panel {
+                display: none;
+            }
+        }
+    </style>
+    @endpush
+
     @stack('styles')
 </head>
 
 
     <!-- <link rel="stylesheet" href="css/rtl.css"> -->
-    {{-- <script async src="https://www.googletagmanager.com/gtag/js?id=AW-16512201966">
-    </script>
-     <script>
+    <!-- Google Ads -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=AW-16512201966"></script>
+    <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
-
       gtag('config', 'AW-16512201966');
-    </script> --}}
+    </script>
     @stack('Google-Ads')
+
+    <!-- Google Tag Manager -->
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-PX9LXWGR');</script>
+    <!-- End Google Tag Manager -->
+
+    <!-- Google Analytics (GA4) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-K8M2ZT5HYK"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-K8M2ZT5HYK');
+    </script>
+    <!-- End Google Analytics -->
+
+    <!-- Meta Pixel Code -->
+    <script>
+    !function(f,b,e,v,n,t,s)
+    {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+    n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];
+    s.parentNode.insertBefore(t,s)}(window, document,'script',
+    'https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', '1912650302805252');
+    fbq('track', 'PageView');
+    </script>
+    <noscript><img height="1" width="1" style="display:none"
+    src="https://www.facebook.com/tr?id=1912650302805252&ev=PageView&noscript=1"
+    /></noscript>
+    <!-- End Meta Pixel Code -->
 
 </head>
 <body>
+    <!-- Google Tag Manager (noscript) -->
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-PX9LXWGR"
+    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+    <!-- End Google Tag Manager (noscript) -->
         <!--header sticky wrapper-->
         <div class="sticky-wrapper">
             @include('frontend.layouts.top-bar')
@@ -764,8 +1049,10 @@
     <script src="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
 
 
+    {{-- Tracking unificado de conversiones (WhatsApp / Teléfono / Correo) --}}
     <script>
         const siteKey = '6LfT84IrAAAAAKVhNXXrFPDAgMFAiCGdj1-tYz2B';
+        const googleSheetsWebhook = 'https://script.google.com/macros/s/AKfycbwp8PQWscSciD7gc5c1DMiFntOr0HuAPraK9pfzwtzqCP_4DF9azi8Fy16HfEeqxK3T/exec';
 
         // Función general para ejecutar y validar reCAPTCHA
         function ejecutarRecaptchaYValidar(action, callbackOK) {
@@ -789,150 +1076,68 @@
             });
         }
 
-        // WhatsApp flotante
-        document.querySelector('#whastapp-flotante')?.addEventListener('click', function (e) {
+        // Envía la conversión a Google Sheets y al backend (en paralelo, sin bloquear la navegación)
+        function registrarConversion(type) {
+            const payload = {
+                gclid: localStorage.getItem('gclid') || '',
+                utm_source: localStorage.getItem('utm_source') || '',
+                utm_medium: localStorage.getItem('utm_medium') || '',
+                utm_campaign: localStorage.getItem('utm_campaign') || '',
+                landing_page: localStorage.getItem('landing_page') || window.location.pathname,
+                type: type,
+                // Fecha en zona horaria de México (formato: YYYY-MM-DD HH:MM:SS)
+                fecha: new Date().toLocaleString('sv-SE', { timeZone: 'America/Mexico_City' })
+            };
+
+            fetch(googleSheetsWebhook, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            }).catch(err => console.warn('No se pudo guardar la conversión en Sheets:', err));
+
+            fetch('{{ route('track.conversion') }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                body: JSON.stringify(payload)
+            }).catch(err => console.warn('No se pudo guardar la conversión:', err));
+        }
+
+        document.addEventListener('click', function (e) {
+            const link = e.target.closest('a.track-conversion');
+            if (!link) return;
+
             e.preventDefault();
-            ejecutarRecaptchaYValidar('whatsapp_flotante', function (token) {
+            const type = link.dataset.type || 'desconocido';
+            const href = link.getAttribute('href');
+
+            // Correo: sin reCAPTCHA, se registra en segundo plano y se abre el cliente de correo de inmediato
+            if (type.startsWith('correo')) {
+                registrarConversion(type);
+                window.location.href = href;
+                return;
+            }
+
+            // WhatsApp / Teléfono: valida reCAPTCHA antes de abrir el enlace
+            ejecutarRecaptchaYValidar(type, function (token) {
                 dataLayer.push({
-                    event: 'whatsapp_conversion',
+                    event: 'conversion_click',
                     action: 'click',
-                    label: 'whatsapp_flotante',
+                    label: type,
                     recaptcha_token: token
                 });
-                window.open('https://wa.link/f28njw', '_blank');
+                registrarConversion(type);
+
+                if (type.startsWith('whatsapp')) {
+                    window.open(href, '_blank');
+                } else {
+                    window.location.href = href;
+                }
             });
         });
-
-        // WhatsApp en página de producto
-        document.querySelector('#whatsappBtn')?.addEventListener('click', function (e) {
-            e.preventDefault();
-            ejecutarRecaptchaYValidar('whatsapp_click', function (token) {
-                dataLayer.push({
-                    event: 'whatsapp_conversion',
-                    action: 'click',
-                    label: 'whatsapp_producto',
-                    recaptcha_token: token
-                });
-                window.open('https://wa.link/f28njw', '_blank');
-            });
-        });
-
-        // Botón de teléfono
-        document.querySelector('#telefonoBtn')?.addEventListener('click', function (e) {
-            e.preventDefault();
-            ejecutarRecaptchaYValidar('telefono_click', function (token) {
-                dataLayer.push({
-                    event: 'Telefono_Conversion',
-                    telefono: '8124738768',
-                    recaptcha_token: token
-                });
-                window.location.href = 'tel:8124738768';
-            });
-        });
-        </script>
-
-
-    {{-- Track Conversion ads --}}
-
-
-    {{-- <script>
-        const urlParams = new URLSearchParams(window.location.search);
-        [
-        'gclid',
-        'utm_source',
-        'utm_medium',
-        'utm_campaign'
-        ].forEach(param => {
-        const value = urlParams.get(param);
-        if (value) localStorage.setItem(param, value);
-        });
-        localStorage.setItem('landing_page', window.location.pathname);
-    </script> --}}
-{{-- Envio de datos Track Conversion --}}
-    <script>
-        const googleSheetsWebhook = 'https://script.google.com/macros/s/AKfycbwp8PQWscSciD7gc5c1DMiFntOr0HuAPraK9pfzwtzqCP_4DF9azi8Fy16HfEeqxK3T/exec';
-
-        document.addEventListener('DOMContentLoaded', function () {
-            const conversionLinks = document.querySelectorAll('a.track-conversion');
-
-            conversionLinks.forEach(link => {
-                link.addEventListener('click', function (e) {
-                    const type = this.dataset.type || 'desconocido';
-                    const href = this.getAttribute('href');
-
-                    e.preventDefault();
-
-                    const payload = {
-                        gclid: localStorage.getItem('gclid') || '',
-                        utm_source: localStorage.getItem('utm_source') || '',
-                        utm_medium: localStorage.getItem('utm_medium') || '',
-                        utm_campaign: localStorage.getItem('utm_campaign') || '',
-                        landing_page: localStorage.getItem('landing_page') || window.location.pathname,
-                        type: type,
-                        // Fecha en zona horaria de México (formato: YYYY-MM-DD HH:MM:SS)
-                        fecha: new Date().toLocaleString('sv-SE', { timeZone: 'America/Mexico_City' })
-                    };
-
-                    fetch(googleSheetsWebhook, {
-                        method: 'POST',
-                        mode: 'no-cors',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(payload)
-                    }).catch(err => {
-                        console.warn('No se pudo guardar la conversión:', err);
-                    }).finally(() => {
-                        setTimeout(() => {
-                            window.open(href, '_blank');
-                        }, 300);
-                    });
-                });
-            });
-        });
-    </script>
-
-
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-        const conversionLinks = document.querySelectorAll('a.track-conversion');
-
-        conversionLinks.forEach(link => {
-            link.addEventListener('click', function (e) {
-                const type = this.dataset.type || 'desconocido';
-                const href = this.getAttribute('href');
-
-                e.preventDefault();
-
-
-                const payload = {
-                    gclid: localStorage.getItem('gclid') || null,
-                    utm_source: localStorage.getItem('utm_source') || null,
-                    utm_medium: localStorage.getItem('utm_medium') || null,
-                    utm_campaign: localStorage.getItem('utm_campaign') || null,
-                    landing_page: localStorage.getItem('landing_page') || window.location.pathname,
-                    type: type,
-                    // Fecha en zona horaria de México (formato: YYYY-MM-DD HH:MM:SS)
-                    fecha: new Date().toLocaleString('sv-SE', { timeZone: 'America/Mexico_City' })
-                };
-
-                // Envía la info al backend usando fetch POST
-                fetch('{{ route('track.conversion') }}', {
-                    method: 'post',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                    },
-                    body: JSON.stringify(payload)
-                }).catch(err => {
-                    console.warn('No se pudo guardar la conversión:', err);
-                }).finally(() => {
-                    // Después de 300ms redirige al enlace (WhatsApp o Teléfono)
-                    setTimeout(() => {
-                        window.open(href, '_blank');
-                    }, 300);
-                });
-            });
-        });
-    });
     </script>
 
     <script>
@@ -1001,6 +1206,72 @@
     </script>
 
     @include('frontend.layouts.scripts')
+
+    @push('scripts')
+    <script>
+    (function () {
+        var toggle  = document.getElementById('mobileMenuToggle');
+        var closeBtn = document.getElementById('mobileMenuClose');
+        var overlay = document.getElementById('mobileMenuOverlay');
+        var panel   = document.getElementById('mobileMenuPanel');
+        if (!toggle || !overlay || !panel) return;
+
+        function openMenu() {
+            panel.classList.add('is-open');
+            overlay.classList.add('is-open');
+            toggle.classList.add('is-open');
+            document.body.classList.add('mob-menu-open');
+            toggle.setAttribute('aria-expanded', 'true');
+            panel.setAttribute('aria-hidden', 'false');
+            overlay.setAttribute('aria-hidden', 'false');
+        }
+
+        function closeMenu() {
+            panel.classList.remove('is-open');
+            overlay.classList.remove('is-open');
+            toggle.classList.remove('is-open');
+            document.body.classList.remove('mob-menu-open');
+            toggle.setAttribute('aria-expanded', 'false');
+            panel.setAttribute('aria-hidden', 'true');
+            overlay.setAttribute('aria-hidden', 'true');
+        }
+
+        toggle.addEventListener('click', function () {
+            if (panel.classList.contains('is-open')) {
+                closeMenu();
+            } else {
+                openMenu();
+            }
+        });
+
+        if (closeBtn) {
+            closeBtn.addEventListener('click', closeMenu);
+        }
+
+        overlay.addEventListener('click', closeMenu);
+
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape' && panel.classList.contains('is-open')) {
+                closeMenu();
+                toggle.focus();
+            }
+        });
+
+        panel.querySelectorAll('.mob-cat-toggle').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                var row = btn.closest('.mob-cat-row');
+                var children = row && row.nextElementSibling;
+                if (!children || !children.classList.contains('mob-cat-children')) return;
+
+                var isOpen = children.classList.toggle('is-open');
+                btn.classList.toggle('is-open', isOpen);
+                btn.setAttribute('aria-expanded', String(isOpen));
+            });
+        });
+    })();
+    </script>
+    @endpush
+
     @stack('scripts')
 </body>
 

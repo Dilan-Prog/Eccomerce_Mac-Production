@@ -58,7 +58,7 @@ class CotizacionController extends Controller
             }
         }
 
-        return view('cotizaciones.formulario');
+        return view('cotizaciones.formulario', ['user' => $user]);
     }
 
     /**
@@ -68,21 +68,28 @@ class CotizacionController extends Controller
     {
         $user = auth()->user();
 
-        // Guardar CIF
-        $cifPath = $request->file('cif')->store('cif', 'public');
+        // Usa el CIF ya subido en el registro a menos que suban uno nuevo.
+        $cifPath = $user->csf_path;
+        if ($request->hasFile('cif')) {
+            $cifPath = $request->file('cif')->store('cif', 'public');
+        }
+
+        $rfc         = strtoupper($user->rfc ?? $request->rfc);
+        $tipoPersona = $request->tipo_persona;
+        $razonSocial = $tipoPersona === 'empresa' ? ($user->company ?? $request->razon_social) : null;
+        $telefono    = $user->phone ?? $request->telefono;
 
         // Crear perfil fiscal
         $perfil = CotizacionPerfil::create([
             'user_id'          => $user->id,
-            'tipo_persona'     => $request->tipo_persona,
-            'razon_social'     => $request->tipo_persona === 'empresa' ? $request->razon_social : null,
-            'curp'             => $request->tipo_persona === 'fisica' ? $request->curp : null,
-            'rfc'              => strtoupper($request->rfc),
+            'tipo_persona'     => $tipoPersona,
+            'razon_social'     => $razonSocial,
+            'rfc'              => $rfc,
             'direccion_fiscal' => $request->direccion_fiscal,
             'cif_path'         => $cifPath,
         ]);
 
-        $cotizacion = $this->generarCotizacion($user, $perfil, $request->telefono);
+        $cotizacion = $this->generarCotizacion($user, $perfil, $telefono);
 
         return redirect()->route('cotizacion.generada', $cotizacion->id);
     }

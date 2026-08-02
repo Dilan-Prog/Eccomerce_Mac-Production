@@ -449,7 +449,7 @@
             </div>
             <div class="contact-info-text-mdn">
               <div class="contact-info-label-mdn">WhatsApp Business</div>
-              <div class="contact-info-value-mdn"><a href="https://wa.me/528135825559">81 3582 5559</a></div>
+              <div class="contact-info-value-mdn"><a href="https://wa.me/528135825559" class="track-conversion" data-type="whatsapp_contacto_business">81 3582 5559</a></div>
             </div>
           </div>
           <div class="contact-info-item-mdn">
@@ -458,7 +458,7 @@
             </div>
             <div class="contact-info-text-mdn">
               <div class="contact-info-label-mdn">Soporte directo</div>
-              <div class="contact-info-value-mdn"><a href="tel:528124738768">81 2473 8768</a></div>
+              <div class="contact-info-value-mdn"><a href="tel:528124738768" class="track-conversion" data-type="telefono_contacto_soporte">81 2473 8768</a></div>
             </div>
           </div>
         </div>
@@ -474,8 +474,8 @@
             </div>
             <div class="contact-info-text-mdn">
               <div class="contact-info-label-mdn">Cotizaciones y ventas</div>
-              <div class="contact-info-value-mdn"><a href="mailto:ventasmty@macdelnorte.com">ventasmty@macdelnorte.com</a></div>
-              <div class="contact-info-value-mdn"><a href="mailto:ventas1@macdelnorte.com">ventas1@macdelnorte.com</a></div>
+              <div class="contact-info-value-mdn"><a href="mailto:ventasmty@macdelnorte.com" class="track-conversion" data-type="correo_contacto_ventasmty">ventasmty@macdelnorte.com</a></div>
+              <div class="contact-info-value-mdn"><a href="mailto:ventas1@macdelnorte.com" class="track-conversion" data-type="correo_contacto_ventas1">ventas1@macdelnorte.com</a></div>
             </div>
           </div>
         </div>
