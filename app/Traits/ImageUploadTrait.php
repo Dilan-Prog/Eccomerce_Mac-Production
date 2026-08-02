@@ -199,8 +199,8 @@ trait ImageUploadTrait{
     if ($request->hasFile($inputName)) {
 
         // Eliminar imagen anterior si existe
-        if ($oldaPath && File::exists(UploadPath::full($oldaPath))) {
-            File::delete(UploadPath::full($oldaPath));
+        if ($oldaPath) {
+            $this->deleteImage($oldaPath);
         }
 
         // Procesar imagen nueva
@@ -239,6 +239,66 @@ trait ImageUploadTrait{
 
     return null; // Si no se subió archivo
 }
+
+    /**
+     * Resolves an image field that can come from EITHER a fresh upload OR a
+     * path picked from the Media Library gallery (AU.ImagePicker) — never
+     * both. Fresh uploads delegate to uploadImage()/updateImage() completely
+     * unchanged (byte-for-byte the same as before the gallery picker
+     * existed); a library pick copies the existing file through the exact
+     * same Intervention resize/watermark/webp pipeline into the module's own
+     * destination folder, so "picked" and "freshly uploaded" produce
+     * identical output shapes and neither module ends up with a live
+     * reference to another module's file.
+     *
+     * Returns null when neither a file nor a library path was given, so
+     * callers keep their existing "no new upload => keep old value" logic.
+     */
+    public function resolveOrCopyImage(Request $request, $inputName, $libraryFieldName, $path, $oldPath = null, $width = null, $height = null, $watermark = false)
+    {
+        if ($request->hasFile($inputName)) {
+            return $oldPath !== null
+                ? $this->updateImage($request, $inputName, $path, $oldPath, $width, $height, $watermark)
+                : $this->uploadImage($request, $inputName, $path, $width, $height, $watermark);
+        }
+
+        $libraryPath = $request->input($libraryFieldName);
+        if (!$libraryPath) {
+            return null;
+        }
+
+        $sourceFull = realpath(UploadPath::full($libraryPath));
+        $uploadsRoot = realpath(UploadPath::full('uploads'));
+        if (!$sourceFull || !$uploadsRoot || !str_starts_with($sourceFull, $uploadsRoot)) {
+            return null;
+        }
+
+        if ($oldPath) {
+            $this->deleteImage($oldPath);
+        }
+
+        $manager = new ImageManager(new Driver());
+        $originalName = pathinfo($sourceFull, PATHINFO_FILENAME);
+        $cleanedName = Str::slug($originalName, '-');
+        $imageName = $cleanedName . '-media_' . uniqid() . '.webp';
+
+        $img = $manager->read($sourceFull);
+        if ($width && $height) {
+            $img->resize($width, $height);
+        }
+        if ($watermark) {
+            $img = $this->applyWatermark($img);
+        }
+        $img->encode(new WebpEncoder(quality: 75));
+
+        $uploadPath = UploadPath::full($path . '/');
+        if (!file_exists($uploadPath)) {
+            mkdir($uploadPath, 0755, true);
+        }
+        $img->save($uploadPath . $imageName);
+
+        return asset($path . '/' . $imageName);
+    }
 
     /**handle delete file antiguo no sirve para rutas url hacer el cambio a rutas relativas*/
 

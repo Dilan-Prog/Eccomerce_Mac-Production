@@ -1,0 +1,300 @@
+/* Shell layout: sidebar + topbar + content area */
+
+.admin-ui-v2 .au-shell {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* ---------- Sidebar ---------- */
+.admin-ui-v2 .au-sidebar {
+  width: var(--au-sidebar-width);
+  flex-shrink: 0;
+  background: var(--au-navy);
+  color: var(--au-text-on-brand);
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  overflow-y: auto;
+  z-index: 20;
+}
+
+.admin-ui-v2 .au-sidebar-brand {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  height: var(--au-topbar-height);
+  padding: 0 var(--au-space-5);
+  flex-shrink: 0;
+  border-bottom: 1px solid var(--au-navy-soft);
+}
+
+.admin-ui-v2 .au-sidebar-brand-link {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+}
+
+.admin-ui-v2 .au-sidebar-brand-logo {
+  max-height: 36px;
+  max-width: 100%;
+  width: auto;
+  object-fit: contain;
+}
+
+.admin-ui-v2 .au-sidebar-nav {
+  padding: 14px 12px 20px;
+  flex: 1;
+}
+
+.admin-ui-v2 .au-nav-header {
+  padding: 10px 10px 7px;
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 1.1px;
+  text-transform: uppercase;
+  color: #61789a;
+}
+
+.admin-ui-v2 .au-nav-link {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 9px 11px;
+  border-radius: var(--au-radius-sm);
+  color: #a9bcd1;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.admin-ui-v2 .au-nav-link:hover {
+  background: rgba(255, 255, 255, 0.07);
+  color: #fff;
+}
+
+.admin-ui-v2 .au-nav-item.is-active > .au-nav-link {
+  background: linear-gradient(90deg, var(--au-blue-700), var(--au-blue-900));
+  color: #fff;
+  font-weight: 600;
+  box-shadow: 0 2px 10px rgba(20, 80, 180, 0.4);
+}
+
+.admin-ui-v2 .au-nav-link .au-nav-icon {
+  width: 18px;
+  text-align: center;
+  flex-shrink: 0;
+  opacity: 0.9;
+}
+
+.admin-ui-v2 .au-nav-link .au-nav-caret {
+  margin-left: auto;
+  font-size: 11px;
+  transition: transform 0.15s ease;
+  opacity: 0.7;
+}
+
+.admin-ui-v2 .au-nav-item.is-open > .au-nav-link .au-nav-caret {
+  transform: rotate(90deg);
+}
+
+.admin-ui-v2 .au-nav-submenu {
+  overflow: hidden;
+  max-height: 0;
+  transition: max-height 0.18s ease;
+}
+
+.admin-ui-v2 .au-nav-item.is-open > .au-nav-submenu {
+  max-height: 600px;
+}
+
+.admin-ui-v2 .au-nav-submenu .au-nav-link {
+  padding-left: var(--au-space-8);
+  font-size: 12.5px;
+  color: #8fa6bf;
+}
+
+.admin-ui-v2 .au-sidebar-widget {
+  margin: 0 12px 14px;
+  padding: 13px 14px;
+  border-radius: var(--au-radius-md);
+  background: linear-gradient(150deg, rgba(47, 127, 240, 0.18), rgba(47, 127, 240, 0.05));
+  border: 1px solid rgba(96, 160, 255, 0.22);
+}
+
+.admin-ui-v2 .au-sidebar-widget-title {
+  color: #fff;
+  font-size: 12.5px;
+  font-weight: 600;
+  margin-bottom: 3px;
+}
+
+.admin-ui-v2 .au-sidebar-widget-note {
+  color: #8fa8c4;
+  font-size: 11px;
+  line-height: 1.45;
+}
+
+/* ---------- Topbar ---------- */
+.admin-ui-v2 .au-topbar {
+  height: var(--au-topbar-height);
+  background: rgba(255, 255, 255, 0.86);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--au-border);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 0 26px;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.admin-ui-v2 .au-topbar-search {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  background: var(--au-surface-subdued);
+  border: 1px solid var(--au-border);
+  border-radius: var(--au-radius-sm);
+  padding: 0 12px;
+  height: 36px;
+  flex: 1;
+  max-width: 460px;
+  color: var(--au-text-muted);
+}
+
+.admin-ui-v2 .au-topbar-search input {
+  border: 0;
+  background: transparent;
+  outline: none;
+  width: 100%;
+  color: var(--au-text);
+  font-size: var(--au-fs-body);
+}
+
+.admin-ui-v2 .au-topbar-kbd {
+  font: 500 10px var(--au-font-mono);
+  color: var(--au-text-muted);
+  background: #e6eaf3;
+  padding: 2px 6px;
+  border-radius: 5px;
+}
+
+.admin-ui-v2 .au-topbar-user {
+  display: flex;
+  align-items: center;
+  gap: var(--au-space-3);
+  position: relative;
+  margin-left: auto;
+}
+
+.admin-ui-v2 .au-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--au-radius-sm);
+  background: var(--au-gradient-primary);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 13px;
+  flex-shrink: 0;
+}
+
+.admin-ui-v2 .au-topbar-user-name {
+  font-size: 12.5px;
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.admin-ui-v2 .au-topbar-user-email {
+  font-size: 11px;
+  color: #7b8798;
+  line-height: 1.25;
+}
+
+/* ---------- Content area ---------- */
+.admin-ui-v2 .au-main {
+  margin-left: var(--au-sidebar-width);
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.admin-ui-v2 .au-content {
+  padding: 24px 26px 44px;
+  max-width: 1560px;
+  width: 100%;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+/* ---------- Page header ---------- */
+.admin-ui-v2 .au-page-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.admin-ui-v2 .au-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 12px;
+  color: #7b8798;
+  margin-bottom: 7px;
+}
+
+.admin-ui-v2 .au-breadcrumb a:hover {
+  color: var(--au-blue-700);
+}
+
+.admin-ui-v2 .au-breadcrumb .au-breadcrumb-sep {
+  color: #c2cad8;
+}
+
+.admin-ui-v2 .au-breadcrumb .au-breadcrumb-current {
+  color: var(--au-text);
+  font-weight: 500;
+}
+
+.admin-ui-v2 .au-page-title {
+  font-size: var(--au-fs-page-title);
+  font-weight: 700;
+  letter-spacing: -0.7px;
+  margin-bottom: 7px;
+}
+
+.admin-ui-v2 .au-page-subtitle {
+  font-size: var(--au-fs-body);
+  color: #6d7a8d;
+}
+
+.admin-ui-v2 .au-page-header-actions {
+  display: flex;
+  gap: 9px;
+  flex-shrink: 0;
+}
+
+@media (max-width: 900px) {
+  .admin-ui-v2 .au-sidebar {
+    transform: translateX(-100%);
+    transition: transform 0.2s ease;
+  }
+  .admin-ui-v2 .au-sidebar.is-open {
+    transform: translateX(0);
+  }
+  .admin-ui-v2 .au-main {
+    margin-left: 0;
+  }
+}

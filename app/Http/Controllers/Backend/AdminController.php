@@ -45,7 +45,7 @@ class AdminController extends Controller
 
 
 
-        return view('admin.dashboard', compact(
+        return view('admin-ui.dashboard.index', compact(
             'todaysOrder',
             'todaysPendingOrder',
             'totalOrders',

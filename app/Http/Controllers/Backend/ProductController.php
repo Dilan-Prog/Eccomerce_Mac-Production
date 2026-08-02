@@ -2,13 +2,16 @@
 
 namespace App\Http\Controllers\Backend;
 
-use App\DataTables\ProductDataTable;
 use App\Http\Controllers\Controller;
 use App\Models\AspelSync;
 use App\Models\Brand;
 use App\Models\PrecioXProductAspel;
 use App\Models\Product;
+use App\Support\AdminTable\AdminTableExport;
+use App\Support\AdminTable\AdminTableRequest;
+use App\Support\AdminTable\Queries\ProductTableQuery;
 use App\Traits\ImageUploadTrait;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use App\Models\ChildCategory;
 use App\Models\Subcategory;
@@ -18,6 +21,9 @@ use App\Models\ProductImageGallery;
 use App\Models\ProductVariant;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
+use Maatwebsite\Excel\Excel as ExcelFormat;
+use Maatwebsite\Excel\Facades\Excel;
 use Str;
 
 class ProductController extends Controller
@@ -26,9 +32,89 @@ class ProductController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(ProductDataTable $dataTable)
+    public function index()
     {
-        return $dataTable->render('admin.product.index');
+        return view('admin-ui.products.index');
+    }
+
+    /** JSON data source for the custom admin table (replaces ProductDataTable). */
+    public function tableData(Request $request, ProductTableQuery $table)
+    {
+        return response()->json($table->paginate(AdminTableRequest::fromRequest($request)));
+    }
+
+    /** Excel/CSV/PDF export of every product matching the current filter/search (replaces the Yajra-Buttons export). */
+    public function export(Request $request, ProductTableQuery $table)
+    {
+        $adminRequest = AdminTableRequest::fromRequest($request);
+        $headings = $table->exportHeadings();
+        $rows = $table->exportRows($adminRequest)->map(fn ($row) => $table->exportRow($row))->all();
+        $format = $request->input('format', 'xlsx');
+
+        if ($format === 'pdf') {
+            return Pdf::loadView('admin-ui.exports.table-pdf', [
+                'title' => 'Productos',
+                'headings' => $headings,
+                'rows' => $rows,
+                'generatedAt' => now()->format('d/m/Y H:i'),
+            ])->download('productos.pdf');
+        }
+
+        $writerType = $format === 'csv' ? ExcelFormat::CSV : ExcelFormat::XLSX;
+        $extension = $format === 'csv' ? 'csv' : 'xlsx';
+
+        return Excel::download(new AdminTableExport($headings, $rows), "productos.{$extension}", $writerType);
+    }
+
+    /** Bulk actions from the table's multi-select bar. Mirrors destroy()'s cleanup exactly, skipping products with existing orders. */
+    public function bulkAction(Request $request)
+    {
+        $ids = array_filter((array) $request->input('ids', []));
+        if (empty($ids)) {
+            return response()->json(['status' => 'error', 'message' => 'No se seleccionó ningún elemento.']);
+        }
+
+        if ($request->input('action') === 'delete') {
+            $products = Product::whereIn('id', $ids)->get();
+            $deleted = 0;
+            $skipped = 0;
+
+            foreach ($products as $product) {
+                if (OrderProduct::where('product_id', $product->id)->count() > 0) {
+                    $skipped++;
+                    continue;
+                }
+
+                /**Delete the main product image */
+                $this->deleteImage($product->thumb_image);
+
+                /**Delete product gallery images */
+                $galleryImages = ProductImageGallery::where('product_id', $product->id)->get();
+                foreach ($galleryImages as $image) {
+                    $this->deleteImage($image->image);
+                    $image->delete();
+                }
+
+                /**Delete product Variants if exists */
+                $variants = ProductVariant::where('product_id', $product->id)->get();
+                foreach ($variants as $variant) {
+                    $variant->productVariantItems()->delete();
+                    $variant->delete();
+                }
+
+                $product->delete();
+                $deleted++;
+            }
+
+            $message = "{$deleted} producto(s) eliminado(s).";
+            if ($skipped > 0) {
+                $message .= " {$skipped} producto(s) no se eliminaron por tener órdenes asociadas.";
+            }
+
+            return response()->json(['status' => 'success', 'message' => $message]);
+        }
+
+        return response()->json(['status' => 'error', 'message' => 'Acción no soportada.']);
     }
 
     /**
@@ -43,9 +129,56 @@ class ProductController extends Controller
         return view('admin.product.create', compact('categories', 'brands', 'ivaValue'));
     }
 
+    /** Bare form fragment for the admin-ui Crear modal (AU.FormModal) — no page layout. */
+    public function createFragment()
+    {
+        $categories = Category::all();
+        $subCategories = Subcategory::all();
+        $childCategories = ChildCategory::all();
+        $brands = Brand::all();
 
-    
+        return view('admin-ui.products._form', compact('categories', 'subCategories', 'childCategories', 'brands'));
+    }
 
+    /** Bare form fragment for the admin-ui Editar modal, pre-filled. Mirrors edit()'s Aspel lookup exactly. */
+    public function editFragment(string $id)
+    {
+        $product = Product::findOrFail($id);
+        $categories = Category::all();
+        $subCategories = Subcategory::all();
+        $childCategories = ChildCategory::all();
+        $brands = Brand::all();
+        // First 3 gallery rows for the sidebar's read-only preview slots (see
+        // _form.blade.php's "Galería del producto" block — there is no
+        // dedicated DB column for these, they're just this product's own
+        // products-image-gallery rows).
+        $galleryImages = $product->productImageGalleries()->orderBy('id')->take(3)->get();
+        $aspelPriceOptions = [];
+        $aspelProductData = null;
+        $aspelCurrency = null;
+        $ivaValue = DB::table('general_settings')->value('iva_mexico') ?? 16.00;
+        try {
+            $aspelProduct = AspelSync::where('cve_art', $product->sku)->first();
+            if ($aspelProduct) {
+                $aspelPriceOptions = PrecioXProductAspel::with('precio_info')
+                    ->where('cve_art', $aspelProduct->cve_art)
+                    ->get();
+                $aspelProductData = $aspelProduct;
+                $aspelCurrency = DB::table('monedas_aspel')
+                    ->where('num_moneda', $aspelProduct->num_mon)
+                    ->first();
+            }
+        } catch (\Throwable $e) {
+            $aspelPriceOptions = [];
+            $aspelProductData = null;
+            $aspelCurrency = null;
+        }
+
+        return view('admin-ui.products._form', compact(
+            'product', 'brands', 'categories', 'subCategories', 'childCategories',
+            'galleryImages', 'aspelPriceOptions', 'aspelProductData', 'aspelCurrency', 'ivaValue'
+        ));
+    }
 
     /**
      * Store a newly created resource in storage.
@@ -54,7 +187,8 @@ class ProductController extends Controller
     {
 
         $request->validate([
-            'image'=>['required','image','max:3000'],
+            'image'=>[Rule::requiredIf(!$request->filled('image_from_library')), 'nullable', 'image', 'max:3000'],
+            'image_from_library'=>['nullable', 'string'],
             'name'=>['required','max:200'],
             'category' => ['required'],
             'brand' => ['required', 'integer', 'exists:brands,id'],
@@ -81,11 +215,11 @@ class ProductController extends Controller
         $category = Category::findOrFail($request->category);
         $brand = Brand::findOrFail($request->brand);
         /**Handle the image upload */
-        $imagePath =  $this->uploadImage($request,'image','uploads/product/' . Str::slug($brand->name) . '/webp/computers/', 1200, 1200, true);
-        $imagePath =  $this->uploadImage($request,'image','uploads/product/' . Str::slug($brand->name) .'/webp/laptop', 1000, 1000, true);
-        $imagePath =  $this->uploadImage($request,'image','uploads/product/' . Str::slug($brand->name) .'/webp/tablet', 800, 800, true);
-        $imagePath =  $this->uploadImage($request,'image','uploads/product/' . Str::slug($brand->name) .'/webp/phone', 600, 600, true);
-        $imagePath =  $this->uploadImage($request,'image','uploads/product/' . Str::slug($brand->name) .'/webp/carrusel', 600, 600, true);
+        $imagePath =  $this->resolveOrCopyImage($request,'image','image_from_library','uploads/product/' . Str::slug($brand->name) . '/webp/computers/', null, 1200, 1200, true);
+        $imagePath =  $this->resolveOrCopyImage($request,'image','image_from_library','uploads/product/' . Str::slug($brand->name) .'/webp/laptop', null, 1000, 1000, true);
+        $imagePath =  $this->resolveOrCopyImage($request,'image','image_from_library','uploads/product/' . Str::slug($brand->name) .'/webp/tablet', null, 800, 800, true);
+        $imagePath =  $this->resolveOrCopyImage($request,'image','image_from_library','uploads/product/' . Str::slug($brand->name) .'/webp/phone', null, 600, 600, true);
+        $imagePath =  $this->resolveOrCopyImage($request,'image','image_from_library','uploads/product/' . Str::slug($brand->name) .'/webp/carrusel', null, 600, 600, true);
 
         $product->thumb_image = $imagePath;
         $product->name = $request->name;
@@ -139,7 +273,11 @@ class ProductController extends Controller
 
         $product->save();
 
-        
+
+
+        if ($request->wantsJson()) {
+            return response()->json(['status' => 'success', 'message' => 'Producto creado con éxito.']);
+        }
 
         toastr('Producto Creado Con exito');
         return redirect()->route('admin.products.index');
@@ -202,6 +340,7 @@ class ProductController extends Controller
     {
         $request->validate([
             'image'=>['nullable','image','max:3000'],
+            'image_from_library'=>['nullable', 'string'],
             'name'=>['required','max:200'],
             'category' => ['required'],
             'brand' => ['required', 'integer', 'exists:brands,id'],
@@ -227,7 +366,7 @@ class ProductController extends Controller
         $product = Product::findOrFail($id);
 
         /**Handle the image upload */
-        $imagePath =  $this->updateImage($request, 'image', 'uploads', $product->thumb_image, 800, 800, true);
+        $imagePath =  $this->resolveOrCopyImage($request, 'image', 'image_from_library', 'uploads', $product->thumb_image, 800, 800, true);
 
         $product->thumb_image = empty(!$imagePath) ? $imagePath : $product->thumb_image;
         $product->name = $request->name;
@@ -280,6 +419,10 @@ class ProductController extends Controller
         // dd($request->all());
         
         $product->save();
+
+        if ($request->wantsJson()) {
+            return response()->json(['status' => 'success', 'message' => 'Producto actualizado con éxito.']);
+        }
 
         toastr('Producto Actualizado Con exito');
         return redirect()->route('admin.products.index');

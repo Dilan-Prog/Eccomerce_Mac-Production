@@ -2,16 +2,14 @@
 
 namespace App\Http\Controllers\Backend;
 
-use App\DataTables\OrderDataTable;
-use App\DataTables\PendingOrderDataTable;
-use App\DataTables\processedOrderDataTable;
-use App\DataTables\droppedOffOrderDataTable;
-use App\DataTables\shippedOrderDataTable;
-use App\DataTables\outForDeliveryOrderDataTable;
-use App\DataTables\deliveredOrderDataTable;
-use App\DataTables\canceledOrderDataTable;
 use App\Http\Controllers\Controller;
 use App\Models\Order;
+use App\Support\AdminTable\AdminTableExport;
+use App\Support\AdminTable\AdminTableRequest;
+use App\Support\AdminTable\Queries\OrderTableQuery;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Maatwebsite\Excel\Excel as ExcelFormat;
+use Maatwebsite\Excel\Facades\Excel;
 
 use Illuminate\Http\Request;
 
@@ -20,45 +18,101 @@ class OrderController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(OrderDataTable $dataTable)
+    public function index()
     {
-        return $dataTable->render('admin.order.index');
+        return view('admin-ui.order.index');
     }
 
-    /**Peding Order */
-    public function pendingOrders(PendingOrderDataTable $dataTable)
+    /** JSON data source for the custom admin table (replaces OrderDataTable). */
+    public function tableData(Request $request, OrderTableQuery $table)
     {
-        return $dataTable->render('admin.order.pending-order');
+        return response()->json($table->paginate(AdminTableRequest::fromRequest($request)));
     }
 
-    public function processedOrders(processedOrderDataTable $dataTable)
+    /** Excel/CSV/PDF export of every order matching the current filter/search (replaces the Yajra-Buttons export). */
+    public function export(Request $request, OrderTableQuery $table)
     {
-        return $dataTable->render('admin.order.processed-orders');
+        $adminRequest = AdminTableRequest::fromRequest($request);
+        $headings = $table->exportHeadings();
+        $rows = $table->exportRows($adminRequest)->map(fn ($row) => $table->exportRow($row))->all();
+        $format = $request->input('format', 'xlsx');
+
+        if ($format === 'pdf') {
+            return Pdf::loadView('admin-ui.exports.table-pdf', [
+                'title' => 'Ordenes',
+                'headings' => $headings,
+                'rows' => $rows,
+                'generatedAt' => now()->format('d/m/Y H:i'),
+            ])->download('ordenes.pdf');
+        }
+
+        $writerType = $format === 'csv' ? ExcelFormat::CSV : ExcelFormat::XLSX;
+        $extension = $format === 'csv' ? 'csv' : 'xlsx';
+
+        return Excel::download(new AdminTableExport($headings, $rows), "ordenes.{$extension}", $writerType);
     }
 
-    public function droppedOfOrders(droppedOffOrderDataTable $dataTable)
+    /** Bulk actions from the table's multi-select bar. */
+    public function bulkAction(Request $request)
     {
-        return $dataTable->render('admin.order.dropped-off-order');
+        $ids = array_filter((array) $request->input('ids', []));
+        if (empty($ids)) {
+            return response()->json(['status' => 'error', 'message' => 'No se seleccionó ningún elemento.']);
+        }
+
+        if ($request->input('action') === 'delete') {
+            $orders = Order::whereIn('id', $ids)->get();
+            foreach ($orders as $order) {
+                $order->orderProducts()->delete();
+                $order->transaction()->delete();
+                $order->delete();
+            }
+            return response()->json(['status' => 'success', 'message' => count($orders) . ' orden(es) eliminada(s).']);
+        }
+
+        return response()->json(['status' => 'error', 'message' => 'Acción no soportada.']);
     }
 
-    public function shippedOrders(shippedOrderDataTable $dataTable)
+    /**
+     * The 8 status-filtered views (Pendientes, Procesadas, ...) used to be
+     * separate DataTable-backed pages; they now redirect into the unified
+     * table with the equivalent tab pre-selected. Route names kept as-is
+     * since resources/views/admin/layouts/sidebar.blade.php (still used by
+     * not-yet-migrated modules) links to them directly.
+     */
+    public function pendingOrders()
     {
-        return $dataTable->render('admin.order.shipped-order');
+        return redirect()->route('admin.order.index', ['filter' => 'pendiente']);
     }
 
-    public function outForDeliveryOrders(outForDeliveryOrderDataTable $dataTable)
+    public function processedOrders()
     {
-        return $dataTable->render('admin.order.out-for-delivery-order');
+        return redirect()->route('admin.order.index', ['filter' => 'procesado']);
     }
 
-    public function deliveredOrders(deliveredOrderDataTable $dataTable)
+    public function droppedOfOrders()
     {
-        return $dataTable->render('admin.order.delivered-order');
+        return redirect()->route('admin.order.index', ['filter' => 'entregado_transportista']);
     }
 
-    public function canceledOrders(canceledOrderDataTable $dataTable)
+    public function shippedOrders()
     {
-        return $dataTable->render('admin.order.canceled-order');
+        return redirect()->route('admin.order.index', ['filter' => 'enviado']);
+    }
+
+    public function outForDeliveryOrders()
+    {
+        return redirect()->route('admin.order.index', ['filter' => 'en_ruta']);
+    }
+
+    public function deliveredOrders()
+    {
+        return redirect()->route('admin.order.index', ['filter' => 'entregado']);
+    }
+
+    public function canceledOrders()
+    {
+        return redirect()->route('admin.order.index', ['filter' => 'cancelado']);
     }
 
 
@@ -87,7 +141,7 @@ class OrderController extends Controller
     public function show(string $id)
     {
         $order = Order::findOrFail($id);
-        return view('admin.order.show', compact('order'));
+        return view('admin-ui.order.show', compact('order'));
     }
 
     /**

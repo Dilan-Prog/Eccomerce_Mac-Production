@@ -1,0 +1,280 @@
+/* Large 2-column Crear/Editar modal, matching the "Modal Producto"/"Modal Orden" reference components. */
+
+.admin-ui-v2 .au-form-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px;
+  background: rgba(9, 20, 36, 0.52);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.12s ease;
+}
+
+.admin-ui-v2 .au-form-modal-overlay.is-open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.admin-ui-v2 .au-form-modal {
+  position: relative;
+  width: 100%;
+  max-width: 840px;
+  max-height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: var(--au-surface);
+  border: 1px solid #dfe4ee;
+  border-radius: var(--au-radius-lg);
+  box-shadow: var(--au-shadow-modal);
+  overflow: hidden;
+  transform: translateY(8px);
+  transition: transform 0.12s ease;
+}
+
+.admin-ui-v2 .au-form-modal-overlay.is-open .au-form-modal {
+  transform: translateY(0);
+}
+
+.admin-ui-v2 .au-form-modal.is-narrow {
+  max-width: 560px;
+}
+
+.admin-ui-v2 .au-form-modal-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 20px 22px 17px;
+  border-bottom: 1px solid #eef1f7;
+  flex-shrink: 0;
+}
+
+.admin-ui-v2 .au-form-modal-icon {
+  width: 38px;
+  height: 38px;
+  flex: none;
+  border-radius: var(--au-radius-sm);
+  background: var(--au-info-bg);
+  border: 1px solid var(--au-info-border);
+  color: var(--au-info);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+}
+
+.admin-ui-v2 .au-form-modal-titles {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  flex: 1;
+  min-width: 0;
+}
+
+.admin-ui-v2 .au-form-modal-title {
+  font-family: var(--au-font-heading);
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: -0.4px;
+}
+
+.admin-ui-v2 .au-form-modal-subtitle {
+  font-size: 12.5px;
+  color: var(--au-text-subdued);
+}
+
+.admin-ui-v2 .au-form-modal-body {
+  padding: 20px 22px;
+  overflow-y: auto;
+  flex: 1;
+  min-height: 80px;
+}
+
+/* Opt-in 2-column layout (main fields + 232px image sidebar), matching the
+   "Modal Producto" reference. The fragment supplies both columns' content. */
+.admin-ui-v2 .au-form-modal.has-sidebar .au-form-modal-body {
+  display: grid;
+  grid-template-columns: 1fr 232px;
+  gap: 22px;
+  align-items: start;
+}
+
+.admin-ui-v2 .au-form-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.admin-ui-v2 .au-image-slot {
+  position: relative;
+  width: 100%;
+  height: 190px;
+  padding: 0;
+  overflow: hidden;
+  border-radius: var(--au-radius-md);
+  border: 1px dashed #cfd7e5;
+  background: var(--au-surface-header);
+  cursor: pointer;
+  text-align: left;
+  display: block;
+}
+
+.admin-ui-v2 .au-image-slot.has-image {
+  border-style: solid;
+  border-color: var(--au-border-table);
+  background: var(--au-surface);
+}
+
+.admin-ui-v2 .au-image-slot:hover {
+  border-color: var(--au-blue-300);
+  background: var(--au-blue-050);
+}
+
+.admin-ui-v2 .au-image-slot-empty {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  text-align: center;
+  padding: 14px;
+  height: 100%;
+  color: var(--au-text-muted);
+}
+
+.admin-ui-v2 .au-image-slot-empty-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--au-radius-sm);
+  background: var(--au-info-bg);
+  border: 1px solid var(--au-info-border);
+  color: var(--au-info);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 17px;
+}
+
+.admin-ui-v2 .au-image-slot-preview {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+}
+
+.admin-ui-v2 .au-image-slot-extra-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.admin-ui-v2 .au-image-slot-extra-grid .au-image-slot {
+  height: auto;
+  aspect-ratio: 1;
+}
+
+.admin-ui-v2 .au-sidebar-meta {
+  padding: 12px 13px;
+  border-radius: 11px;
+  background: var(--au-surface-header);
+  border: 1px solid var(--au-border-table);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.admin-ui-v2 .au-sidebar-meta-label {
+  font-size: 11.5px;
+  color: var(--au-text-muted);
+}
+
+.admin-ui-v2 .au-sidebar-meta-value {
+  font-family: var(--au-font-mono);
+  font-weight: 600;
+  font-size: 13px;
+  color: var(--au-info);
+}
+
+/* Remove ("x") button overlaid on a picked-from-gallery thumbnail — used by
+   the products-image-gallery module's multi-pick preview grid
+   (.au-image-slot-extra-grid reused outside the sidebar layout it was
+   originally built for). */
+.admin-ui-v2 .au-image-slot-remove {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: var(--au-critical);
+  color: #fff;
+  font-size: 13px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 1;
+}
+
+.admin-ui-v2 .au-image-slot-remove:hover {
+  filter: brightness(1.08);
+}
+
+.admin-ui-v2 .au-form-modal-body.is-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--au-text-subdued);
+  font-size: 13px;
+}
+
+.admin-ui-v2 .au-form-modal-foot {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 15px 22px;
+  border-top: 1px solid #eef1f7;
+  background: var(--au-surface-header);
+  flex-shrink: 0;
+}
+
+.admin-ui-v2 .au-form-modal-footnote {
+  font-size: 12px;
+  color: var(--au-text-muted);
+  flex: 1;
+}
+
+/* Generic 2-column field grid a module's fragment can opt into. */
+.admin-ui-v2 .au-form-grid-2 {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+}
+
+.admin-ui-v2 .au-form-grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+
+.admin-ui-v2 .au-field-error {
+  display: block;
+  font-size: 11.5px;
+  color: var(--au-critical);
+  margin-top: 4px;
+}
+
+.admin-ui-v2 .au-field.has-error .au-input,
+.admin-ui-v2 .au-field.has-error .au-select,
+.admin-ui-v2 .au-field.has-error .au-textarea {
+  border-color: var(--au-critical-border);
+}

@@ -1,0 +1,88 @@
+/* Duplicate image detection panel (Media Library > Duplicados).
+   Only NEW layout classes live here — everything else (.au-card, .au-badge,
+   .au-checkbox, .au-btn, .au-stat-grid, .au-tabs, .au-modal, .au-table-*)
+   is reused as-is from the existing components. */
+
+.admin-ui-v2 .dup-group-card + .dup-group-card {
+  margin-top: var(--au-space-5);
+}
+
+.admin-ui-v2 .dup-thumb-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: var(--au-space-3);
+}
+
+.admin-ui-v2 .dup-thumb {
+  position: relative;
+  border: 1px solid var(--au-border);
+  border-radius: var(--au-radius-md);
+  overflow: hidden;
+  background: var(--au-surface-subdued);
+  display: flex;
+  flex-direction: column;
+}
+
+.admin-ui-v2 .dup-thumb-selectable {
+  cursor: pointer;
+  transition: border-color 0.12s ease, box-shadow 0.12s ease;
+}
+
+.admin-ui-v2 .dup-thumb-selectable:has(input:checked) {
+  border-color: var(--au-blue-500);
+  box-shadow: 0 0 0 3px rgba(47, 127, 240, 0.14);
+}
+
+.admin-ui-v2 .dup-thumb-img {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  display: block;
+  background: var(--au-surface-header);
+}
+
+.admin-ui-v2 .dup-thumb-checkbox-overlay {
+  position: absolute;
+  top: var(--au-space-2);
+  left: var(--au-space-2);
+  z-index: 2;
+  display: flex;
+  padding: 3px;
+  background: rgba(255, 255, 255, 0.85);
+  border-radius: var(--au-radius-sm);
+  cursor: pointer;
+}
+
+.admin-ui-v2 .dup-thumb-selectable input[type="radio"] {
+  position: absolute;
+  top: var(--au-space-2);
+  left: var(--au-space-2);
+  z-index: 2;
+  accent-color: var(--au-blue-700);
+}
+
+.admin-ui-v2 .dup-thumb-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  padding: var(--au-space-2);
+}
+
+.admin-ui-v2 .dup-replace-mode-tabs {
+  display: flex;
+  gap: var(--au-space-2);
+  flex-wrap: wrap;
+}
+
+.admin-ui-v2 .dup-replace-mode-btn.is-active {
+  background: var(--au-gradient-primary);
+  border-color: var(--au-blue-900);
+  color: #fff;
+  font-weight: 600;
+}
+
+.admin-ui-v2 .dup-replace-panel {
+  max-height: 360px;
+  overflow-y: auto;
+}

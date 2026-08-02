@@ -15,7 +15,7 @@ class UserManageController extends Controller
 {
     public function index()
     {
-        return view('admin.manage-user.index');
+        return view('admin-ui.manage-user.index');
     }
 
     public function create(Request $request)

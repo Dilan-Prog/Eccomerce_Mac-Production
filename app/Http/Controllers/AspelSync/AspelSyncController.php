@@ -2,11 +2,16 @@
 
 namespace App\Http\Controllers\AspelSync;
 
-use App\DataTables\AspelSyncDataTable;
 use App\Http\Controllers\Controller;
 use App\Models\AspelSync;
+use App\Support\AdminTable\AdminTableExport;
+use App\Support\AdminTable\AdminTableRequest;
+use App\Support\AdminTable\Queries\AspelSyncTableQuery;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Excel as ExcelFormat;
+use Maatwebsite\Excel\Facades\Excel;
 
 class AspelSyncController extends Controller
 {
@@ -197,9 +202,44 @@ class AspelSyncController extends Controller
         ]);
     }
 
-    public function index(AspelSyncDataTable $dataTable)
+    public function index()
     {
-        return $dataTable->render('admin.product.sync-aspel.index');
+        return view('admin-ui.sync-aspel.index');
     }
+
+    /** JSON data source for the custom admin table (replaces AspelSyncDataTable). */
+    public function tableData(Request $request, AspelSyncTableQuery $table)
+    {
+        return response()->json($table->paginate(AdminTableRequest::fromRequest($request)));
+    }
+
+    /** Excel/CSV/PDF export of every synced product matching the current filter/search. */
+    public function export(Request $request, AspelSyncTableQuery $table)
+    {
+        $adminRequest = AdminTableRequest::fromRequest($request);
+        $headings = $table->exportHeadings();
+        $rows = $table->exportRows($adminRequest)->map(fn ($row) => $table->exportRow($row))->all();
+        $format = $request->input('format', 'xlsx');
+
+        if ($format === 'pdf') {
+            return Pdf::loadView('admin-ui.exports.table-pdf', [
+                'title' => 'Aspel Sincronizacion',
+                'headings' => $headings,
+                'rows' => $rows,
+                'generatedAt' => now()->format('d/m/Y H:i'),
+            ])->download('aspel-sincronizacion.pdf');
+        }
+
+        $writerType = $format === 'csv' ? ExcelFormat::CSV : ExcelFormat::XLSX;
+        $extension = $format === 'csv' ? 'csv' : 'xlsx';
+
+        return Excel::download(new AdminTableExport($headings, $rows), "aspel-sincronizacion.{$extension}", $writerType);
+    }
+
+    // NOTE: No bulkAction() here — this listing is a read-only mirror of the
+    // external Aspel SAE inventory sync (see sync() above, the only writer).
+    // There is no delete/destroy route for aspel_products rows in this admin
+    // module, so a bulk-delete action would have no real destructive
+    // counterpart to mirror (unlike OrderController::bulkAction()).
 }
 ?>

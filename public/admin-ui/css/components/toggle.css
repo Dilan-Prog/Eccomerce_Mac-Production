@@ -1,0 +1,66 @@
+/* iOS-style toggle switch, matching the "Modal Producto" reference component. */
+
+.admin-ui-v2 .au-toggle {
+  display: inline-flex;
+  flex: none;
+  cursor: pointer;
+}
+
+.admin-ui-v2 .au-toggle-input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.admin-ui-v2 .au-toggle-track {
+  width: 44px;
+  height: 25px;
+  flex: none;
+  border-radius: var(--au-radius-full);
+  background: #e4e9f2;
+  border: 1px solid #d0d7e4;
+  padding: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  transition: background 0.16s ease, border-color 0.16s ease, justify-content 0.16s ease;
+}
+
+.admin-ui-v2 .au-toggle.is-on .au-toggle-track {
+  background: var(--au-blue-700);
+  border-color: var(--au-blue-900);
+  justify-content: flex-end;
+}
+
+.admin-ui-v2 .au-toggle-knob {
+  width: 19px;
+  height: 19px;
+  border-radius: 50%;
+  background: var(--au-surface);
+  box-shadow: 0 1px 3px rgba(9, 20, 36, 0.3);
+  display: block;
+}
+
+/* "Settings row" card wrapping a toggle, e.g. "Publicado en la tienda". */
+.admin-ui-v2 .au-toggle-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 13px 15px;
+  border-radius: var(--au-radius-md);
+  background: var(--au-surface-header);
+  border: 1px solid var(--au-border-table);
+}
+
+.admin-ui-v2 .au-toggle-row-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--au-text);
+}
+
+.admin-ui-v2 .au-toggle-row-desc {
+  font-size: 11.5px;
+  color: var(--au-text-muted);
+  margin-top: 2px;
+}

@@ -1,0 +1,37 @@
+.admin-ui-v2 .au-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 24px;
+  padding: 4px 9px;
+  border-radius: var(--au-radius-sm);
+  font-size: 11.5px;
+  font-weight: 600;
+  white-space: nowrap;
+  background: var(--au-neutral-bg);
+  color: var(--au-neutral);
+  border: 1px solid var(--au-neutral-border);
+}
+
+.admin-ui-v2 .au-badge-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex: none;
+  background: var(--au-neutral-dot);
+}
+
+.admin-ui-v2 .au-badge-success { background: var(--au-success-bg); color: var(--au-success); border-color: var(--au-success-border); }
+.admin-ui-v2 .au-badge-success .au-badge-dot { background: var(--au-success-dot); }
+
+.admin-ui-v2 .au-badge-warning { background: var(--au-warning-bg); color: var(--au-warning); border-color: var(--au-warning-border); }
+.admin-ui-v2 .au-badge-warning .au-badge-dot { background: var(--au-warning-dot); }
+
+.admin-ui-v2 .au-badge-critical { background: var(--au-critical-bg); color: var(--au-critical); border-color: var(--au-critical-border); }
+.admin-ui-v2 .au-badge-critical .au-badge-dot { background: var(--au-critical-dot); }
+
+.admin-ui-v2 .au-badge-info { background: var(--au-info-bg); color: var(--au-info); border-color: var(--au-info-border); }
+.admin-ui-v2 .au-badge-info .au-badge-dot { background: var(--au-info-dot); }
+
+.admin-ui-v2 .au-badge-purple { background: var(--au-purple-bg); color: var(--au-purple); border-color: var(--au-purple-border); }
+.admin-ui-v2 .au-badge-purple .au-badge-dot { background: var(--au-purple-dot); }

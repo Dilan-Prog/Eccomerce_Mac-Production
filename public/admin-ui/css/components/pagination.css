@@ -1,0 +1,37 @@
+.admin-ui-v2 .au-pagination {
+  display: flex;
+  align-items: center;
+  gap: var(--au-space-2);
+}
+
+.admin-ui-v2 .au-page-btn {
+  width: 30px;
+  height: 30px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--au-radius-sm);
+  border: 1px solid var(--au-border);
+  background: var(--au-surface);
+  color: var(--au-text);
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.admin-ui-v2 .au-page-btn:hover:not(:disabled) {
+  background: var(--au-surface-subdued);
+}
+
+.admin-ui-v2 .au-page-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.admin-ui-v2 .au-page-size-select {
+  height: 30px;
+  border: 1px solid var(--au-border);
+  border-radius: var(--au-radius-sm);
+  background: var(--au-surface);
+  font-size: 12px;
+  padding: 0 var(--au-space-2);
+}

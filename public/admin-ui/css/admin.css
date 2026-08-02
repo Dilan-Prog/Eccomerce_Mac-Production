@@ -1,0 +1,25 @@
+@import url("tokens.css");
+@import url("reset.css");
+@import url("layout.css");
+@import url("components/button.css");
+@import url("components/card.css");
+@import url("components/badge.css");
+@import url("components/table.css");
+@import url("components/form.css");
+@import url("components/modal.css");
+@import url("components/form-modal.css");
+@import url("components/toggle.css");
+@import url("components/image-picker.css");
+@import url("components/toast.css");
+@import url("components/tabs.css");
+@import url("components/pagination.css");
+@import url("components/dropdown-menu.css");
+@import url("components/duplicate-images.css");
+
+/* Utility helpers */
+.admin-ui-v2 .au-text-subdued { color: var(--au-text-subdued); }
+.admin-ui-v2 .au-text-right { text-align: right; }
+.admin-ui-v2 .au-text-center { text-align: center; }
+.admin-ui-v2 .au-mt-4 { margin-top: var(--au-space-4); }
+.admin-ui-v2 .au-flex { display: flex; align-items: center; }
+.admin-ui-v2 .au-gap-2 { gap: var(--au-space-2); }

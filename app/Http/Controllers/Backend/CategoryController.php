@@ -2,12 +2,17 @@
 
 namespace App\Http\Controllers\Backend;
 
-use App\DataTables\CategoryDataTable;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Category;
 use App\Models\Subcategory;
+use App\Support\AdminTable\AdminTableExport;
+use App\Support\AdminTable\AdminTableRequest;
+use App\Support\AdminTable\Queries\CategoryTableQuery;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Cache;
+use Maatwebsite\Excel\Excel as ExcelFormat;
+use Maatwebsite\Excel\Facades\Excel;
 use Str;
 
 class CategoryController extends Controller
@@ -15,10 +20,76 @@ class CategoryController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(CategoryDataTable $dataTable)
+    public function index()
     {
-        //
-        return $dataTable->render('admin.category.index');
+        return view('admin-ui.category.index');
+    }
+
+    /** JSON data source for the custom admin table (replaces CategoryDataTable). */
+    public function tableData(Request $request, CategoryTableQuery $table)
+    {
+        return response()->json($table->paginate(AdminTableRequest::fromRequest($request)));
+    }
+
+    /** Excel/CSV/PDF export of every category matching the current filter/search. */
+    public function export(Request $request, CategoryTableQuery $table)
+    {
+        $adminRequest = AdminTableRequest::fromRequest($request);
+        $headings = $table->exportHeadings();
+        $rows = $table->exportRows($adminRequest)->map(fn ($row) => $table->exportRow($row))->all();
+        $format = $request->input('format', 'xlsx');
+
+        if ($format === 'pdf') {
+            return Pdf::loadView('admin-ui.exports.table-pdf', [
+                'title' => 'Categorias',
+                'headings' => $headings,
+                'rows' => $rows,
+                'generatedAt' => now()->format('d/m/Y H:i'),
+            ])->download('categorias.pdf');
+        }
+
+        $writerType = $format === 'csv' ? ExcelFormat::CSV : ExcelFormat::XLSX;
+        $extension = $format === 'csv' ? 'csv' : 'xlsx';
+
+        return Excel::download(new AdminTableExport($headings, $rows), "categorias.{$extension}", $writerType);
+    }
+
+    /** Bulk actions from the table's multi-select bar. */
+    public function bulkAction(Request $request)
+    {
+        $ids = array_filter((array) $request->input('ids', []));
+        if (empty($ids)) {
+            return response()->json(['status' => 'error', 'message' => 'No se seleccionó ningún elemento.']);
+        }
+
+        if ($request->input('action') === 'delete') {
+            $categories = Category::whereIn('id', $ids)->get();
+            $deleted = 0;
+            $blocked = 0;
+            foreach ($categories as $category) {
+                $subCategory = Subcategory::where('category_id', $category->id)->count();
+                if ($subCategory > 0) {
+                    $blocked++;
+                    continue;
+                }
+                $category->delete();
+                $deleted++;
+            }
+
+            Cache::forget('nav_categories');
+            Cache::forget('categories_filter_tree');
+
+            if ($blocked > 0) {
+                return response()->json([
+                    'status' => $deleted > 0 ? 'success' : 'error',
+                    'message' => "{$deleted} categoría(s) eliminada(s). {$blocked} no se pudieron eliminar por contener Sub Categorias.",
+                ]);
+            }
+
+            return response()->json(['status' => 'success', 'message' => "{$deleted} categoría(s) eliminada(s)."]);
+        }
+
+        return response()->json(['status' => 'error', 'message' => 'Acción no soportada.']);
     }
 
     /**
@@ -27,6 +98,19 @@ class CategoryController extends Controller
     public function create()
     {
         return view('admin.category.create');
+    }
+
+    /** Bare form fragment for the admin-ui Crear modal (AU.FormModal) — no page layout. */
+    public function createFragment()
+    {
+        return view('admin-ui.category._form');
+    }
+
+    /** Bare form fragment for the admin-ui Editar modal, pre-filled. */
+    public function editFragment(string $id)
+    {
+        $category = Category::findOrFail($id);
+        return view('admin-ui.category._form', compact('category'));
     }
 
     /**
@@ -53,6 +137,11 @@ class CategoryController extends Controller
 
         Cache::forget('nav_categories');
         Cache::forget('categories_filter_tree');
+
+        if ($request->wantsJson()) {
+            return response()->json(['status' => 'success', 'message' => 'Categoría creada con éxito.']);
+        }
+
         toastr('Categoria Creada Con exito');
         return redirect()->route('admin.category.index');
 
@@ -98,6 +187,11 @@ class CategoryController extends Controller
 
         Cache::forget('nav_categories');
         Cache::forget('categories_filter_tree');
+
+        if ($request->wantsJson()) {
+            return response()->json(['status' => 'success', 'message' => 'Categoría actualizada con éxito.']);
+        }
+
         toastr('Actualizacion con exito', 'success');
         return redirect()->route('admin.category.index');
     }

@@ -2,9 +2,14 @@
 
 namespace App\Http\Controllers\Backend;
 
-use App\DataTables\CouponDataTable;
 use App\Http\Controllers\Controller;
 use App\Models\Coupon;
+use App\Support\AdminTable\AdminTableExport;
+use App\Support\AdminTable\AdminTableRequest;
+use App\Support\AdminTable\Queries\CouponTableQuery;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Maatwebsite\Excel\Excel as ExcelFormat;
+use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Http\Request;
 
 class CouponController extends Controller
@@ -12,9 +17,56 @@ class CouponController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(CouponDataTable $dataTable)
+    public function index()
     {
-        return $dataTable->render('admin.coupon.index');
+        return view('admin-ui.coupons.index');
+    }
+
+    /** JSON data source for the custom admin table (replaces CouponDataTable). */
+    public function tableData(Request $request, CouponTableQuery $table)
+    {
+        return response()->json($table->paginate(AdminTableRequest::fromRequest($request)));
+    }
+
+    /** Excel/CSV/PDF export of every coupon matching the current filter/search (replaces the Yajra-Buttons export). */
+    public function export(Request $request, CouponTableQuery $table)
+    {
+        $adminRequest = AdminTableRequest::fromRequest($request);
+        $headings = $table->exportHeadings();
+        $rows = $table->exportRows($adminRequest)->map(fn ($row) => $table->exportRow($row))->all();
+        $format = $request->input('format', 'xlsx');
+
+        if ($format === 'pdf') {
+            return Pdf::loadView('admin-ui.exports.table-pdf', [
+                'title' => 'Cupones',
+                'headings' => $headings,
+                'rows' => $rows,
+                'generatedAt' => now()->format('d/m/Y H:i'),
+            ])->download('cupones.pdf');
+        }
+
+        $writerType = $format === 'csv' ? ExcelFormat::CSV : ExcelFormat::XLSX;
+        $extension = $format === 'csv' ? 'csv' : 'xlsx';
+
+        return Excel::download(new AdminTableExport($headings, $rows), "cupones.{$extension}", $writerType);
+    }
+
+    /** Bulk actions from the table's multi-select bar (mirrors destroy(), which has no extra side effects). */
+    public function bulkAction(Request $request)
+    {
+        $ids = array_filter((array) $request->input('ids', []));
+        if (empty($ids)) {
+            return response()->json(['status' => 'error', 'message' => 'No se seleccionó ningún elemento.']);
+        }
+
+        if ($request->input('action') === 'delete') {
+            $count = Coupon::whereIn('id', $ids)->count();
+            Coupon::whereIn('id', $ids)->delete();
+
+            return response()->json(['status' => 'success', 'message' => $count . ' cupón(es) eliminado(s).']);
+        }
+
+        return response()->json(['status' => 'error', 'message' => 'Acción no soportada.']);
     }
 
     /**
@@ -23,6 +75,19 @@ class CouponController extends Controller
     public function create()
     {
         return view('admin.coupon.create');
+    }
+
+    /** Bare form fragment for the admin-ui Crear modal (AU.FormModal) — no page layout. */
+    public function createFragment()
+    {
+        return view('admin-ui.coupons._form');
+    }
+
+    /** Bare form fragment for the admin-ui Editar modal, pre-filled. */
+    public function editFragment(string $id)
+    {
+        $coupon = Coupon::findOrFail($id);
+        return view('admin-ui.coupons._form', compact('coupon'));
     }
 
     /**
@@ -54,6 +119,11 @@ class CouponController extends Controller
         $coupon->total_used = 0;
         $coupon->status = $request->status;
         $coupon->save();
+
+        if ($request->wantsJson()) {
+            return response()->json(['status' => 'success', 'message' => 'Cupón creado con éxito.']);
+        }
+
         toastr('Cupon Creado', 'success', 'Success');
 
         return redirect()->route('admin.coupons.index');
@@ -106,6 +176,11 @@ class CouponController extends Controller
 
         $coupon->status = $request->status;
         $coupon->save();
+
+        if ($request->wantsJson()) {
+            return response()->json(['status' => 'success', 'message' => 'Cupón actualizado con éxito.']);
+        }
+
         toastr('Cupon Actualizado', 'success', 'Success');
 
         return redirect()->route('admin.coupons.index');

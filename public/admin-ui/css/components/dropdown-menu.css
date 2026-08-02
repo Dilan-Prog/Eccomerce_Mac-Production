@@ -1,0 +1,52 @@
+/* Generic popover / dropdown menu (row actions, user menu, column toggle) */
+
+.admin-ui-v2 .au-dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.admin-ui-v2 .au-dropdown-panel {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  background: var(--au-surface);
+  border: 1px solid var(--au-border);
+  border-radius: var(--au-radius-md);
+  box-shadow: var(--au-shadow-popover);
+  min-width: 160px;
+  z-index: 100;
+  display: none;
+  padding: var(--au-space-1);
+}
+
+.admin-ui-v2 .au-dropdown.is-open .au-dropdown-panel {
+  display: block;
+}
+
+.admin-ui-v2 .au-dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: var(--au-space-2);
+  width: 100%;
+  padding: var(--au-space-2) var(--au-space-3);
+  border-radius: var(--au-radius-sm);
+  font-size: var(--au-fs-sm);
+  color: var(--au-text);
+  background: none;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.admin-ui-v2 .au-dropdown-item:hover {
+  background: var(--au-surface-subdued);
+}
+
+.admin-ui-v2 .au-dropdown-item.is-critical {
+  color: var(--au-critical);
+}
+
+.admin-ui-v2 .au-dropdown-item.is-critical:hover {
+  background: #fff5f5;
+}

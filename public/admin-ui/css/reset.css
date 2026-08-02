@@ -1,0 +1,66 @@
+/* Minimal reset, scoped to .admin-ui-v2 so legacy Stisla pages are unaffected. */
+.admin-ui-v2,
+.admin-ui-v2 *,
+.admin-ui-v2 *::before,
+.admin-ui-v2 *::after {
+  box-sizing: border-box;
+}
+
+.admin-ui-v2 {
+  font-family: var(--au-font);
+  font-size: var(--au-fs-body);
+  line-height: var(--au-lh-body);
+  color: var(--au-text);
+  background: var(--au-bg);
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+
+.admin-ui-v2 h1,
+.admin-ui-v2 h2,
+.admin-ui-v2 h3,
+.admin-ui-v2 h4,
+.admin-ui-v2 p {
+  margin: 0;
+}
+
+.admin-ui-v2 h1,
+.admin-ui-v2 h2,
+.admin-ui-v2 h3,
+.admin-ui-v2 h4 {
+  font-family: var(--au-font-heading);
+  letter-spacing: -0.02em;
+}
+
+.admin-ui-v2 .au-mono {
+  font-family: var(--au-font-mono);
+}
+
+.admin-ui-v2 ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.admin-ui-v2 a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.admin-ui-v2 button {
+  font-family: inherit;
+  font-size: inherit;
+}
+
+.admin-ui-v2 input,
+.admin-ui-v2 select,
+.admin-ui-v2 textarea {
+  font-family: inherit;
+  font-size: inherit;
+  color: inherit;
+}
+
+.admin-ui-v2 img {
+  max-width: 100%;
+  display: block;
+}

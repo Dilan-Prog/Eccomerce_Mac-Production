@@ -10,6 +10,12 @@ use App\Models\Subcategory;
 use App\Models\Category;
 use App\Models\Product;
 use Illuminate\Support\Facades\Cache;
+use App\Support\AdminTable\AdminTableExport;
+use App\Support\AdminTable\AdminTableRequest;
+use App\Support\AdminTable\Queries\ChildCategoryTableQuery;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Maatwebsite\Excel\Excel as ExcelFormat;
+use Maatwebsite\Excel\Facades\Excel;
 use Str;
 
 class ChildCategoryController extends Controller
@@ -17,9 +23,76 @@ class ChildCategoryController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(ChildCategoryDataTable $dataTable)
+    public function index()
     {
-        return $dataTable->render('admin.child-category.index');
+        return view('admin-ui.child-category.index');
+    }
+
+    /** JSON data source for the custom admin table (replaces ChildCategoryDataTable). */
+    public function tableData(Request $request, ChildCategoryTableQuery $table)
+    {
+        return response()->json($table->paginate(AdminTableRequest::fromRequest($request)));
+    }
+
+    /** Excel/CSV/PDF export of every child category matching the current filter/search. */
+    public function export(Request $request, ChildCategoryTableQuery $table)
+    {
+        $adminRequest = AdminTableRequest::fromRequest($request);
+        $headings = $table->exportHeadings();
+        $rows = $table->exportRows($adminRequest)->map(fn ($row) => $table->exportRow($row))->all();
+        $format = $request->input('format', 'xlsx');
+
+        if ($format === 'pdf') {
+            return Pdf::loadView('admin-ui.exports.table-pdf', [
+                'title' => 'Categorias Secundarias',
+                'headings' => $headings,
+                'rows' => $rows,
+                'generatedAt' => now()->format('d/m/Y H:i'),
+            ])->download('categorias-secundarias.pdf');
+        }
+
+        $writerType = $format === 'csv' ? ExcelFormat::CSV : ExcelFormat::XLSX;
+        $extension = $format === 'csv' ? 'csv' : 'xlsx';
+
+        return Excel::download(new AdminTableExport($headings, $rows), "categorias-secundarias.{$extension}", $writerType);
+    }
+
+    /**
+     * Bulk actions from the table's multi-select bar. Mirrors destroy()'s
+     * side-effect check: rows still referenced by a Product are skipped
+     * instead of deleted.
+     */
+    public function bulkAction(Request $request)
+    {
+        $ids = array_filter((array) $request->input('ids', []));
+        if (empty($ids)) {
+            return response()->json(['status' => 'error', 'message' => 'No se seleccionó ningún elemento.']);
+        }
+
+        if ($request->input('action') === 'delete') {
+            $childCategories = ChildCategory::whereIn('id', $ids)->get();
+            $deleted = 0;
+            $skipped = 0;
+            foreach ($childCategories as $childCategory) {
+                if (Product::where('child_category_id', $childCategory->id)->count() > 0) {
+                    $skipped++;
+                    continue;
+                }
+                $childCategory->delete();
+                $deleted++;
+            }
+            Cache::forget('nav_categories');
+            Cache::forget('categories_filter_tree');
+
+            $message = $deleted . ' categoria(s) secundaria(s) eliminada(s).';
+            if ($skipped > 0) {
+                $message .= ' ' . $skipped . ' no se eliminaron por tener productos relacionados.';
+            }
+
+            return response()->json(['status' => 'success', 'message' => $message]);
+        }
+
+        return response()->json(['status' => 'error', 'message' => 'Acción no soportada.']);
     }
 
     /**
@@ -29,6 +102,23 @@ class ChildCategoryController extends Controller
     {
         $categories = Category::all();
         return view('admin.child-category.create', compact('categories'));
+    }
+
+    /** Bare form fragment for the admin-ui Crear modal (AU.FormModal) — no page layout. */
+    public function createFragment()
+    {
+        $categories = Category::all();
+        $subCategories = Subcategory::all();
+        return view('admin-ui.child-category._form', compact('categories', 'subCategories'));
+    }
+
+    /** Bare form fragment for the admin-ui Editar modal, pre-filled. */
+    public function editFragment(string $id)
+    {
+        $childCategory = ChildCategory::findOrFail($id);
+        $categories = Category::all();
+        $subCategories = Subcategory::all();
+        return view('admin-ui.child-category._form', compact('childCategory', 'categories', 'subCategories'));
     }
 
     /**
@@ -61,6 +151,11 @@ class ChildCategoryController extends Controller
         $childCategory->save();
         Cache::forget('nav_categories');
         Cache::forget('categories_filter_tree');
+
+        if ($request->wantsJson()) {
+            return response()->json(['status' => 'success', 'message' => 'Categoria Secundaria creada con éxito.']);
+        }
+
         toastr('Categoria Secundaria Creada Con Exito');
         return redirect()->route('admin.child-category.index');
 
@@ -107,6 +202,11 @@ class ChildCategoryController extends Controller
         $childCategory->save();
         Cache::forget('nav_categories');
         Cache::forget('categories_filter_tree');
+
+        if ($request->wantsJson()) {
+            return response()->json(['status' => 'success', 'message' => 'Categoria Secundaria actualizada con éxito.']);
+        }
+
         toastr('Child Categoria Actualizada Con Exito');
         return redirect()->route('admin.child-category.index');
     }

@@ -12,7 +12,9 @@ use App\Http\Controllers\Backend\SubcategoryController;
 use App\Http\Controllers\Backend\ChildCategoryController;
 use App\Http\Controllers\Backend\CouponController;
 use App\Http\Controllers\Backend\CustomerListController;
+use App\Http\Controllers\Backend\DuplicateImagesController;
 use App\Http\Controllers\Backend\FlashSaleController;
+use App\Http\Controllers\Backend\MediaLibraryController;
 use App\Http\Controllers\Backend\OrderController;
 use App\Http\Controllers\Backend\PaymentSettingController;
 use App\Http\Controllers\Backend\PaypalSettingController;
@@ -42,6 +44,8 @@ Route::post('profile/update/password',[ProfileController::class, 'updatePassword
 
 /** coustomer list routes */
 Route::get('customer', [CustomerListController::class, 'index'])->name('customer.index');
+Route::get('customer/table-data', [CustomerListController::class, 'tableData'])->name('customer.table-data');
+Route::get('customer/export', [CustomerListController::class, 'export'])->name('customer.export');
 Route::put('customer/status-change', [CustomerListController::class, 'changeStatus'])->name('customer.status-change');
 Route::post('customer/{user}/csf', [CustomerListController::class, 'uploadCsf'])->name('customer.csf.upload');
 Route::get('customer/{user}/csf/view', [CustomerListController::class, 'viewCsf'])->name('customer.csf.view');
@@ -49,6 +53,9 @@ Route::put('customer/{user}/b2b-status', [CustomerListController::class, 'b2bSta
 
 /**Admin List */
 Route::get('admin-list', [AdminListController::class, 'index'])->name('admin-list.index');
+Route::get('admin-list/table-data', [AdminListController::class, 'tableData'])->name('admin-list.table-data');
+Route::get('admin-list/export', [AdminListController::class, 'export'])->name('admin-list.export');
+Route::post('admin-list/bulk', [AdminListController::class, 'bulkAction'])->name('admin-list.bulk');
 Route::put('admin-list/status-change', [AdminListController::class, 'changeStatus'])->name('admin-list.status-change');
 Route::delete('admin-list/{id}', [AdminListController::class, 'destory'])->name('admin-list.destory');
 /**manege User */
@@ -57,25 +64,66 @@ Route::post('manage-user', [userManageController::class, 'create'])->name('manag
 
 /** Cotizaciones */
 Route::get('cotizaciones',          [AdminCotizacionController::class, 'index'])->name('cotizaciones.index');
+Route::get('cotizaciones/table-data', [AdminCotizacionController::class, 'tableData'])->name('cotizaciones.table-data');
+Route::get('cotizaciones/export', [AdminCotizacionController::class, 'export'])->name('cotizaciones.export');
 Route::get('cotizaciones/{cotizacion}', [AdminCotizacionController::class, 'show'])->name('cotizaciones.show');
 
 /**Slider routes */
+Route::get('slider/table-data', [SliderController::class, 'tableData'])->name('slider.table-data');
+Route::get('slider/export', [SliderController::class, 'export'])->name('slider.export');
+Route::post('slider/bulk', [SliderController::class, 'bulkAction'])->name('slider.bulk');
+Route::get('slider/create-fragment', [SliderController::class, 'createFragment'])->name('slider.create-fragment');
+Route::get('slider/{id}/edit-fragment', [SliderController::class, 'editFragment'])->name('slider.edit-fragment');
 Route::resource('slider',SliderController::class);
 
+/**Media Library routes */
+Route::get('media-library', [MediaLibraryController::class, 'index'])->name('media-library.index');
+Route::get('media-library/data', [MediaLibraryController::class, 'data'])->name('media-library.data');
+Route::post('media-library/upload', [MediaLibraryController::class, 'store'])->name('media-library.store');
+Route::delete('media-library/{path}', [MediaLibraryController::class, 'destroy'])->name('media-library.destroy');
+
+/**Duplicate Images routes */
+Route::post('duplicate-images/scan', [DuplicateImagesController::class, 'scan'])->name('duplicate-images.scan');
+Route::get('duplicate-images/data', [DuplicateImagesController::class, 'data'])->name('duplicate-images.data');
+Route::get('duplicate-images/search', [DuplicateImagesController::class, 'search'])->name('duplicate-images.search');
+Route::post('duplicate-images/{group}/discard', [DuplicateImagesController::class, 'discard'])->name('duplicate-images.discard');
+Route::post('duplicate-images/{group}/restore', [DuplicateImagesController::class, 'restore'])->name('duplicate-images.restore');
+Route::post('duplicate-images/{group}/replace', [DuplicateImagesController::class, 'replace'])->name('duplicate-images.replace');
+
 /**Category Routes */
+Route::get('category/table-data', [CategoryController::class, 'tableData'])->name('category.table-data');
+Route::get('category/export', [CategoryController::class, 'export'])->name('category.export');
+Route::post('category/bulk', [CategoryController::class, 'bulkAction'])->name('category.bulk');
+Route::get('category/create-fragment', [CategoryController::class, 'createFragment'])->name('category.create-fragment');
+Route::get('category/{id}/edit-fragment', [CategoryController::class, 'editFragment'])->name('category.edit-fragment');
 Route::resource('category',CategoryController::class);
 Route::put('change-status', [CategoryController::class, 'changeStatus'])->name('category.change-status');
 /**SubCategory Routes */
 Route::put('subcategory/change-status', [SubcategoryController::class, 'changeStatus'])->name('sub-category.change-status');
+Route::get('sub-category/table-data', [SubcategoryController::class, 'tableData'])->name('sub-category.table-data');
+Route::get('sub-category/export', [SubcategoryController::class, 'export'])->name('sub-category.export');
+Route::post('sub-category/bulk', [SubcategoryController::class, 'bulkAction'])->name('sub-category.bulk');
+Route::get('sub-category/create-fragment', [SubcategoryController::class, 'createFragment'])->name('sub-category.create-fragment');
+Route::get('sub-category/{id}/edit-fragment', [SubcategoryController::class, 'editFragment'])->name('sub-category.edit-fragment');
 Route::resource('sub-category',SubcategoryController::class);
 /**Child Category Routes */
 Route::put('child-category/change-status', [ChildCategoryController::class, 'changeStatus'])->name('child-category.change-status');
 Route::get('get-subcategory',[ChildCategoryController::class, 'getSubCategories'])->name('get-subcategories');
+Route::get('child-category/table-data', [ChildCategoryController::class, 'tableData'])->name('child-category.table-data');
+Route::get('child-category/export', [ChildCategoryController::class, 'export'])->name('child-category.export');
+Route::post('child-category/bulk', [ChildCategoryController::class, 'bulkAction'])->name('child-category.bulk');
+Route::get('child-category/create-fragment', [ChildCategoryController::class, 'createFragment'])->name('child-category.create-fragment');
+Route::get('child-category/{id}/edit-fragment', [ChildCategoryController::class, 'editFragment'])->name('child-category.edit-fragment');
 Route::resource('child-category',ChildCategoryController::class);
 
 
 /**Brand route */
 Route::put('brand/change-status', [BrandController::class, 'changeStatus'])->name('brand.change-status');
+Route::get('brand/table-data', [BrandController::class, 'tableData'])->name('brand.table-data');
+Route::get('brand/export', [BrandController::class, 'export'])->name('brand.export');
+Route::post('brand/bulk', [BrandController::class, 'bulkAction'])->name('brand.bulk');
+Route::get('brand/create-fragment', [BrandController::class, 'createFragment'])->name('brand.create-fragment');
+Route::get('brand/{id}/edit-fragment', [BrandController::class, 'editFragment'])->name('brand.edit-fragment');
 Route::resource('brand',BrandController::class);
 
 /**Products route */
@@ -85,26 +133,49 @@ Route::get('products/get-child-categories',[ ProductController::class, 'getChild
 Route::get('products/search-sku',[ ProductController::class, 'searchSku'])->name('product.search-sku');
 Route::get('products/aspel-prices', [ProductController::class, 'getAspelPrices'])->name('product.aspel-prices');
 Route::get('products/get-aspel-currency',[ ProductController::class, 'getAspelCurrency'])->name('product.get-aspel-currency');
+Route::get('products/table-data', [ProductController::class, 'tableData'])->name('products.table-data');
+Route::get('products/export', [ProductController::class, 'export'])->name('products.export');
+Route::post('products/bulk', [ProductController::class, 'bulkAction'])->name('products.bulk');
+Route::get('products/create-fragment', [ProductController::class, 'createFragment'])->name('products.create-fragment');
+Route::get('products/{id}/edit-fragment', [ProductController::class, 'editFragment'])->name('products.edit-fragment');
 Route::resource('products',ProductController::class);
 
 
 /**Product Sync Aspell Route */
 Route::get('/sync-aspel', [AspelSyncController::class, 'index'])->name('sync-aspel.index');
+Route::get('sync-aspel/table-data', [AspelSyncController::class, 'tableData'])->name('sync-aspel.table-data');
+Route::get('sync-aspel/export', [AspelSyncController::class, 'export'])->name('sync-aspel.export');
 
 /**Ads route */
 Route::get('track-conversion', [TrackConversionController::class, 'index'])->name('track-conversion.index');
+Route::get('track-conversion/table-data', [TrackConversionController::class, 'tableData'])->name('track-conversion.table-data');
+Route::get('track-conversion/export', [TrackConversionController::class, 'export'])->name('track-conversion.export');
 
 
 /**ProductImageGallery route */
+Route::get('products-image-gallery/table-data', [ProductImageGalleryController::class, 'tableData'])->name('products-image-gallery.table-data');
+Route::get('products-image-gallery/export', [ProductImageGalleryController::class, 'export'])->name('products-image-gallery.export');
+Route::post('products-image-gallery/bulk', [ProductImageGalleryController::class, 'bulkAction'])->name('products-image-gallery.bulk');
+Route::get('products-image-gallery/create-fragment', [ProductImageGalleryController::class, 'createFragment'])->name('products-image-gallery.create-fragment');
 Route::get('products-image-gallery/{productId}', [ProductImageGalleryController::class, 'index'])->name('admin.products-image-gallery.index');
 Route::resource('products-image-gallery', ProductImageGalleryController::class);
 
 /**Product Variant */
 Route::put('products-variant/change-status', [ProductVariantController::class, 'changeStatus'])->name('products-variant.change-status');
+Route::get('products-variant/{product}/table-data', [ProductVariantController::class, 'tableData'])->name('products-variant.table-data');
+Route::get('products-variant/export', [ProductVariantController::class, 'export'])->name('products-variant.export');
+Route::post('products-variant/bulk', [ProductVariantController::class, 'bulkAction'])->name('products-variant.bulk');
+Route::get('products-variant/create-fragment', [ProductVariantController::class, 'createFragment'])->name('products-variant.create-fragment');
+Route::get('products-variant/{id}/edit-fragment', [ProductVariantController::class, 'editFragment'])->name('products-variant.edit-fragment');
 Route::resource('products-variant', ProductVariantController::class);
 
 /**Product Variant Item */
+Route::get('products-variant-item/create-fragment/{productId}/{variantId}', [ProductVariantItemController::class, 'createFragment'])->name('products-variant-item.create-fragment');
+Route::get('products-variant-item/{variantItemId}/edit-fragment', [ProductVariantItemController::class, 'editFragment'])->name('products-variant-item.edit-fragment');
 Route::get('products-variant-item/{productId}/{variantId}' , [ProductVariantItemController::class, 'index'])->name('products-variant-item.index');
+Route::get('products-variant-item/{productId}/{variantId}/table-data', [ProductVariantItemController::class, 'tableData'])->name('products-variant-item.table-data');
+Route::get('products-variant-item/{productId}/{variantId}/export', [ProductVariantItemController::class, 'export'])->name('products-variant-item.export');
+Route::post('products-variant-item/bulk', [ProductVariantItemController::class, 'bulkAction'])->name('products-variant-item.bulk');
 Route::get('products-variant-item/create/{productId}/{variantId}' , [ProductVariantItemController::class, 'create'])->name('products-variant-item.create');
 Route::post('products-variant-item' , [ProductVariantItemController::class, 'store'])->name('products-variant-item.store');
 Route::get('products-variant-item-edit/{variantItemId}' , [ProductVariantItemController::class, 'edit'])->name('products-variant-item.edit');
@@ -115,16 +186,29 @@ Route::put('products-variant-item-status' , [ProductVariantItemController::class
 /**Product Variant Combinations*/
 // Route::get('products-variant-combinations/{productId}', [ProductVariantCombinationsController::class, 'index'])->name('products-variant-combinations.index');
 // Route::get('products-variant-combinations/create/{productId}', [ProductVariantCombinationsController::class, 'create'])->name('products-variant-combinations.create');
+Route::get('products-variant-combinations/table-data', [ProductVariantCombinationsController::class, 'tableData'])->name('products-variant-combinations.table-data');
+Route::get('products-variant-combinations/export', [ProductVariantCombinationsController::class, 'export'])->name('products-variant-combinations.export');
+Route::post('products-variant-combinations/bulk', [ProductVariantCombinationsController::class, 'bulkAction'])->name('products-variant-combinations.bulk');
+Route::get('products-variant-combinations/create-fragment', [ProductVariantCombinationsController::class, 'createFragment'])->name('products-variant-combinations.create-fragment');
+Route::get('products-variant-combinations/{id}/edit-fragment', [ProductVariantCombinationsController::class, 'editFragment'])->name('products-variant-combinations.edit-fragment');
 Route::resource('products-variant-combinations', ProductVariantCombinationsController::class);
 
 
 /**Producto More Eccomerce */
 Route::put('products-more-eccomerce/change-status', [ProductMoreEccomerceController::class, 'changeStatus'])->name('products-more-eccomerce.change-status');
+Route::get('products-more-eccomerce/{product}/table-data', [ProductMoreEccomerceController::class, 'tableData'])->name('products-more-eccomerce.table-data');
+Route::get('products-more-eccomerce/{product}/export', [ProductMoreEccomerceController::class, 'export'])->name('products-more-eccomerce.export');
+Route::post('products-more-eccomerce/{product}/bulk', [ProductMoreEccomerceController::class, 'bulkAction'])->name('products-more-eccomerce.bulk');
+Route::get('products-more-eccomerce/create-fragment', [ProductMoreEccomerceController::class, 'createFragment'])->name('products-more-eccomerce.create-fragment');
+Route::get('products-more-eccomerce/{id}/edit-fragment', [ProductMoreEccomerceController::class, 'editFragment'])->name('products-more-eccomerce.edit-fragment');
 Route::resource('products-more-eccomerce',ProductMoreEccomerceController::class);
 // Route::get('product-more-eccomerce-edit/{productId}',[ProductMoreEccomerceController::class, 'edit'])->name('product-more-eccomerce.edit');
 
 /**Flash Sale Routes */
 Route::get('flash-sale', [FlashSaleController::class, 'index'])->name('flash-sale.index');
+Route::get('flash-sale/table-data', [FlashSaleController::class, 'tableData'])->name('flash-sale.table-data');
+Route::get('flash-sale/export', [FlashSaleController::class, 'export'])->name('flash-sale.export');
+Route::post('flash-sale/bulk', [FlashSaleController::class, 'bulkAction'])->name('flash-sale.bulk');
 Route::put('flash-sale', [FlashSaleController::class, 'update'])->name('flash-sale.update');
 Route::post('flash-sale/add-product', [FlashSaleController::class, 'addProduct'])->name('flash-sale.add-product');
 Route::put('flash-sale/show_at_home/status-change', [FlashSaleController::class, 'changeShowAtHomeStatus'])->name('flash-sale.show-at-home.change-status');
@@ -137,6 +221,11 @@ Route::put('general-setting-update', [SettingController::class, 'generalSettingU
 
 /**Coupon routes */
 Route::put('coupons/change-status', [CouponController::class, 'changeStatus'])->name('coupons.change-status');
+Route::get('coupons/table-data', [CouponController::class, 'tableData'])->name('coupons.table-data');
+Route::get('coupons/export', [CouponController::class, 'export'])->name('coupons.export');
+Route::post('coupons/bulk', [CouponController::class, 'bulkAction'])->name('coupons.bulk');
+Route::get('coupons/create-fragment', [CouponController::class, 'createFragment'])->name('coupons.create-fragment');
+Route::get('coupons/{id}/edit-fragment', [CouponController::class, 'editFragment'])->name('coupons.edit-fragment');
 Route::resource('coupons', CouponController::class);
 /**Order routes */
 
@@ -154,13 +243,23 @@ Route::get('out-for-delivery-orders', [OrderController::class, 'outForDeliveryOr
 Route::get('delivered-orders', [OrderController::class, 'deliveredOrders'])->name('delivered-orders');
 Route::get('canceled-orders', [OrderController::class, 'canceledOrders'])->name('canceled-orders');
 
+Route::get('order/table-data', [OrderController::class, 'tableData'])->name('order.table-data');
+Route::get('order/export', [OrderController::class, 'export'])->name('order.export');
+Route::post('order/bulk', [OrderController::class, 'bulkAction'])->name('order.bulk');
 Route::resource('order', OrderController::class);
 
 /** Order Transaction route */
 Route::get('transaction', [TransactionController::class, 'index'])->name('transaction');
+Route::get('transaction/table-data', [TransactionController::class, 'tableData'])->name('transaction.table-data');
+Route::get('transaction/export', [TransactionController::class, 'export'])->name('transaction.export');
 
 /**Shipping Rules */
 Route::put('shipping-rule/change-status', [ShippingRuleController::class, 'changeStatus'])->name('shipping-rule.change-status');
+Route::get('shipping-rule/table-data', [ShippingRuleController::class, 'tableData'])->name('shipping-rule.table-data');
+Route::get('shipping-rule/export', [ShippingRuleController::class, 'export'])->name('shipping-rule.export');
+Route::post('shipping-rule/bulk', [ShippingRuleController::class, 'bulkAction'])->name('shipping-rule.bulk');
+Route::get('shipping-rule/create-fragment', [ShippingRuleController::class, 'createFragment'])->name('shipping-rule.create-fragment');
+Route::get('shipping-rule/{id}/edit-fragment', [ShippingRuleController::class, 'editFragment'])->name('shipping-rule.edit-fragment');
 Route::resource('shipping-rule', ShippingRuleController::class);
 
 
@@ -169,4 +268,3 @@ Route::get('payment-settings', [PaymentSettingController::class, 'index'])->name
 Route::resource('paypal-setting', PaypalSettingController::class);
 Route::put('stripe-setting/{id}', [StripeSettingController::class, 'update'])->name('stripe-setting.update');
 Route::put('transfer-setting/{id}', [TransferController::class, 'update'])->name('transfer.update');
-

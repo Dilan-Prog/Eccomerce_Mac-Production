@@ -1,0 +1,82 @@
+.admin-ui-v2 .au-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  height: 38px;
+  padding: 0 16px;
+  border-radius: var(--au-radius-md);
+  border: 1px solid var(--au-border-strong);
+  background: var(--au-surface);
+  color: #2b3648;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.12s ease, border-color 0.12s ease, opacity 0.12s ease;
+  white-space: nowrap;
+}
+
+.admin-ui-v2 .au-btn:hover {
+  background: var(--au-surface-subdued);
+  border-color: #c3cbdb;
+}
+
+.admin-ui-v2 .au-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.admin-ui-v2 .au-btn-primary {
+  background: var(--au-gradient-primary);
+  border-color: var(--au-blue-900);
+  color: #fff;
+  font-weight: 600;
+  box-shadow: 0 1px 2px rgba(16, 45, 90, 0.28);
+}
+
+.admin-ui-v2 .au-btn-primary:hover {
+  background: var(--au-gradient-primary-hover);
+  border-color: var(--au-blue-900);
+}
+
+.admin-ui-v2 .au-btn-critical {
+  background: var(--au-surface);
+  border-color: var(--au-critical-border);
+  color: var(--au-critical);
+}
+
+.admin-ui-v2 .au-btn-critical:hover {
+  background: #fff5f5;
+  border-color: #e79ea1;
+}
+
+.admin-ui-v2 .au-btn-critical.au-btn-primary {
+  background: var(--au-gradient-critical);
+  border-color: #a52d31;
+  color: #fff;
+}
+
+.admin-ui-v2 .au-btn-critical.au-btn-primary:hover {
+  background: var(--au-gradient-critical-hover);
+}
+
+.admin-ui-v2 .au-btn-plain {
+  border-color: transparent;
+  background: transparent;
+}
+
+.admin-ui-v2 .au-btn-plain:hover {
+  background: var(--au-surface-subdued);
+}
+
+.admin-ui-v2 .au-btn-sm {
+  height: 30px;
+  padding: 0 12px;
+  font-size: 12px;
+  border-radius: var(--au-radius-sm);
+}
+
+.admin-ui-v2 .au-btn-icon {
+  width: 34px;
+  padding: 0;
+}

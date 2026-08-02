@@ -1,0 +1,47 @@
+/* Saved-filter tabs, Shopify resource-list style */
+
+.admin-ui-v2 .au-tabs {
+  display: flex;
+  gap: var(--au-space-1);
+  padding: 0 var(--au-space-5);
+  border-bottom: 1px solid var(--au-border);
+  overflow-x: auto;
+}
+
+.admin-ui-v2 .au-tab {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: var(--au-space-3) var(--au-space-3);
+  font-size: var(--au-fs-sm);
+  font-weight: 600;
+  color: var(--au-text-subdued);
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.admin-ui-v2 .au-tab:hover {
+  color: var(--au-text);
+}
+
+.admin-ui-v2 .au-tab.is-active {
+  color: var(--au-blue-900);
+  border-bottom-color: var(--au-blue-700);
+}
+
+.admin-ui-v2 .au-tab-count {
+  min-width: 20px;
+  text-align: center;
+  background: var(--au-surface-header);
+  color: var(--au-text-muted);
+  border-radius: 999px;
+  padding: 1px 6px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.admin-ui-v2 .au-tab.is-active .au-tab-count {
+  background: #e4eefc;
+  color: var(--au-blue-900);
+}

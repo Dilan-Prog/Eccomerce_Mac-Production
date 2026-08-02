@@ -1,0 +1,81 @@
+.admin-ui-v2 .au-card {
+  background: var(--au-surface);
+  border: 1px solid var(--au-border);
+  border-radius: var(--au-radius-lg);
+  box-shadow: var(--au-shadow-card);
+}
+
+.admin-ui-v2 .au-card + .au-card {
+  margin-top: var(--au-space-5);
+}
+
+.admin-ui-v2 .au-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--au-space-3);
+  padding: var(--au-space-4) var(--au-space-5);
+  border-bottom: 1px solid var(--au-border);
+}
+
+.admin-ui-v2 .au-card-title {
+  font-size: var(--au-fs-heading);
+  font-weight: 700;
+}
+
+.admin-ui-v2 .au-card-body {
+  padding: var(--au-space-5);
+}
+
+.admin-ui-v2 .au-card-body.au-card-body-flush {
+  padding: 0;
+}
+
+/* Dashboard stat tile */
+.admin-ui-v2 .au-stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: var(--au-space-4);
+}
+
+.admin-ui-v2 .au-stat-card {
+  display: flex;
+  align-items: center;
+  gap: var(--au-space-4);
+  padding: var(--au-space-5);
+  background: var(--au-surface);
+  border: 1px solid var(--au-border);
+  border-radius: var(--au-radius-lg);
+  box-shadow: var(--au-shadow-card);
+}
+
+.admin-ui-v2 .au-stat-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--au-radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+  color: #fff;
+  background: var(--au-blue-700);
+}
+
+.admin-ui-v2 .au-stat-icon.is-critical { background: var(--au-critical); }
+.admin-ui-v2 .au-stat-icon.is-info { background: var(--au-blue-500); }
+.admin-ui-v2 .au-stat-icon.is-success { background: var(--au-success); }
+.admin-ui-v2 .au-stat-icon.is-warning { background: var(--au-warning); }
+
+.admin-ui-v2 .au-stat-label {
+  font-size: var(--au-fs-sm);
+  color: var(--au-text-subdued);
+  margin-bottom: 2px;
+}
+
+.admin-ui-v2 .au-stat-value {
+  font-family: var(--au-font-heading);
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.6px;
+}
