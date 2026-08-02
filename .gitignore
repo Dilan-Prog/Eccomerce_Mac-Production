@@ -3,6 +3,7 @@
 /node_modules
 /public/hot
 /public/uploads
+/uploads
 /public/test-uploadsuploads
 /public/storage
 /storage/*.key
@@ -24,3 +25,35 @@ yarn-error.log
 /storage/**/*.log
 storage/laravel*.log
 *.log
+
+# Dev-only Composer packages (require-dev): kept out of vendor/ on purpose.
+# Production ships vendor/ built with `composer install --no-dev`, but local
+# dev needs the full install. Ignoring these paths means a regular local
+# `composer install` won't make git status/VS Code think they're new files
+# to commit (that's what bloated the repo and broke the last deploy).
+/vendor/barryvdh
+/vendor/bin/phpunit*
+/vendor/bin/pint*
+/vendor/bin/sail*
+/vendor/bin/yaml-lint*
+/vendor/fakerphp
+/vendor/filp
+/vendor/hamcrest
+/vendor/laravel/breeze
+/vendor/laravel/pint
+/vendor/laravel/sail
+/vendor/mockery
+/vendor/myclabs
+/vendor/nunomaduro
+/vendor/phar-io
+/vendor/php-debugbar
+/vendor/phpunit
+/vendor/sebastian
+/vendor/spatie
+/vendor/symfony/yaml
+/vendor/theseer
+
+# Stray/unused files, not referenced anywhere in the app.
+/htaccess
+/resources/css/components/product-card.zip
+/skus-sin-marca.txt
