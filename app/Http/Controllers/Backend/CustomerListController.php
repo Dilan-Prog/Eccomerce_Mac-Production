@@ -46,12 +46,21 @@ class CustomerListController extends Controller
      * is created with a random password (no activation-email flow — out of
      * scope here); the admin can reset access separately if the client ever
      * needs to log in themselves.
+     *
+     * `sin_datos_contacto` (checkbox, create-only — see _form.blade.php) lets
+     * the admin proceed without correo/RFC/teléfono/empresa on hand, e.g.
+     * while building a quote fast. `name` stays required — everything else
+     * becomes optional. `email` still can't be truly empty (NOT NULL + UNIQUE
+     * at the DB level), so a unique placeholder is generated instead; the
+     * admin fills in the real one later via the edit modal.
      */
     public function store(Request $request)
     {
+        $skipContactInfo = $request->boolean('sin_datos_contacto');
+
         $request->validate([
             'name' => ['required', 'max:200'],
-            'email' => ['required', 'email', 'unique:users,email'],
+            'email' => [$skipContactInfo ? 'nullable' : 'required', 'nullable', 'email', 'unique:users,email'],
             'phone' => ['nullable', 'max:15'],
             'company' => ['nullable', 'max:200'],
             'rfc' => ['nullable', 'max:14'],
@@ -62,7 +71,7 @@ class CustomerListController extends Controller
         $customer = new User();
         $customer->name = $request->name;
         $customer->last_name = ''; // not part of this simplified admin form; matches self-registration's default (RegisteredUserController)
-        $customer->email = $request->email;
+        $customer->email = $request->email ?: $this->generatePlaceholderEmail();
         $customer->phone = $request->phone;
         $customer->company = $request->company;
         $customer->rfc = $request->rfc;
@@ -82,6 +91,16 @@ class CustomerListController extends Controller
                 'email' => $customer->email,
             ],
         ]);
+    }
+
+    /** Unique, obviously-fake placeholder — used only when the admin explicitly skips correo at creation. */
+    private function generatePlaceholderEmail(): string
+    {
+        do {
+            $candidate = 'pendiente-' . Str::random(10) . '@sin-correo.macdelnorte.com';
+        } while (User::where('email', $candidate)->exists());
+
+        return $candidate;
     }
 
     /** Edits an existing customer's info. Does not touch role/password. */
