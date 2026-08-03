@@ -42,6 +42,7 @@
     <script src="{{ asset('admin-ui/js/core/toast.js') }}"></script>
     <script src="{{ asset('admin-ui/js/core/modal.js') }}"></script>
     <script src="{{ asset('admin-ui/js/core/form-modal.js') }}"></script>
+    <script src="{{ asset('admin-ui/js/core/pdf-preview.js') }}"></script>
     <script src="{{ asset('admin-ui/js/core/toggle.js') }}"></script>
     <script src="{{ asset('admin-ui/js/core/image-picker.js') }}"></script>
     <script src="{{ asset('admin-ui/js/core/dropdown.js') }}"></script>

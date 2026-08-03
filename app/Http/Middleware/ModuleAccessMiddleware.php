@@ -10,8 +10,13 @@ use Symfony\Component\HttpFoundation\Response;
  * Route middleware: `can-access-module:{moduleKey}` (see $middlewareAliases
  * in app/Http/Kernel.php). Delegates to User::canAccessModule(), which
  * already knows how to treat legacy/full admins and system roles as
- * unrestricted. NOT YET attached to any controller/route — registration only,
- * wiring it up to real admin routes is a separate follow-up task.
+ * unrestricted. Already attached via `$this->middleware('can-access-module:{key}')`
+ * in the constructor of every module controller listed in
+ * config/admin-modules.php (dashboard, orders, transactions, cotizaciones,
+ * categories, products, aspel, ecommerce, ads, clientes, site, settings) —
+ * except StaffUserController and RoleController, which manage the
+ * permission system itself and instead use a stricter
+ * unrestricted-admin-only guard (see those controllers' constructors).
  */
 class ModuleAccessMiddleware
 {

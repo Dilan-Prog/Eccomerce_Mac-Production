@@ -88,6 +88,26 @@
   });
 
   /*
+   * Generic PDF-preview trigger (AU.PdfPreview, core/pdf-preview.js) — any
+   * "Ver PDF" link anywhere in the admin panel opts in with 3 data-*
+   * attributes instead of writing its own modal wiring:
+   *   data-au-pdf-preview                marks the trigger
+   *   data-title="..."                   modal header text
+   *   data-url="..."                     PDF-serving URL (iframe src + download href)
+   *   data-download-name="..."           filename for the download button
+   */
+  document.addEventListener("click", (e) => {
+    const trigger = e.target.closest("[data-au-pdf-preview]");
+    if (!trigger) return;
+    e.preventDefault();
+    AU.PdfPreview.open({
+      title: trigger.getAttribute("data-title") || "Vista previa",
+      url: trigger.getAttribute("data-url"),
+      downloadName: trigger.getAttribute("data-download-name") || "documento.pdf",
+    });
+  });
+
+  /*
    * Generic image-slot -> gallery-picker wiring, shared by every module's
    * form fragment (brand/slider/products/products-image-gallery). A slot
    * only needs 3 data-* attributes — no per-module JS required:

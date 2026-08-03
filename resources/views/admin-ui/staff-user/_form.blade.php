@@ -1,8 +1,12 @@
 {{-- Fragment injected into AU.FormModal — no @extends/layout, just the form.
      Field list mirrors UserManageController's actual validation rules
      (name/last_name/company/rfc/phone/email/password), plus the `role`
-     select now covers all 4 staff roles (admin/vendor/associate/technician —
-     vendor and technician previously had no creation UI at all).
+     select now covers all 3 staff roles (admin/associate/technician —
+     technician previously had no creation UI at all). "Vendedor" was
+     removed from this select (and from STAFF_ROLES/ROLE_LABELS in
+     StaffUserController) — it mapped to a dead, separately-retired legacy
+     vendor panel and only confused admins who meant to pick Administrador +
+     a custom "Rol personalizado" instead.
 
      "Rol personalizado" only means anything when role=admin (see
      User::customRole() / role_id). Rather than always showing it with a
@@ -54,7 +58,6 @@
                 ">
                     <option value="">Seleccionar</option>
                     <option value="admin" {{ isset($staffUser) && $staffUser->role === 'admin' ? 'selected' : '' }}>Administrador</option>
-                    <option value="vendor" {{ isset($staffUser) && $staffUser->role === 'vendor' ? 'selected' : '' }}>Vendedor</option>
                     <option value="associate" {{ isset($staffUser) && $staffUser->role === 'associate' ? 'selected' : '' }}>Asociado</option>
                     <option value="technician" {{ isset($staffUser) && $staffUser->role === 'technician' ? 'selected' : '' }}>Técnico</option>
                 </select>

@@ -11,7 +11,10 @@ use Illuminate\Database\Eloquent\Model;
  * Unified "Personal / Staff" listing — replaces the create-only
  * UserManageController (admin.manage-user) and the admin-only
  * AdminListController (admin.admin-list) with a single table covering every
- * non-customer role: admin, vendor, associate, technician.
+ * non-customer, non-legacy-vendor role: admin, associate, technician.
+ * ('vendor' was removed here too — StaffUserController's STAFF_ROLES no
+ * longer includes it and 0 real users hold that role, so this listing/tab
+ * would only ever show an empty "Vendedores" bucket going forward.)
  *
  * The `rol_personalizado` column only means something for role=admin
  * (User::customRole(), a nullable FK to a non-system Role — see
@@ -28,14 +31,13 @@ class StaffUserTableQuery extends AdminTableQuery
 {
     private const ROLE_BADGES = [
         'admin' => ['label' => 'Administrador', 'tone' => 'critical'],
-        'vendor' => ['label' => 'Vendedor', 'tone' => 'info'],
         'associate' => ['label' => 'Asociado', 'tone' => 'success'],
         'technician' => ['label' => 'Técnico', 'tone' => 'warning'],
     ];
 
     public function baseQuery(): Builder
     {
-        return User::query()->whereIn('role', ['admin', 'vendor', 'associate', 'technician']);
+        return User::query()->whereIn('role', ['admin', 'associate', 'technician']);
     }
 
     public function columns(): array
@@ -93,7 +95,6 @@ class StaffUserTableQuery extends AdminTableQuery
         return [
             ['key' => 'todos', 'label' => 'Todos', 'apply' => fn (Builder $q) => $q],
             ['key' => 'administradores', 'label' => 'Administradores', 'apply' => fn (Builder $q) => $q->where('role', 'admin')],
-            ['key' => 'vendedores', 'label' => 'Vendedores', 'apply' => fn (Builder $q) => $q->where('role', 'vendor')],
             ['key' => 'asociados', 'label' => 'Asociados', 'apply' => fn (Builder $q) => $q->where('role', 'associate')],
             ['key' => 'tecnicos', 'label' => 'Técnicos', 'apply' => fn (Builder $q) => $q->where('role', 'technician')],
         ];

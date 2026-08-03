@@ -25,8 +25,6 @@ class RoleMiddleware
                 return redirect()->route('technician.dashboard');
             }elseif($request->user()->role == 'user') {
                 return redirect()->route('user.dashboard');
-            }elseif($request->user()->role == 'vendor'){
-                return redirect()->route('vendor.dashboard');
             }else{
                 abort(403);
             }

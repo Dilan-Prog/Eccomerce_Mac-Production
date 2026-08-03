@@ -18,10 +18,14 @@ use Maatwebsite\Excel\Facades\Excel;
 
 /**
  * Unified "Personal / Staff" module — replaces UserManageController
- * (admin.manage-user, create-only, no vendor/technician option) and
+ * (admin.manage-user, create-only, no technician option) and
  * AdminListController (admin.admin-list, admin-only listing). Covers every
- * non-customer role: admin, vendor, associate, technician. Customer
- * ('user' role) creation/listing stays in its own existing module.
+ * non-customer, non-legacy-vendor role: admin, associate, technician.
+ * ('vendor' was removed from STAFF_ROLES/ROLE_LABELS — it mapped to a dead,
+ * separately-retired legacy vendor panel and only confused admins picking a
+ * role for a new staff account; use role=admin + a custom "Rol personalizado"
+ * instead.) Customer ('user' role) creation/listing stays in its own
+ * existing module.
  *
  * Validation rules for name/last_name/company/rfc/phone/email/password and
  * the AccountCreatedMail sending behaviour are carried over as-is from
@@ -30,11 +34,10 @@ use Maatwebsite\Excel\Facades\Excel;
  */
 class StaffUserController extends Controller
 {
-    private const STAFF_ROLES = ['admin', 'vendor', 'associate', 'technician'];
+    private const STAFF_ROLES = ['admin', 'associate', 'technician'];
 
     private const ROLE_LABELS = [
         'admin' => 'Administrador',
-        'vendor' => 'Vendedor',
         'associate' => 'Asociado',
         'technician' => 'Técnico',
     ];
@@ -42,7 +45,7 @@ class StaffUserController extends Controller
     public function __construct()
     {
         // This controller manages staff accounts themselves (creating/editing/
-        // deleting admin/vendor/associate/technician users, and — indirectly —
+        // deleting admin/associate/technician users, and — indirectly —
         // who gets escalated access), so it must only ever be reachable by an
         // unrestricted admin (role === 'admin' and role_id === null). A
         // restricted custom-role admin must never be able to create more staff

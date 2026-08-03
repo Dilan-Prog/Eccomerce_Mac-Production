@@ -30,7 +30,13 @@
         $actions .= ' <a href="' . route('admin.cotizaciones.edit', $cotizacion->id) . '" class="au-btn au-btn-sm au-btn-primary">Continuar edición</a>';
     }
     if ($pdfUrl) {
-        $actions .= ' <a href="' . $pdfUrl . '" target="_blank" class="au-btn au-btn-sm">Ver PDF</a>';
+        // AU.PdfPreview (public/admin-ui/js/core/pdf-preview.js) opens an
+        // iframe+download modal instead of a bare target="_blank" link, via
+        // the generic [data-au-pdf-preview] delegated handler in admin.js.
+        $actions .= ' <a href="' . $pdfUrl . '" class="au-btn au-btn-sm" data-au-pdf-preview'
+            . ' data-title="' . e('Cotización ' . $cotizacion->folio) . '"'
+            . ' data-url="' . e($pdfUrl) . '"'
+            . ' data-download-name="' . e($cotizacion->folio . '.pdf') . '">Ver PDF</a>';
     }
 @endphp
 @extends('admin-ui.layouts.master')

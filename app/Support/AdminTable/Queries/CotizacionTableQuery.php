@@ -6,7 +6,6 @@ use App\Models\Cotizacion;
 use App\Support\AdminTable\AdminTableQuery;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Storage;
 
 /**
  * Replaces the plain (non-Yajra) paginated listing previously built by hand
@@ -151,7 +150,7 @@ class CotizacionTableQuery extends AdminTableQuery
         if ($row->pdf_path) {
             $actions[] = [
                 'label' => 'Ver PDF',
-                'url' => Storage::url($row->pdf_path),
+                'url' => route('admin.cotizaciones.pdf', $row->id),
             ];
         }
 

@@ -181,9 +181,27 @@ class AdminCotizacionController extends Controller
     public function show(Cotizacion $cotizacion)
     {
         $cotizacion->load(['user', 'perfil', 'items', 'createdByAdmin']);
-        $pdfUrl = $cotizacion->pdf_path ? Storage::url($cotizacion->pdf_path) : null;
+        $pdfUrl = $cotizacion->pdf_path ? route('admin.cotizaciones.pdf', $cotizacion) : null;
 
         return view('admin-ui.cotizaciones.show', compact('cotizacion', 'pdfUrl'));
+    }
+
+    /**
+     * Serves the already-generated PDF directly from disk instead of a
+     * Storage::url() link, so it doesn't depend on the public/storage
+     * symlink existing (or being followable) on the server — mirrors
+     * CotizacionController::pdf() in the customer-facing flow, minus the
+     * ownership check (this is admin-only, already gated by the module's
+     * own access middleware on every routes/admin.php route).
+     */
+    public function pdf(Cotizacion $cotizacion)
+    {
+        abort_unless($cotizacion->pdf_path && Storage::disk('public')->exists($cotizacion->pdf_path), 404);
+
+        return response()->file(
+            Storage::disk('public')->path($cotizacion->pdf_path),
+            ['Content-Type' => 'application/pdf']
+        );
     }
 
     /** Blank ERP-style quote builder page — no Cotizacion exists yet. */

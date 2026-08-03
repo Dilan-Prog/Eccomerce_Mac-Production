@@ -4,7 +4,6 @@ use App\Http\Controllers\Backend\AdminController;
 use App\Http\Controllers\Backend\ProductController;
 use App\Http\Controllers\Backend\TrackConversionController;
 use App\Http\Controllers\Frontend\FlashSaleController;
-use App\Http\Controllers\Backend\VendorController;
 use App\Http\Controllers\Frontend\BrandsMarkController;
 use App\Http\Controllers\Frontend\CartController;
 use App\Http\Controllers\Frontend\FrontendProductController;

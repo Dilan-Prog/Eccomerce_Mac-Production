@@ -144,7 +144,7 @@ class RoleController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name' => ['required', 'string', 'max:100'],
+            'name' => ['required', 'string', 'max:100', $this->notSystemNameRule()],
         ]);
 
         $role = DB::transaction(function () use ($request) {
@@ -189,7 +189,7 @@ class RoleController extends Controller
     public function update(Request $request, string $id)
     {
         $request->validate([
-            'name' => ['required', 'string', 'max:100'],
+            'name' => ['required', 'string', 'max:100', $this->notSystemNameRule()],
         ]);
 
         $role = Role::findOrFail($id);
@@ -232,6 +232,38 @@ class RoleController extends Controller
         $role->delete();
 
         return response(['status' => 'success', 'message' => 'Eliminado con éxito!']);
+    }
+
+    /**
+     * Builds a closure-based validation rule rejecting any name that collides
+     * (case-insensitive, trimmed) with an existing system role's name, or
+     * whose derived slug collides with an existing system role's slug.
+     *
+     * Rule::notIn() only does exact/case-sensitive matching, so a plain
+     * "vendedor" would slip past it even though "Vendedor" is reserved —
+     * hence the manual strcasecmp() comparison here. This runs as part of
+     * $request->validate(), i.e. before uniqueSlug() is ever called, so a
+     * collision surfaces as this specific, clear message instead of being
+     * silently absorbed into a "-2" suffix by uniqueSlug()'s generic
+     * uniqueness loop.
+     */
+    private function notSystemNameRule(): \Closure
+    {
+        $systemNames = Role::where('is_system', true)->pluck('name');
+        $systemSlugs = Role::where('is_system', true)->pluck('slug');
+
+        return function (string $attribute, mixed $value, \Closure $fail) use ($systemNames, $systemSlugs) {
+            $trimmed = trim((string) $value);
+
+            $collidesByName = $systemNames->contains(
+                fn ($systemName) => strcasecmp(trim($systemName), $trimmed) === 0
+            );
+            $collidesBySlug = $systemSlugs->contains(Str::slug($trimmed));
+
+            if ($collidesByName || $collidesBySlug) {
+                $fail('Ese nombre ya está reservado para un rol del sistema y no se puede usar.');
+            }
+        };
     }
 
     /** Generates a unique slug for the given name, appending -2, -3, ... on collision. */

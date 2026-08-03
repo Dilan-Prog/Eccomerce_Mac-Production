@@ -82,6 +82,7 @@ Route::post('cotizaciones/{cotizacion}/items', [AdminCotizacionController::class
 Route::put('cotizaciones/{cotizacion}/items/{item}', [AdminCotizacionController::class, 'updateItem'])->name('cotizaciones.items.update');
 Route::delete('cotizaciones/{cotizacion}/items/{item}', [AdminCotizacionController::class, 'destroyItem'])->name('cotizaciones.items.delete');
 Route::post('cotizaciones/{cotizacion}/finalize', [AdminCotizacionController::class, 'finalize'])->name('cotizaciones.finalize');
+Route::get('cotizaciones/{cotizacion}/pdf', [AdminCotizacionController::class, 'pdf'])->name('cotizaciones.pdf');
 Route::get('cotizaciones/{cotizacion}', [AdminCotizacionController::class, 'show'])->name('cotizaciones.show');
 
 /**Slider routes */
