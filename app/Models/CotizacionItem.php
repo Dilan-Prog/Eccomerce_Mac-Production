@@ -17,7 +17,11 @@ class CotizacionItem extends Model
         'modelo',
         'marca',
         'precio_unitario',
+        'precio_tier',
+        'precio_tier_label',
         'cantidad',
+        'es_pendiente',
+        'tiempo_entrega',
         'subtotal',
         'sort_order',
     ];
@@ -27,6 +31,8 @@ class CotizacionItem extends Model
         'subtotal'        => 'decimal:2',
         'cantidad'        => 'integer',
         'sort_order'      => 'integer',
+        'precio_tier'     => 'integer',
+        'es_pendiente'    => 'boolean',
     ];
 
     public function cotizacion()

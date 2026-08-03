@@ -10,6 +10,7 @@ use App\Models\Product;
 use App\Models\ProductVariantCombinations;
 use App\Models\ProductVariantItem;
 use App\Models\User;
+use App\Support\AspelPricing;
 use App\Support\AdminTable\AdminTableExport;
 use App\Support\AdminTable\AdminTableRequest;
 use App\Support\AdminTable\Queries\CotizacionTableQuery;
@@ -139,6 +140,13 @@ class AdminCotizacionController extends Controller
             $combinations = $combinationsByProduct->get($product->id, collect());
             $hasVariants = $combinations->isNotEmpty();
 
+            // Niveles de precio Aspel (público/mínimo/liquidación/mayorista) solo
+            // existen a nivel de producto base (products.sku = aspel_products.cve_art)
+            // — las combinaciones de variante no tienen su propio cve_art, así que
+            // nunca traen price_tiers (ver investigación previa: "No hay concepto
+            // Aspel a nivel combinación").
+            $priceTiers = $product->sku ? AspelPricing::optionsForSku($product->sku) : [];
+
             $entry = [
                 'id' => $product->id,
                 'name' => $product->name,
@@ -148,6 +156,11 @@ class AdminCotizacionController extends Controller
                 'price' => $product->effectivePrice(),
                 'stock' => $product->effectiveStock(),
                 'has_variants' => $hasVariants,
+                'price_tiers' => array_map(fn ($tier) => [
+                    'cve_precio' => $tier['cve_precio'],
+                    'descripcion' => $tier['descripcion'],
+                    'with_iva' => round($tier['with_iva'], 2),
+                ], $priceTiers),
             ];
 
             if ($hasVariants) {
@@ -263,6 +276,24 @@ class AdminCotizacionController extends Controller
      * Adds one line item to a draft quote. Body must contain exactly one of
      * product_id / product_variant_combination_id — price/name/sku/modelo/
      * marca are always resolved server-side, never trusted from the client.
+     *
+     * Two extra behaviors layered on top of the base "add a line" flow:
+     *
+     * - Price tier: if the client sends `precio_tier` (a precio_x_product_aspel
+     *   cve_precio: 1=público, 2=mínimo, 3=liquidación, 4=mayorista) AND the
+     *   product has that Aspel price level available, the line uses that
+     *   IVA-inclusive tier amount instead of Product::effectivePrice(). Combos
+     *   never have tiers (no cve_art at combination level), so precio_tier is
+     *   ignored there. An invalid/unavailable tier silently falls back to the
+     *   normal effective price rather than erroring — the tier is a pricing
+     *   *option*, not a required input.
+     * - Stock split: if `cantidad` exceeds what's actually available right
+     *   now, the line is split into up to two rows — one for the immediately
+     *   available quantity (es_pendiente=false) and one for the remainder
+     *   (es_pendiente=true). The backordered half requires a human-entered
+     *   `tiempo_entrega` note (the vendor types it — no automatic ETA source
+     *   exists in this system yet); if it's missing this returns a 422 with
+     *   code `needs_tiempo_entrega` so the UI can prompt for it and resubmit.
      */
     public function storeItem(Request $request, Cotizacion $cotizacion)
     {
@@ -272,6 +303,8 @@ class AdminCotizacionController extends Controller
             'product_id' => ['nullable', 'integer', 'exists:products,id'],
             'product_variant_combination_id' => ['nullable', 'integer', 'exists:product_variants_combinations,id'],
             'cantidad' => ['required', 'integer', 'min:1'],
+            'precio_tier' => ['nullable', 'integer', 'between:1,4'],
+            'tiempo_entrega' => ['nullable', 'string', 'max:255'],
         ]);
 
         $hasProduct = $request->filled('product_id');
@@ -285,6 +318,8 @@ class AdminCotizacionController extends Controller
         }
 
         $cantidad = (int) $request->input('cantidad');
+        $tieredPrecio = null;
+        $tieredLabel = null;
 
         if ($hasCombination) {
             $combination = ProductVariantCombinations::with('product.brand')
@@ -298,6 +333,7 @@ class AdminCotizacionController extends Controller
             $modelo = $product->productModel ?? null;
             $marca = $product->brand->name ?? null;
             $precioUnitario = $combination->effectivePrice();
+            $disponible = (int) $combination->qty;
         } else {
             $product = Product::with('brand')->findOrFail($request->input('product_id'));
 
@@ -308,12 +344,40 @@ class AdminCotizacionController extends Controller
             $modelo = $product->productModel;
             $marca = $product->brand->name ?? null;
             $precioUnitario = $product->effectivePrice();
+            $disponible = $product->effectiveStock();
+
+            if ($request->filled('precio_tier') && $product->sku) {
+                foreach (AspelPricing::optionsForSku($product->sku) as $tier) {
+                    if ($tier['cve_precio'] === (int) $request->input('precio_tier')) {
+                        $precioUnitario = round($tier['with_iva'], 2);
+                        $tieredPrecio = $tier['cve_precio'];
+                        $tieredLabel = $tier['descripcion'];
+                        break;
+                    }
+                }
+            }
         }
 
-        $subtotal = round($precioUnitario * $cantidad, 2);
-        $nextSortOrder = ((int) $cotizacion->items()->max('sort_order')) + 1;
+        $disponible = max(0, $disponible);
+        $pendienteQty = max(0, $cantidad - $disponible);
+        $inmediataQty = $cantidad - $pendienteQty;
 
-        $item = $cotizacion->items()->create([
+        if ($pendienteQty > 0 && !$request->filled('tiempo_entrega')) {
+            return response()->json([
+                'status' => 'error',
+                'code' => 'needs_tiempo_entrega',
+                'disponible' => $disponible,
+                'pendiente' => $pendienteQty,
+                'message' => $disponible > 0
+                    ? "Solo hay {$disponible} pieza(s) disponibles ahora mismo. Indica el tiempo de entrega para las {$pendienteQty} pieza(s) restantes."
+                    : "No hay piezas disponibles ahora mismo. Indica el tiempo de entrega para las {$pendienteQty} pieza(s).",
+            ], 422);
+        }
+
+        $nextSortOrder = ((int) $cotizacion->items()->max('sort_order')) + 1;
+        $createdItems = [];
+
+        $baseAttributes = [
             'product_id' => $productId,
             'product_variant_combination_id' => $combinationId,
             'nombre' => $nombre,
@@ -321,25 +385,47 @@ class AdminCotizacionController extends Controller
             'modelo' => $modelo,
             'marca' => $marca,
             'precio_unitario' => $precioUnitario,
-            'cantidad' => $cantidad,
-            'subtotal' => $subtotal,
-            'sort_order' => $nextSortOrder,
-        ]);
+            'precio_tier' => $tieredPrecio,
+            'precio_tier_label' => $tieredLabel,
+        ];
+
+        if ($inmediataQty > 0) {
+            $createdItems[] = $cotizacion->items()->create($baseAttributes + [
+                'cantidad' => $inmediataQty,
+                'es_pendiente' => false,
+                'tiempo_entrega' => null,
+                'subtotal' => round($precioUnitario * $inmediataQty, 2),
+                'sort_order' => $nextSortOrder++,
+            ]);
+        }
+
+        if ($pendienteQty > 0) {
+            $createdItems[] = $cotizacion->items()->create($baseAttributes + [
+                'cantidad' => $pendienteQty,
+                'es_pendiente' => true,
+                'tiempo_entrega' => $request->input('tiempo_entrega'),
+                'subtotal' => round($precioUnitario * $pendienteQty, 2),
+                'sort_order' => $nextSortOrder++,
+            ]);
+        }
 
         $totals = $this->recalculateTotals($cotizacion);
 
         return response()->json([
             'status' => 'success',
-            'item' => [
+            'items' => collect($createdItems)->map(fn (CotizacionItem $item) => [
                 'id' => $item->id,
                 'nombre' => $item->nombre,
                 'sku' => $item->sku,
                 'modelo' => $item->modelo,
                 'marca' => $item->marca,
                 'precio_unitario' => (float) $item->precio_unitario,
+                'precio_tier_label' => $item->precio_tier_label,
                 'cantidad' => $item->cantidad,
+                'es_pendiente' => $item->es_pendiente,
+                'tiempo_entrega' => $item->tiempo_entrega,
                 'subtotal' => (float) $item->subtotal,
-            ],
+            ])->values(),
             'total' => $totals,
         ]);
     }
@@ -437,7 +523,7 @@ class AdminCotizacionController extends Controller
         $cotizacion->load(['items', 'user', 'perfil']);
 
         DB::transaction(function () use ($cotizacion) {
-            $cotizacion->folio = 'COT-' . now()->year . '-' . str_pad($cotizacion->id, 5, '0', STR_PAD_LEFT);
+            $cotizacion->folio = Cotizacion::buildFolio($cotizacion->id);
 
             $cotizacion->productos_json = $cotizacion->items->sortBy('sort_order')->values()->map(function (CotizacionItem $item) {
                 return [
@@ -446,7 +532,10 @@ class AdminCotizacionController extends Controller
                     'modelo' => $item->modelo,
                     'marca' => $item->marca,
                     'precio' => (float) $item->precio_unitario,
+                    'precio_tier_label' => $item->precio_tier_label,
                     'cantidad' => $item->cantidad,
+                    'es_pendiente' => (bool) $item->es_pendiente,
+                    'tiempo_entrega' => $item->tiempo_entrega,
                     'subtotal' => (float) $item->subtotal,
                 ];
             })->all();

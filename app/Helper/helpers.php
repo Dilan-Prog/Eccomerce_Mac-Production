@@ -134,3 +134,137 @@ function getUrlcanonical(){
     $Urlcanonical = "https://www.macdelnorte.com/product-detail/";
     return $Urlcanonical;
 }
+
+/**
+ * Convierte un monto a su representación en letras para el pie de una
+ * cotización/factura estilo "TRES MIL DOSCIENTOS VEINTIDOS PESOS 48/100 M.N."
+ * Sin acentos a propósito, para igualar el estilo de las cotizaciones Aspel
+ * ya usadas por la empresa (ver referencia en resources/views/cotizaciones/pdf.blade.php).
+ */
+function numeroALetras($numero): string
+{
+    $numero  = round((float) $numero, 2);
+    $entero  = (int) floor($numero);
+    $centavos = (int) round(($numero - $entero) * 100);
+
+    $texto = _numALetrasApocope(trim($entero === 0 ? 'cero' : _numALetrasEntero($entero)));
+
+    return strtoupper($texto . ' pesos ' . str_pad((string) $centavos, 2, '0', STR_PAD_LEFT) . '/100 m.n.');
+}
+
+function _numALetrasApocope(string $texto): string
+{
+    if (str_ends_with($texto, 'veintiuno')) {
+        return substr($texto, 0, -2) . 'un';
+    }
+    if (str_ends_with($texto, 'uno')) {
+        return substr($texto, 0, -3) . 'un';
+    }
+    return $texto;
+}
+
+function _numALetrasEntero(int $n): string
+{
+    if ($n <= 0) {
+        return 'cero';
+    }
+
+    $unidades = ['', 'uno', 'dos', 'tres', 'cuatro', 'cinco', 'seis', 'siete', 'ocho', 'nueve'];
+    if ($n < 10) {
+        return $unidades[$n];
+    }
+
+    $especiales = ['diez', 'once', 'doce', 'trece', 'catorce', 'quince', 'dieciseis', 'diecisiete', 'dieciocho', 'diecinueve'];
+    if ($n < 20) {
+        return $especiales[$n - 10];
+    }
+
+    if ($n < 30) {
+        return $n === 20 ? 'veinte' : 'veinti' . $unidades[$n - 20];
+    }
+
+    if ($n < 100) {
+        $decenas = ['', '', '', 'treinta', 'cuarenta', 'cincuenta', 'sesenta', 'setenta', 'ochenta', 'noventa'];
+        $d = intdiv($n, 10);
+        $u = $n % 10;
+        return $u === 0 ? $decenas[$d] : $decenas[$d] . ' y ' . $unidades[$u];
+    }
+
+    if ($n === 100) {
+        return 'cien';
+    }
+
+    if ($n < 1000) {
+        $centenas = ['', 'ciento', 'doscientos', 'trescientos', 'cuatrocientos', 'quinientos', 'seiscientos', 'setecientos', 'ochocientos', 'novecientos'];
+        $c = intdiv($n, 100);
+        $r = $n % 100;
+        return $r === 0 ? $centenas[$c] : $centenas[$c] . ' ' . _numALetrasEntero($r);
+    }
+
+    if ($n < 2000) {
+        $r = $n - 1000;
+        return $r === 0 ? 'mil' : 'mil ' . _numALetrasEntero($r);
+    }
+
+    if ($n < 1000000) {
+        $miles = intdiv($n, 1000);
+        $r = $n % 1000;
+        $prefijo = _numALetrasApocope(_numALetrasEntero($miles)) . ' mil';
+        return $r === 0 ? $prefijo : $prefijo . ' ' . _numALetrasEntero($r);
+    }
+
+    $millones = intdiv($n, 1000000);
+    $r = $n % 1000000;
+    $prefijo = $millones === 1 ? 'un millon' : _numALetrasApocope(_numALetrasEntero($millones)) . ' millones';
+    return $r === 0 ? $prefijo : $prefijo . ' ' . _numALetrasEntero($r);
+}
+
+/**
+ * Resuelve una URL completa de una imagen subida (como las que guarda
+ * ImageUploadTrait — ej. http://host/uploads/logo/foo.webp) a un data URI
+ * base64, para poder incrustarla en PDFs generados con dompdf sin depender
+ * de fetch remoto ni de que la ruta caiga dentro del 'chroot' de dompdf
+ * (UPLOADS_BASE_PATH puede vivir fuera de la raíz del proyecto). Devuelve
+ * null si no hay URL o el archivo no existe en disco — nunca debe tronar la
+ * generación del PDF por un logo/imagen faltante.
+ */
+function uploadedImageToBase64(?string $fullUrl): ?string
+{
+    if (!$fullUrl) {
+        return null;
+    }
+
+    // Extrae todo a partir de "/uploads/" en vez de solo quitar config('app.url'):
+    // las URLs guardadas en BD a veces traen www/no-www o http/https distinto
+    // al APP_URL del entorno actual (ej. producción vs. este script), y así
+    // se resuelve la ruta relativa sin depender de que coincidan exactamente.
+    if (preg_match('#/uploads/.+$#', $fullUrl, $m)) {
+        $relativePath = ltrim($m[0], '/');
+    } else {
+        $relativePath = ltrim(str_replace(config('app.url'), '', $fullUrl), '/');
+    }
+
+    $path = \App\Support\UploadPath::full($relativePath);
+
+    if (!\Illuminate\Support\Facades\File::exists($path)) {
+        return null;
+    }
+
+    // Siempre se re-codifica a PNG vía GD sin importar el formato de origen
+    // (típicamente WEBP): probado directamente que dompdf (backend CPDF de
+    // este proyecto) renderiza WEBP embebido con el canal alfa roto —
+    // pierde el fondo y dibuja solo parte del contenido. PNG vía GD sí se
+    // ve correcto, así que se normaliza aquí antes de incrustarlo.
+    $image = @imagecreatefromstring(\Illuminate\Support\Facades\File::get($path));
+    if (!$image) {
+        return null;
+    }
+
+    imagesavealpha($image, true);
+    ob_start();
+    imagepng($image);
+    $pngData = ob_get_clean();
+    imagedestroy($image);
+
+    return 'data:image/png;base64,' . base64_encode($pngData);
+}

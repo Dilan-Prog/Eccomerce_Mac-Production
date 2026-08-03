@@ -135,6 +135,16 @@
   white-space: nowrap;
 }
 
+/* Selector de nivel de precio (público/mínimo/liquidación/mayorista) que
+   reemplaza .au-quote-product-price cuando el producto tiene niveles Aspel.
+   .au-select trae width:100% por defecto (pensado para formularios en
+   columna) — aquí vive en una fila flex, así que se fija un ancho propio y
+   flex:none para que no se estire y desplace el botón "Agregar". */
+.admin-ui-v2 .au-quote-tier-select {
+  flex: none;
+  width: 210px;
+}
+
 .admin-ui-v2 .au-quote-product-add {
   display: flex;
   align-items: center;

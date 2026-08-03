@@ -98,7 +98,17 @@
                                 @forelse ($cotizacion->productos_json ?? [] as $i => $p)
                                     <tr>
                                         <td>{{ $i + 1 }}</td>
-                                        <td><strong>{{ $p['nombre'] }}</strong></td>
+                                        <td>
+                                            <strong>{{ $p['nombre'] }}</strong>
+                                            @if (!empty($p['precio_tier_label']))
+                                                <div style="font-size:11px;color:var(--au-text-subdued)">Precio: {{ $p['precio_tier_label'] }}</div>
+                                            @endif
+                                            @if (!empty($p['es_pendiente']))
+                                                <div style="margin-top:4px">
+                                                    <span class="au-badge au-badge-warning"><span class="au-badge-dot"></span>Pendiente — {{ $p['tiempo_entrega'] ?? 'sin especificar' }}</span>
+                                                </div>
+                                            @endif
+                                        </td>
                                         <td>
                                             @if (!empty($p['sku']))<span class="au-mono">{{ $p['sku'] }}</span>@endif
                                             @if (!empty($p['modelo'])) <span style="color:var(--au-text-subdued)">/ {{ $p['modelo'] }}</span>@endif

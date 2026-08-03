@@ -181,8 +181,7 @@ class CotizacionController extends Controller
             'status'               => 'generada',
         ]);
 
-        // Folio definitivo: COT-{AÑO}-{ID con 5 ceros}
-        $cotizacion->folio = 'COT-' . now()->year . '-' . str_pad($cotizacion->id, 5, '0', STR_PAD_LEFT);
+        $cotizacion->folio = Cotizacion::buildFolio($cotizacion->id);
         $cotizacion->save();
 
         // Generar PDF

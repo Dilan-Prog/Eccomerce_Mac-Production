@@ -107,6 +107,12 @@ window.AU = window.AU || {};
         <td>
           ${AU.escapeHtml(item.nombre)}
           ${item.marca ? `<div class="au-quote-item-sub">${AU.escapeHtml(item.marca)}</div>` : ""}
+          ${item.precio_tier_label ? `<div class="au-quote-item-sub">Precio: ${AU.escapeHtml(item.precio_tier_label)}</div>` : ""}
+          ${
+            item.es_pendiente
+              ? `<div class="au-badge au-badge-warning" style="margin-top:4px"><span class="au-badge-dot"></span>Pendiente de surtir — ${AU.escapeHtml(item.tiempo_entrega || "sin especificar")}</div>`
+              : ""
+          }
         </td>
         <td class="au-mono">${AU.escapeHtml(item.sku || "")}${item.modelo ? " / " + AU.escapeHtml(item.modelo) : ""}</td>
         <td>
@@ -131,11 +137,26 @@ window.AU = window.AU || {};
     if (!config.routes.itemsStore) return;
     try {
       const data = await AU.request(config.routes.itemsStore, { method: "POST", body: payload });
-      items.push(data.item);
+      items.push(...data.items);
       renderItems();
       applyServerTotals(data.total);
-      AU.toast.success("Producto agregado");
+      const splitNote = data.items.some((i) => i.es_pendiente) ? " (parte quedó pendiente de surtir)" : "";
+      AU.toast.success(`Producto agregado${splitNote}`);
     } catch (err) {
+      // El servidor detectó que la cantidad pedida supera el stock disponible
+      // y necesita que el vendedor capture manualmente el tiempo de entrega
+      // de la parte pendiente (no hay fuente automática de ETA hoy) — se
+      // pide con un prompt nativo y se reintenta la misma petición con ese
+      // dato ya incluido.
+      if (err.data && err.data.code === "needs_tiempo_entrega") {
+        const nota = window.prompt(err.data.message + "\n\nTiempo de entrega para lo pendiente:");
+        if (nota && nota.trim()) {
+          await addItem({ ...payload, tiempo_entrega: nota.trim() });
+          return;
+        }
+        AU.toast.error("Cancelado: se necesita el tiempo de entrega para agregar el producto.");
+        return;
+      }
       AU.toast.error((err.data && err.data.message) || "No se pudo agregar el producto");
     }
   }
@@ -202,13 +223,20 @@ window.AU = window.AU || {};
       .join(" · ");
 
     if (!p.has_variants) {
+      const tiers = p.price_tiers || [];
+      const priceControl = tiers.length
+        ? `<select class="au-select au-quote-tier-select" data-tier-select>
+            ${tiers.map((t) => `<option value="${t.cve_precio}">${AU.escapeHtml(t.descripcion)} — ${formatMoney(t.with_iva)}</option>`).join("")}
+          </select>`
+        : `<div class="au-quote-product-price au-mono">${formatMoney(p.price)}</div>`;
+
       return `
         <div class="au-quote-product-row" data-product-row="${p.id}">
           <div class="au-quote-product-info">
             <div class="au-quote-product-name">${AU.escapeHtml(p.name)}</div>
             <div class="au-quote-product-meta">${meta}${meta ? " · " : ""}Stock: ${p.stock}</div>
           </div>
-          <div class="au-quote-product-price au-mono">${formatMoney(p.price)}</div>
+          ${priceControl}
           <div class="au-quote-product-add">
             <input type="number" min="1" step="1" value="1" class="au-input au-quote-qty-input">
             <button type="button" class="au-btn au-btn-sm au-btn-primary" data-au-quote-add-product="${p.id}">Agregar</button>
@@ -259,7 +287,10 @@ window.AU = window.AU || {};
         const row = btn.closest(".au-quote-product-row");
         const qtyInput = row.querySelector("input[type=\"number\"]");
         const qty = Math.max(1, parseInt(qtyInput.value, 10) || 1);
-        addItem({ product_id: btn.getAttribute("data-au-quote-add-product"), cantidad: qty });
+        const tierSelect = row.querySelector("[data-tier-select]");
+        const payload = { product_id: btn.getAttribute("data-au-quote-add-product"), cantidad: qty };
+        if (tierSelect) payload.precio_tier = tierSelect.value;
+        addItem(payload);
       });
     });
 

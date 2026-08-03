@@ -21,7 +21,10 @@
                     'modelo' => $item->modelo,
                     'marca' => $item->marca,
                     'precio_unitario' => (float) $item->precio_unitario,
+                    'precio_tier_label' => $item->precio_tier_label,
                     'cantidad' => $item->cantidad,
+                    'es_pendiente' => (bool) $item->es_pendiente,
+                    'tiempo_entrega' => $item->tiempo_entrega,
                     'subtotal' => (float) $item->subtotal,
                 ];
             })->all()

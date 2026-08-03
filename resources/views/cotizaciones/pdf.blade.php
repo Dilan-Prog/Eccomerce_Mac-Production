@@ -4,230 +4,205 @@
 <meta charset="UTF-8">
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  body {
-    font-family: DejaVu Sans, Arial, sans-serif;
-    font-size: 11px; color: #1A202C; line-height: 1.5;
-    background: #fff;
-  }
-  /* ── HEADER ── */
-  .pdf-header {
-    background: #003E7E; color: #fff;
-    padding: 18px 30px; display: table; width: 100%;
-  }
-  .pdf-header-left { display: table-cell; vertical-align: middle; }
-  .pdf-header-right { display: table-cell; text-align: right; vertical-align: middle; }
-  .logo-box {
-    display: inline-block; background: #F7941D;
-    width: 40px; height: 40px; line-height: 40px;
-    text-align: center; font-size: 22px; font-weight: 900;
-    color: #fff; border-radius: 6px; vertical-align: middle;
-  }
-  .logo-text {
-    display: inline-block; vertical-align: middle; margin-left: 10px;
-  }
-  .logo-text .name { font-size: 16px; font-weight: 900; letter-spacing: -0.3px; }
-  .logo-text .slogan { font-size: 9px; opacity: 0.75; font-style: italic; }
-  .folio-box { font-size: 13px; font-weight: 700; }
-  .folio-box .folio-num {
-    font-size: 18px; font-weight: 900; color: #F6AD1C; display: block;
-  }
-  .fecha { font-size: 10px; opacity: 0.8; margin-top: 4px; }
+  body { font-family: DejaVu Sans, Arial, sans-serif; font-size: 10px; color: #000; }
+  table { border-collapse: collapse; width: 100%; }
+  .wrap { padding: 20px 26px; }
 
-  /* ── SECCIONES ── */
-  .section { padding: 16px 30px; }
-  .section-title {
-    font-size: 10px; font-weight: 700; text-transform: uppercase;
-    letter-spacing: 1.5px; color: #003E7E; margin-bottom: 10px;
-    padding-bottom: 5px; border-bottom: 2px solid #F7941D;
-  }
-  .info-table { width: 100%; border-collapse: collapse; }
-  .info-table td { padding: 4px 6px; font-size: 11px; vertical-align: top; }
-  .info-table .lbl { color: #718096; font-weight: 700; width: 140px; }
-  .info-table .val { color: #1A202C; }
+  /* ── ENCABEZADO ── */
+  .head-table td { vertical-align: top; padding: 0; }
+  .head-logo-cell { width: 90px; }
+  .head-logo-cell img { width: 80px; }
+  .head-company-cell { padding-left: 10px; }
+  .company-name { font-size: 12px; font-weight: 700; }
+  .company-meta-table td { padding: 1px 6px 1px 0; font-size: 9px; vertical-align: top; }
+  .company-meta-table .lbl { font-weight: 700; white-space: nowrap; }
+  .head-folio-cell { width: 150px; text-align: right; font-size: 9px; }
+  .head-folio-cell .lbl { font-weight: 700; }
+  .head-folio-cell .folio-val { font-weight: 700; font-size: 11px; }
+  .head-folio-cell .block { margin-top: 6px; }
+
+  .divider { height: 1px; background: #000; margin: 6px 0; }
+
+  /* ── DATOS CLIENTE / VENDEDOR ── */
+  .client-table td { padding: 1px 0; font-size: 9px; vertical-align: top; }
+  .client-table .lbl { font-weight: 700; width: 70px; }
 
   /* ── TABLA DE PRODUCTOS ── */
-  .prod-table {
-    width: 100%; border-collapse: collapse; margin-top: 4px;
-  }
+  .prod-table { margin-top: 10px; }
   .prod-table th {
-    background: #003E7E; color: #fff; font-size: 10px; font-weight: 700;
-    padding: 8px 10px; text-align: left; text-transform: uppercase; letter-spacing: 0.5px;
+      border-bottom: 1.5px solid #000; border-top: 1.5px solid #000;
+      font-size: 9px; font-weight: 700; text-align: left; padding: 4px 4px;
   }
-  .prod-table th.right { text-align: right; }
-  .prod-table td { padding: 7px 10px; font-size: 11px; border-bottom: 1px solid #DDE3EA; }
-  .prod-table td.right { text-align: right; }
-  .prod-table tr:nth-child(even) td { background: #F5F7FA; }
-  .prod-table .item-name { font-weight: 600; color: #003E7E; }
-  .prod-table .item-sku {
-    font-size: 9px; color: #718096; font-family: monospace; margin-top: 2px;
-  }
+  .prod-table th.right, .prod-table td.right { text-align: right; }
+  .prod-table td { padding: 4px 4px; font-size: 9px; vertical-align: top; border-bottom: 1px solid #ddd; }
+  .prod-table .item-desc-sub { font-size: 8px; color: #444; }
 
   /* ── TOTALES ── */
-  .totals-table {
-    width: 260px; margin-left: auto; margin-top: 10px;
-    border-collapse: collapse;
-  }
-  .totals-table td { padding: 5px 10px; font-size: 11px; }
-  .totals-table .lbl { color: #718096; }
-  .totals-table .val { text-align: right; font-weight: 700; color: #1A202C; }
-  .totals-table .total-row td {
-    background: #003E7E; color: #fff; font-size: 13px;
-    font-weight: 900; border-top: 2px solid #F7941D;
-    padding: 8px 10px;
-  }
-  .totals-table .total-row .val { color: #F6AD1C; }
-  .iva-note { font-size: 9px; color: #718096; margin-top: 4px; }
+  .totals-table { width: 220px; margin-left: auto; margin-top: 6px; }
+  .totals-table td { padding: 2px 6px; font-size: 10px; }
+  .totals-table .lbl { font-weight: 700; }
+  .totals-table .val { text-align: right; font-weight: 700; }
 
-  /* ── VIGENCIA ── */
-  .vigencia {
-    background: #E6EFF8; border-left: 4px solid #003E7E;
-    padding: 10px 16px; margin: 0 30px 16px; border-radius: 0 6px 6px 0;
-    font-size: 10px; color: #003E7E;
-  }
+  .note-line { margin-top: 10px; font-size: 9px; font-weight: 700; }
+  .vigencia-line { margin-top: 20px; font-size: 10px; }
+  .vigencia-line .lbl { font-weight: 700; }
+  .vigencia-line .val { font-weight: 400; }
+  .en-letras { margin-top: 10px; font-size: 10px; font-weight: 700; }
 
-  /* ── FOOTER ── */
-  .pdf-footer {
-    background: #002856; color: rgba(255,255,255,0.75);
-    padding: 12px 30px; text-align: center; font-size: 9px; margin-top: 10px;
-  }
-  .pdf-footer strong { color: #F6AD1C; }
+  /* ── MARCAS ── */
+  .brands-row { margin-top: 40px; text-align: center; }
+  .brands-row img { height: 24px; margin: 0 10px; vertical-align: middle; }
 
-  .divider { height: 1px; background: #DDE3EA; margin: 0 30px; }
+  /* ── CONDICIONES ── */
+  .conditions-title { margin-top: 14px; font-size: 10px; font-weight: 700; }
+  .conditions-list { margin-top: 4px; font-size: 8px; line-height: 1.5; }
+  .cond-highlight { color: #C0392B; }
+
+  .env-note { margin-top: 10px; text-align: center; font-size: 8px; color: #2E7D32; }
 </style>
 </head>
 <body>
+<div class="wrap">
 
-{{-- HEADER --}}
-<div class="pdf-header">
-    <div class="pdf-header-left">
-        <span class="logo-box">M</span>
-        <div class="logo-text">
-            <div class="name">Mac Del Norte</div>
-            <div class="slogan">No somos una opción, somos la elección correcta</div>
-        </div>
-    </div>
-    <div class="pdf-header-right">
-        <div class="folio-box">
-            Cotización Formal
-            <span class="folio-num">{{ $cotizacion->folio }}</span>
-        </div>
-        <div class="fecha">Fecha: {{ $cotizacion->created_at->format('d/m/Y') }}</div>
-    </div>
-</div>
-
-{{-- DATOS DEL CLIENTE --}}
-<div class="section">
-    <div class="section-title">Datos del cliente</div>
-    <table class="info-table">
-        <tr>
-            <td class="lbl">Nombre completo:</td>
-            <td class="val">{{ $user->name }}</td>
-            <td class="lbl">Correo:</td>
-            <td class="val">{{ $user->email }}</td>
-        </tr>
-        @if($perfil)
-        <tr>
-            <td class="lbl">Teléfono:</td>
-            <td class="val">{{ $telefono ?: '—' }}</td>
-            <td class="lbl">Tipo de persona:</td>
-            <td class="val">{{ $perfil->tipo_persona === 'empresa' ? 'Persona Moral (Empresa)' : 'Persona Física' }}</td>
-        </tr>
-        <tr>
-            <td class="lbl">RFC:</td>
-            <td class="val">{{ $perfil->rfc }}</td>
-            @if($perfil->tipo_persona === 'empresa')
-                <td class="lbl">Razón Social:</td>
-                <td class="val">{{ $perfil->razon_social ?? '—' }}</td>
-            @else
-                <td class="lbl"></td>
-                <td class="val"></td>
-            @endif
-        </tr>
-        <tr>
-            <td class="lbl">Dirección fiscal:</td>
-            <td class="val" colspan="3">{{ $perfil->direccion_fiscal }}</td>
-        </tr>
-        @else
-        <tr>
-            <td class="val" colspan="4">Cotización interna — sin datos fiscales</td>
-        </tr>
+{{-- ENCABEZADO --}}
+<table class="head-table">
+    <tr>
+        @php($logoDataUri = uploadedImageToBase64(asset('uploads/logo/webp-horizontal.webp')))
+        @if ($logoDataUri)
+        <td class="head-logo-cell"><img src="{{ $logoDataUri }}" alt="Mac Del Norte"></td>
         @endif
-    </table>
-</div>
+        <td class="head-company-cell">
+            <div class="company-name">MAC DEL NORTE - MONITOREO, AUTOMATIZACION Y CONTROLES DEL NORTE</div>
+            <table class="company-meta-table">
+                <tr>
+                    <td class="lbl">Domicilio fiscal</td>
+                    <td class="lbl">R.F.C.:</td>
+                    <td>NMA180313M46</td>
+                </tr>
+                <tr>
+                    <td colspan="3">
+                        Calle: CASTAÑO No. 718, Col. EBANOS NORTE, CP: 66612, APODACA, NUEVO LEON, MEXICO
+                        &nbsp;&nbsp;TEL: 8124738768 o 8124738744&nbsp;&nbsp;www.macdelnorte.com
+                    </td>
+                </tr>
+            </table>
+        </td>
+        <td class="head-folio-cell">
+            <div><span class="lbl">COTIZACIÓN No.:</span></div>
+            <div class="folio-val">{{ $cotizacion->folio }}</div>
+            <div class="block"><span class="lbl">Fecha</span><br>{{ $cotizacion->created_at->format('d/m/Y') }}</div>
+            <div class="block"><span class="lbl">Tiempo de entrega</span><br>{{ $cotizacion->created_at->format('d/m/Y') }}</div>
+            <div class="block"><span class="lbl">Condiciones de pago</span><br>CONTADO</div>
+        </td>
+    </tr>
+</table>
 
 <div class="divider"></div>
 
+{{-- DATOS DEL CLIENTE / VENDEDOR --}}
+<table class="client-table">
+    <tr>
+        <td class="lbl">Cliente:</td>
+        <td>{{ $user->id }} &nbsp; {{ mb_strtoupper($user->name) }}</td>
+    </tr>
+    <tr>
+        <td class="lbl">Calle:</td>
+        <td>
+            @if ($perfil)
+                {{ mb_strtoupper($perfil->direccion_fiscal) }} &nbsp; RFC: {{ mb_strtoupper($perfil->rfc) }}
+            @else
+                Cotización interna — sin datos fiscales
+            @endif
+        </td>
+    </tr>
+    <tr>
+        <td class="lbl">Vendedor:</td>
+        <td>{{ $cotizacion->createdByAdmin->name ?? 'Cotizador Web (autoservicio)' }}</td>
+    </tr>
+    <tr>
+        <td class="lbl">Enviar a:</td>
+        <td>&nbsp;</td>
+    </tr>
+</table>
+
 {{-- TABLA DE PRODUCTOS --}}
-<div class="section">
-    <div class="section-title">Productos cotizados</div>
-    <table class="prod-table">
-        <thead>
-            <tr>
-                <th style="width:28px;">#</th>
-                <th>Descripción / Nombre</th>
-                <th style="width:120px;">SKU / Modelo</th>
-                <th class="right" style="width:55px;">Cant.</th>
-                <th class="right" style="width:90px;">P. Unitario</th>
-                <th class="right" style="width:90px;">Subtotal</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach($cotizacion->productos_json as $i => $p)
-            <tr>
-                <td>{{ $i + 1 }}</td>
-                <td>
-                    <div class="item-name">{{ $p['nombre'] }}</div>
-                    @if(!empty($p['marca']))
-                        <div class="item-sku">Marca: {{ $p['marca'] }}</div>
-                    @endif
-                </td>
-                <td>
-                    @if(!empty($p['sku']))
-                        <div class="item-sku">SKU: {{ $p['sku'] }}</div>
-                    @endif
-                    @if(!empty($p['modelo']))
-                        <div class="item-sku">Mod: {{ $p['modelo'] }}</div>
-                    @endif
-                </td>
-                <td class="right">{{ $p['cantidad'] }}</td>
-                <td class="right">${{ number_format($p['precio'], 2, '.', ',') }}</td>
-                <td class="right">${{ number_format($p['subtotal'], 2, '.', ',') }}</td>
-            </tr>
-            @endforeach
-        </tbody>
-    </table>
-
-    {{-- TOTALES --}}
-    <table class="totals-table">
+<table class="prod-table">
+    <thead>
         <tr>
-            <td class="lbl">Subtotal (s/IVA):</td>
-            <td class="val">${{ number_format($subtotalSinIva, 2, '.', ',') }} MXN</td>
+            <th style="width:50px;">Cantidad</th>
+            <th style="width:80px;">Clave</th>
+            <th>Descripción</th>
+            <th class="right" style="width:70px;">P/U</th>
+            <th class="right" style="width:80px;">Importe</th>
         </tr>
+    </thead>
+    <tbody>
+        @foreach ($cotizacion->productos_json as $p)
         <tr>
-            <td class="lbl">IVA (16%):</td>
-            <td class="val">${{ number_format($iva, 2, '.', ',') }} MXN</td>
+            <td>{{ number_format($p['cantidad'], 2) }}</td>
+            <td>{{ $p['sku'] ?? '' }}</td>
+            <td>
+                {{ $p['nombre'] }}
+                @if (!empty($p['marca']) || !empty($p['modelo']))
+                    <div class="item-desc-sub">
+                        {{ mb_strtoupper(trim(($p['marca'] ?? '') . ' ' . ($p['modelo'] ?? ''))) }}
+                    </div>
+                @endif
+                @if (!empty($p['es_pendiente']))
+                    <div class="item-desc-sub cond-highlight">
+                        PENDIENTE DE SURTIR — TIEMPO DE ENTREGA: {{ $p['tiempo_entrega'] ?? 'Por confirmar' }}
+                    </div>
+                @endif
+            </td>
+            <td class="right">{{ number_format($p['precio'], 2, '.', ',') }}</td>
+            <td class="right">{{ number_format($p['subtotal'], 2, '.', ',') }}</td>
         </tr>
-        <tr class="total-row">
-            <td class="lbl">TOTAL:</td>
-            <td class="val">${{ number_format($cotizacion->total, 2, '.', ',') }} MXN</td>
-        </tr>
-    </table>
-    <div class="iva-note" style="text-align:right;margin-top:4px;">* Precios con IVA incluido.</div>
+        @endforeach
+    </tbody>
+</table>
+
+{{-- TOTALES --}}
+<table class="totals-table">
+    <tr><td class="lbl">Subtotal</td><td class="val">{{ number_format($subtotalSinIva, 2, '.', ',') }}</td></tr>
+    <tr><td class="lbl">I.V.A.</td><td class="val">{{ number_format($iva, 2, '.', ',') }}</td></tr>
+    <tr><td class="lbl">Total</td><td class="val">{{ number_format($cotizacion->total, 2, '.', ',') }}</td></tr>
+</table>
+
+<div class="note-line">TIEMPO DE ENTREGA INMEDIATA, ENVIO GRATIS</div>
+
+<div class="vigencia-line">
+    <span class="lbl">La cotización será vigente hasta el día</span>
+    <span class="val">{{ $cotizacion->created_at->copy()->addDays(15)->format('d/m/Y') }}</span>
 </div>
 
-{{-- VIGENCIA --}}
-<div class="vigencia">
-    <strong>Nota:</strong> Esta cotización tiene vigencia de <strong>15 días hábiles</strong>
-    a partir de la fecha de emisión ({{ $cotizacion->created_at->format('d/m/Y') }}).
-    Sujeta a disponibilidad de inventario.
+<div class="en-letras">{{ numeroALetras($cotizacion->total) }}</div>
+
+{{-- MARCAS --}}
+@php($brands = \App\Models\Brand::where('status', 1)->get())
+@if ($brands->isNotEmpty())
+<div class="brands-row">
+    @foreach ($brands as $brand)
+        @php($brandLogo = uploadedImageToBase64($brand->logo))
+        @if ($brandLogo)
+            <img src="{{ $brandLogo }}" alt="{{ $brand->name }}">
+        @endif
+    @endforeach
+</div>
+@endif
+
+{{-- CONDICIONES COMERCIALES --}}
+<div class="conditions-title">Condiciones Comerciales</div>
+<div class="conditions-list">
+    1. Esta Cotizacion tiene una vigencia de 20 Dias<br>
+    2. Lugar de entrega LAB SU PLANTA<br>
+    3. Cualquier Cambio que no este descrito en la cotizacion se tendra que Recotizar<br>
+    4. Tiempo de entrega inicia despues de haber recibido su orden de compra o su anticipo según corresponda la negociacion con su ejecutivo de ventas<br>
+    5. No se aceptan Cambios o Cancelaciones por parte del cliente despues de haber recibido su orden de Compra<br>
+    <span class="cond-highlight">6. SI su Cotizacion es en DOLARES y desea hacer el pago en Moneda Nacional se debera Pagar A precio venta ventanillas BANCOMER.</span>
 </div>
 
-{{-- FOOTER --}}
-<div class="pdf-footer">
-    <strong>Mac Del Norte</strong> &nbsp;·&nbsp; Distribuidor autorizado Honeywell &nbsp;·&nbsp;
-    contacto@macdelnorte.com &nbsp;·&nbsp; 81-3582-5559 &nbsp;·&nbsp;
-    Monterrey, N.L. · Envíos a todo México
-</div>
+<div class="env-note">Antes de imprimir, piense en su responsabilidad y compromiso con el MEDIO AMBIENTE</div>
 
+</div>
 </body>
 </html>
