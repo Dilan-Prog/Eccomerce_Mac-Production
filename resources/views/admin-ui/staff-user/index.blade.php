@@ -11,7 +11,7 @@
         ],
         'actions' => '<button type="button" class="au-btn au-btn-primary" data-au-open-modal="' . e(json_encode([
             'title' => 'Crear personal',
-            'subtitle' => 'Alta manual de administrador, vendedor, asociado o técnico',
+            'subtitle' => 'Alta manual de administrador, asociado o técnico',
             'icon' => 'fas fa-user-tie',
             'fragmentUrl' => route('admin.staff-users.create-fragment'),
             'submitUrl' => route('admin.staff-users.store'),

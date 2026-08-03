@@ -12,14 +12,13 @@ use Illuminate\Http\Request;
 
 class AdminController extends Controller
 {
-    public function __construct()
-    {
-        // Only gate the dashboard action. `login()` is served pre-authentication
-        // (routes/auth.php, under the 'guest' middleware group) where
-        // $request->user() is null — scoping to 'dashboard' keeps that route
-        // from crashing on a null-user canAccessModule() call.
-        $this->middleware('can-access-module:dashboard')->only('dashboard');
-    }
+    // Dashboard is intentionally NOT gated by can-access-module: it's the
+    // mandatory landing page every role='admin' account is redirected to
+    // immediately after login (see AuthenticatedSessionController::store()),
+    // with no fallback page if that were blocked. A custom role whose admin
+    // forgot to check "Escritorio" would otherwise 403 on the very first
+    // page they land on, with no way in. Every module BEYOND the dashboard
+    // is still correctly restricted by each module's own controller.
 
     public function dashboard()
     {

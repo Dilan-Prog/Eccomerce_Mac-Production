@@ -53,8 +53,8 @@
             <div class="au-field">
                 <label class="au-label">Rol<span class="au-required-mark">*</span></label>
                 <select class="au-select" name="role" required onchange="
-                    var wrap = this.form.querySelector('[data-role-id-wrap]');
-                    if (wrap) { wrap.style.display = this.value === 'admin' ? '' : 'none'; }
+                    var roleIdSelect = this.form.querySelector('[name=role_id]');
+                    if (roleIdSelect) { roleIdSelect.disabled = this.value !== 'admin'; }
                 ">
                     <option value="">Seleccionar</option>
                     <option value="admin" {{ isset($staffUser) && $staffUser->role === 'admin' ? 'selected' : '' }}>Administrador</option>
@@ -62,9 +62,9 @@
                     <option value="technician" {{ isset($staffUser) && $staffUser->role === 'technician' ? 'selected' : '' }}>Técnico</option>
                 </select>
             </div>
-            <div class="au-field" data-role-id-wrap style="{{ (isset($staffUser) ? $staffUser->role : null) === 'admin' ? '' : 'display:none' }}">
+            <div class="au-field" data-role-id-wrap>
                 <label class="au-label">Rol personalizado</label>
-                <select class="au-select" name="role_id">
+                <select class="au-select" name="role_id" {{ (isset($staffUser) ? $staffUser->role : null) === 'admin' ? '' : 'disabled' }}>
                     <option value="">Sin rol personalizado (acceso completo)</option>
                     @foreach ($customRoles as $customRole)
                         <option value="{{ $customRole->id }}" {{ isset($staffUser) && (int) $staffUser->role_id === $customRole->id ? 'selected' : '' }}>{{ $customRole->name }}</option>

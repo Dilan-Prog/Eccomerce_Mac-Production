@@ -167,7 +167,10 @@ class StaffUserController extends Controller
             'name' => ['required', 'max:200'],
             'last_name' => ['max:100'],
             'company' => ['max:200'],
-            'rfc' => ['max:14', 'unique:users,rfc'],
+            // `rfc` is a nullable, UNIQUE column — stored as null (not '')
+            // below when omitted, so a plain nullable+unique rule is correct:
+            // MySQL never treats two NULLs as colliding under a unique index.
+            'rfc' => ['nullable', 'max:14', 'unique:users,rfc'],
             'phone' => ['max:15'],
             'role' => ['required', Rule::in(self::STAFF_ROLES)],
             'role_id' => ['nullable', 'exists:roles,id'],
@@ -178,16 +181,15 @@ class StaffUserController extends Controller
 
         $user = new User();
         $user->fill([
-            // last_name/company/rfc/phone are NOT NULL columns but not
-            // `required` by validation (matching UserManageController's
-            // original rules) — real HTML forms always submit an empty
-            // string for a blank text input, so default to '' rather than
-            // null to avoid a DB integrity-constraint error when a field is
-            // omitted entirely (e.g. a programmatic API call).
+            // last_name/company/phone are nullable but harmless to default to
+            // '' (no uniqueness constraint on them). rfc is ALSO nullable but
+            // DOES have a unique index, so it must default to null, never ''
+            // — two blank-string rows collide under MySQL's unique index,
+            // while two NULLs never do.
             'name' => $validated['name'],
             'last_name' => $validated['last_name'] ?? '',
             'company' => $validated['company'] ?? '',
-            'rfc' => $validated['rfc'] ?? '',
+            'rfc' => $validated['rfc'] ?? null,
             'phone' => $validated['phone'] ?? '',
             'email' => $validated['email'],
             'password' => bcrypt($validated['password']),
@@ -224,7 +226,7 @@ class StaffUserController extends Controller
             'name' => ['required', 'max:200'],
             'last_name' => ['max:100'],
             'company' => ['max:200'],
-            'rfc' => ['max:14', Rule::unique('users', 'rfc')->ignore($staffUser->id)],
+            'rfc' => ['nullable', 'max:14', Rule::unique('users', 'rfc')->ignore($staffUser->id)],
             'phone' => ['max:15'],
             'role' => ['required', Rule::in(self::STAFF_ROLES)],
             'role_id' => ['nullable', 'exists:roles,id'],
@@ -237,7 +239,7 @@ class StaffUserController extends Controller
             'name' => $validated['name'],
             'last_name' => $validated['last_name'] ?? '',
             'company' => $validated['company'] ?? '',
-            'rfc' => $validated['rfc'] ?? '',
+            'rfc' => $validated['rfc'] ?? null,
             'phone' => $validated['phone'] ?? '',
             'email' => $validated['email'],
         ]);
