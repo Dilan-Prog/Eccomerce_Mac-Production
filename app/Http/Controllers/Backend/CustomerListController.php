@@ -10,14 +10,105 @@ use App\Support\AdminTable\Queries\CustomerTableQuery;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 use Maatwebsite\Excel\Excel as ExcelFormat;
 use Maatwebsite\Excel\Facades\Excel;
 
 class CustomerListController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('can-access-module:clientes');
+    }
+
     public function index()
     {
         return view('admin-ui.customer.index');
+    }
+
+    /** Bare form fragment for the admin-ui Crear modal (AU.FormModal) — no page layout. */
+    public function createFragment()
+    {
+        return view('admin-ui.customer._form');
+    }
+
+    /** Bare form fragment for the admin-ui Editar modal, pre-filled. */
+    public function editFragment(string $id)
+    {
+        $customer = User::where('role', 'user')->findOrFail($id);
+
+        return view('admin-ui.customer._form', compact('customer'));
+    }
+
+    /**
+     * Admin-side registration of a brand-new client. Low-ceremony: the account
+     * is created with a random password (no activation-email flow — out of
+     * scope here); the admin can reset access separately if the client ever
+     * needs to log in themselves.
+     */
+    public function store(Request $request)
+    {
+        $request->validate([
+            'name' => ['required', 'max:200'],
+            'email' => ['required', 'email', 'unique:users,email'],
+            'phone' => ['nullable', 'max:15'],
+            'company' => ['nullable', 'max:200'],
+            'rfc' => ['nullable', 'max:14'],
+            'account_type' => ['nullable', 'in:personal,b2b'],
+            'tipo_cliente' => ['nullable', 'in:revendedor,tecnico,empresa,contratista'],
+        ]);
+
+        $customer = new User();
+        $customer->name = $request->name;
+        $customer->last_name = ''; // not part of this simplified admin form; matches self-registration's default (RegisteredUserController)
+        $customer->email = $request->email;
+        $customer->phone = $request->phone;
+        $customer->company = $request->company;
+        $customer->rfc = $request->rfc;
+        $customer->account_type = $request->account_type ?: 'personal';
+        $customer->tipo_cliente = $request->tipo_cliente;
+        $customer->role = 'user';
+        $customer->status = 'active';
+        $customer->password = bcrypt(Str::random(16));
+        $customer->save();
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Cliente creado con éxito.',
+            'client' => [
+                'id' => $customer->id,
+                'name' => $customer->name,
+                'email' => $customer->email,
+            ],
+        ]);
+    }
+
+    /** Edits an existing customer's info. Does not touch role/password. */
+    public function update(Request $request, string $id)
+    {
+        $customer = User::where('role', 'user')->findOrFail($id);
+
+        $request->validate([
+            'name' => ['required', 'max:200'],
+            'email' => ['required', 'email', Rule::unique('users', 'email')->ignore($customer->id)],
+            'phone' => ['nullable', 'max:15'],
+            'company' => ['nullable', 'max:200'],
+            'rfc' => ['nullable', 'max:14'],
+            'account_type' => ['nullable', 'in:personal,b2b'],
+            'tipo_cliente' => ['nullable', 'in:revendedor,tecnico,empresa,contratista'],
+        ]);
+
+        $customer->name = $request->name;
+        $customer->email = $request->email;
+        $customer->phone = $request->phone;
+        $customer->company = $request->company;
+        $customer->rfc = $request->rfc;
+        $customer->account_type = $request->account_type ?: 'personal';
+        $customer->tipo_cliente = $request->tipo_cliente;
+        $customer->save();
+
+        return response()->json(['status' => 'success', 'message' => 'Cliente actualizado con éxito.']);
     }
 
     /** JSON data source for the custom admin table (replaces CustomerListDataTable). */

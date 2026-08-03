@@ -147,7 +147,7 @@ Route::middleware('auth.cart')->group(function () {
 
 
 
-Route::group(['middleware' => ['auth','verified'], 'prefix' => 'user', 'as' => 'user.'],function(){
+Route::group(['middleware' => ['auth','verified','role:user'], 'prefix' => 'user', 'as' => 'user.'],function(){
     Route::get('dashboard', [UserDashboardController::class, 'index'])->name('dashboard');
 
     Route::get('profile', [UserProfileController::class,'index'])->name('profile');//Perfil de Usuario

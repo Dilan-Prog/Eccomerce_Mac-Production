@@ -199,6 +199,31 @@ window.AU = window.AU || {};
           const config = this.bulkActionsConfig.find((a) => a.key === action);
           if (!config || !this.bulkEndpoint) return;
 
+          if (config.download) {
+            const form = document.createElement("form");
+            form.method = "POST";
+            form.action = this.bulkEndpoint;
+            form.target = "_blank";
+            form.style.display = "none";
+
+            const addField = (name, value) => {
+              const input = document.createElement("input");
+              input.type = "hidden";
+              input.name = name;
+              input.value = value;
+              form.appendChild(input);
+            };
+
+            addField("_token", AU.csrfToken());
+            addField("action", action);
+            Array.from(this.selected).forEach((id, i) => addField(`ids[${i}]`, id));
+
+            document.body.appendChild(form);
+            form.submit();
+            form.remove();
+            return;
+          }
+
           if (config.tone === "critical") {
             const { confirmed } = await AU.confirm({
               title: "¿Estás seguro?",

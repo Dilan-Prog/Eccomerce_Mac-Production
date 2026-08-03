@@ -12,6 +12,8 @@ class Cotizacion extends Model
         'folio',
         'user_id',
         'cotizacion_perfil_id',
+        'created_by_admin_id',
+        'source',
         'productos_json',
         'subtotal',
         'total',
@@ -34,5 +36,15 @@ class Cotizacion extends Model
     public function perfil()
     {
         return $this->belongsTo(CotizacionPerfil::class, 'cotizacion_perfil_id');
+    }
+
+    public function createdByAdmin()
+    {
+        return $this->belongsTo(User::class, 'created_by_admin_id');
+    }
+
+    public function items(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(CotizacionItem::class);
     }
 }

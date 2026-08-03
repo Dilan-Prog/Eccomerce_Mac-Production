@@ -4,6 +4,7 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
@@ -54,4 +55,26 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+
+    /**
+     * Only meaningful when role === 'admin'. Null = full/legacy admin with no
+     * module restriction; set = scoped to that Role's allowed module_keys
+     * (see ModuleAccessMiddleware).
+     */
+    public function customRole(): BelongsTo
+    {
+        return $this->belongsTo(Role::class, 'role_id');
+    }
+
+    public function canAccessModule(string $moduleKey): bool
+    {
+        if ($this->role !== 'admin' || !$this->role_id) {
+            return true; // legacy/full admin, or not an admin-panel account at all
+        }
+        $role = $this->customRole;
+        if (!$role || $role->is_system) {
+            return true;
+        }
+        return in_array($moduleKey, $role->allowedModuleKeys(), true);
+    }
 }

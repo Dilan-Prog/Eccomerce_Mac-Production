@@ -9,6 +9,7 @@
             ['label' => 'Escritorio', 'url' => route('admin.dashboard')],
             ['label' => 'Cotizaciones'],
         ],
+        'actions' => '<a href="' . route('admin.cotizaciones.create') . '" class="au-btn au-btn-primary">+ Nueva Cotización</a>',
     ])
 
     <div id="cotizaciones-table"></div>

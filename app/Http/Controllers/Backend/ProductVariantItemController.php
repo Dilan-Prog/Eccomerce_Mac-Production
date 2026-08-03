@@ -16,6 +16,11 @@ use Maatwebsite\Excel\Facades\Excel;
 
 class ProductVariantItemController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('can-access-module:products');
+    }
+
     public function index($productId, $variantId) {
 
         $product = Product::findOrFail($productId);

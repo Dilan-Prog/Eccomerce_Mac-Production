@@ -125,6 +125,7 @@
             <td class="lbl">Correo:</td>
             <td class="val">{{ $user->email }}</td>
         </tr>
+        @if($perfil)
         <tr>
             <td class="lbl">Teléfono:</td>
             <td class="val">{{ $telefono ?: '—' }}</td>
@@ -146,6 +147,11 @@
             <td class="lbl">Dirección fiscal:</td>
             <td class="val" colspan="3">{{ $perfil->direccion_fiscal }}</td>
         </tr>
+        @else
+        <tr>
+            <td class="val" colspan="4">Cotización interna — sin datos fiscales</td>
+        </tr>
+        @endif
     </table>
 </div>
 

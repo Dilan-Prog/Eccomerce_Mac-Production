@@ -14,6 +14,11 @@ use Illuminate\Http\Request;
 
 class CouponController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('can-access-module:ecommerce');
+    }
+
     /**
      * Display a listing of the resource.
      */

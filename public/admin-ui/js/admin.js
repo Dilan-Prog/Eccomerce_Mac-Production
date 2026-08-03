@@ -47,6 +47,33 @@
     }
   });
 
+  /*
+   * Generic non-destructive row action trigger, e.g. "apply watermark" or
+   * any other POST-style action that doesn't warrant a confirm() step
+   * (unlike .delete-item above). Reusable by any admin table screen.
+   */
+  document.addEventListener("click", async (e) => {
+    const trigger = e.target.closest(".au-action-item");
+    if (!trigger) return;
+    e.preventDefault();
+
+    const method = trigger.getAttribute("data-method") || "POST";
+    const href = trigger.getAttribute("href");
+    if (!href) return;
+
+    try {
+      const data = await AU.request(href, { method });
+      if (data.status === "success") {
+        AU.toast.success(data.message || "Listo");
+        setTimeout(() => window.location.reload(), 600);
+      } else {
+        AU.toast.error(data.message || "No se pudo completar la acción");
+      }
+    } catch (err) {
+      AU.toast.error((err.data && err.data.message) || "Ocurrió un error");
+    }
+  });
+
   document.addEventListener("click", async (e) => {
     const trigger = e.target.closest("[data-au-copy]");
     if (!trigger) return;

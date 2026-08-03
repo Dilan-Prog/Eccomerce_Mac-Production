@@ -129,6 +129,19 @@ class CustomerTableQuery extends AdminTableQuery
     {
         $actions = [];
 
+        $actions[] = [
+            'label' => 'Editar',
+            'modal' => [
+                'title' => 'Editar cliente',
+                'subtitle' => 'ID ' . $row->id,
+                'icon' => 'fas fa-user-edit',
+                'fragmentUrl' => route('admin.customer.edit-fragment', $row->id),
+                'submitUrl' => route('admin.customer.update', $row->id),
+                'method' => 'PUT',
+                'sidebar' => false,
+            ],
+        ];
+
         if ($row->csf_path) {
             $actions[] = [
                 'label' => 'Ver CSF',

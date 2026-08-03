@@ -8,6 +8,11 @@ use Illuminate\Http\Request;
 
 class SettingController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('can-access-module:settings');
+    }
+
     public function index(){
         $generalSettings = GeneralSetting::first();
         return view('admin.setting.index', compact('generalSettings'));

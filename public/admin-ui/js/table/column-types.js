@@ -11,6 +11,12 @@ AU.avatarColorFor = (seed) => {
 
 AU.columnTypes = {
   text(value) {
+    if (value && typeof value === "object" && "value" in value) {
+      return `<div style="display:flex;flex-direction:column;gap:1px">
+        <span>${AU.escapeHtml(value.value ?? "")}</span>
+        ${value.subtext ? `<span style="font-size:11px;color:var(--au-text-muted)">${AU.escapeHtml(value.subtext)}</span>` : ""}
+      </div>`;
+    }
     return `<span>${AU.escapeHtml(value ?? "")}</span>`;
   },
 
@@ -75,7 +81,7 @@ AU.columnTypes = {
       }
       const attrs = [
         `href="${AU.escapeHtml(a.url || "#")}"`,
-        `class="au-dropdown-item${a.tone === "critical" ? " is-critical" : ""}${a.tone === "critical" && a.method === "DELETE" ? " delete-item" : ""}"`,
+        `class="au-dropdown-item${a.tone === "critical" ? " is-critical" : ""}${a.tone === "critical" && a.method === "DELETE" ? " delete-item" : ""}${a.method && a.method.toUpperCase() !== "GET" && !(a.tone === "critical" && a.method === "DELETE") ? " au-action-item" : ""}"`,
         `data-row-id="${AU.escapeHtml(rowId)}"`,
       ];
       if (a.method && a.method.toUpperCase() !== "GET") attrs.push(`data-method="${AU.escapeHtml(a.method)}"`);
@@ -89,7 +95,7 @@ AU.columnTypes = {
       html += `<button type="button" class="au-btn au-btn-sm" data-au-open-modal="${AU.escapeHtml(JSON.stringify(primary.modal))}">${AU.escapeHtml(primary.label)}</button>`;
     } else if (primary) {
       const summaryAttr = primary.summary ? `data-au-summary="${AU.escapeHtml(JSON.stringify(primary.summary))}"` : "";
-      html += `<a href="${AU.escapeHtml(primary.url || "#")}" ${primary.target ? `target="${AU.escapeHtml(primary.target)}"` : ""} class="au-btn au-btn-sm ${primary.tone === "critical" ? "au-btn-critical delete-item" : ""}" data-row-id="${AU.escapeHtml(rowId)}" ${summaryAttr}>${AU.escapeHtml(primary.label)}</a>`;
+      html += `<a href="${AU.escapeHtml(primary.url || "#")}" ${primary.target ? `target="${AU.escapeHtml(primary.target)}"` : ""} class="au-btn au-btn-sm ${primary.tone === "critical" ? "au-btn-critical delete-item" : ""}${primary.method && primary.method.toUpperCase() !== "GET" && !(primary.tone === "critical" && primary.method === "DELETE") ? " au-action-item" : ""}" data-row-id="${AU.escapeHtml(rowId)}" ${summaryAttr}>${AU.escapeHtml(primary.label)}</a>`;
     }
     if (rest.length) {
       html += `

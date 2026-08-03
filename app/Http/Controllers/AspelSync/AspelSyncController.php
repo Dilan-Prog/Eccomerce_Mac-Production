@@ -15,6 +15,11 @@ use Maatwebsite\Excel\Facades\Excel;
 
 class AspelSyncController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('can-access-module:aspel');
+    }
+
     public function sync(Request $request)
     {
         $items = $request->input('items', []);

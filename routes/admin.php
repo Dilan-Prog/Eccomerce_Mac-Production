@@ -2,12 +2,13 @@
 /** Admin Panel Routes */
 
 use App\Http\Controllers\Backend\AdminController;
-use App\Http\Controllers\Backend\AdminListController;
 use App\Http\Controllers\Backend\BrandController;
 use App\Http\Controllers\Backend\CategoryController;
 use App\Http\Controllers\Backend\ProfileController;
+use App\Http\Controllers\Backend\RoleController;
 use App\Http\Controllers\Backend\ShippingRuleController;
 use App\Http\Controllers\Backend\SliderController;
+use App\Http\Controllers\Backend\StaffUserController;
 use App\Http\Controllers\Backend\SubcategoryController;
 use App\Http\Controllers\Backend\ChildCategoryController;
 use App\Http\Controllers\Backend\CouponController;
@@ -29,7 +30,6 @@ use App\Http\Controllers\Backend\StripeSettingController;
 use App\Http\Controllers\Backend\TrackConversionController;
 use App\Http\Controllers\Backend\TransactionController;
 use App\Http\Controllers\Backend\TransferController;
-use App\Http\Controllers\Backend\UserManageController;
 use App\Http\Controllers\Backend\AdminCotizacionController;
 use App\Http\Controllers\Backend\ProductVariantCombinationsController;
 use App\Models\Subcategory;
@@ -46,26 +46,42 @@ Route::post('profile/update/password',[ProfileController::class, 'updatePassword
 Route::get('customer', [CustomerListController::class, 'index'])->name('customer.index');
 Route::get('customer/table-data', [CustomerListController::class, 'tableData'])->name('customer.table-data');
 Route::get('customer/export', [CustomerListController::class, 'export'])->name('customer.export');
+Route::get('customer/create-fragment', [CustomerListController::class, 'createFragment'])->name('customer.create-fragment');
+Route::post('customer', [CustomerListController::class, 'store'])->name('customer.store');
 Route::put('customer/status-change', [CustomerListController::class, 'changeStatus'])->name('customer.status-change');
 Route::post('customer/{user}/csf', [CustomerListController::class, 'uploadCsf'])->name('customer.csf.upload');
 Route::get('customer/{user}/csf/view', [CustomerListController::class, 'viewCsf'])->name('customer.csf.view');
 Route::put('customer/{user}/b2b-status', [CustomerListController::class, 'b2bStatus'])->name('customer.b2b.status');
+Route::get('customer/{id}/edit-fragment', [CustomerListController::class, 'editFragment'])->name('customer.edit-fragment');
+Route::put('customer/{id}', [CustomerListController::class, 'update'])->name('customer.update');
 
-/**Admin List */
-Route::get('admin-list', [AdminListController::class, 'index'])->name('admin-list.index');
-Route::get('admin-list/table-data', [AdminListController::class, 'tableData'])->name('admin-list.table-data');
-Route::get('admin-list/export', [AdminListController::class, 'export'])->name('admin-list.export');
-Route::post('admin-list/bulk', [AdminListController::class, 'bulkAction'])->name('admin-list.bulk');
-Route::put('admin-list/status-change', [AdminListController::class, 'changeStatus'])->name('admin-list.status-change');
-Route::delete('admin-list/{id}', [AdminListController::class, 'destory'])->name('admin-list.destory');
-/**manege User */
-Route::get('manage-user', [UserManageController::class, 'index'])->name('manage-user');
-Route::post('manage-user', [userManageController::class, 'create'])->name('manage-user.create');
+/**
+ * Staff Users route — unified admin-ui replacement for manage-user +
+ * admin-list, covering admin/vendor/associate/technician. Not removing the
+ * two routes above yet; that deprecation/removal is a separate later step
+ * once this module is confirmed working.
+ */
+Route::put('staff-users/change-status', [StaffUserController::class, 'changeStatus'])->name('staff-users.change-status');
+Route::get('staff-users/table-data', [StaffUserController::class, 'tableData'])->name('staff-users.table-data');
+Route::get('staff-users/export', [StaffUserController::class, 'export'])->name('staff-users.export');
+Route::post('staff-users/bulk', [StaffUserController::class, 'bulkAction'])->name('staff-users.bulk');
+Route::get('staff-users/create-fragment', [StaffUserController::class, 'createFragment'])->name('staff-users.create-fragment');
+Route::get('staff-users/{id}/edit-fragment', [StaffUserController::class, 'editFragment'])->name('staff-users.edit-fragment');
+Route::resource('staff-users', StaffUserController::class);
 
 /** Cotizaciones */
 Route::get('cotizaciones',          [AdminCotizacionController::class, 'index'])->name('cotizaciones.index');
 Route::get('cotizaciones/table-data', [AdminCotizacionController::class, 'tableData'])->name('cotizaciones.table-data');
 Route::get('cotizaciones/export', [AdminCotizacionController::class, 'export'])->name('cotizaciones.export');
+Route::get('cotizaciones/clients-search', [AdminCotizacionController::class, 'clientsSearch'])->name('cotizaciones.clients-search');
+Route::get('cotizaciones/products-search', [AdminCotizacionController::class, 'productsSearch'])->name('cotizaciones.products-search');
+Route::get('cotizaciones/create', [AdminCotizacionController::class, 'create'])->name('cotizaciones.create');
+Route::post('cotizaciones', [AdminCotizacionController::class, 'store'])->name('cotizaciones.store');
+Route::get('cotizaciones/{cotizacion}/edit', [AdminCotizacionController::class, 'edit'])->name('cotizaciones.edit');
+Route::post('cotizaciones/{cotizacion}/items', [AdminCotizacionController::class, 'storeItem'])->name('cotizaciones.items.store');
+Route::put('cotizaciones/{cotizacion}/items/{item}', [AdminCotizacionController::class, 'updateItem'])->name('cotizaciones.items.update');
+Route::delete('cotizaciones/{cotizacion}/items/{item}', [AdminCotizacionController::class, 'destroyItem'])->name('cotizaciones.items.delete');
+Route::post('cotizaciones/{cotizacion}/finalize', [AdminCotizacionController::class, 'finalize'])->name('cotizaciones.finalize');
 Route::get('cotizaciones/{cotizacion}', [AdminCotizacionController::class, 'show'])->name('cotizaciones.show');
 
 /**Slider routes */
@@ -81,6 +97,9 @@ Route::get('media-library', [MediaLibraryController::class, 'index'])->name('med
 Route::get('media-library/data', [MediaLibraryController::class, 'data'])->name('media-library.data');
 Route::post('media-library/upload', [MediaLibraryController::class, 'store'])->name('media-library.store');
 Route::delete('media-library/{path}', [MediaLibraryController::class, 'destroy'])->name('media-library.destroy');
+Route::post('media-library/{path}/watermark', [MediaLibraryController::class, 'watermark'])->name('media-library.watermark');
+Route::get('media-library/{path}/download', [MediaLibraryController::class, 'download'])->name('media-library.download');
+Route::post('media-library/bulk', [MediaLibraryController::class, 'bulkAction'])->name('media-library.bulk');
 
 /**Duplicate Images routes */
 Route::post('duplicate-images/scan', [DuplicateImagesController::class, 'scan'])->name('duplicate-images.scan');
@@ -125,6 +144,14 @@ Route::post('brand/bulk', [BrandController::class, 'bulkAction'])->name('brand.b
 Route::get('brand/create-fragment', [BrandController::class, 'createFragment'])->name('brand.create-fragment');
 Route::get('brand/{id}/edit-fragment', [BrandController::class, 'editFragment'])->name('brand.edit-fragment');
 Route::resource('brand',BrandController::class);
+
+/**Roles route */
+Route::get('roles/table-data', [RoleController::class, 'tableData'])->name('roles.table-data');
+Route::get('roles/export', [RoleController::class, 'export'])->name('roles.export');
+Route::post('roles/bulk', [RoleController::class, 'bulkAction'])->name('roles.bulk');
+Route::get('roles/create-fragment', [RoleController::class, 'createFragment'])->name('roles.create-fragment');
+Route::get('roles/{id}/edit-fragment', [RoleController::class, 'editFragment'])->name('roles.edit-fragment');
+Route::resource('roles', RoleController::class);
 
 /**Products route */
 Route::put('product/change-status', [ProductController::class, 'changeStatus'])->name('product.change-status');

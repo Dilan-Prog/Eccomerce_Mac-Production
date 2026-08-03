@@ -125,7 +125,7 @@
         </div>
 
         @php
-            $usersActive = setActive(['admin.manage-user.*', 'admin.admin-list.index', 'admin.customer.index']);
+            $usersActive = setActive(['admin.customer.index', 'admin.roles.*', 'admin.staff-users.*']);
         @endphp
         <div class="au-nav-item has-submenu {{ $usersActive ? 'is-active is-open' : '' }}" data-nav-key="users">
             <a href="#" class="au-nav-link">
@@ -134,8 +134,8 @@
             </a>
             <div class="au-nav-submenu">
                 <a href="{{ route('admin.customer.index') }}" class="au-nav-link">Usuarios/Clientes</a>
-                <a href="{{ route('admin.manage-user') }}" class="au-nav-link">Control De Usuarios</a>
-                <a href="{{ route('admin.admin-list.index') }}" class="au-nav-link">Administradores</a>
+                <a href="{{ route('admin.staff-users.index') }}" class="au-nav-link">Personal / Staff</a>
+                <a href="{{ route('admin.roles.index') }}" class="au-nav-link">Roles y Permisos</a>
             </div>
         </div>
 

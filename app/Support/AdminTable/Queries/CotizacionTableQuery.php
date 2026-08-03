@@ -55,6 +55,25 @@ class CotizacionTableQuery extends AdminTableQuery
                 'render' => fn (Model $row) => $row->perfil->rfc ?? '—',
             ],
             [
+                'key' => 'source',
+                'label' => 'Origen',
+                'type' => 'badge',
+                'render' => fn (Model $row) => $row->source === 'cliente'
+                    ? ['label' => 'Cliente', 'tone' => 'info']
+                    : ['label' => 'Admin', 'tone' => 'warning'],
+            ],
+            [
+                'key' => 'status',
+                'label' => 'Estado',
+                'type' => 'badge',
+                'render' => fn (Model $row) => match ($row->status) {
+                    'generada' => ['label' => 'Generada', 'tone' => 'info'],
+                    'borrador' => ['label' => 'Borrador', 'tone' => 'warning'],
+                    'finalizada' => ['label' => 'Finalizada', 'tone' => 'success'],
+                    default => ['label' => ucfirst($row->status), 'tone' => 'info'],
+                },
+            ],
+            [
                 'key' => 'created_at',
                 'label' => 'Fecha',
                 'type' => 'date',
@@ -71,6 +90,28 @@ class CotizacionTableQuery extends AdminTableQuery
                 'key' => 'actions',
                 'label' => 'Acciones',
                 'type' => 'actions',
+            ],
+        ];
+    }
+
+    /**
+     * "Todas" is kept as the default tab (no filtering) to preserve the
+     * listing's previous behavior — it had no tabs at all before, i.e.
+     * everything was shown. "Mis borradores" is the one new tab: admin-
+     * authored drafts still awaiting finalize.
+     */
+    public function filters(): array
+    {
+        return [
+            [
+                'key' => 'todas',
+                'label' => 'Todas',
+                'apply' => fn (Builder $q) => $q,
+            ],
+            [
+                'key' => 'mis-borradores',
+                'label' => 'Mis borradores',
+                'apply' => fn (Builder $q) => $q->where('source', 'admin')->where('status', 'borrador'),
             ],
         ];
     }
@@ -96,6 +137,16 @@ class CotizacionTableQuery extends AdminTableQuery
                 'url' => route('admin.cotizaciones.show', $row->id),
             ],
         ];
+
+        // Only an admin-authored draft can still be edited here — a
+        // customer-originated row (source = 'cliente') or an already-
+        // finalized quote must never get this action.
+        if ($row->source === 'admin' && $row->status === 'borrador') {
+            $actions[] = [
+                'label' => 'Continuar edición',
+                'url' => route('admin.cotizaciones.edit', $row->id),
+            ];
+        }
 
         if ($row->pdf_path) {
             $actions[] = [

@@ -12,6 +12,15 @@ use Illuminate\Http\Request;
 
 class AdminController extends Controller
 {
+    public function __construct()
+    {
+        // Only gate the dashboard action. `login()` is served pre-authentication
+        // (routes/auth.php, under the 'guest' middleware group) where
+        // $request->user() is null — scoping to 'dashboard' keeps that route
+        // from crashing on a null-user canAccessModule() call.
+        $this->middleware('can-access-module:dashboard')->only('dashboard');
+    }
+
     public function dashboard()
     {
         $todaysOrder = Order::whereDate('created_at', Carbon::today())->count();

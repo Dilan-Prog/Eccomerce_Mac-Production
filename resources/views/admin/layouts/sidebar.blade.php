@@ -135,19 +135,13 @@
             </li>
 
             <li
-                class="dropdown {{ setActive(['admin.manage-user.*', 'admin.admin-list.index', 'admin.customer.index']) }}">
+                class="dropdown {{ setActive(['admin.customer.index']) }}">
                 <a href="#" class="nav-link has-dropdown" data-toggle="dropdown"><i
                         class="fas fa-users"></i><span>Usuarios</span></a>
                 <ul class="dropdown-menu">
                     <li class="{{ setActive(['admin.customer.index']) }}"><a class="nav-link"
                             href="{{ route('admin.customer.index') }}"> <i
                                 class="fas fa-user"></i>Usuarios/Clientes</a></li>
-                    <li class="{{ setActive(['admin.manage-user.*']) }}"><a class="nav-link"
-                            href="{{ route('admin.manage-user') }}"> <i class="fas fa-users"></i>Control De
-                            Usuarios</a></li>
-                    <li class="{{ setActive(['admin.admin-list.index']) }}"><a class="nav-link"
-                            href="{{ route('admin.admin-list.index') }}"> <i
-                                class="fas fa-user-shield"></i>Administradores</a></li>
                 </ul>
             </li>
 

@@ -17,6 +17,11 @@ use Illuminate\Support\Facades\Cache;
 
 class FlashSaleController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('can-access-module:ecommerce');
+    }
+
     public function index(){
         $flashSaleDate = FlashSale::first();
         $products = Product::where('status', 1)->orderBy('id', 'DESC')->get();

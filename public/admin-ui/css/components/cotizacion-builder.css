@@ -1,0 +1,198 @@
+/* ERP-style admin quote builder (admin-ui.cotizaciones.create/edit).
+ * Reuses .au-card / .au-table / .au-badge / .au-btn / au-picker-item-family
+ * visual language; only the genuinely new text-only list rows (client
+ * results, product results, variant combinations) get their own rules here. */
+
+.admin-ui-v2 .au-quote-builder {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: var(--au-space-5);
+  align-items: start;
+}
+
+@media (max-width: 900px) {
+  .admin-ui-v2 .au-quote-builder {
+    grid-template-columns: 1fr;
+  }
+}
+
+.admin-ui-v2 .au-quote-builder-main {
+  display: flex;
+  flex-direction: column;
+  gap: var(--au-space-5);
+}
+
+.admin-ui-v2 .au-quote-builder-side {
+  position: sticky;
+  top: var(--au-space-5);
+}
+
+/* Client picked / picker */
+.admin-ui-v2 .au-quote-client-selected {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--au-space-3);
+}
+
+.admin-ui-v2 .au-quote-client-name {
+  font-weight: 700;
+  font-size: var(--au-fs-lg);
+  color: var(--au-text);
+}
+
+.admin-ui-v2 .au-quote-client-email {
+  font-size: var(--au-fs-sm);
+  color: var(--au-text-subdued);
+  margin-top: 2px;
+}
+
+.admin-ui-v2 .au-quote-client-results,
+.admin-ui-v2 .au-quote-product-results {
+  display: flex;
+  flex-direction: column;
+  gap: var(--au-space-2);
+  max-height: 320px;
+  overflow-y: auto;
+  margin-bottom: var(--au-space-3);
+}
+
+.admin-ui-v2 .au-quote-client-result {
+  display: flex;
+  align-items: center;
+  gap: var(--au-space-3);
+  width: 100%;
+  padding: 9px 12px;
+  border: 1px solid var(--au-border-table);
+  border-radius: var(--au-radius-md);
+  background: var(--au-surface);
+  cursor: pointer;
+  text-align: left;
+  font: inherit;
+  color: inherit;
+  transition: border-color 0.12s ease, background-color 0.12s ease;
+}
+
+.admin-ui-v2 .au-quote-client-result:hover {
+  border-color: var(--au-blue-500);
+  background: var(--au-blue-050);
+}
+
+.admin-ui-v2 .au-quote-client-result-name {
+  font-weight: 600;
+  font-size: var(--au-fs-sm);
+  flex: 1;
+  min-width: 0;
+}
+
+.admin-ui-v2 .au-quote-client-result-email {
+  font-size: 11.5px;
+  color: var(--au-text-muted);
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Product search results */
+.admin-ui-v2 .au-quote-product-row {
+  display: flex;
+  align-items: center;
+  gap: var(--au-space-3);
+  padding: 10px 12px;
+  border: 1px solid var(--au-border-table);
+  border-radius: var(--au-radius-md);
+  background: var(--au-surface);
+}
+
+.admin-ui-v2 .au-quote-product-row-variant {
+  border-bottom: none;
+  border-radius: var(--au-radius-md) var(--au-radius-md) 0 0;
+  background: var(--au-surface-header);
+}
+
+.admin-ui-v2 .au-quote-product-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.admin-ui-v2 .au-quote-product-name {
+  font-weight: 600;
+  font-size: var(--au-fs-sm);
+  color: var(--au-text);
+}
+
+.admin-ui-v2 .au-quote-product-meta {
+  font-size: 11.5px;
+  color: var(--au-text-muted);
+  margin-top: 2px;
+}
+
+.admin-ui-v2 .au-quote-product-price {
+  font-size: var(--au-fs-sm);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.admin-ui-v2 .au-quote-product-add {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: none;
+}
+
+.admin-ui-v2 .au-quote-combo-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  margin: 0 0 var(--au-space-2);
+  border: 1px solid var(--au-border-table);
+  border-top: none;
+  border-radius: 0 0 var(--au-radius-md) var(--au-radius-md);
+  overflow: hidden;
+}
+
+.admin-ui-v2 .au-quote-combo-row {
+  display: flex;
+  align-items: center;
+  gap: var(--au-space-3);
+  padding: 8px 12px 8px 22px;
+  background: var(--au-surface);
+  border-top: 1px solid var(--au-border-row);
+}
+
+.admin-ui-v2 .au-quote-combo-info {
+  flex: 1;
+  min-width: 0;
+  font-size: 12.5px;
+}
+
+/* Line items table extras */
+.admin-ui-v2 .au-quote-item-sub {
+  font-size: 11.5px;
+  color: var(--au-text-muted);
+  margin-top: 2px;
+}
+
+.admin-ui-v2 .au-quote-qty-input {
+  width: 74px;
+  height: 32px;
+  padding: 0 8px;
+  text-align: center;
+}
+
+/* Summary sidebar */
+.admin-ui-v2 .au-quote-summary-count {
+  font-size: var(--au-fs-sm);
+  color: var(--au-text-subdued);
+}
+
+.admin-ui-v2 .au-quote-summary-total {
+  font-family: var(--au-font-heading);
+  font-size: 30px;
+  font-weight: 700;
+  letter-spacing: -0.6px;
+  color: var(--au-text);
+  margin-top: 4px;
+}

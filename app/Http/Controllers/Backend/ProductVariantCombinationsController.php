@@ -19,6 +19,10 @@ use Illuminate\Support\Facades\Log;
 
 class ProductVariantCombinationsController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('can-access-module:products');
+    }
 
 public function index(Request $request)
     {

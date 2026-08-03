@@ -3,11 +3,17 @@
 namespace App\Http\Controllers\Backend;
 
 use App\Http\Controllers\Controller;
+use App\Models\Product;
+use App\Models\ProductImageGallery;
 use App\Services\DuplicateImages\FilesystemUploadsScanner;
 use App\Support\UploadPath;
 use App\Traits\ImageUploadTrait;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\File;
+use Intervention\Image\Drivers\Gd\Driver;
+use Intervention\Image\ImageManager;
+use ZipStream\ZipStream;
 
 /**
  * Browses/manages every image already living under public/uploads/** (about,
@@ -19,6 +25,11 @@ use Illuminate\Support\Facades\File;
 class MediaLibraryController extends Controller
 {
     use ImageUploadTrait;
+
+    public function __construct()
+    {
+        $this->middleware('can-access-module:site');
+    }
 
     private const IMAGE_EXTENSIONS = ['webp', 'png', 'jpg', 'jpeg', 'gif'];
     private const FOLDERS = ['about', 'logo', 'slider', 'product'];
@@ -60,28 +71,50 @@ class MediaLibraryController extends Controller
         $total = $rows->count();
         $paged = $rows->slice(($page - 1) * $perPage, $perPage)->values();
 
+        // SKU lookups, done once per page (not per row) to avoid N+1 queries:
+        // a file can be linked to a product either via a ProductImageGallery
+        // row (by relative path) or as a Product's own thumb_image (by full
+        // asset URL, since that column stores a full URL, not a bare path).
+        $relativePaths = $paged->pluck('path');
+        $fullUrls = $paged->map(fn ($f) => asset($f['path']));
+
+        $galleryProductIdByPath = ProductImageGallery::whereIn('image', $relativePaths)->pluck('product_id', 'image');
+        $thumbProductIdByUrl = Product::whereIn('thumb_image', $fullUrls)->pluck('id', 'thumb_image');
+
+        $productIds = $galleryProductIdByPath->values()->merge($thumbProductIdByUrl->values())->unique();
+        $skuById = Product::whereIn('id', $productIds)->pluck('sku', 'id');
+
         return response()->json([
-            'rows' => $paged->map(fn ($f) => [
-                'row_id' => $this->encodePath($f['path']),
-                'cells' => [
-                    'thumbnail' => ['url' => asset($f['path'])],
-                    'name' => $f['name'],
-                    'folder' => ['label' => ucfirst($f['folder']), 'tone' => 'info'],
-                    'size' => $this->formatBytes($f['size']),
-                    'modified' => date('c', $f['modified']),
-                    'actions' => [
-                        ['label' => 'Ver', 'url' => asset($f['path']), 'target' => '_blank'],
-                        ['label' => 'Copiar URL', 'copy' => true, 'value' => asset($f['path'])],
-                        [
-                            'label' => 'Borrar',
-                            'url' => route('admin.media-library.destroy', ['path' => $this->encodePath($f['path'])]),
-                            'method' => 'DELETE',
-                            'tone' => 'critical',
-                            'confirm' => true,
+            'rows' => $paged->map(function ($f) use ($galleryProductIdByPath, $thumbProductIdByUrl, $skuById) {
+                $rowId = $this->encodePath($f['path']);
+
+                $productId = $galleryProductIdByPath[$f['path']] ?? $thumbProductIdByUrl[asset($f['path'])] ?? null;
+                $sku = $productId ? ($skuById[$productId] ?? null) : null;
+
+                return [
+                    'row_id' => $rowId,
+                    'cells' => [
+                        'thumbnail' => ['url' => asset($f['path'])],
+                        'name' => $f['name'],
+                        'folder' => ['label' => ucfirst($f['folder']), 'tone' => 'info'],
+                        'size' => $sku ? ['value' => $this->formatBytes($f['size']), 'subtext' => "SKU: {$sku}"] : $this->formatBytes($f['size']),
+                        'modified' => date('c', $f['modified']),
+                        'actions' => [
+                            ['label' => 'Ver', 'url' => asset($f['path']), 'target' => '_blank'],
+                            ['label' => 'Copiar URL', 'copy' => true, 'value' => asset($f['path'])],
+                            ['label' => 'Marca de agua', 'url' => route('admin.media-library.watermark', ['path' => $rowId]), 'method' => 'POST'],
+                            ['label' => 'Descargar', 'url' => route('admin.media-library.download', ['path' => $rowId])],
+                            [
+                                'label' => 'Borrar',
+                                'url' => route('admin.media-library.destroy', ['path' => $rowId]),
+                                'method' => 'DELETE',
+                                'tone' => 'critical',
+                                'confirm' => true,
+                            ],
                         ],
                     ],
-                ],
-            ])->all(),
+                ];
+            })->all(),
             'total' => $total,
             'page' => $page,
             'per_page' => $perPage,
@@ -129,6 +162,104 @@ class MediaLibraryController extends Controller
         File::delete($full);
 
         return response()->json(['status' => 'success', 'message' => 'Imagen eliminada.']);
+    }
+
+    /** Applies the configured watermark to a single file, in place, after confirming the resolved path stays inside uploads/. */
+    public function watermark(string $path)
+    {
+        $relative = $this->decodePath($path);
+        $full = realpath(UploadPath::full($relative));
+        $uploadsRoot = realpath(UploadPath::full('uploads'));
+
+        if (!$full || !$uploadsRoot || !str_starts_with($full, $uploadsRoot)) {
+            return response()->json(['status' => 'error', 'message' => 'Ruta inválida.'], 422);
+        }
+
+        if (!$this->watermarkFile($full)) {
+            return response()->json(['status' => 'error', 'message' => 'No se pudo aplicar la marca de agua.'], 422);
+        }
+
+        return response()->json(['status' => 'success', 'message' => 'Marca de agua aplicada.']);
+    }
+
+    /** Downloads a single file, after confirming the resolved path stays inside uploads/ (path-traversal guard). */
+    public function download(string $path)
+    {
+        $relative = $this->decodePath($path);
+        $full = realpath(UploadPath::full($relative));
+        $uploadsRoot = realpath(UploadPath::full('uploads'));
+
+        if (!$full || !$uploadsRoot || !str_starts_with($full, $uploadsRoot)) {
+            return response()->json(['status' => 'error', 'message' => 'Ruta inválida.'], 422);
+        }
+
+        return response()->download($full, basename($full));
+    }
+
+    /** Bulk actions from the table's multi-select bar: watermark or zip-download several files at once. */
+    public function bulkAction(Request $request)
+    {
+        $ids = array_filter((array) $request->input('ids', []));
+        if (empty($ids)) {
+            return response()->json(['status' => 'error', 'message' => 'No se seleccionó ningún elemento.']);
+        }
+
+        $uploadsRoot = realpath(UploadPath::full('uploads'));
+        $validFullPaths = collect($ids)
+            ->map(fn ($id) => $this->decodePath($id))
+            ->map(fn ($rel) => realpath(UploadPath::full($rel)))
+            ->filter(fn ($full) => $full && $uploadsRoot && str_starts_with($full, $uploadsRoot))
+            ->values();
+
+        $action = $request->input('action');
+
+        if ($action === 'watermark') {
+            $count = 0;
+            foreach ($validFullPaths as $full) {
+                if ($this->watermarkFile($full)) {
+                    $count++;
+                }
+            }
+
+            return response()->json(['status' => 'success', 'message' => "{$count} imagen(es) marcada(s) con marca de agua."]);
+        }
+
+        if ($action === 'download') {
+            return $this->streamZip($validFullPaths, $uploadsRoot);
+        }
+
+        return response()->json(['status' => 'error', 'message' => 'Acción no soportada.']);
+    }
+
+    /** Reads, watermarks (in place), and re-saves one file — encoding format is inferred from the path's extension. */
+    private function watermarkFile(string $physicalPath): bool
+    {
+        try {
+            $manager = new ImageManager(new Driver());
+            $img = $this->applyWatermark($manager->read($physicalPath));
+            $img->save($physicalPath);
+
+            return true;
+        } catch (\Throwable $e) {
+            return false;
+        }
+    }
+
+    /** Streams a zip archive containing every given file, named relative to $uploadsRoot so entries stay organized. */
+    private function streamZip(Collection $fullPaths, string $uploadsRoot)
+    {
+        $filename = 'galeria-' . now()->format('Ymd-His') . '.zip';
+
+        return response()->stream(function () use ($fullPaths, $uploadsRoot, $filename) {
+            $zip = new ZipStream(outputName: $filename);
+
+            foreach ($fullPaths as $full) {
+                $entryName = ltrim(str_replace('\\', '/', substr($full, strlen($uploadsRoot))), '/');
+                $zip->addFileFromPath(fileName: $entryName, path: $full);
+            }
+
+            $zip->finish();
+        }, 200);
     }
 
     /** Recursively lists every image file under uploads/, with its top-level folder (about/logo/slider/product). */

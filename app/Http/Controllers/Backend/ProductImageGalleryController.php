@@ -22,6 +22,12 @@ use Maatwebsite\Excel\Facades\Excel;
 class ProductImageGalleryController extends Controller
 {
     use ImageUploadTrait;
+
+    public function __construct()
+    {
+        $this->middleware('can-access-module:products');
+    }
+
     /**
      * Display a listing of the resource.
      */

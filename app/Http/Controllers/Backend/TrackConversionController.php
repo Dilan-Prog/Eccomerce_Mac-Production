@@ -15,6 +15,11 @@ use Illuminate\Support\Facades\Log;
 
 class TrackConversionController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('can-access-module:ads');
+    }
+
     //
     public function index()
     {

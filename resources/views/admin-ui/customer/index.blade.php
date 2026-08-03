@@ -9,6 +9,15 @@
             ['label' => 'Escritorio', 'url' => route('admin.dashboard')],
             ['label' => 'Usuarios/Clientes'],
         ],
+        'actions' => '<button type="button" class="au-btn au-btn-primary" data-au-open-modal="' . e(json_encode([
+            'title' => 'Crear cliente',
+            'subtitle' => 'Alta manual de cliente',
+            'icon' => 'fas fa-user-plus',
+            'fragmentUrl' => route('admin.customer.create-fragment'),
+            'submitUrl' => route('admin.customer.store'),
+            'method' => 'POST',
+            'sidebar' => false,
+        ])) . '">+ Crear Nuevo</button>',
     ])
 
     <div id="customer-table"></div>

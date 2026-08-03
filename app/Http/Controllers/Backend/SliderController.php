@@ -20,6 +20,11 @@ use PhpParser\Node\Stmt\Return_;
 class SliderController extends Controller
 {
     use ImageUploadTrait;
+
+    public function __construct()
+    {
+        $this->middleware('can-access-module:site');
+    }
     /**
      * Display a listing of the resource.
      */

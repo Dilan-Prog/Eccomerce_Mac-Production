@@ -15,6 +15,11 @@ use Illuminate\Http\Request;
 
 class ShippingRuleController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('can-access-module:ecommerce');
+    }
+
     /**
      * Display a listing of the resource.
      */

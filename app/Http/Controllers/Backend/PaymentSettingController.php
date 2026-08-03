@@ -10,6 +10,11 @@ use Illuminate\Http\Request;
 
 class PaymentSettingController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('can-access-module:ecommerce');
+    }
+
     public function index(){
         $paypalSetting = PaypalSetting::first();
         $stripeSetting = StripeSetting::first();

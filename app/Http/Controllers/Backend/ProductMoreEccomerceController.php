@@ -15,6 +15,11 @@ use Maatwebsite\Excel\Facades\Excel;
 
 class ProductMoreEccomerceController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('can-access-module:products');
+    }
+
     /**
      * Display a listing of the resource.
      */

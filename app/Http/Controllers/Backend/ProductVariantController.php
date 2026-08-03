@@ -16,6 +16,11 @@ use Illuminate\Http\Request;
 
 class ProductVariantController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('can-access-module:products');
+    }
+
     /**
      * Display a listing of the resource.
      */

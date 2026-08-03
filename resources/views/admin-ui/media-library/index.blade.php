@@ -69,7 +69,12 @@
         const mediaTable = new AU.AdminTable({
             el: '#media-library-table',
             endpoint: '{{ route('admin.media-library.data') }}',
-            rowSelectable: false,
+            bulkEndpoint: '{{ route('admin.media-library.bulk') }}',
+            bulkActions: [
+                { key: 'watermark', label: 'Aplicar marca de agua' },
+                { key: 'download', label: 'Descargar (ZIP)', download: true },
+            ],
+            rowSelectable: true,
         });
 
         const uploadModal = document.getElementById('au-upload-modal');
