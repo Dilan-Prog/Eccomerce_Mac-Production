@@ -17,6 +17,11 @@ class Kernel extends ConsoleKernel
         ->withoutOverlapping()
         ->runInBackground();
 
+        $schedule->command('app:sync-aspel-prices --batch=1000')
+        ->hourly()
+        ->withoutOverlapping()
+        ->runInBackground();
+
     }
 
     protected function commands(): void

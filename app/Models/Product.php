@@ -10,6 +10,10 @@ class Product extends Model
    use HasFactory;
    protected $fillable = [
     'thumb_image',
+    'thumb_image_laptop',
+    'thumb_image_tablet',
+    'thumb_image_phone',
+    'thumb_image_carrusel',
     'name',
     'slug',
     'category_id',
@@ -28,8 +32,10 @@ class Product extends Model
     'price',
     'offert_price',
     'aspel_price',
+    'aspel_price_tier',
     'price_personalizated',
     'aspel_offert_price',
+    'aspel_offert_price_tier',
     'price_offert_personalizated',
     'offer_start_date',
     'offer_end_date',

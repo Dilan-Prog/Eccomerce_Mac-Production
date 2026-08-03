@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\File;
 // use File;
 use Intervention\Image\Drivers\Gd\Encoders\WebpEncoder;
 use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
 trait ImageUploadTrait{
 
     /**
@@ -159,33 +160,38 @@ trait ImageUploadTrait{
 
         if ($request->hasFile($inputName)) {
             $image = $request->{$inputName};
-            $manager = new ImageManager(new Driver());
 
             $originalName = pathinfo($image->getClientOriginalName(), PATHINFO_FILENAME);
             $cleanedName = Str::slug($originalName, '-');
-
-
             $imageName = $cleanedName  . '-media_' . uniqid() . '.webp';
 
-            // Procesar la imagen con ImageManager
-            $img = $manager->read($image->getRealPath());
-            if ($width && $height) {
-                $img->resize($width, $height);
-            }
-
-            if ($watermark) {
-                $img = $this->applyWatermark($img);
-            }
-
-            $img->encode(new WebpEncoder(quality:75));
-
             $uploadPath = UploadPath::full($path . '/');
-            if (!file_exists($uploadPath)) {
-                mkdir($uploadPath, 0755, true);
+
+            try {
+                $manager = new ImageManager(new Driver());
+
+                // Procesar la imagen con ImageManager
+                $img = $manager->read($image->getRealPath());
+                if ($width && $height) {
+                    $img->resize($width, $height);
+                }
+
+                if ($watermark) {
+                    $img = $this->applyWatermark($img);
+                }
+
+                $img->encode(new WebpEncoder(quality:75));
+
+                if (!file_exists($uploadPath)) {
+                    mkdir($uploadPath, 0755, true);
+                }
+
+                $img->save($uploadPath . $imageName);
+            } catch (\Throwable $e) {
+                throw ValidationException::withMessages([
+                    $inputName => 'No se pudo procesar la imagen. Verifica que el archivo no esté dañado e inténtalo de nuevo.',
+                ]);
             }
-
-            $img->save($uploadPath . $imageName);
-
 
             $imagePath = asset($path . '/' . $imageName);
             return $imagePath;
@@ -198,40 +204,50 @@ trait ImageUploadTrait{
 {
     if ($request->hasFile($inputName)) {
 
-        // Eliminar imagen anterior si existe
-        if ($oldaPath) {
-            $this->deleteImage($oldaPath);
-        }
-
         // Procesar imagen nueva
         $image = $request->{$inputName};
-        $manager = new ImageManager(new Driver());
 
         // Limpiar nombre y crear nombre único
         $originalName = pathinfo($image->getClientOriginalName(), PATHINFO_FILENAME);
         $cleanedName = Str::slug($originalName, '-');
         $imageName = $cleanedName . '-media_' . uniqid() . '.webp';
 
-        // Leer, redimensionar y codificar la imagen
-        $img = $manager->read($image->getRealPath());
-        if ($width && $height) {
-            $img->resize($width, $height);
-        }
-
-        if ($watermark) {
-            $img = $this->applyWatermark($img);
-        }
-
-        $img->encode(new WebpEncoder(quality: 75));
-
-        // Crear carpeta si no existe
         $uploadPath = UploadPath::full($path . '/');
-        if (!file_exists($uploadPath)) {
-            mkdir($uploadPath, 0755, true);
+
+        try {
+            $manager = new ImageManager(new Driver());
+
+            // Leer, redimensionar y codificar la imagen
+            $img = $manager->read($image->getRealPath());
+            if ($width && $height) {
+                $img->resize($width, $height);
+            }
+
+            if ($watermark) {
+                $img = $this->applyWatermark($img);
+            }
+
+            $img->encode(new WebpEncoder(quality: 75));
+
+            // Crear carpeta si no existe
+            if (!file_exists($uploadPath)) {
+                mkdir($uploadPath, 0755, true);
+            }
+
+            // Guardar imagen procesada
+            $img->save($uploadPath . $imageName);
+        } catch (\Throwable $e) {
+            throw ValidationException::withMessages([
+                $inputName => 'No se pudo procesar la imagen. Verifica que el archivo no esté dañado e inténtalo de nuevo.',
+            ]);
         }
 
-        // Guardar imagen procesada
-        $img->save($uploadPath . $imageName);
+        // La imagen anterior solo se elimina DESPUÉS de que la nueva ya se
+        // guardó con éxito — si algo falla arriba, el registro se queda con
+        // la imagen anterior en vez de terminar sin ninguna.
+        if ($oldaPath) {
+            $this->deleteImage($oldaPath);
+        }
 
         // Devolver ruta pública
         return asset($path . '/' . $imageName);
@@ -273,29 +289,37 @@ trait ImageUploadTrait{
             return null;
         }
 
-        if ($oldPath) {
-            $this->deleteImage($oldPath);
-        }
-
-        $manager = new ImageManager(new Driver());
         $originalName = pathinfo($sourceFull, PATHINFO_FILENAME);
         $cleanedName = Str::slug($originalName, '-');
         $imageName = $cleanedName . '-media_' . uniqid() . '.webp';
-
-        $img = $manager->read($sourceFull);
-        if ($width && $height) {
-            $img->resize($width, $height);
-        }
-        if ($watermark) {
-            $img = $this->applyWatermark($img);
-        }
-        $img->encode(new WebpEncoder(quality: 75));
-
         $uploadPath = UploadPath::full($path . '/');
-        if (!file_exists($uploadPath)) {
-            mkdir($uploadPath, 0755, true);
+
+        try {
+            $manager = new ImageManager(new Driver());
+
+            $img = $manager->read($sourceFull);
+            if ($width && $height) {
+                $img->resize($width, $height);
+            }
+            if ($watermark) {
+                $img = $this->applyWatermark($img);
+            }
+            $img->encode(new WebpEncoder(quality: 75));
+
+            if (!file_exists($uploadPath)) {
+                mkdir($uploadPath, 0755, true);
+            }
+            $img->save($uploadPath . $imageName);
+        } catch (\Throwable $e) {
+            throw ValidationException::withMessages([
+                $inputName => 'No se pudo procesar la imagen seleccionada de la galería. Verifica el archivo e inténtalo de nuevo.',
+            ]);
         }
-        $img->save($uploadPath . $imageName);
+
+        // Solo se elimina la anterior una vez que la nueva ya se guardó con éxito.
+        if ($oldPath) {
+            $this->deleteImage($oldPath);
+        }
 
         return asset($path . '/' . $imageName);
     }

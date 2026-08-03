@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Backend;
 
-use App\DataTables\ShippingRuleDataTable;
 use App\Http\Controllers\Controller;
 use App\Models\ShippingRule;
 use App\Support\AdminTable\AdminTableExport;

@@ -16,6 +16,7 @@
 @import url("components/dropdown-menu.css");
 @import url("components/duplicate-images.css");
 @import url("components/cotizacion-builder.css");
+@import url("components/product-sku-search.css");
 
 /* Utility helpers */
 .admin-ui-v2 .au-text-subdued { color: var(--au-text-subdued); }

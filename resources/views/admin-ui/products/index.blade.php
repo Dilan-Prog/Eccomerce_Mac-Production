@@ -29,6 +29,15 @@
     <script src="{{ asset('admin-ui/js/table/column-visibility.js') }}"></script>
     <script src="{{ asset('admin-ui/js/table/admin-table.js') }}"></script>
     <script>
+        window.AU_PRODUCT_SKU_SEARCH = {
+            routes: {
+                searchSku: '{{ route('admin.product.search-sku') }}',
+                aspelPrices: '{{ route('admin.product.aspel-prices') }}',
+            },
+        };
+    </script>
+    <script src="{{ asset('admin-ui/js/products/sku-search.js') }}"></script>
+    <script>
         new AU.AdminTable({
             el: '#products-table',
             endpoint: '{{ route('admin.products.table-data') }}',

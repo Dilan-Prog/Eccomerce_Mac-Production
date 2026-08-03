@@ -180,10 +180,10 @@ class AdminCotizacionController extends Controller
 
     public function show(Cotizacion $cotizacion)
     {
-        $cotizacion->load(['user', 'perfil']);
+        $cotizacion->load(['user', 'perfil', 'items', 'createdByAdmin']);
         $pdfUrl = $cotizacion->pdf_path ? Storage::url($cotizacion->pdf_path) : null;
 
-        return view('admin.cotizaciones.show', compact('cotizacion', 'pdfUrl'));
+        return view('admin-ui.cotizaciones.show', compact('cotizacion', 'pdfUrl'));
     }
 
     /** Blank ERP-style quote builder page — no Cotizacion exists yet. */

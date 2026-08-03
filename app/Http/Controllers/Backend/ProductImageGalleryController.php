@@ -12,6 +12,7 @@ use App\Support\UploadPath;
 use App\Traits\ImageUploadTrait;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 use Intervention\Image\Drivers\Gd\Driver;
 use Intervention\Image\Drivers\Gd\Encoders\WebpEncoder;
@@ -82,6 +83,18 @@ class ProductImageGalleryController extends Controller
             $images = ProductImageGallery::whereIn('id', $ids)->get();
             foreach ($images as $image) {
                 $this->deleteImage($image->image);
+                if (!empty($image->image_laptop)) {
+                    $this->deleteImage($image->image_laptop);
+                }
+                if (!empty($image->image_tablet)) {
+                    $this->deleteImage($image->image_tablet);
+                }
+                if (!empty($image->image_phone)) {
+                    $this->deleteImage($image->image_phone);
+                }
+                if (!empty($image->image_carrusel)) {
+                    $this->deleteImage($image->image_carrusel);
+                }
                 $image->delete();
             }
             return response()->json(['status' => 'success', 'message' => count($images) . ' imagen(es) eliminada(s).']);
@@ -127,27 +140,33 @@ class ProductImageGalleryController extends Controller
             ]);
         }
 
-        /**Handle Image Upload */
-        $imagePaths = $this->uploadMultiImage($request, 'image', 'uploads', true) ?? [];
+        $product = Product::with('brand')->findOrFail($request->product);
+        $brandSlug = Str::slug($product->brand->name);
 
-        /** Handle images picked from the Media Library gallery: copy + reprocess
-         *  each through the same watermark/webp pipeline uploadMultiImage() uses
-         *  for fresh uploads, so every gallery row ends up in the same
-         *  relative-path format under uploads/, regardless of its source. */
-        foreach ($libraryPaths as $libraryPath) {
-            $copiedPath = $this->copyGalleryImageFromLibrary($libraryPath, 'uploads', true);
-            if ($copiedPath) {
-                $imagePaths[] = $copiedPath;
+        /** Handle fresh uploads: each file gets the same 5 responsive sizes
+         *  (computers/laptop/tablet/phone/carrusel) the product's own main
+         *  image gets, stored in the same per-brand folder tree. */
+        if ($request->hasFile('image')) {
+            foreach ((array) $request->file('image') as $file) {
+                $variants = $this->generateResponsiveVariants($file->getRealPath(), $brandSlug, true);
+                $this->saveGalleryRow($variants, $request->product);
             }
         }
 
-        foreach($imagePaths as $path){
-            $productImageGallery = new ProductImageGallery();
-            $productImageGallery->image = $path;
-            $productImageGallery->product_id = $request->product;
-            $productImageGallery->save();
+        /** Handle images picked from the Media Library gallery: resolve +
+         *  guard against path traversal the same way this controller always
+         *  has, then run the file through the same responsive pipeline as
+         *  fresh uploads, so every gallery row ends up with the same 5
+         *  columns regardless of its source. */
+        $uploadsRoot = realpath(UploadPath::full('uploads'));
+        foreach ($libraryPaths as $libraryPath) {
+            $sourceFull = realpath(UploadPath::full($libraryPath));
+            if (!$sourceFull || !$uploadsRoot || !str_starts_with($sourceFull, $uploadsRoot)) {
+                continue;
+            }
 
-
+            $variants = $this->generateResponsiveVariants($sourceFull, $brandSlug, true);
+            $this->saveGalleryRow($variants, $request->product);
         }
 
         if ($request->wantsJson()) {
@@ -161,45 +180,86 @@ class ProductImageGalleryController extends Controller
     }
 
     /**
-     * Copies one Media Library path (e.g. "uploads/product/foo.webp") into this
-     * module's own uploads folder, reprocessed through the same Intervention
-     * watermark/webp pipeline uploadMultiImage() already applies to fresh
-     * uploads — so a library-picked gallery row is indistinguishable in
-     * format from a freshly uploaded one (a relative path, matching this
-     * module's existing `image` column convention; see the frontend's
-     * asset($galleryImage->image) usage).
+     * Generates the same 5 responsive size variants (computers/laptop/tablet/
+     * phone/carrusel) that a product's own main image gets, from a single
+     * already-resolved absolute source path on disk. Source-agnostic on
+     * purpose: the caller may pass a freshly-uploaded temp file's real path
+     * or a realpath()-resolved Media Library file — this method just needs
+     * something it can read, so both a fresh upload and a library pick end
+     * up with identical output shapes.
      *
-     * Deliberately NOT ImageUploadTrait::resolveOrCopyImage(): that helper
-     * returns a full asset() URL, built for single "main image" fields
-     * (Brand logo, Slider image). Reusing it here would store gallery rows
-     * in a different format than fresh multi-uploads, breaking asset() on
-     * the frontend for the mixed rows. Uses the same path-traversal guard
-     * style as resolveOrCopyImage() / MediaLibraryController::destroy().
+     * Each size gets its own fresh ImageManager::read() of the source
+     * because Intervention images are mutated in place by resize()/place()
+     * — reusing one instance across sizes would compound the resizes
+     * instead of producing 5 independent variants.
+     *
+     * Deliberately NOT ImageUploadTrait::resolveOrCopyImage()/uploadImage():
+     * those helpers return a full asset() URL, built for single "main
+     * image" fields (Brand logo, Slider image, Product thumb_image). This
+     * module's `image`/`image_*` columns use bare relative paths instead
+     * (see the frontend's asset($galleryImage->image) usage), so wrapping
+     * them here would break that convention for gallery rows.
+     *
+     * Mirrors the try/catch shape of ImageUploadTrait::resolveOrCopyImage():
+     * any Intervention failure (corrupt/unreadable file, etc.) becomes a
+     * ValidationException instead of a raw 500.
+     *
+     * @return array{computers:string, laptop:string, tablet:string, phone:string, carrusel:string}
      */
-    private function copyGalleryImageFromLibrary(string $libraryPath, string $path, bool $watermark = false): ?string
+    private function generateResponsiveVariants(string $sourceFullPath, string $brandSlug, bool $watermark): array
     {
-        $sourceFull = realpath(UploadPath::full($libraryPath));
-        $uploadsRoot = realpath(UploadPath::full('uploads'));
-        if (!$sourceFull || !$uploadsRoot || !str_starts_with($sourceFull, $uploadsRoot)) {
-            return null;
+        $sizes = [
+            'computers' => [1200, 1200],
+            'laptop' => [1000, 1000],
+            'tablet' => [800, 800],
+            'phone' => [600, 600],
+            'carrusel' => [600, 600],
+        ];
+
+        $variants = [];
+
+        try {
+            foreach ($sizes as $size => [$width, $height]) {
+                $manager = new ImageManager(new Driver());
+                $img = $manager->read($sourceFullPath);
+                $img->resize($width, $height);
+
+                if ($watermark) {
+                    $img = $this->applyWatermark($img);
+                }
+                $img->encode(new WebpEncoder(quality: 75));
+
+                $relativeDir = 'uploads/product/' . $brandSlug . '/webp/' . $size;
+                $uploadPath = UploadPath::full($relativeDir . '/');
+                if (!file_exists($uploadPath)) {
+                    mkdir($uploadPath, 0755, true);
+                }
+
+                $imageName = 'media_' . uniqid() . '.webp';
+                $img->save($uploadPath . $imageName);
+
+                $variants[$size] = $relativeDir . '/' . $imageName;
+            }
+        } catch (\Throwable $e) {
+            throw ValidationException::withMessages([
+                'image' => 'No se pudo procesar la imagen. Verifica que el archivo no esté dañado e inténtalo de nuevo.',
+            ]);
         }
 
-        $manager = new ImageManager(new Driver());
-        $imageName = 'media_' . uniqid() . '.webp';
+        return $variants;
+    }
 
-        $img = $manager->read($sourceFull);
-        if ($watermark) {
-            $img = $this->applyWatermark($img);
-        }
-        $img->encode(new WebpEncoder(quality: 75));
-
-        $uploadPath = UploadPath::full($path . '/');
-        if (!file_exists($uploadPath)) {
-            mkdir($uploadPath, 0755, true);
-        }
-        $img->save($uploadPath . $imageName);
-
-        return $path . '/' . $imageName;
+    /** Creates one ProductImageGallery row from a generateResponsiveVariants() result. */
+    private function saveGalleryRow(array $variants, $productId): void
+    {
+        $row = new ProductImageGallery();
+        $row->image = $variants['computers'];
+        $row->image_laptop = $variants['laptop'];
+        $row->image_tablet = $variants['tablet'];
+        $row->image_phone = $variants['phone'];
+        $row->image_carrusel = $variants['carrusel'];
+        $row->product_id = $productId;
+        $row->save();
     }
 
     /**
@@ -233,6 +293,18 @@ class ProductImageGalleryController extends Controller
     {
         $productImage = ProductImageGallery::findOrFail($id);
         $this->deleteImage($productImage->image);
+        if (!empty($productImage->image_laptop)) {
+            $this->deleteImage($productImage->image_laptop);
+        }
+        if (!empty($productImage->image_tablet)) {
+            $this->deleteImage($productImage->image_tablet);
+        }
+        if (!empty($productImage->image_phone)) {
+            $this->deleteImage($productImage->image_phone);
+        }
+        if (!empty($productImage->image_carrusel)) {
+            $this->deleteImage($productImage->image_carrusel);
+        }
         $productImage->delete();
         return response(['status' => 'success', 'message' => 'Borrado con exito']);
     }

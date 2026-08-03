@@ -348,7 +348,7 @@ class HomeController extends Controller
                 'descripcion' => $product->short_description,
                 'marca' => $product->brand->name ?? null,
                 'masModelos' => $product->variants->count() > 1,
-                'imagen' => $product->thumb_image ? asset($product->thumb_image) : null,
+                'imagen' => $product->thumb_image_carrusel ? asset($product->thumb_image_carrusel) : ($product->thumb_image ? asset($product->thumb_image) : null),
                 'url' => route('product-detail', $product->slug),
             ];
         }

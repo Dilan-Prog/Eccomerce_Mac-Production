@@ -36,6 +36,14 @@ class ProductTableQuery extends AdminTableQuery
                 'sortable' => true,
             ],
             [
+                'key' => 'thumb_image',
+                'label' => 'Imagen',
+                'type' => 'image',
+                // thumb_image is already stored as an absolute asset() URL by
+                // ImageUploadTrait, unlike Media Library's relative-path rows.
+                'render' => fn (Model $row) => $row->thumb_image ? ['url' => $row->thumb_image] : null,
+            ],
+            [
                 'key' => 'name',
                 'label' => 'Nombre del Producto',
                 'sortable' => true,

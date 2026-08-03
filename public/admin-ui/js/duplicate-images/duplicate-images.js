@@ -340,7 +340,18 @@ AU.DuplicateImages = (function () {
 
   function renderGroupMemberPicker(group) {
     const container = document.getElementById("dup-replace-group-members");
-    const members = group.members || [];
+    // Only images NOT currently marked for discard are valid "keep" choices —
+    // offering one you already checked to delete would be a contradiction.
+    const discardSet = selections[group.id] || new Set();
+    const members = (group.members || []).filter((m) => !discardSet.has(m.path_hash));
+
+    if (!members.length) {
+      container.innerHTML =
+        '<div class="au-table-empty">Todas las imágenes de este grupo están marcadas para descartar. Desmarca al menos una en la tarjeta para conservarla aquí, o usa "Buscar en biblioteca" / "Subir nueva".</div>';
+      if (replaceCtx) replaceCtx.keeperPathHash = null;
+      return;
+    }
+
     container.innerHTML = members
       .map(
         (m, i) => `
@@ -354,7 +365,7 @@ AU.DuplicateImages = (function () {
       )
       .join("");
 
-    if (replaceCtx && members[0]) {
+    if (replaceCtx) {
       replaceCtx.keeperPathHash = members[0].path_hash;
     }
   }

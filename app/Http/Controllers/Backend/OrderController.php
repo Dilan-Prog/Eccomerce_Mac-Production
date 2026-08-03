@@ -201,29 +201,4 @@ class OrderController extends Controller
 
         return response(['status' => 'success', 'message' => 'Updated Payment Status Successfully']);
     }
-
-
-
-    //Generate PDF
-
-    // public function generatePdf(string $id){
-    //     $order = Order::findOrFail($id);
-    //     return view('admin.order.generate-pdf', compact('order'));
-    // }
-
-
-    // public function pdf(string $id)
-    // {
-    //     // Obtener la orden específica según el ID proporcionado
-    //     $order = Order::findOrFail($id);
-
-    //     // Generar el PDF utilizando la vista 'show' y los datos de la orden
-    //     $pdf = PDF::loadView('admin.order.generate-pdf', compact('order'));
-    //     $pdf->setPaper('a4', 'portrait'); // Configurar tamaño de papel y orientación
-    //     // Descargar el PDF con el nombre 'invoice.pdf'
-    //     // return $pdf->download($order->invocie_id);
-    //     return $pdf->stream();
-    // }
-
-
 }

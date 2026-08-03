@@ -457,13 +457,13 @@
             <div class="product-gallery">
                 <div class="gallery-thumbs" id="gallery-thumbs">
                     <div class="gallery-thumb active"
-                         onclick="switchGalleryImage(this, '{{ asset($product->thumb_image) }}')"
+                         onclick="switchGalleryImage(this, {{ \Illuminate\Support\Js::from(['src' => asset($product->thumb_image)]) }})"
                          role="button" tabindex="0">
                         <img src="{{ asset($product->thumb_image) }}" alt="{{ $product->name }}" loading="eager">
                     </div>
                     @foreach($product->productImageGalleries as $gi)
                     <div class="gallery-thumb"
-                         onclick="switchGalleryImage(this, '{{ asset($gi->image) }}')"
+                         onclick="switchGalleryImage(this, {{ \Illuminate\Support\Js::from(['src' => asset($gi->image)]) }})"
                          role="button" tabindex="0">
                         <img src="{{ asset($gi->image) }}" alt="{{ $product->name }}" loading="lazy">
                     </div>
@@ -486,10 +486,7 @@
                         <div class="gallery-badge badge-brand">⭐ {{ $product->brand->name }}</div>
                     </div>
 
-                    <img id="gallery-main-img"
-                         src="{{ asset($product->thumb_image) }}"
-                         alt="{{ $product->name }}"
-                         itemprop="image">
+                    <x-responsive-product-image :product="$product" variant="hero" img-id="gallery-main-img" picture-id="gallery-main-picture" loading="eager" itemprop="image" :alt="$product->name" />
                 </div>
             </div>
 
@@ -1083,7 +1080,7 @@
                 @endphp
                 <a href="{{ route('product-detail', $related->slug) }}" class="related-card">
                     <div class="related-image">
-                        <img src="{{ asset($related->thumb_image) }}" alt="{{ $related->name }}" loading="lazy">
+                        <x-responsive-product-image :product="$related" variant="card" :alt="$related->name" loading="lazy" />
                     </div>
                     <div class="related-info">
                         <div class="related-pn">{{ $related->sku }}</div>
@@ -1163,8 +1160,15 @@ function updateCotizarUrl() {
 updateCotizarUrl();
 
 /* ===== GALERÍA ===== */
-function switchGalleryImage(thumb, src) {
-    document.getElementById('gallery-main-img').src = src;
+function switchGalleryImage(thumb, data) {
+    const picture = document.getElementById('gallery-main-picture');
+    const img = document.getElementById('gallery-main-img');
+    if (picture) {
+        picture.querySelectorAll('source').forEach(function (source) {
+            source.srcset = data.src;
+        });
+    }
+    img.src = data.src;
     document.querySelectorAll('.gallery-thumb').forEach(function(t) { t.classList.remove('active'); });
     thumb.classList.add('active');
 }

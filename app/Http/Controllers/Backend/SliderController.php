@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Backend;
 
-use App\DataTables\SliderDataTable;
 use App\Http\Controllers\Controller;
 use App\Traits\ImageUploadTrait;
 use Illuminate\Http\Request;
@@ -196,30 +195,18 @@ class SliderController extends Controller
         $slider = Slider::findOrFail($id);
 
         if ($request->hasFile('banner') || $request->filled('banner_from_library')) {
-            // Verifica y elimina solo si existe. deleteImage() strips the app
-            // URL from the stored value first, which is what this codebase
-            // persists (asset() URLs, not relative paths) — resolveOrCopyImage()'s
-            // own $oldPath cleanup expects a relative path, so it is passed
-            // null here and the old files are removed via deleteImage() instead,
-            // same as this controller did before the gallery picker existed.
-            if (!empty($slider->banner)) {
-                $this->deleteImage($slider->banner);
-            }
-            if (!empty($slider->banner_laptop)) {
-                $this->deleteImage($slider->banner_laptop);
-            }
-            if (!empty($slider->banner_tablet)) {
-                $this->deleteImage($slider->banner_tablet);
-            }
-            if (!empty($slider->banner_phone)) {
-                $this->deleteImage($slider->banner_phone);
-            }
-
-            // Subir nuevas imágenes (o copiar la seleccionada desde la galería)
-            $slider->banner = $this->resolveOrCopyImage($request, 'banner', 'banner_from_library', 'uploads/slider/webp/computers', null, 1320, 700);
-            $slider->banner_laptop = $this->resolveOrCopyImage($request, 'banner', 'banner_from_library', 'uploads/slider/webp/laptop', null, 1140, 380);
-            $slider->banner_tablet = $this->resolveOrCopyImage($request, 'banner', 'banner_from_library', 'uploads/slider/webp/tablet', null, 720, 240);
-            $slider->banner_phone = $this->resolveOrCopyImage($request, 'banner', 'banner_from_library', 'uploads/slider/webp/phone', null, 370, 125);
+            // resolveOrCopyImage()'s own $oldPath cleanup ultimately calls deleteImage(),
+            // which already strips config('app.url') from a full URL before checking
+            // File::exists() — the same full asset() URL this controller stores in
+            // banner/banner_laptop/banner_tablet/banner_phone. Passing each column's
+            // current value as $oldPath (like ProductController/BrandController already
+            // do) means the old file for THAT column is only removed after its own new
+            // file is confirmed saved — a failure partway through only risks the size
+            // currently being processed, never all 4 upfront.
+            $slider->banner = $this->resolveOrCopyImage($request, 'banner', 'banner_from_library', 'uploads/slider/webp/computers', $slider->banner, 1320, 700) ?: $slider->banner;
+            $slider->banner_laptop = $this->resolveOrCopyImage($request, 'banner', 'banner_from_library', 'uploads/slider/webp/laptop', $slider->banner_laptop, 1140, 380) ?: $slider->banner_laptop;
+            $slider->banner_tablet = $this->resolveOrCopyImage($request, 'banner', 'banner_from_library', 'uploads/slider/webp/tablet', $slider->banner_tablet, 720, 240) ?: $slider->banner_tablet;
+            $slider->banner_phone = $this->resolveOrCopyImage($request, 'banner', 'banner_from_library', 'uploads/slider/webp/phone', $slider->banner_phone, 370, 125) ?: $slider->banner_phone;
         }
 
         $slider->type = $request->type;

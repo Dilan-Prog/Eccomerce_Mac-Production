@@ -7,14 +7,14 @@
      for the precedent this mirrors). All sub/child categories are preloaded
      and filtered client-side via data-category/data-subcategory + hidden.
 
-     The live SKU-typeahead dropdown (jQuery keyup search against
-     admin.product.search-sku, auto-filling qty_aspel/aspel_price on click)
-     from the old create/edit views is intentionally NOT ported here for the
-     same innerHTML/<script> reason plus Aspel pricing being sensitive
-     business data — see controller notes. The underlying endpoints are
-     untouched; sku/aspel fields are plain editable inputs instead, and the
-     edit view still pre-renders real Aspel price options exactly like
-     admin.product.edit did (zero JS required for that part).
+     The live SKU-typeahead dropdown (search against admin.product.search-sku,
+     auto-filling qty_aspel/aspel_price on click) is wired up again via
+     public/admin-ui/js/products/sku-search.js, using a delegated listener on
+     document (AU.on) instead of a script tag in this fragment, since anything
+     injected here via innerHTML never executes. See that file for the full
+     flow. The edit view still additionally pre-renders real Aspel price
+     options server-side on load (zero JS needed just to open the modal);
+     the JS only kicks in when the SKU field changes.
 
      Sidebar (opts.sidebar: true, see products/index.blade.php +
      ProductTableQuery::rowActions()): main "image" field lives here as an
@@ -37,12 +37,6 @@
     $aspelOffertDisabled = isset($product) ? !$offertOff : false;
     $qtyDisabled = isset($product) ? $qtyOff : true;
     $qtyAspelDisabled = isset($product) ? !$qtyOff : false;
-
-    $aspelCurrencyCode = $aspelCurrency->cve_moned ?? 'MXN';
-    $aspelExchangeRate = (isset($aspelCurrency) && $aspelCurrency && $aspelCurrency->tipo_cambio) ? (float) $aspelCurrency->tipo_cambio : 1;
-    $aspelSymbol = $aspelCurrency->simbolo ?? '$';
-    $aspelIsMXN = $aspelCurrencyCode === 'MXN';
-    $ivaPercent = (float) ($ivaValue ?? 16);
 @endphp
 <form>
     @csrf
@@ -120,7 +114,8 @@
     <div class="au-form-grid-2">
         <div class="au-field">
             <label class="au-label">Sku</label>
-            <input type="text" class="au-input" name="sku" value="{{ $product->sku ?? '' }}">
+            <input type="text" class="au-input" name="sku" value="{{ $product->sku ?? '' }}" autocomplete="off">
+            <div class="au-sku-search-results" data-sku-results></div>
         </div>
         <div class="au-field">
             <label class="au-label">Modelo</label>
@@ -152,16 +147,8 @@
             <select class="au-select" name="aspel_price" {{ $aspelPriceDisabled ? 'disabled' : '' }}>
                 <option value="">Seleccionar...</option>
                 @foreach($aspelPriceOptions as $opt)
-                    @php
-                        $desc = optional($opt->precio_info)->descripcion ?? ('Precio ' . $opt->cve_precio);
-                        $val = $opt->precio;
-                        $convertedVal = $aspelIsMXN ? $val : $val * $aspelExchangeRate;
-                        $priceWithIva = $convertedVal * (1 + $ivaPercent / 100);
-                        $selectedAspel = $product->aspel_price && (round($product->aspel_price, 2) == round($priceWithIva, 2));
-                    @endphp
-                    <option value="{{ $priceWithIva }}" {{ $selectedAspel ? 'selected' : '' }}>
-                        {{ $desc }} — {{ $aspelSymbol }}{{ number_format($val, 2) }} {{ $aspelCurrencyCode }}
-                        / Precio Con IVA MXN ${{ number_format($priceWithIva, 2) }} ({{ number_format($ivaPercent, 2) }}% IVA)
+                    <option value="{{ $opt['cve_precio'] }}" {{ (int) $product->aspel_price_tier === $opt['cve_precio'] ? 'selected' : '' }}>
+                        {{ $opt['descripcion'] }} — ${{ number_format($opt['with_iva'], 2) }} MXN (IVA incl.)
                     </option>
                 @endforeach
             </select>
@@ -194,17 +181,8 @@
             <select class="au-select" name="aspel_offert_price" {{ $aspelOffertDisabled ? 'disabled' : '' }}>
                 <option value="">Seleccionar...</option>
                 @foreach($aspelPriceOptions as $opt)
-                    @php
-                        $desc = optional($opt->precio_info)->descripcion ?? ('Precio ' . $opt->cve_precio);
-                        $val = $opt->precio;
-                        $convertedVal = $aspelIsMXN ? $val : $val * $aspelExchangeRate;
-                        $priceWithIva = $convertedVal * (1 + $ivaPercent / 100);
-                        $selectedAspel = ($product->aspel_offert_price == $priceWithIva) || ($product->aspel_offert_price == $convertedVal) || ($product->aspel_offert_price == $val);
-                    @endphp
-                    <option value="{{ $priceWithIva }}" {{ $selectedAspel ? 'selected' : '' }}>
-                        {{ $desc }} — {{ $aspelSymbol }}{{ number_format($val, 2) }} {{ $aspelCurrencyCode }}
-                        / Precio Con IVA MXN ${{ number_format($priceWithIva, 2) }} ({{ number_format($ivaPercent, 2) }}% IVA)
-                        (ID: {{ $opt->cve_precio }})
+                    <option value="{{ $opt['cve_precio'] }}" {{ (int) $product->aspel_offert_price_tier === $opt['cve_precio'] ? 'selected' : '' }}>
+                        {{ $opt['descripcion'] }} — ${{ number_format($opt['with_iva'], 2) }} MXN (IVA incl.)
                     </option>
                 @endforeach
             </select>

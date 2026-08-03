@@ -62,7 +62,7 @@ class CartController extends Controller
             $cartData['weight'] = 10;
             $cartData['options']['sku'] = $combination->sku;
             $cartData['options']['productModel'] = $product->productModel;
-            $cartData['options']['image'] = $product->thumb_image;
+            $cartData['options']['image'] = $product->thumb_image_carrusel ?: $product->thumb_image;
             $cartData['options']['slug'] = $product->slug;
             $cartData['options']['brand_name'] = $request->brand_name;
             $cartData['options']['combination_id'] = $combination->id;
@@ -107,7 +107,7 @@ class CartController extends Controller
             $cartData['weight'] = 10;
             $cartData['options']['sku'] = $product->sku;
             $cartData['options']['productModel'] = $product->productModel;
-            $cartData['options']['image'] = $product->thumb_image;
+            $cartData['options']['image'] = $product->thumb_image_carrusel ?: $product->thumb_image;
             $cartData['options']['slug'] = $product->slug;
             $cartData['options']['brand_name'] = $request->brand_name;
 

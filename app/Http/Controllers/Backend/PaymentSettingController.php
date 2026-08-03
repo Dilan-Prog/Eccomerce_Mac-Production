@@ -19,7 +19,7 @@ class PaymentSettingController extends Controller
         $paypalSetting = PaypalSetting::first();
         $stripeSetting = StripeSetting::first();
         $transferSetting = Transfer::first();
-        return view('admin.payment-settings.index', compact('paypalSetting', 'stripeSetting', 'transferSetting'));
+        return view('admin-ui.payment-settings.index', compact('paypalSetting', 'stripeSetting', 'transferSetting'));
 
     }
 }

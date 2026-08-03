@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Backend;
 
-use App\DataTables\ProductVariantCombinationsDataTables;
 use App\Http\Controllers\Controller;
 use App\Models\Product;
 use App\Models\ProductVariant;

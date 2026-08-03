@@ -67,7 +67,7 @@
 
                         @endif
                         <a class="wsus__pro_link" href="{{route('product-detail', $product->slug)}}">
-                            <img src="{{asset($product->thumb_image)}}" alt="product" class="img_1" loading="lazy" />
+                            <x-responsive-product-image :product="$product" variant="card" class="img_1" alt="product" loading="lazy" />
                             <img src="
                             @if (isset($product->productImageGalleries[0]->image))
                                 {{asset($product->productImageGalleries[0]->image)}}

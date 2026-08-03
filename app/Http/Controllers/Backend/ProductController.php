@@ -10,6 +10,7 @@ use App\Models\Product;
 use App\Support\AdminTable\AdminTableExport;
 use App\Support\AdminTable\AdminTableRequest;
 use App\Support\AdminTable\Queries\ProductTableQuery;
+use App\Support\AspelPricing;
 use App\Traits\ImageUploadTrait;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
@@ -93,6 +94,18 @@ class ProductController extends Controller
 
                 /**Delete the main product image */
                 $this->deleteImage($product->thumb_image);
+                if (!empty($product->thumb_image_laptop)) {
+                    $this->deleteImage($product->thumb_image_laptop);
+                }
+                if (!empty($product->thumb_image_tablet)) {
+                    $this->deleteImage($product->thumb_image_tablet);
+                }
+                if (!empty($product->thumb_image_phone)) {
+                    $this->deleteImage($product->thumb_image_phone);
+                }
+                if (!empty($product->thumb_image_carrusel)) {
+                    $this->deleteImage($product->thumb_image_carrusel);
+                }
 
                 /**Delete product gallery images */
                 $galleryImages = ProductImageGallery::where('product_id', $product->id)->get();
@@ -160,29 +173,15 @@ class ProductController extends Controller
         // products-image-gallery rows).
         $galleryImages = $product->productImageGalleries()->orderBy('id')->take(3)->get();
         $aspelPriceOptions = [];
-        $aspelProductData = null;
-        $aspelCurrency = null;
-        $ivaValue = DB::table('general_settings')->value('iva_mexico') ?? 16.00;
         try {
-            $aspelProduct = AspelSync::where('cve_art', $product->sku)->first();
-            if ($aspelProduct) {
-                $aspelPriceOptions = PrecioXProductAspel::with('precio_info')
-                    ->where('cve_art', $aspelProduct->cve_art)
-                    ->get();
-                $aspelProductData = $aspelProduct;
-                $aspelCurrency = DB::table('monedas_aspel')
-                    ->where('num_moneda', $aspelProduct->num_mon)
-                    ->first();
-            }
+            $aspelPriceOptions = AspelPricing::optionsForSku($product->sku);
         } catch (\Throwable $e) {
             $aspelPriceOptions = [];
-            $aspelProductData = null;
-            $aspelCurrency = null;
         }
 
         return view('admin-ui.products._form', compact(
             'product', 'brands', 'categories', 'subCategories', 'childCategories',
-            'galleryImages', 'aspelPriceOptions', 'aspelProductData', 'aspelCurrency', 'ivaValue'
+            'galleryImages', 'aspelPriceOptions'
         ));
     }
 
@@ -221,13 +220,17 @@ class ProductController extends Controller
         $category = Category::findOrFail($request->category);
         $brand = Brand::findOrFail($request->brand);
         /**Handle the image upload */
-        $imagePath =  $this->resolveOrCopyImage($request,'image','image_from_library','uploads/product/' . Str::slug($brand->name) . '/webp/computers/', null, 1200, 1200, true);
-        $imagePath =  $this->resolveOrCopyImage($request,'image','image_from_library','uploads/product/' . Str::slug($brand->name) .'/webp/laptop', null, 1000, 1000, true);
-        $imagePath =  $this->resolveOrCopyImage($request,'image','image_from_library','uploads/product/' . Str::slug($brand->name) .'/webp/tablet', null, 800, 800, true);
-        $imagePath =  $this->resolveOrCopyImage($request,'image','image_from_library','uploads/product/' . Str::slug($brand->name) .'/webp/phone', null, 600, 600, true);
-        $imagePath =  $this->resolveOrCopyImage($request,'image','image_from_library','uploads/product/' . Str::slug($brand->name) .'/webp/carrusel', null, 600, 600, true);
+        $imagePathComputers = $this->resolveOrCopyImage($request,'image','image_from_library','uploads/product/' . Str::slug($brand->name) . '/webp/computers/', null, 1200, 1200, true);
+        $imagePathLaptop    = $this->resolveOrCopyImage($request,'image','image_from_library','uploads/product/' . Str::slug($brand->name) .'/webp/laptop', null, 1000, 1000, true);
+        $imagePathTablet    = $this->resolveOrCopyImage($request,'image','image_from_library','uploads/product/' . Str::slug($brand->name) .'/webp/tablet', null, 800, 800, true);
+        $imagePathPhone     = $this->resolveOrCopyImage($request,'image','image_from_library','uploads/product/' . Str::slug($brand->name) .'/webp/phone', null, 600, 600, true);
+        $imagePathCarrusel  = $this->resolveOrCopyImage($request,'image','image_from_library','uploads/product/' . Str::slug($brand->name) .'/webp/carrusel', null, 600, 600, true);
 
-        $product->thumb_image = $imagePath;
+        $product->thumb_image          = $imagePathComputers;
+        $product->thumb_image_laptop   = $imagePathLaptop;
+        $product->thumb_image_tablet   = $imagePathTablet;
+        $product->thumb_image_phone    = $imagePathPhone;
+        $product->thumb_image_carrusel = $imagePathCarrusel;
         $product->name = $request->name;
         $product->slug=Str::slug($request->name);
     /** In case of ocuped vendor plus        $product->vendor_id= Auth::user()->vendor->id;*/
@@ -263,8 +266,7 @@ class ProductController extends Controller
         else{
             $product->offert_price = $request->offert_price;
         }
-        $product->aspel_price = $request->aspel_price;
-        $product->aspel_offert_price = $request->aspel_offert_price;
+        $this->applyAspelPricing($product, $request);
         $product->offer_start_date = $request->offer_start_date;
         $product->offer_end_date = $request->offer_end_date;
         $product->product_type = $request->product_type;
@@ -275,7 +277,7 @@ class ProductController extends Controller
         $product->canonical_url = $request->canonical_url;
         $product->is_canonical = $request->is_canonical;
         // Testeo de envio de datos
-        // dd($request->all()); 
+        // dd($request->all());
 
         $product->save();
 
@@ -370,11 +372,17 @@ class ProductController extends Controller
 
         ]);
         $product = Product::findOrFail($id);
+        $brand = Brand::findOrFail($request->brand);
 
         /**Handle the image upload */
-        $imagePath =  $this->resolveOrCopyImage($request, 'image', 'image_from_library', 'uploads', $product->thumb_image, 800, 800, true);
+        if ($request->hasFile('image') || $request->filled('image_from_library')) {
+            $product->thumb_image = $this->resolveOrCopyImage($request,'image','image_from_library','uploads/product/' . Str::slug($brand->name) . '/webp/computers/', $product->thumb_image, 1200, 1200, true) ?: $product->thumb_image;
+            $product->thumb_image_laptop = $this->resolveOrCopyImage($request,'image','image_from_library','uploads/product/' . Str::slug($brand->name) .'/webp/laptop', $product->thumb_image_laptop, 1000, 1000, true) ?: $product->thumb_image_laptop;
+            $product->thumb_image_tablet = $this->resolveOrCopyImage($request,'image','image_from_library','uploads/product/' . Str::slug($brand->name) .'/webp/tablet', $product->thumb_image_tablet, 800, 800, true) ?: $product->thumb_image_tablet;
+            $product->thumb_image_phone = $this->resolveOrCopyImage($request,'image','image_from_library','uploads/product/' . Str::slug($brand->name) .'/webp/phone', $product->thumb_image_phone, 600, 600, true) ?: $product->thumb_image_phone;
+            $product->thumb_image_carrusel = $this->resolveOrCopyImage($request,'image','image_from_library','uploads/product/' . Str::slug($brand->name) .'/webp/carrusel', $product->thumb_image_carrusel, 600, 600, true) ?: $product->thumb_image_carrusel;
+        }
 
-        $product->thumb_image = empty(!$imagePath) ? $imagePath : $product->thumb_image;
         $product->name = $request->name;
         $product->slug=Str::slug($request->name);
     /** In case of ocuped vendor plus        $product->vendor_id= Auth::user()->vendor->id;*/
@@ -403,7 +411,6 @@ class ProductController extends Controller
         else{
             $product->price = $request->price;
         }
-        $product->aspel_price = $request->aspel_price;
         $product->price_offert_personalizated = $request->price_offert_personalizated;
         if($request->price_offert_personalizated == 0){
             $product->offert_price = 0;
@@ -411,7 +418,7 @@ class ProductController extends Controller
         else{
             $product->offert_price = $request->offert_price;
         }
-        $product->aspel_offert_price = $request->aspel_offert_price;
+        $this->applyAspelPricing($product, $request);
         $product->offer_start_date = $request->offer_start_date;
         $product->offer_end_date = $request->offer_end_date;
         $product->product_type = $request->product_type;
@@ -435,6 +442,40 @@ class ProductController extends Controller
 
 
     }
+
+    /**
+     * Sets aspel_price/aspel_price_tier (and the offer-price equivalents) from
+     * whatever the form submitted for aspel_price/aspel_offert_price. That
+     * field is a <select> of cve_precio tier ids when the SKU has Aspel price
+     * data (_form.blade.php / sku-search.js), or a plain manual-value <input>
+     * when it doesn't — so a submitted value only counts as a tier if it
+     * actually matches one of this SKU's current tiers; otherwise it's kept
+     * as a raw manual price, same as before this method existed.
+     */
+    private function applyAspelPricing(Product $product, Request $request): void
+    {
+        $options = collect(AspelPricing::optionsForSku((string) $product->sku))->keyBy('cve_precio');
+
+        foreach (['aspel_price' => 'aspel_price_tier', 'aspel_offert_price' => 'aspel_offert_price_tier'] as $field => $tierField) {
+            $submitted = $request->input($field);
+
+            if ($submitted === null || $submitted === '') {
+                $product->{$field} = null;
+                $product->{$tierField} = null;
+                continue;
+            }
+
+            $tier = $options->get((int) $submitted);
+            if ($tier) {
+                $product->{$tierField} = $tier['cve_precio'];
+                $product->{$field} = $tier['with_iva'];
+            } else {
+                $product->{$tierField} = null;
+                $product->{$field} = $submitted;
+            }
+        }
+    }
+
     /**
      * Remove the specified resource from storage.
      */
@@ -446,6 +487,18 @@ class ProductController extends Controller
         }
         /**Delete the main product image */
         $this->deleteImage($product->thumb_image);
+        if (!empty($product->thumb_image_laptop)) {
+            $this->deleteImage($product->thumb_image_laptop);
+        }
+        if (!empty($product->thumb_image_tablet)) {
+            $this->deleteImage($product->thumb_image_tablet);
+        }
+        if (!empty($product->thumb_image_phone)) {
+            $this->deleteImage($product->thumb_image_phone);
+        }
+        if (!empty($product->thumb_image_carrusel)) {
+            $this->deleteImage($product->thumb_image_carrusel);
+        }
 
         /**Delete product gallery images */
         $galleryImages = ProductImageGallery::where('product_id', $product->id)->get();
@@ -690,47 +743,26 @@ class ProductController extends Controller
 
     public function getAspelPrices(Request $request)
     {
-        $sku = $request->sku;
-        $ivaValue = DB::table('general_settings')->value('iva_mexico');
+        $sku = (string) $request->sku;
         $aspelProduct = AspelSync::where('cve_art', $sku)->first();
-        $aspelPriceOptions = [];
-        $aspelCurrency = null;
-        $aspelExchangeRate = 1.0;
-        $aspelIsMXN = true;
-        if ($aspelProduct) {
-            $aspelPriceOptions = PrecioXProductAspel::with('precio_info')
-                ->where('cve_art', $aspelProduct->cve_art)
-                ->get();
-            $aspelCurrency = DB::table('monedas_aspel')
-                ->where('num_moneda', $aspelProduct->num_mon)
-                ->first();
-            if ($aspelCurrency) {
-                $aspelIsMXN = ($aspelCurrency->cve_moned === 'MXN');
-                if (!$aspelIsMXN) {
-                    $aspelExchangeRate = floatval($aspelCurrency->tipo_cambio);
-                }
-            }
-        }
-        // Prepara los datos para JS
-        $result = [];
-        foreach ($aspelPriceOptions as $opt) {
-            $val = $opt->precio;
-            $convertedVal = $aspelIsMXN ? $val : $val * $aspelExchangeRate;
-            $priceWithIva = $convertedVal * (1 + floatval($ivaValue) / 100);
-            $result[] = [
-                'desc' => optional($opt->precio_info)->descripcion ?? ('Precio ' . $opt->cve_precio),
-                'val' => $val,
-                'convertedVal' => $convertedVal,
-                'priceWithIva' => $priceWithIva,
-                'cve_precio' => $opt->cve_precio,
-            ];
-        }
+        $aspelCurrency = $aspelProduct
+            ? DB::table('monedas_aspel')->where('num_moneda', $aspelProduct->num_mon)->first()
+            : null;
+
+        $result = collect(AspelPricing::optionsForSku($sku))->map(fn ($opt) => [
+            'desc' => $opt['descripcion'],
+            'val' => $opt['raw'],
+            'convertedVal' => $opt['converted'],
+            'priceWithIva' => $opt['with_iva'],
+            'cve_precio' => $opt['cve_precio'],
+        ])->values();
+
         return response()->json([
             'prices' => $result,
-            'currency' => $aspelCurrency ? $aspelCurrency->cve_moned : 'MXN',
-            'symbol' => $aspelCurrency ? $aspelCurrency->simbolo : '$',
-            'iva' => $ivaValue,
+            'currency' => $aspelCurrency->cve_moned ?? 'MXN',
+            'symbol' => $aspelCurrency->simbolo ?? '$',
+            'iva' => DB::table('general_settings')->value('iva_mexico'),
         ]);
     }
-    
+
 }

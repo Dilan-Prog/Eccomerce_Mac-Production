@@ -84,12 +84,34 @@ class MediaLibraryController extends Controller
         $productIds = $galleryProductIdByPath->values()->merge($thumbProductIdByUrl->values())->unique();
         $skuById = Product::whereIn('id', $productIds)->pluck('sku', 'id');
 
+        // "Also used elsewhere" warning shown in the Borrar confirm dialog —
+        // purely informational (deletion still proceeds if confirmed), see
+        // App\Services\DuplicateImages\ImageReferenceRegistry::findReferencesToMany().
+        // Batched once per page (8 queries total, not per row) same as the SKU lookup above.
+        $physicalPaths = $paged->map(fn ($f) => UploadPath::full($f['path']));
+        $usedInByPath = app(\App\Services\DuplicateImages\ImageReferenceRegistry::class)->findReferencesToMany($physicalPaths);
+
         return response()->json([
-            'rows' => $paged->map(function ($f) use ($galleryProductIdByPath, $thumbProductIdByUrl, $skuById) {
+            'rows' => $paged->map(function ($f) use ($galleryProductIdByPath, $thumbProductIdByUrl, $skuById, $usedInByPath) {
                 $rowId = $this->encodePath($f['path']);
 
                 $productId = $galleryProductIdByPath[$f['path']] ?? $thumbProductIdByUrl[asset($f['path'])] ?? null;
                 $sku = $productId ? ($skuById[$productId] ?? null) : null;
+
+                $borrarAction = [
+                    'label' => 'Borrar',
+                    'url' => route('admin.media-library.destroy', ['path' => $rowId]),
+                    'method' => 'DELETE',
+                    'tone' => 'critical',
+                    'confirm' => true,
+                ];
+                $usedIn = $usedInByPath[UploadPath::full($f['path'])] ?? collect();
+                if ($usedIn->isNotEmpty()) {
+                    $borrarAction['summary'] = $usedIn->map(fn ($ref) => [
+                        'label' => 'También usada en',
+                        'value' => $ref->label(),
+                    ])->all();
+                }
 
                 return [
                     'row_id' => $rowId,
@@ -104,13 +126,7 @@ class MediaLibraryController extends Controller
                             ['label' => 'Copiar URL', 'copy' => true, 'value' => asset($f['path'])],
                             ['label' => 'Marca de agua', 'url' => route('admin.media-library.watermark', ['path' => $rowId]), 'method' => 'POST'],
                             ['label' => 'Descargar', 'url' => route('admin.media-library.download', ['path' => $rowId])],
-                            [
-                                'label' => 'Borrar',
-                                'url' => route('admin.media-library.destroy', ['path' => $rowId]),
-                                'method' => 'DELETE',
-                                'tone' => 'critical',
-                                'confirm' => true,
-                            ],
+                            $borrarAction,
                         ],
                     ],
                 ];

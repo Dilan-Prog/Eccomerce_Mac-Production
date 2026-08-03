@@ -1,0 +1,62 @@
+/*
+ * Live SKU search dropdown injected by admin-ui/js/products/sku-search.js
+ * into the Crear/Editar producto modal (admin-ui.products._form). Mirrors
+ * .au-quote-client-result / .au-quote-product-row (cotizacion-builder.css)
+ * for visual consistency with the other search-as-you-type dropdowns.
+ */
+.admin-ui-v2 .au-sku-search-results {
+  display: flex;
+  flex-direction: column;
+  gap: var(--au-space-2);
+  max-height: 260px;
+  overflow-y: auto;
+  margin-top: var(--au-space-2);
+}
+
+.admin-ui-v2 .au-sku-search-result {
+  display: flex;
+  align-items: center;
+  gap: var(--au-space-3);
+  width: 100%;
+  padding: 9px 12px;
+  border: 1px solid var(--au-border-table);
+  border-radius: var(--au-radius-md);
+  background: var(--au-surface);
+  cursor: pointer;
+  text-align: left;
+  font: inherit;
+  color: inherit;
+  transition: border-color 0.12s ease, background-color 0.12s ease;
+}
+
+.admin-ui-v2 .au-sku-search-result:hover {
+  border-color: var(--au-blue-500);
+  background: var(--au-blue-050);
+}
+
+.admin-ui-v2 .au-sku-search-result-code {
+  font-weight: 600;
+  font-size: var(--au-fs-sm);
+}
+
+.admin-ui-v2 .au-sku-search-result-desc {
+  font-size: 11.5px;
+  color: var(--au-text-muted);
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.admin-ui-v2 .au-sku-search-result-stock {
+  font-size: 11.5px;
+  color: var(--au-text-subdued);
+  white-space: nowrap;
+}
+
+.admin-ui-v2 .au-sku-search-status {
+  font-size: var(--au-fs-sm);
+  color: var(--au-text-subdued);
+  padding: 6px 2px;
+}

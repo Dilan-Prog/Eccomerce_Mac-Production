@@ -623,8 +623,7 @@
 
                             {{-- IMAGE --}}
                             <a class="product-card-image" href="{{ route('product-detail', $product->slug) }}" aria-label="{{ $product->name }}">
-                                <img class="img-main" src="{{ asset($product->thumb_image) }}"
-                                     alt="{{ $product->name }}" loading="lazy" itemprop="image" />
+                                <x-responsive-product-image :product="$product" variant="card" class="img-main" itemprop="image" :alt="$product->name" loading="lazy" />
                                 @if($hoverImage)
                                     <img class="img-hover" src="{{ asset($hoverImage) }}"
                                          alt="{{ $product->name }}" loading="lazy" />

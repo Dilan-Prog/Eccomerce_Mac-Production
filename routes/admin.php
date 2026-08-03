@@ -90,7 +90,7 @@ Route::get('slider/export', [SliderController::class, 'export'])->name('slider.e
 Route::post('slider/bulk', [SliderController::class, 'bulkAction'])->name('slider.bulk');
 Route::get('slider/create-fragment', [SliderController::class, 'createFragment'])->name('slider.create-fragment');
 Route::get('slider/{id}/edit-fragment', [SliderController::class, 'editFragment'])->name('slider.edit-fragment');
-Route::resource('slider',SliderController::class);
+Route::resource('slider',SliderController::class)->except(['create', 'edit']);
 
 /**Media Library routes */
 Route::get('media-library', [MediaLibraryController::class, 'index'])->name('media-library.index');
@@ -115,7 +115,7 @@ Route::get('category/export', [CategoryController::class, 'export'])->name('cate
 Route::post('category/bulk', [CategoryController::class, 'bulkAction'])->name('category.bulk');
 Route::get('category/create-fragment', [CategoryController::class, 'createFragment'])->name('category.create-fragment');
 Route::get('category/{id}/edit-fragment', [CategoryController::class, 'editFragment'])->name('category.edit-fragment');
-Route::resource('category',CategoryController::class);
+Route::resource('category',CategoryController::class)->except(['create', 'edit']);
 Route::put('change-status', [CategoryController::class, 'changeStatus'])->name('category.change-status');
 /**SubCategory Routes */
 Route::put('subcategory/change-status', [SubcategoryController::class, 'changeStatus'])->name('sub-category.change-status');
@@ -124,7 +124,7 @@ Route::get('sub-category/export', [SubcategoryController::class, 'export'])->nam
 Route::post('sub-category/bulk', [SubcategoryController::class, 'bulkAction'])->name('sub-category.bulk');
 Route::get('sub-category/create-fragment', [SubcategoryController::class, 'createFragment'])->name('sub-category.create-fragment');
 Route::get('sub-category/{id}/edit-fragment', [SubcategoryController::class, 'editFragment'])->name('sub-category.edit-fragment');
-Route::resource('sub-category',SubcategoryController::class);
+Route::resource('sub-category',SubcategoryController::class)->except(['create', 'edit']);
 /**Child Category Routes */
 Route::put('child-category/change-status', [ChildCategoryController::class, 'changeStatus'])->name('child-category.change-status');
 Route::get('get-subcategory',[ChildCategoryController::class, 'getSubCategories'])->name('get-subcategories');
@@ -133,7 +133,7 @@ Route::get('child-category/export', [ChildCategoryController::class, 'export'])-
 Route::post('child-category/bulk', [ChildCategoryController::class, 'bulkAction'])->name('child-category.bulk');
 Route::get('child-category/create-fragment', [ChildCategoryController::class, 'createFragment'])->name('child-category.create-fragment');
 Route::get('child-category/{id}/edit-fragment', [ChildCategoryController::class, 'editFragment'])->name('child-category.edit-fragment');
-Route::resource('child-category',ChildCategoryController::class);
+Route::resource('child-category',ChildCategoryController::class)->except(['create', 'edit']);
 
 
 /**Brand route */
@@ -143,7 +143,7 @@ Route::get('brand/export', [BrandController::class, 'export'])->name('brand.expo
 Route::post('brand/bulk', [BrandController::class, 'bulkAction'])->name('brand.bulk');
 Route::get('brand/create-fragment', [BrandController::class, 'createFragment'])->name('brand.create-fragment');
 Route::get('brand/{id}/edit-fragment', [BrandController::class, 'editFragment'])->name('brand.edit-fragment');
-Route::resource('brand',BrandController::class);
+Route::resource('brand',BrandController::class)->except(['create', 'edit']);
 
 /**Roles route */
 Route::get('roles/table-data', [RoleController::class, 'tableData'])->name('roles.table-data');
@@ -159,13 +159,12 @@ Route::get('products/get-subcategories',[ ProductController::class, 'getSubCateg
 Route::get('products/get-child-categories',[ ProductController::class, 'getChildCategories'])->name('product.get-child-categories');
 Route::get('products/search-sku',[ ProductController::class, 'searchSku'])->name('product.search-sku');
 Route::get('products/aspel-prices', [ProductController::class, 'getAspelPrices'])->name('product.aspel-prices');
-Route::get('products/get-aspel-currency',[ ProductController::class, 'getAspelCurrency'])->name('product.get-aspel-currency');
 Route::get('products/table-data', [ProductController::class, 'tableData'])->name('products.table-data');
 Route::get('products/export', [ProductController::class, 'export'])->name('products.export');
 Route::post('products/bulk', [ProductController::class, 'bulkAction'])->name('products.bulk');
 Route::get('products/create-fragment', [ProductController::class, 'createFragment'])->name('products.create-fragment');
 Route::get('products/{id}/edit-fragment', [ProductController::class, 'editFragment'])->name('products.edit-fragment');
-Route::resource('products',ProductController::class);
+Route::resource('products',ProductController::class)->except(['create', 'edit']);
 
 
 /**Product Sync Aspell Route */
@@ -194,7 +193,7 @@ Route::get('products-variant/export', [ProductVariantController::class, 'export'
 Route::post('products-variant/bulk', [ProductVariantController::class, 'bulkAction'])->name('products-variant.bulk');
 Route::get('products-variant/create-fragment', [ProductVariantController::class, 'createFragment'])->name('products-variant.create-fragment');
 Route::get('products-variant/{id}/edit-fragment', [ProductVariantController::class, 'editFragment'])->name('products-variant.edit-fragment');
-Route::resource('products-variant', ProductVariantController::class);
+Route::resource('products-variant', ProductVariantController::class)->except(['create', 'edit']);
 
 /**Product Variant Item */
 Route::get('products-variant-item/create-fragment/{productId}/{variantId}', [ProductVariantItemController::class, 'createFragment'])->name('products-variant-item.create-fragment');
@@ -203,9 +202,7 @@ Route::get('products-variant-item/{productId}/{variantId}' , [ProductVariantItem
 Route::get('products-variant-item/{productId}/{variantId}/table-data', [ProductVariantItemController::class, 'tableData'])->name('products-variant-item.table-data');
 Route::get('products-variant-item/{productId}/{variantId}/export', [ProductVariantItemController::class, 'export'])->name('products-variant-item.export');
 Route::post('products-variant-item/bulk', [ProductVariantItemController::class, 'bulkAction'])->name('products-variant-item.bulk');
-Route::get('products-variant-item/create/{productId}/{variantId}' , [ProductVariantItemController::class, 'create'])->name('products-variant-item.create');
 Route::post('products-variant-item' , [ProductVariantItemController::class, 'store'])->name('products-variant-item.store');
-Route::get('products-variant-item-edit/{variantItemId}' , [ProductVariantItemController::class, 'edit'])->name('products-variant-item.edit');
 Route::put('products-variant-item-update/{variantItemId}' , [ProductVariantItemController::class, 'update'])->name('products-variant-item.update');
 Route::delete('products-variant-item/{variantItemId}' , [ProductVariantItemController::class, 'destroy'])->name('products-variant-item.destroy');
 Route::put('products-variant-item-status' , [ProductVariantItemController::class, 'changeStatus'])->name('products-variant-item.change-status');
@@ -218,7 +215,7 @@ Route::get('products-variant-combinations/export', [ProductVariantCombinationsCo
 Route::post('products-variant-combinations/bulk', [ProductVariantCombinationsController::class, 'bulkAction'])->name('products-variant-combinations.bulk');
 Route::get('products-variant-combinations/create-fragment', [ProductVariantCombinationsController::class, 'createFragment'])->name('products-variant-combinations.create-fragment');
 Route::get('products-variant-combinations/{id}/edit-fragment', [ProductVariantCombinationsController::class, 'editFragment'])->name('products-variant-combinations.edit-fragment');
-Route::resource('products-variant-combinations', ProductVariantCombinationsController::class);
+Route::resource('products-variant-combinations', ProductVariantCombinationsController::class)->except(['create', 'edit']);
 
 
 /**Producto More Eccomerce */
@@ -228,7 +225,7 @@ Route::get('products-more-eccomerce/{product}/export', [ProductMoreEccomerceCont
 Route::post('products-more-eccomerce/{product}/bulk', [ProductMoreEccomerceController::class, 'bulkAction'])->name('products-more-eccomerce.bulk');
 Route::get('products-more-eccomerce/create-fragment', [ProductMoreEccomerceController::class, 'createFragment'])->name('products-more-eccomerce.create-fragment');
 Route::get('products-more-eccomerce/{id}/edit-fragment', [ProductMoreEccomerceController::class, 'editFragment'])->name('products-more-eccomerce.edit-fragment');
-Route::resource('products-more-eccomerce',ProductMoreEccomerceController::class);
+Route::resource('products-more-eccomerce',ProductMoreEccomerceController::class)->except(['create', 'edit']);
 // Route::get('product-more-eccomerce-edit/{productId}',[ProductMoreEccomerceController::class, 'edit'])->name('product-more-eccomerce.edit');
 
 /**Flash Sale Routes */
@@ -253,11 +250,9 @@ Route::get('coupons/export', [CouponController::class, 'export'])->name('coupons
 Route::post('coupons/bulk', [CouponController::class, 'bulkAction'])->name('coupons.bulk');
 Route::get('coupons/create-fragment', [CouponController::class, 'createFragment'])->name('coupons.create-fragment');
 Route::get('coupons/{id}/edit-fragment', [CouponController::class, 'editFragment'])->name('coupons.edit-fragment');
-Route::resource('coupons', CouponController::class);
+Route::resource('coupons', CouponController::class)->except(['create', 'edit']);
 /**Order routes */
 
-// Route::get('invocie-pdf/{id}', [OrderController::class, 'pdf'])->name('invocie.pdf');
-// Route::get('generate-pdf/{id}', [OrderController::class, 'generatePdf'])->name('generate.pdf');
 Route::get('order-status', [OrderController::class, 'changeOrderStatus'])->name('order.status');
 Route::get('payment-status', [OrderController::class, 'changePaymentStatus'])->name('payment.status');
 
@@ -287,7 +282,7 @@ Route::get('shipping-rule/export', [ShippingRuleController::class, 'export'])->n
 Route::post('shipping-rule/bulk', [ShippingRuleController::class, 'bulkAction'])->name('shipping-rule.bulk');
 Route::get('shipping-rule/create-fragment', [ShippingRuleController::class, 'createFragment'])->name('shipping-rule.create-fragment');
 Route::get('shipping-rule/{id}/edit-fragment', [ShippingRuleController::class, 'editFragment'])->name('shipping-rule.edit-fragment');
-Route::resource('shipping-rule', ShippingRuleController::class);
+Route::resource('shipping-rule', ShippingRuleController::class)->except(['create', 'edit']);
 
 
 /**Payment Settings Routes */

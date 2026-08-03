@@ -1,7 +1,6 @@
 <?php
 namespace App\Http\Controllers\Backend;
 
-use App\DataTables\AssociateProductDataTable;
 use App\Http\Controllers\Controller;
 use App\Models\Product;
 use Illuminate\Http\Request;
