@@ -41,6 +41,11 @@ class BankAccountTableQuery extends AdminTableQuery
                 'searchable' => true,
             ],
             [
+                'key' => 'moneda',
+                'label' => 'Moneda',
+                'sortable' => true,
+            ],
+            [
                 'key' => 'numero_cuenta',
                 'label' => 'No. de Cuenta',
             ],
@@ -85,6 +90,7 @@ class BankAccountTableQuery extends AdminTableQuery
                     'fragmentUrl' => route('admin.bank-account.edit-fragment', $row->id),
                     'submitUrl' => route('admin.bank-account.update', $row->id),
                     'method' => 'PUT',
+                    'sidebar' => true,
                 ],
             ],
             [

@@ -28,6 +28,7 @@
     <script src="{{ asset('admin-ui/js/table/bulk-actions.js') }}"></script>
     <script src="{{ asset('admin-ui/js/table/column-visibility.js') }}"></script>
     <script src="{{ asset('admin-ui/js/table/admin-table.js') }}"></script>
+    <script src="{{ asset('admin-ui/js/core/detail-modal.js') }}"></script>
     <script>
         window.AU_PRODUCT_SKU_SEARCH = {
             routes: {
@@ -48,6 +49,11 @@
             ],
             rowSelectable: true,
             initialFilter: @json(request('filter')),
+            // Opt-in read-only detail modal (AU.DetailModal): clicking a row
+            // (outside the checkbox / Acciones column) fetches the product's
+            // details fragment and shows it in an overlay.
+            rowDetailsUrl: (id) => '{{ url('admin/products') }}/' + id + '/details-fragment',
+            rowDetailsTitle: (row) => (row && row.cells && row.cells.name) || 'Detalle de producto',
         });
     </script>
 @endpush

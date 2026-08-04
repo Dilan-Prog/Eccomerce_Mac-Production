@@ -14,11 +14,15 @@
     $sourceTone = $cotizacion->source === 'cliente' ? 'info' : 'warning';
     $sourceLabel = $cotizacion->source === 'cliente' ? 'Cliente' : 'Admin';
 
-    // Same IVA-16%-back-calculated-for-display convention used in the
-    // customer-facing PDF (resources/views/cotizaciones/pdf.blade.php) and
-    // the legacy admin show view, preserved here for parity.
-    $subtotalSinIva = round($cotizacion->total / 1.16, 2);
-    $iva = round($cotizacion->total - $subtotalSinIva, 2);
+    // Forward IVA calc (subtotal + IVA = total), matching the fix applied to
+    // resources/views/cotizaciones/pdf.blade.php — cotizacion->total is
+    // always raw MXN with no IVA baked in (see App\Support\CotizacionPricing),
+    // so IVA is added once here for display, then converted to the quote's
+    // chosen currency via Cotizacion::displayAmount().
+    $subtotalSinIva = round($cotizacion->total, 2);
+    $ivaPercent = (float) (\Illuminate\Support\Facades\DB::table('general_settings')->value('iva_mexico') ?? 16.00);
+    $iva = round($subtotalSinIva * $ivaPercent / 100, 2);
+    $totalConIva = $subtotalSinIva + $iva;
 
     // Finalized/generated quotes carry their final line items as a frozen
     // snapshot in productos_json. A draft has no snapshot yet — its items
@@ -37,6 +41,14 @@
             . ' data-title="' . e('Cotización ' . $cotizacion->folio) . '"'
             . ' data-url="' . e($pdfUrl) . '"'
             . ' data-download-name="' . e($cotizacion->folio . '.pdf') . '">Ver PDF</a>';
+    }
+    if ($cotizacion->status !== 'borrador' && $cotizacion->pdf_path) {
+        // Re-renders the same PDF file from this quote's frozen data but
+        // with whatever is CURRENT in the template/settings (logo, IVA %,
+        // bank accounts) — see AdminCotizacionController::regeneratePdf().
+        // .au-action-item is the generic POST+toast+reload handler in
+        // admin.js — no bespoke JS needed for this button.
+        $actions .= ' <a href="' . route('admin.cotizaciones.regenerate-pdf', $cotizacion->id) . '" class="au-btn au-btn-sm au-action-item" data-method="POST">Regenerar PDF</a>';
     }
 @endphp
 @extends('admin-ui.layouts.master')
@@ -136,15 +148,18 @@
                 </div>
                 <div class="au-card-body">
                     <div class="au-flex" style="justify-content:space-between;padding:5px 0;font-size:13px;color:var(--au-text-subdued)">
-                        <span>Subtotal (s/IVA)</span><span class="au-mono">${{ number_format($subtotalSinIva, 2, '.', ',') }} MXN</span>
+                        <span>Subtotal (s/IVA)</span><span class="au-mono">${{ number_format($cotizacion->displayAmount($subtotalSinIva), 2, '.', ',') }} {{ $cotizacion->currency }}</span>
                     </div>
                     <div class="au-flex" style="justify-content:space-between;padding:5px 0;font-size:13px;color:var(--au-text-subdued)">
-                        <span>IVA (16%)</span><span class="au-mono">${{ number_format($iva, 2, '.', ',') }} MXN</span>
+                        <span>IVA ({{ number_format($ivaPercent, 0) }}%)</span><span class="au-mono">${{ number_format($cotizacion->displayAmount($iva), 2, '.', ',') }} {{ $cotizacion->currency }}</span>
                     </div>
                     <hr style="border:0;border-top:1px solid var(--au-border);margin:6px 0">
                     <div class="au-flex" style="justify-content:space-between;padding:5px 0;font-size:15px;font-weight:700">
-                        <span>Total</span><span class="au-mono">${{ number_format($cotizacion->total, 2, '.', ',') }} MXN</span>
+                        <span>Total</span><span class="au-mono">${{ number_format($cotizacion->displayAmount($totalConIva), 2, '.', ',') }} {{ $cotizacion->currency }}</span>
                     </div>
+                    @if ($cotizacion->currency === 'USD' && $cotizacion->exchange_rate)
+                    <div style="font-size:11px;color:var(--au-text-subdued);margin-top:4px">Tipo de cambio: {{ $cotizacion->exchange_rate }} MXN por USD</div>
+                    @endif
                 </div>
             </div>
         </div>

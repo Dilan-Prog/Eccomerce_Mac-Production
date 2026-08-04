@@ -106,8 +106,11 @@ class ProductTableQuery extends AdminTableQuery
             ],
             [
                 'key' => 'qty',
-                'label' => 'Cantidad',
+                'label' => 'Stock',
                 'sortable' => true,
+                'render' => fn (Model $row) => $row->qty_personalizated == 0
+                    ? (int) $row->qty_aspel
+                    : (int) $row->qty,
             ],
             [
                 'key' => 'actions',

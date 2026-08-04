@@ -16,6 +16,7 @@
             'fragmentUrl' => route('admin.bank-account.create-fragment'),
             'submitUrl' => route('admin.bank-account.store'),
             'method' => 'POST',
+            'sidebar' => true,
         ])) . '">+ Crear Nuevo</button>',
     ])
 

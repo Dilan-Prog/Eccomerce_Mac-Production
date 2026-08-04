@@ -18,6 +18,7 @@
 @import url("components/cotizacion-builder.css");
 @import url("components/product-sku-search.css");
 @import url("components/pdf-preview.css");
+@import url("components/detail-modal.css");
 
 /* Utility helpers */
 .admin-ui-v2 .au-text-subdued { color: var(--au-text-subdued); }

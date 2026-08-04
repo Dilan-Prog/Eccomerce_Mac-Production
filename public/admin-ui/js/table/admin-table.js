@@ -12,6 +12,19 @@
  *     bulkActions: [{ key: 'delete', label: 'Eliminar', tone: 'critical' }],
  *     rowSelectable: true,
  *   });
+ *
+ * Opt-in read-only row detail modal (AU.DetailModal, core/detail-modal.js):
+ * pass `rowDetailsUrl`, a function `(rowId, row) => url`, and clicking a row
+ * (anywhere except the row-select checkbox or the Acciones column) opens
+ * the fragment at that URL in a detail modal. Omit it (the default for
+ * every other table) and row clicks do nothing — zero behavior change.
+ *
+ *   new AU.AdminTable({
+ *     el: '#products-table',
+ *     endpoint: '{{ route("admin.products.table-data") }}',
+ *     rowDetailsUrl: (id) => `/admin/products/${id}/details-fragment`,
+ *     rowDetailsTitle: (row) => (row && row.cells && row.cells.name) || 'Detalle',
+ *   });
  */
 window.AU = window.AU || {};
 
@@ -32,6 +45,8 @@ window.AU = window.AU || {};
         { key: "csv", label: "CSV" },
         { key: "pdf", label: "PDF" },
       ];
+      this.rowDetailsUrl = typeof opts.rowDetailsUrl === "function" ? opts.rowDetailsUrl : null;
+      this.rowDetailsTitle = typeof opts.rowDetailsTitle === "function" ? opts.rowDetailsTitle : null;
 
       this.state = {
         page: 1,
@@ -84,7 +99,7 @@ window.AU = window.AU || {};
         <div class="au-tabs" data-au-tabs style="display:none"></div>
         <div class="au-bulk-bar" data-au-bulk-bar></div>
         <div class="au-table-wrap">
-          <table class="au-table">
+          <table class="au-table${this.rowDetailsUrl ? " has-row-details" : ""}">
             <thead data-au-thead></thead>
             <tbody data-au-tbody></tbody>
           </table>
@@ -245,6 +260,25 @@ window.AU = window.AU || {};
           } catch (err) {
             AU.toast.error((err.data && err.data.message) || "Ocurrió un error");
           }
+        });
+      }
+
+      if (this.rowDetailsUrl) {
+        AU.on(this.root, "click", "tbody tr[data-row-id]", (e, tr) => {
+          // Excluded: the row-select checkbox cell and anything in the
+          // Acciones column (buttons, dropdown menu, links) — same cells
+          // rowSelectable/actions rendering above marks with these classes.
+          if (e.target.closest(".au-col-checkbox") || e.target.closest(".au-col-actions")) return;
+
+          const rowId = tr.getAttribute("data-row-id");
+          const row = ((this.data && this.data.rows) || []).find((r) => String(r.row_id) === String(rowId));
+          const url = this.rowDetailsUrl(rowId, row);
+          if (!url) return;
+
+          AU.DetailModal.open({
+            title: this.rowDetailsTitle ? this.rowDetailsTitle(row) : "Detalle",
+            fragmentUrl: url,
+          });
         });
       }
     }

@@ -199,7 +199,19 @@ class AdminCotizacionController extends Controller
     public function show(Cotizacion $cotizacion)
     {
         $cotizacion->load(['user', 'perfil', 'items', 'createdByAdmin']);
-        $pdfUrl = $cotizacion->pdf_path ? route('admin.cotizaciones.pdf', $cotizacion) : null;
+
+        // Cache-busting query param (the file's own mtime) so a browser that
+        // already cached this exact PDF URL from before a regeneratePdf()
+        // call is forced to re-fetch instead of showing a stale copy —
+        // Cache-Control headers alone can't invalidate what a browser
+        // already has cached from a prior response.
+        $pdfUrl = null;
+        if ($cotizacion->pdf_path) {
+            $version = Storage::disk('public')->exists($cotizacion->pdf_path)
+                ? Storage::disk('public')->lastModified($cotizacion->pdf_path)
+                : time();
+            $pdfUrl = route('admin.cotizaciones.pdf', $cotizacion) . '?v=' . $version;
+        }
 
         return view('admin-ui.cotizaciones.show', compact('cotizacion', 'pdfUrl'));
     }
@@ -216,10 +228,41 @@ class AdminCotizacionController extends Controller
     {
         abort_unless($cotizacion->pdf_path && Storage::disk('public')->exists($cotizacion->pdf_path), 404);
 
+        // No cache-control: the file is regenerated in place at the SAME path
+        // (see regeneratePdf()), so without this the browser can keep showing
+        // a stale copy from before a regeneration instead of re-fetching it.
         return response()->file(
             Storage::disk('public')->path($cotizacion->pdf_path),
-            ['Content-Type' => 'application/pdf']
+            [
+                'Content-Type' => 'application/pdf',
+                'Cache-Control' => 'no-cache, no-store, must-revalidate',
+                'Pragma' => 'no-cache',
+                'Expires' => '0',
+            ]
         );
+    }
+
+    /**
+     * Re-renders the PDF file in place (same folio.pdf path) from the
+     * quote's already-frozen data (productos_json/subtotal/total never
+     * change here — a finalized quote's numbers are historical fact) but
+     * with whatever is CURRENT in the template/settings: the logo file,
+     * general_settings.iva_mexico, and the bank_accounts list. Lets an
+     * already-finalized quote pick up template/settings changes (e.g. this
+     * PDF's own redesign) without re-finalizing or touching its data.
+     */
+    public function regeneratePdf(Cotizacion $cotizacion)
+    {
+        abort_if($cotizacion->status === 'borrador' || !$cotizacion->pdf_path, 403);
+
+        $cotizacion->load(['items', 'user', 'perfil']);
+        $cotizacion->pdf_path = $this->generateFinalizedPdf($cotizacion);
+        $cotizacion->save();
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'PDF regenerado con éxito.',
+        ]);
     }
 
     /** Blank ERP-style quote builder page — no Cotizacion exists yet. */

@@ -10,8 +10,8 @@
 
   /* ── ENCABEZADO ── */
   .head-table td { vertical-align: top; padding: 0; }
-  .head-logo-cell { width: 35%; }
-  .head-logo-cell img { width: 100%; display: block; }
+  .head-logo-cell { width: 350px; }
+  .head-logo-cell img { width: 350px; display: block; }
   .head-company-cell { padding-top: 8px; }
   .company-name { font-size: 12px; font-weight: 700; }
   .company-meta-table { margin-top: 3px; }
@@ -208,8 +208,10 @@
     <table class="bank-accounts-table">
         <thead>
             <tr>
+                <th style="width:36px"></th>
                 <th>Banco</th>
                 <th>Titular</th>
+                <th>Moneda</th>
                 <th>No. de Cuenta</th>
                 <th>No. de Tarjeta</th>
                 <th>CLABE</th>
@@ -218,8 +220,15 @@
         <tbody>
             @foreach ($bankAccounts as $account)
             <tr>
+                <td>
+                    @php($accountLogo = $account->logo ? uploadedImageToBase64($account->logo) : null)
+                    @if ($accountLogo)
+                        <img src="{{ $accountLogo }}" alt="{{ $account->banco }}" style="width:28px;height:28px;object-fit:contain;display:block">
+                    @endif
+                </td>
                 <td>{{ $account->banco }}</td>
                 <td>{{ $account->titular }}</td>
+                <td>{{ $account->moneda ?? 'MXN' }}</td>
                 <td>{{ $account->numero_cuenta ?? '—' }}</td>
                 <td>{{ $account->numero_tarjeta ?? '—' }}</td>
                 <td>{{ $account->clabe ?? '—' }}</td>

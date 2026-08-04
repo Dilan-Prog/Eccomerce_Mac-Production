@@ -186,6 +186,71 @@ class ProductController extends Controller
     }
 
     /**
+     * Bare, read-only details fragment for the admin-ui Products list's
+     * "click a row" details modal. Mirrors editFragment()'s defensive style
+     * (Aspel/DB lookups wrapped in try/catch) but never writes anything and
+     * loads the FULL image gallery (no take() limit — this isn't a sidebar
+     * preview slot, it's the whole gallery).
+     */
+    public function detailsFragment(string $id)
+    {
+        $product = Product::findOrFail($id);
+        $category = $product->category;
+        $brand = $product->brand;
+        $subCategory = $product->sub_category_id ? Subcategory::find($product->sub_category_id) : null;
+        $childCategory = $product->child_category_id ? ChildCategory::find($product->child_category_id) : null;
+
+        $galleryImages = $product->productImageGalleries()->orderBy('id')->get();
+
+        $aspelPriceOptions = [];
+        try {
+            $aspelPriceOptions = AspelPricing::optionsForSku((string) $product->sku);
+        } catch (\Throwable $e) {
+            $aspelPriceOptions = [];
+        }
+
+        $aspelTierLabel = null;
+        if (!empty($product->aspel_price_tier)) {
+            $tier = collect($aspelPriceOptions)->firstWhere('cve_precio', (int) $product->aspel_price_tier);
+            $aspelTierLabel = $tier['descripcion'] ?? null;
+        }
+
+        // Same fallback logic as effectivePrice()/effectiveStock() (see Product model),
+        // wrapped defensively since these accessors touch product state that could be
+        // malformed on legacy rows and this view must never break on bad data.
+        try {
+            $effectivePrice = $product->effectivePrice();
+        } catch (\Throwable $e) {
+            $effectivePrice = (float) $product->price;
+        }
+
+        try {
+            $effectiveStock = $product->effectiveStock();
+        } catch (\Throwable $e) {
+            $effectiveStock = (int) $product->qty;
+        }
+
+        try {
+            $hasActiveOffer = checkDiscount($product);
+        } catch (\Throwable $e) {
+            $hasActiveOffer = false;
+        }
+
+        // Mirrors the price_offert_personalizated fallback used inside effectivePrice(),
+        // shown separately so an admin can see the offer price regardless of whether
+        // the offer window is currently active.
+        $effectiveOffertPrice = $product->price_offert_personalizated == 1
+            ? $product->offert_price
+            : ($product->aspel_offert_price ?? $product->offert_price);
+
+        return view('admin-ui.products._details', compact(
+            'product', 'category', 'brand', 'subCategory', 'childCategory',
+            'galleryImages', 'aspelTierLabel', 'effectivePrice', 'effectiveStock',
+            'effectiveOffertPrice', 'hasActiveOffer'
+        ));
+    }
+
+    /**
      * Store a newly created resource in storage.
      */
     public function store(Request $request)

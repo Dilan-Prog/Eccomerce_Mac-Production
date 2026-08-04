@@ -16,6 +16,8 @@ class BankAccount extends Model
     protected $fillable = [
         'banco',
         'titular',
+        'moneda',
+        'logo',
         'numero_cuenta',
         'numero_tarjeta',
         'clabe',

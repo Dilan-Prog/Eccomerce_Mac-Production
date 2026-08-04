@@ -85,6 +85,7 @@ Route::delete('cotizaciones/{cotizacion}/items/{item}', [AdminCotizacionControll
 Route::put('cotizaciones/{cotizacion}/currency', [AdminCotizacionController::class, 'updateCurrency'])->name('cotizaciones.currency');
 Route::post('cotizaciones/{cotizacion}/finalize', [AdminCotizacionController::class, 'finalize'])->name('cotizaciones.finalize');
 Route::get('cotizaciones/{cotizacion}/pdf', [AdminCotizacionController::class, 'pdf'])->name('cotizaciones.pdf');
+Route::post('cotizaciones/{cotizacion}/regenerate-pdf', [AdminCotizacionController::class, 'regeneratePdf'])->name('cotizaciones.regenerate-pdf');
 Route::get('cotizaciones/{cotizacion}', [AdminCotizacionController::class, 'show'])->name('cotizaciones.show');
 
 /**Slider routes */
@@ -167,6 +168,7 @@ Route::get('products/export', [ProductController::class, 'export'])->name('produ
 Route::post('products/bulk', [ProductController::class, 'bulkAction'])->name('products.bulk');
 Route::get('products/create-fragment', [ProductController::class, 'createFragment'])->name('products.create-fragment');
 Route::get('products/{id}/edit-fragment', [ProductController::class, 'editFragment'])->name('products.edit-fragment');
+Route::get('products/{id}/details-fragment', [ProductController::class, 'detailsFragment'])->name('products.details-fragment');
 Route::resource('products',ProductController::class)->except(['create', 'edit']);
 
 

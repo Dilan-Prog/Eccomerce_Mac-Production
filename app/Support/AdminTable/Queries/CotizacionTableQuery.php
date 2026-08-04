@@ -6,6 +6,7 @@ use App\Models\Cotizacion;
 use App\Support\AdminTable\AdminTableQuery;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 
 /**
  * Replaces the plain (non-Yajra) paginated listing previously built by hand
@@ -148,9 +149,18 @@ class CotizacionTableQuery extends AdminTableQuery
         }
 
         if ($row->pdf_path) {
+            // Cache-busting query param (the file's own mtime) so a browser
+            // that already cached this exact PDF URL from before a
+            // regeneratePdf() call is forced to re-fetch instead of showing
+            // a stale copy — Cache-Control headers alone can't invalidate
+            // what a browser already has cached from a prior response.
+            $version = Storage::disk('public')->exists($row->pdf_path)
+                ? Storage::disk('public')->lastModified($row->pdf_path)
+                : time();
+
             $actions[] = [
                 'label' => 'Ver PDF',
-                'url' => route('admin.cotizaciones.pdf', $row->id),
+                'url' => route('admin.cotizaciones.pdf', $row->id) . '?v=' . $version,
             ];
         }
 

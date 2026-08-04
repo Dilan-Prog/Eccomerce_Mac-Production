@@ -1,0 +1,104 @@
+/* Reusable read-only detail modal (AU.DetailModal, core/detail-modal.js).
+   Mirrors the overlay/shell structure of form-modal.css/pdf-preview.css,
+   sized for a scrollable read-only HTML fragment instead of a form or an
+   iframe. */
+
+.admin-ui-v2 .au-detail-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px;
+  background: rgba(9, 20, 36, 0.52);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.12s ease;
+}
+
+.admin-ui-v2 .au-detail-modal-overlay.is-open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.admin-ui-v2 .au-detail-modal {
+  position: relative;
+  width: 100%;
+  max-width: 640px;
+  max-height: 92vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--au-surface);
+  border: 1px solid #dfe4ee;
+  border-radius: var(--au-radius-lg);
+  box-shadow: var(--au-shadow-modal);
+  overflow: hidden;
+  transform: translateY(8px);
+  transition: transform 0.12s ease;
+}
+
+.admin-ui-v2 .au-detail-modal-overlay.is-open .au-detail-modal {
+  transform: translateY(0);
+}
+
+.admin-ui-v2 .au-detail-modal-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 16px 20px;
+  border-bottom: 1px solid #eef1f7;
+  flex-shrink: 0;
+}
+
+.admin-ui-v2 .au-detail-modal-title {
+  font-family: var(--au-font-heading);
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: -0.3px;
+}
+
+.admin-ui-v2 .au-detail-modal-body {
+  padding: 20px 22px;
+  overflow-y: auto;
+  flex: 1;
+  min-height: 80px;
+}
+
+.admin-ui-v2 .au-detail-modal-body.is-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--au-text-subdued);
+  font-size: 13px;
+}
+
+.admin-ui-v2 .au-detail-modal-foot {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 14px 20px;
+  border-top: 1px solid #eef1f7;
+  background: var(--au-surface-header);
+  flex-shrink: 0;
+}
+
+/* Opt-in cursor affordance for AdminTable rows wired up via
+   `rowDetailsUrl` (see table/admin-table.js) — signals the whole row is
+   clickable, not just the Acciones column. */
+.admin-ui-v2 table.au-table.has-row-details tbody tr {
+  cursor: pointer;
+}
+
+@media (max-width: 600px) {
+  .admin-ui-v2 .au-detail-modal-overlay {
+    padding: 12px;
+  }
+  .admin-ui-v2 .au-detail-modal {
+    max-height: 96vh;
+  }
+}

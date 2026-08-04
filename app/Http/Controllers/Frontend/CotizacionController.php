@@ -115,9 +115,16 @@ class CotizacionController extends Controller
     {
         abort_if($cotizacion->user_id !== auth()->id(), 403);
 
-        $pdfUrl = $cotizacion->pdf_path
-            ? route('cotizacion.pdf', $cotizacion->id)
-            : null;
+        // Cache-busting query param (the file's own mtime) — see
+        // AdminCotizacionController::show() for why this is needed even
+        // with the Cache-Control headers on pdf().
+        $pdfUrl = null;
+        if ($cotizacion->pdf_path) {
+            $version = Storage::disk('public')->exists($cotizacion->pdf_path)
+                ? Storage::disk('public')->lastModified($cotizacion->pdf_path)
+                : time();
+            $pdfUrl = route('cotizacion.pdf', $cotizacion->id) . '?v=' . $version;
+        }
 
         return view('cotizaciones.generada', compact('cotizacion', 'pdfUrl'));
     }
@@ -135,7 +142,12 @@ class CotizacionController extends Controller
 
         return response()->file(
             Storage::disk('public')->path($cotizacion->pdf_path),
-            ['Content-Type' => 'application/pdf']
+            [
+                'Content-Type' => 'application/pdf',
+                'Cache-Control' => 'no-cache, no-store, must-revalidate',
+                'Pragma' => 'no-cache',
+                'Expires' => '0',
+            ]
         );
     }
 
