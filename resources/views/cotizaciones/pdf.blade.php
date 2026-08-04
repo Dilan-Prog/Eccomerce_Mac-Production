@@ -10,12 +10,13 @@
 
   /* ── ENCABEZADO ── */
   .head-table td { vertical-align: top; padding: 0; }
-  .head-logo-cell { width: 90px; }
-  .head-logo-cell img { width: 80px; }
-  .head-company-cell { padding-left: 10px; }
+  .head-logo-cell { width: 35%; }
+  .head-logo-cell img { width: 100%; display: block; }
+  .head-company-cell { padding-top: 8px; }
   .company-name { font-size: 12px; font-weight: 700; }
+  .company-meta-table { margin-top: 3px; }
   .company-meta-table td { padding: 1px 6px 1px 0; font-size: 9px; vertical-align: top; }
-  .company-meta-table .lbl { font-weight: 700; white-space: nowrap; }
+  .company-meta-table .lbl { font-weight: 700; white-space: nowrap; width: 90px; }
   .head-folio-cell { width: 150px; text-align: right; font-size: 9px; }
   .head-folio-cell .lbl { font-weight: 700; }
   .head-folio-cell .folio-val { font-weight: 700; font-size: 11px; }
@@ -43,11 +44,23 @@
   .totals-table .lbl { font-weight: 700; }
   .totals-table .val { text-align: right; font-weight: 700; }
 
+  .exchange-rate-note { width: 220px; margin-left: auto; margin-top: 2px; font-size: 8px; text-align: right; }
+
   .note-line { margin-top: 10px; font-size: 9px; font-weight: 700; }
   .vigencia-line { margin-top: 20px; font-size: 10px; }
   .vigencia-line .lbl { font-weight: 700; }
   .vigencia-line .val { font-weight: 400; }
   .en-letras { margin-top: 10px; font-size: 10px; font-weight: 700; }
+
+  /* ── CUENTAS BANCARIAS ── */
+  .bank-accounts-row { margin-top: 20px; }
+  .bank-accounts-title { font-size: 10px; font-weight: 700; }
+  .bank-accounts-table { margin-top: 4px; }
+  .bank-accounts-table th {
+      border-bottom: 1px solid #000; font-size: 9px; font-weight: 700;
+      text-align: left; padding: 4px 4px;
+  }
+  .bank-accounts-table td { padding: 4px 4px; font-size: 9px; vertical-align: top; border-bottom: 1px solid #ddd; }
 
   /* ── MARCAS ── */
   .brands-row { margin-top: 40px; text-align: center; }
@@ -64,35 +77,41 @@
 <body>
 <div class="wrap">
 
-{{-- ENCABEZADO --}}
+{{-- ENCABEZADO: logo arriba (35% de ancho, estirado), Nombre/R.F.C./Domicilio
+     fiscal apilados debajo — folio/fecha/condiciones se mantienen a la
+     derecha, alineados con ambas filas vía rowspan. --}}
 <table class="head-table">
     <tr>
-        @php($logoDataUri = uploadedImageToBase64(asset('uploads/logo/webp-horizontal.webp')))
-        @if ($logoDataUri)
-        <td class="head-logo-cell"><img src="{{ $logoDataUri }}" alt="Mac Del Norte"></td>
-        @endif
-        <td class="head-company-cell">
-            <div class="company-name">MAC DEL NORTE - MONITOREO, AUTOMATIZACION Y CONTROLES DEL NORTE</div>
-            <table class="company-meta-table">
-                <tr>
-                    <td class="lbl">Domicilio fiscal</td>
-                    <td class="lbl">R.F.C.:</td>
-                    <td>NMA180313M46</td>
-                </tr>
-                <tr>
-                    <td colspan="3">
-                        Calle: CASTAÑO No. 718, Col. EBANOS NORTE, CP: 66612, APODACA, NUEVO LEON, MEXICO
-                        &nbsp;&nbsp;TEL: 8124738768 o 8124738744&nbsp;&nbsp;www.macdelnorte.com
-                    </td>
-                </tr>
-            </table>
+        <td class="head-logo-cell">
+            @php($logoDataUri = uploadedImageToBase64(asset('uploads/logo/webp-horizontal.webp')))
+            @if ($logoDataUri)
+                <img src="{{ $logoDataUri }}" alt="Mac Del Norte">
+            @endif
         </td>
-        <td class="head-folio-cell">
+        <td class="head-folio-cell" rowspan="2">
             <div><span class="lbl">COTIZACIÓN No.:</span></div>
             <div class="folio-val">{{ $cotizacion->folio }}</div>
             <div class="block"><span class="lbl">Fecha</span><br>{{ $cotizacion->created_at->format('d/m/Y') }}</div>
             <div class="block"><span class="lbl">Tiempo de entrega</span><br>{{ $cotizacion->created_at->format('d/m/Y') }}</div>
             <div class="block"><span class="lbl">Condiciones de pago</span><br>CONTADO</div>
+        </td>
+    </tr>
+    <tr>
+        <td class="head-company-cell">
+            <div class="company-name">MAC DEL NORTE - MONITOREO, AUTOMATIZACION Y CONTROLES DEL NORTE</div>
+            <table class="company-meta-table">
+                <tr>
+                    <td class="lbl">R.F.C.:</td>
+                    <td>NMA180313M46</td>
+                </tr>
+                <tr>
+                    <td class="lbl">Domicilio fiscal:</td>
+                    <td>
+                        Calle: CASTAÑO No. 718, Col. EBANOS NORTE, CP: 66612, APODACA, NUEVO LEON, MEXICO
+                        &nbsp;&nbsp;TEL: 8124738768 o 8124738744&nbsp;&nbsp;www.macdelnorte.com
+                    </td>
+                </tr>
+            </table>
         </td>
     </tr>
 </table>
@@ -154,8 +173,8 @@
                     </div>
                 @endif
             </td>
-            <td class="right">{{ number_format($p['precio'], 2, '.', ',') }}</td>
-            <td class="right">{{ number_format($p['subtotal'], 2, '.', ',') }}</td>
+            <td class="right">{{ number_format($cotizacion->displayAmount($p['precio']), 2, '.', ',') }}</td>
+            <td class="right">{{ number_format($cotizacion->displayAmount($p['subtotal']), 2, '.', ',') }}</td>
         </tr>
         @endforeach
     </tbody>
@@ -163,10 +182,14 @@
 
 {{-- TOTALES --}}
 <table class="totals-table">
-    <tr><td class="lbl">Subtotal</td><td class="val">{{ number_format($subtotalSinIva, 2, '.', ',') }}</td></tr>
-    <tr><td class="lbl">I.V.A.</td><td class="val">{{ number_format($iva, 2, '.', ',') }}</td></tr>
-    <tr><td class="lbl">Total</td><td class="val">{{ number_format($cotizacion->total, 2, '.', ',') }}</td></tr>
+    <tr><td class="lbl">Subtotal</td><td class="val">{{ number_format($cotizacion->displayAmount($subtotalSinIva), 2, '.', ',') }}</td></tr>
+    <tr><td class="lbl">I.V.A.</td><td class="val">{{ number_format($cotizacion->displayAmount($iva), 2, '.', ',') }}</td></tr>
+    <tr><td class="lbl">Total ({{ $cotizacion->currency }})</td><td class="val">{{ number_format($cotizacion->displayAmount($totalConIva), 2, '.', ',') }}</td></tr>
 </table>
+
+@if ($cotizacion->currency === 'USD')
+<div class="exchange-rate-note">Tipo de cambio: {{ $cotizacion->exchange_rate }} MXN por USD</div>
+@endif
 
 <div class="note-line">TIEMPO DE ENTREGA INMEDIATA, ENVIO GRATIS</div>
 
@@ -175,7 +198,37 @@
     <span class="val">{{ $cotizacion->created_at->copy()->addDays(15)->format('d/m/Y') }}</span>
 </div>
 
-<div class="en-letras">{{ numeroALetras($cotizacion->total) }}</div>
+<div class="en-letras">{{ numeroALetras($cotizacion->displayAmount($totalConIva)) }}</div>
+
+{{-- CUENTAS BANCARIAS --}}
+@php($bankAccounts = \App\Models\BankAccount::where('status', 1)->get())
+@if ($bankAccounts->isNotEmpty())
+<div class="bank-accounts-row">
+    <div class="bank-accounts-title">Cuentas Bancarias</div>
+    <table class="bank-accounts-table">
+        <thead>
+            <tr>
+                <th>Banco</th>
+                <th>Titular</th>
+                <th>No. de Cuenta</th>
+                <th>No. de Tarjeta</th>
+                <th>CLABE</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach ($bankAccounts as $account)
+            <tr>
+                <td>{{ $account->banco }}</td>
+                <td>{{ $account->titular }}</td>
+                <td>{{ $account->numero_cuenta ?? '—' }}</td>
+                <td>{{ $account->numero_tarjeta ?? '—' }}</td>
+                <td>{{ $account->clabe ?? '—' }}</td>
+            </tr>
+            @endforeach
+        </tbody>
+    </table>
+</div>
+@endif
 
 {{-- MARCAS --}}
 @php($brands = \App\Models\Brand::where('status', 1)->get())

@@ -4,11 +4,17 @@
  * Reads its config from window.AU_COTIZACION_BUILDER (set inline by
  * _builder.blade.php right before this script tag):
  *   {
- *     cotizacionId, items: [...], total,
+ *     cotizacionId, items: [...], total, currency, exchangeRate,
  *     routes: { clientsSearch, productsSearch, store, editUrlBase,
- *               itemsStore, itemBase, finalize, showUrlBase,
+ *               itemsStore, itemBase, currency, finalize, showUrlBase,
  *               customerCreateFragment, customerStore }
  *   }
+ *
+ * currency/exchangeRate: every price from the server is always raw MXN
+ * (cotizacion_items.precio_unitario never changes) — these two only control
+ * how amounts are *displayed* here (see toDisplayAmount()/formatMoney()) and
+ * in the final PDF (Cotizacion::displayAmount()). Manual, per-quote, entered
+ * by the vendor — deliberately not sourced from Aspel's monedas_aspel rates.
  *
  * On the create page (cotizacionId === null) only the client picker is wired
  * up: picking/creating a client immediately POSTs to `store` and redirects
@@ -23,11 +29,59 @@ window.AU = window.AU || {};
   if (!config) return;
 
   let items = Array.isArray(config.items) ? config.items.slice() : [];
+  let currency = config.currency || "MXN";
+  let exchangeRate = config.exchangeRate || null;
+  let lastTotals = { item_count: items.length, total: config.total || 0 };
 
-  function formatMoney(value) {
-    const num = typeof value === "number" ? value : parseFloat(value);
-    if (isNaN(num)) return "$0.00";
-    return num.toLocaleString("es-MX", { style: "currency", currency: "MXN" });
+  /*
+   * Every price the server sends is always raw MXN (see
+   * App\Support\CotizacionPricing / Cotizacion::displayAmount() — the same
+   * conversion, mirrored here so the builder doesn't need a round-trip just
+   * to preview totals as the vendor changes currency/tipo de cambio).
+   */
+  function toDisplayAmount(mxnValue) {
+    const num = typeof mxnValue === "number" ? mxnValue : parseFloat(mxnValue);
+    if (isNaN(num)) return 0;
+    return currency === "USD" && exchangeRate ? num / exchangeRate : num;
+  }
+
+  function formatMoney(mxnValue) {
+    return toDisplayAmount(mxnValue).toLocaleString("es-MX", { style: "currency", currency });
+  }
+
+  /* ---------------------------------------------------------------- *
+   * Moneda / tipo de cambio
+   * ---------------------------------------------------------------- */
+
+  function wireCurrencyControls() {
+    const currencySelect = AU.qs("[data-au-quote-currency]");
+    const rateField = AU.qs("[data-au-quote-exchange-rate-field]");
+    const rateInput = AU.qs("[data-au-quote-exchange-rate]");
+    if (!currencySelect || !config.routes.currency) return;
+
+    async function save() {
+      const payload = { currency: currencySelect.value };
+      if (currencySelect.value === "USD") payload.exchange_rate = rateInput.value;
+
+      try {
+        const data = await AU.request(config.routes.currency, { method: "PUT", body: payload });
+        currency = data.cotizacion.currency;
+        exchangeRate = data.cotizacion.exchange_rate;
+        renderItems();
+        renderSummary(lastTotals.item_count, lastTotals.total);
+      } catch (err) {
+        AU.toast.error((err.data && err.data.message) || "No se pudo guardar la moneda/tipo de cambio");
+      }
+    }
+
+    currencySelect.addEventListener("change", () => {
+      if (rateField) rateField.style.display = currencySelect.value === "USD" ? "" : "none";
+      if (currencySelect.value === "MXN" || (rateInput && rateInput.value)) save();
+    });
+
+    if (rateInput) {
+      rateInput.addEventListener("input", AU.debounce(save, 500));
+    }
   }
 
   /* ---------------------------------------------------------------- *
@@ -35,6 +89,7 @@ window.AU = window.AU || {};
    * ---------------------------------------------------------------- */
 
   function renderSummary(count, total) {
+    lastTotals = { item_count: count, total };
     const countEl = AU.qs("[data-au-quote-summary-count]");
     const totalEl = AU.qs("[data-au-quote-summary-total]");
     if (countEl) countEl.textContent = count === 1 ? "1 artículo" : `${count} artículos`;
@@ -224,10 +279,17 @@ window.AU = window.AU || {};
 
     if (!p.has_variants) {
       const tiers = p.price_tiers || [];
+      const minimo = p.precio_minimo || 1;
+      const publico = p.precio_publico || null;
       const priceControl = tiers.length
-        ? `<select class="au-select au-quote-tier-select" data-tier-select>
-            ${tiers.map((t) => `<option value="${t.cve_precio}">${AU.escapeHtml(t.descripcion)} — ${formatMoney(t.with_iva)}</option>`).join("")}
-          </select>`
+        ? `<div class="au-quote-price-controls">
+            <select class="au-select au-quote-tier-select" data-tier-select>
+              ${tiers.map((t) => `<option value="${t.cve_precio}">${AU.escapeHtml(t.descripcion)} — ${formatMoney(t.precio)}</option>`).join("")}
+            </select>
+            <input type="number" min="0" step="0.01" class="au-input au-quote-custom-price" data-custom-price
+                   data-minimo="${minimo}" data-publico="${publico || ""}" placeholder="Precio personalizado (opcional)">
+            <div class="au-quote-price-notice" data-price-notice></div>
+          </div>`
         : `<div class="au-quote-product-price au-mono">${formatMoney(p.price)}</div>`;
 
       return `
@@ -282,14 +344,61 @@ window.AU = window.AU || {};
 
     container.innerHTML = results.map(productRowHtml).join("");
 
+    /*
+     * Live custom-price feedback: a value below "mínimo" is a hard error
+     * (blocks "Agregar", same rule storeItem() enforces server-side — never
+     * trust this client check alone). A value above "público" is allowed,
+     * just shown as an informational %/amount-over notice.
+     */
+    AU.qsa("[data-custom-price]", container).forEach((input) => {
+      input.addEventListener("input", () => {
+        const notice = input.closest(".au-quote-price-controls").querySelector("[data-price-notice]");
+        const value = parseFloat(input.value);
+        const minimo = parseFloat(input.getAttribute("data-minimo"));
+        const publico = parseFloat(input.getAttribute("data-publico"));
+
+        if (!input.value || isNaN(value)) {
+          notice.textContent = "";
+          notice.className = "au-quote-price-notice";
+          return;
+        }
+
+        if (value < minimo) {
+          notice.textContent = "No puedes poner un precio por debajo del precio mínimo.";
+          notice.className = "au-quote-price-notice is-error";
+        } else if (!isNaN(publico) && value > publico) {
+          const diff = value - publico;
+          const pct = (diff / publico) * 100;
+          notice.textContent = `+${pct.toFixed(1)}% (${formatMoney(diff)} arriba del precio público)`;
+          notice.className = "au-quote-price-notice is-info";
+        } else {
+          notice.textContent = "";
+          notice.className = "au-quote-price-notice";
+        }
+      });
+    });
+
     AU.qsa("[data-au-quote-add-product]", container).forEach((btn) => {
       btn.addEventListener("click", () => {
         const row = btn.closest(".au-quote-product-row");
         const qtyInput = row.querySelector("input[type=\"number\"]");
         const qty = Math.max(1, parseInt(qtyInput.value, 10) || 1);
         const tierSelect = row.querySelector("[data-tier-select]");
+        const customPriceInput = row.querySelector("[data-custom-price]");
         const payload = { product_id: btn.getAttribute("data-au-quote-add-product"), cantidad: qty };
-        if (tierSelect) payload.precio_tier = tierSelect.value;
+
+        if (customPriceInput && customPriceInput.value) {
+          const value = parseFloat(customPriceInput.value);
+          const minimo = parseFloat(customPriceInput.getAttribute("data-minimo"));
+          if (value < minimo) {
+            AU.toast.error("No puedes poner un precio por debajo del precio mínimo.");
+            return;
+          }
+          payload.precio_personalizado = value;
+        } else if (tierSelect) {
+          payload.precio_tier = tierSelect.value;
+        }
+
         addItem(payload);
       });
     });
@@ -424,4 +533,5 @@ window.AU = window.AU || {};
   wireProductSearch();
   wireClientPicker();
   wireFinalizeButton();
+  wireCurrencyControls();
 })();

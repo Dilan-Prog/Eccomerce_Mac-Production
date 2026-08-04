@@ -145,6 +145,35 @@
   width: 210px;
 }
 
+/* Wraps the tier <select> + the optional custom-price <input> + its live
+   notice, stacked, in place of the bare .au-quote-tier-select when a
+   product has price tiers — same fixed width/flex:none reasoning as above. */
+.admin-ui-v2 .au-quote-price-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: none;
+  width: 210px;
+}
+
+.admin-ui-v2 .au-quote-price-controls .au-quote-tier-select,
+.admin-ui-v2 .au-quote-custom-price {
+  width: 100%;
+}
+
+.admin-ui-v2 .au-quote-price-notice {
+  font-size: 11px;
+  min-height: 14px;
+}
+
+.admin-ui-v2 .au-quote-price-notice.is-error {
+  color: var(--au-critical);
+}
+
+.admin-ui-v2 .au-quote-price-notice.is-info {
+  color: var(--au-info);
+}
+
 .admin-ui-v2 .au-quote-product-add {
   display: flex;
   align-items: center;

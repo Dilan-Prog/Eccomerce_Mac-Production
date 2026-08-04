@@ -10,7 +10,7 @@ use App\Models\Product;
 use App\Models\ProductVariantCombinations;
 use App\Models\ProductVariantItem;
 use App\Models\User;
-use App\Support\AspelPricing;
+use App\Support\CotizacionPricing;
 use App\Support\AdminTable\AdminTableExport;
 use App\Support\AdminTable\AdminTableRequest;
 use App\Support\AdminTable\Queries\CotizacionTableQuery;
@@ -140,12 +140,13 @@ class AdminCotizacionController extends Controller
             $combinations = $combinationsByProduct->get($product->id, collect());
             $hasVariants = $combinations->isNotEmpty();
 
-            // Niveles de precio Aspel (público/mínimo/liquidación/mayorista) solo
-            // existen a nivel de producto base (products.sku = aspel_products.cve_art)
-            // — las combinaciones de variante no tienen su propio cve_art, así que
-            // nunca traen price_tiers (ver investigación previa: "No hay concepto
-            // Aspel a nivel combinación").
-            $priceTiers = $product->sku ? AspelPricing::optionsForSku($product->sku) : [];
+            // Niveles de precio (público/mínimo/liquidación/mayorista) solo existen
+            // a nivel de producto base (products.sku = aspel_products.cve_art) —
+            // las combinaciones de variante no tienen su propio cve_art, así que
+            // nunca traen price_tiers. Vía CotizacionPricing (NO AspelPricing):
+            // esta es la lógica de precios propia de cotizaciones, aislada de
+            // Aspel — sin IVA, sin conversión de moneda de monedas_aspel.
+            $priceTiers = $product->sku ? CotizacionPricing::optionsForSku($product->sku) : [];
 
             $entry = [
                 'id' => $product->id,
@@ -159,8 +160,12 @@ class AdminCotizacionController extends Controller
                 'price_tiers' => array_map(fn ($tier) => [
                     'cve_precio' => $tier['cve_precio'],
                     'descripcion' => $tier['descripcion'],
-                    'with_iva' => round($tier['with_iva'], 2),
+                    'precio' => round($tier['precio'], 2),
                 ], $priceTiers),
+                // Referencias para el campo de precio personalizado: piso (mínimo,
+                // o 1 si no hay/está en 0) y techo informativo (público).
+                'precio_minimo' => $product->sku ? (CotizacionPricing::minimoFor($product->sku) ?: 1.0) : 1.0,
+                'precio_publico' => $product->sku ? CotizacionPricing::publicoFor($product->sku) : null,
             ];
 
             if ($hasVariants) {
@@ -281,12 +286,20 @@ class AdminCotizacionController extends Controller
      *
      * - Price tier: if the client sends `precio_tier` (a precio_x_product_aspel
      *   cve_precio: 1=público, 2=mínimo, 3=liquidación, 4=mayorista) AND the
-     *   product has that Aspel price level available, the line uses that
-     *   IVA-inclusive tier amount instead of Product::effectivePrice(). Combos
-     *   never have tiers (no cve_art at combination level), so precio_tier is
-     *   ignored there. An invalid/unavailable tier silently falls back to the
-     *   normal effective price rather than erroring — the tier is a pricing
-     *   *option*, not a required input.
+     *   product has that price level available, the line uses that raw MXN
+     *   amount (via App\Support\CotizacionPricing — no IVA, isolated from
+     *   App\Support\AspelPricing/monedas_aspel on purpose) instead of
+     *   Product::effectivePrice(). Combos never have tiers (no cve_art at
+     *   combination level), so precio_tier is ignored there. An invalid/
+     *   unavailable tier silently falls back to the normal effective price
+     *   rather than erroring — the tier is a pricing *option*, not a required
+     *   input.
+     * - Custom price: `precio_personalizado` overrides both the tier and the
+     *   effective price. Must be >= the "mínimo" tier (or >= 1 if that SKU has
+     *   no mínimo tier / it's 0) — anything lower is rejected with a 422.
+     *   Going above the "público" tier is allowed; the builder UI shows an
+     *   informational %/amount notice for that case, nothing is enforced
+     *   server-side for it.
      * - Stock split: if `cantidad` exceeds what's actually available right
      *   now, the line is split into up to two rows — one for the immediately
      *   available quantity (es_pendiente=false) and one for the remainder
@@ -304,6 +317,7 @@ class AdminCotizacionController extends Controller
             'product_variant_combination_id' => ['nullable', 'integer', 'exists:product_variants_combinations,id'],
             'cantidad' => ['required', 'integer', 'min:1'],
             'precio_tier' => ['nullable', 'integer', 'between:1,4'],
+            'precio_personalizado' => ['nullable', 'numeric', 'min:0'],
             'tiempo_entrega' => ['nullable', 'string', 'max:255'],
         ]);
 
@@ -346,10 +360,25 @@ class AdminCotizacionController extends Controller
             $precioUnitario = $product->effectivePrice();
             $disponible = $product->effectiveStock();
 
-            if ($request->filled('precio_tier') && $product->sku) {
-                foreach (AspelPricing::optionsForSku($product->sku) as $tier) {
+            if ($request->filled('precio_personalizado') && $product->sku) {
+                $personalizado = (float) $request->input('precio_personalizado');
+                $minimo = CotizacionPricing::minimoFor($product->sku);
+                $piso = ($minimo === null || $minimo <= 0) ? 1.0 : $minimo;
+
+                if ($personalizado < $piso) {
+                    return response()->json([
+                        'status' => 'error',
+                        'message' => 'No puedes poner un precio por debajo del precio mínimo.',
+                    ], 422);
+                }
+
+                $precioUnitario = $personalizado;
+                $tieredPrecio = null;
+                $tieredLabel = 'Precio personalizado';
+            } elseif ($request->filled('precio_tier') && $product->sku) {
+                foreach (CotizacionPricing::optionsForSku($product->sku) as $tier) {
                     if ($tier['cve_precio'] === (int) $request->input('precio_tier')) {
-                        $precioUnitario = round($tier['with_iva'], 2);
+                        $precioUnitario = round($tier['precio'], 2);
                         $tieredPrecio = $tier['cve_precio'];
                         $tieredLabel = $tier['descripcion'];
                         break;
@@ -474,6 +503,36 @@ class AdminCotizacionController extends Controller
     }
 
     /**
+     * Sets the quote's display currency (MXN/USD) and, when USD, the manual
+     * exchange rate used to convert it — a per-quote setting, entered by the
+     * vendor, entirely separate from Aspel's monedas_aspel rates.
+     * cotizacion_items.precio_unitario is never touched by this: every price
+     * always stays in raw MXN, conversion only ever happens at display/PDF
+     * time via Cotizacion::displayAmount().
+     */
+    public function updateCurrency(Request $request, Cotizacion $cotizacion)
+    {
+        abort_if($cotizacion->status !== 'borrador', 403);
+
+        $validated = $request->validate([
+            'currency' => ['required', 'in:MXN,USD'],
+            'exchange_rate' => ['nullable', 'numeric', 'min:0.0001', 'required_if:currency,USD'],
+        ]);
+
+        $cotizacion->currency = $validated['currency'];
+        $cotizacion->exchange_rate = $validated['currency'] === 'USD' ? $validated['exchange_rate'] : null;
+        $cotizacion->save();
+
+        return response()->json([
+            'status' => 'success',
+            'cotizacion' => [
+                'currency' => $cotizacion->currency,
+                'exchange_rate' => $cotizacion->exchange_rate ? (float) $cotizacion->exchange_rate : null,
+            ],
+        ]);
+    }
+
+    /**
      * Recomputes and persists subtotal/total from the quote's own items —
      * the server is always the source of truth for the persisted amount.
      * No tax is added on top (this project's existing tax-inclusive-pricing
@@ -566,8 +625,10 @@ class AdminCotizacionController extends Controller
     {
         Storage::disk('public')->makeDirectory('cotizaciones');
 
-        $subtotalSinIva = round($cotizacion->total / 1.16, 2);
-        $iva = round($cotizacion->total - $subtotalSinIva, 2);
+        $subtotalSinIva = round($cotizacion->total, 2);
+        $ivaValue = (float) (DB::table('general_settings')->value('iva_mexico') ?? 16.00);
+        $iva = round($subtotalSinIva * $ivaValue / 100, 2);
+        $totalConIva = $subtotalSinIva + $iva;
 
         $pdf = Pdf::loadView('cotizaciones.pdf', [
             'cotizacion' => $cotizacion,
@@ -576,6 +637,7 @@ class AdminCotizacionController extends Controller
             'telefono' => $cotizacion->user->phone ?? '',
             'subtotalSinIva' => $subtotalSinIva,
             'iva' => $iva,
+            'totalConIva' => $totalConIva,
         ])->setPaper('letter', 'portrait');
 
         $filename = $cotizacion->folio . '.pdf';

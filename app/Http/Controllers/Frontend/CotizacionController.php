@@ -11,6 +11,7 @@ use App\Models\ProductVariantCombinations;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Cart;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
 class CotizacionController extends Controller
@@ -199,8 +200,10 @@ class CotizacionController extends Controller
     {
         Storage::disk('public')->makeDirectory('cotizaciones');
 
-        $subtotalSinIva = round($cotizacion->total / 1.16, 2);
-        $iva            = round($cotizacion->total - $subtotalSinIva, 2);
+        $subtotalSinIva = round($cotizacion->total, 2);
+        $ivaValue       = (float) (DB::table('general_settings')->value('iva_mexico') ?? 16.00);
+        $iva            = round($subtotalSinIva * $ivaValue / 100, 2);
+        $totalConIva    = $subtotalSinIva + $iva;
 
         $pdf = Pdf::loadView('cotizaciones.pdf', [
             'cotizacion'     => $cotizacion,
@@ -209,6 +212,7 @@ class CotizacionController extends Controller
             'telefono'       => $telefono,
             'subtotalSinIva' => $subtotalSinIva,
             'iva'            => $iva,
+            'totalConIva'    => $totalConIva,
         ])->setPaper('letter', 'portrait');
 
         $filename = $cotizacion->folio . '.pdf';

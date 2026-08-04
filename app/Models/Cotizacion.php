@@ -37,6 +37,7 @@ class Cotizacion extends Model
         'subtotal',
         'total',
         'currency',
+        'exchange_rate',
         'status',
         'pdf_path',
     ];
@@ -45,7 +46,23 @@ class Cotizacion extends Model
         'productos_json' => 'array',
         'subtotal'       => 'decimal:2',
         'total'          => 'decimal:2',
+        'exchange_rate'  => 'decimal:4',
     ];
+
+    /**
+     * Converts a raw MXN amount (how every price is always stored — see
+     * App\Support\CotizacionPricing) into this quote's chosen display
+     * currency. Deliberately isolated from Aspel's monedas_aspel exchange
+     * rates: this is a manual, per-quote rate entered by the vendor.
+     */
+    public function displayAmount(float $mxnAmount): float
+    {
+        if ($this->currency === 'USD' && $this->exchange_rate) {
+            return round($mxnAmount / (float) $this->exchange_rate, 2);
+        }
+
+        return round($mxnAmount, 2);
+    }
 
     public function user()
     {

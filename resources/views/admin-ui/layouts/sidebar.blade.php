@@ -198,6 +198,11 @@
                 <i class="fas fa-cog au-nav-icon"></i><span>Configuracion General</span>
             </a>
         </div>
+        <div class="au-nav-item {{ setActive(['admin.bank-account.*']) ? 'is-active' : '' }}">
+            <a href="{{ route('admin.bank-account.index') }}" class="au-nav-link">
+                <i class="fas fa-university au-nav-icon"></i><span>Cuentas Bancarias</span>
+            </a>
+        </div>
         @endif
     </nav>
 </aside>

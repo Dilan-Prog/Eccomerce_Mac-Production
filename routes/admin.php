@@ -2,6 +2,7 @@
 /** Admin Panel Routes */
 
 use App\Http\Controllers\Backend\AdminController;
+use App\Http\Controllers\Backend\BankAccountController;
 use App\Http\Controllers\Backend\BrandController;
 use App\Http\Controllers\Backend\CategoryController;
 use App\Http\Controllers\Backend\ProfileController;
@@ -81,6 +82,7 @@ Route::get('cotizaciones/{cotizacion}/edit', [AdminCotizacionController::class, 
 Route::post('cotizaciones/{cotizacion}/items', [AdminCotizacionController::class, 'storeItem'])->name('cotizaciones.items.store');
 Route::put('cotizaciones/{cotizacion}/items/{item}', [AdminCotizacionController::class, 'updateItem'])->name('cotizaciones.items.update');
 Route::delete('cotizaciones/{cotizacion}/items/{item}', [AdminCotizacionController::class, 'destroyItem'])->name('cotizaciones.items.delete');
+Route::put('cotizaciones/{cotizacion}/currency', [AdminCotizacionController::class, 'updateCurrency'])->name('cotizaciones.currency');
 Route::post('cotizaciones/{cotizacion}/finalize', [AdminCotizacionController::class, 'finalize'])->name('cotizaciones.finalize');
 Route::get('cotizaciones/{cotizacion}/pdf', [AdminCotizacionController::class, 'pdf'])->name('cotizaciones.pdf');
 Route::get('cotizaciones/{cotizacion}', [AdminCotizacionController::class, 'show'])->name('cotizaciones.show');
@@ -284,6 +286,15 @@ Route::post('shipping-rule/bulk', [ShippingRuleController::class, 'bulkAction'])
 Route::get('shipping-rule/create-fragment', [ShippingRuleController::class, 'createFragment'])->name('shipping-rule.create-fragment');
 Route::get('shipping-rule/{id}/edit-fragment', [ShippingRuleController::class, 'editFragment'])->name('shipping-rule.edit-fragment');
 Route::resource('shipping-rule', ShippingRuleController::class)->except(['create', 'edit']);
+
+
+/**Bank Accounts (Cuentas Bancarias) */
+Route::get('bank-account/table-data', [BankAccountController::class, 'tableData'])->name('bank-account.table-data');
+Route::get('bank-account/export', [BankAccountController::class, 'export'])->name('bank-account.export');
+Route::post('bank-account/bulk', [BankAccountController::class, 'bulkAction'])->name('bank-account.bulk');
+Route::get('bank-account/create-fragment', [BankAccountController::class, 'createFragment'])->name('bank-account.create-fragment');
+Route::get('bank-account/{id}/edit-fragment', [BankAccountController::class, 'editFragment'])->name('bank-account.edit-fragment');
+Route::resource('bank-account', BankAccountController::class)->except(['create', 'edit']);
 
 
 /**Payment Settings Routes */

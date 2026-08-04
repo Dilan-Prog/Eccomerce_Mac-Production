@@ -30,6 +30,8 @@
             })->all()
             : [],
         'total' => $isEdit ? (float) $cotizacion->total : 0,
+        'currency' => $isEdit ? $cotizacion->currency : 'MXN',
+        'exchangeRate' => $isEdit && $cotizacion->exchange_rate ? (float) $cotizacion->exchange_rate : null,
         'routes' => [
             'clientsSearch' => route('admin.cotizaciones.clients-search'),
             'productsSearch' => route('admin.cotizaciones.products-search'),
@@ -37,6 +39,7 @@
             'editUrlBase' => url('admin/cotizaciones'),
             'itemsStore' => $isEdit ? route('admin.cotizaciones.items.store', $cotizacion->id) : null,
             'itemBase' => $isEdit ? url('admin/cotizaciones/' . $cotizacion->id . '/items') : null,
+            'currency' => $isEdit ? route('admin.cotizaciones.currency', $cotizacion->id) : null,
             'finalize' => $isEdit ? route('admin.cotizaciones.finalize', $cotizacion->id) : null,
             'showUrlBase' => url('admin/cotizaciones'),
             'customerCreateFragment' => route('admin.customer.create-fragment'),
@@ -132,6 +135,19 @@
                 <div class="au-card-title">Resumen</div>
             </div>
             <div class="au-card-body">
+                @if ($isEdit)
+                    <div class="au-field" style="margin-bottom:10px">
+                        <label class="au-label">Moneda</label>
+                        <select class="au-select" data-au-quote-currency>
+                            <option value="MXN" {{ $cotizacion->currency === 'MXN' ? 'selected' : '' }}>Pesos (MXN)</option>
+                            <option value="USD" {{ $cotizacion->currency === 'USD' ? 'selected' : '' }}>Dólares (USD)</option>
+                        </select>
+                    </div>
+                    <div class="au-field" data-au-quote-exchange-rate-field style="margin-bottom:10px; {{ $cotizacion->currency === 'USD' ? '' : 'display:none' }}">
+                        <label class="au-label">Tipo de cambio (MXN por USD)</label>
+                        <input type="number" step="0.0001" min="0" class="au-input" data-au-quote-exchange-rate value="{{ $cotizacion->exchange_rate ?? '' }}">
+                    </div>
+                @endif
                 <div class="au-quote-summary-count" data-au-quote-summary-count>0 artículos</div>
                 <div class="au-quote-summary-total" data-au-quote-summary-total>{{ "$0.00" }}</div>
                 @if ($isEdit)
