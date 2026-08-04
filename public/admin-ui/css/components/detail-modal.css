@@ -26,8 +26,8 @@
 
 .admin-ui-v2 .au-detail-modal {
   position: relative;
-  width: 100%;
-  max-width: 640px;
+  width: 80vw;
+  max-width: 80vw;
   max-height: 92vh;
   display: flex;
   flex-direction: column;

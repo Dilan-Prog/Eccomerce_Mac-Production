@@ -20,6 +20,7 @@ use App\Models\Category;
 use App\Models\OrderProduct;
 use App\Models\ProductImageGallery;
 use App\Models\ProductVariant;
+use App\Models\ProductVariantItem;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
@@ -215,6 +216,57 @@ class ProductController extends Controller
             $aspelTierLabel = $tier['descripcion'] ?? null;
         }
 
+        $aspelOffertTierLabel = null;
+        if (!empty($product->aspel_offert_price_tier)) {
+            $tier = collect($aspelPriceOptions)->firstWhere('cve_precio', (int) $product->aspel_offert_price_tier);
+            $aspelOffertTierLabel = $tier['descripcion'] ?? null;
+        }
+
+        // Datos crudos de Aspel (existencia real, costos, moneda) — distintos
+        // de qty_aspel/aspel_price en products, que son una copia sincronizada
+        // y pueden estar desactualizados si el job de sync no ha corrido.
+        $aspelSync = null;
+        $aspelCurrency = null;
+        try {
+            $aspelSync = AspelSync::where('cve_art', (string) $product->sku)->first();
+            if ($aspelSync) {
+                $aspelCurrency = DB::table('monedas_aspel')->where('num_moneda', $aspelSync->num_mon)->first();
+            }
+        } catch (\Throwable $e) {
+            $aspelSync = null;
+            $aspelCurrency = null;
+        }
+
+        // Combinaciones de variante (talla/color/etc.) con su propio precio y
+        // stock — mismo patrón de resolución de etiquetas que
+        // AdminCotizacionController::productsSearch() usa para el picker de
+        // cotizaciones.
+        $combinations = collect();
+        try {
+            $rawCombinations = $product->combinations()->get();
+            $variantItemNames = ProductVariantItem::whereIn(
+                'id',
+                $rawCombinations->flatMap(fn ($c) => $c->variants_item_ids ?? [])->unique()->values()
+            )->pluck('name', 'id');
+
+            $combinations = $rawCombinations->map(function ($combination) use ($variantItemNames) {
+                $labelParts = collect($combination->variants_item_ids ?? [])
+                    ->map(fn ($itemId) => $variantItemNames->get($itemId))
+                    ->filter()
+                    ->values();
+
+                return [
+                    'label' => $labelParts->isNotEmpty() ? $labelParts->implode(' / ') : ('SKU: ' . $combination->sku),
+                    'sku' => $combination->sku,
+                    'price' => (float) $combination->price,
+                    'offert_price' => $combination->offert_price !== null ? (float) $combination->offert_price : null,
+                    'qty' => (int) $combination->qty,
+                ];
+            });
+        } catch (\Throwable $e) {
+            $combinations = collect();
+        }
+
         // Same fallback logic as effectivePrice()/effectiveStock() (see Product model),
         // wrapped defensively since these accessors touch product state that could be
         // malformed on legacy rows and this view must never break on bad data.
@@ -245,7 +297,8 @@ class ProductController extends Controller
 
         return view('admin-ui.products._details', compact(
             'product', 'category', 'brand', 'subCategory', 'childCategory',
-            'galleryImages', 'aspelTierLabel', 'effectivePrice', 'effectiveStock',
+            'galleryImages', 'aspelTierLabel', 'aspelOffertTierLabel', 'aspelPriceOptions',
+            'aspelSync', 'aspelCurrency', 'combinations', 'effectivePrice', 'effectiveStock',
             'effectiveOffertPrice', 'hasActiveOffer'
         ));
     }
