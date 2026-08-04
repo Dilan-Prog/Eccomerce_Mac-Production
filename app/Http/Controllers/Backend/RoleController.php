@@ -188,11 +188,11 @@ class RoleController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $request->validate([
-            'name' => ['required', 'string', 'max:100', $this->notSystemNameRule()],
-        ]);
-
         $role = Role::findOrFail($id);
+
+        $request->validate([
+            'name' => ['required', 'string', 'max:100', $this->notSystemNameRule($role)],
+        ]);
 
         DB::transaction(function () use ($request, $role) {
             if (!$role->is_system) {
@@ -246,14 +246,25 @@ class RoleController extends Controller
      * collision surfaces as this specific, clear message instead of being
      * silently absorbed into a "-2" suffix by uniqueSlug()'s generic
      * uniqueness loop.
+     *
+     * When editing ($editingRole given), resubmitting that role's own
+     * already-saved name is not a new attempt to claim a reserved name —
+     * some custom roles were created before this rule existed and happen to
+     * share a name with a system role added later, so every edit to them
+     * (even just toggling a module checkbox) would otherwise fail this check
+     * forever. Only an actual rename to a new colliding value is blocked.
      */
-    private function notSystemNameRule(): \Closure
+    private function notSystemNameRule(?Role $editingRole = null): \Closure
     {
         $systemNames = Role::where('is_system', true)->pluck('name');
         $systemSlugs = Role::where('is_system', true)->pluck('slug');
 
-        return function (string $attribute, mixed $value, \Closure $fail) use ($systemNames, $systemSlugs) {
+        return function (string $attribute, mixed $value, \Closure $fail) use ($systemNames, $systemSlugs, $editingRole) {
             $trimmed = trim((string) $value);
+
+            if ($editingRole && strcasecmp(trim($editingRole->name), $trimmed) === 0) {
+                return;
+            }
 
             $collidesByName = $systemNames->contains(
                 fn ($systemName) => strcasecmp(trim($systemName), $trimmed) === 0
