@@ -123,7 +123,39 @@ window.AU = window.AU || {};
     }
 
     if (currencySelect) {
-      currencySelect.addEventListener("change", () => save({ currency: currencySelect.value }));
+      // Cambiar la moneda de despliegue re-resuelve todos los montos de la
+      // cotización (passthrough vs. conversión por partida) — se confirma
+      // antes de aplicar, y se recarga la página completa en vez de
+      // re-renderizar en el cliente, para que absolutamente todo (Partidas,
+      // Resumen, los propios inputs de tipo de cambio) quede consistente con
+      // lo que el servidor ya guardó.
+      let previousCurrencyValue = currencySelect.value;
+
+      currencySelect.addEventListener("change", async () => {
+        const newValue = currencySelect.value;
+        if (newValue === previousCurrencyValue) return;
+
+        const { confirmed } = await AU.confirm({
+          title: "¿Cambiar tipo de moneda?",
+          text: "Esto va a cambiar cómo se muestran los precios de esta cotización. La página se recargará para reflejar el cambio.",
+          tone: "warning",
+          confirmText: "Sí, cambiar",
+          cancelText: "Cancelar",
+        });
+
+        if (!confirmed) {
+          currencySelect.value = previousCurrencyValue;
+          return;
+        }
+
+        try {
+          await AU.request(config.routes.currency, { method: "PUT", body: { currency: newValue } });
+          window.location.reload();
+        } catch (err) {
+          AU.toast.error((err.data && err.data.message) || "No se pudo guardar la moneda");
+          currencySelect.value = previousCurrencyValue;
+        }
+      });
     }
     if (rateUsdMxnInput) {
       rateUsdMxnInput.addEventListener(
