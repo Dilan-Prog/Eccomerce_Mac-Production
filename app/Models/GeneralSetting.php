@@ -14,7 +14,8 @@ class GeneralSetting extends Model
         'contact_email',
         'currency_name',
         'currency_icon',
-        'time_zone'
-
+        'time_zone',
+        'tipo_cambio_usd_mxn',
+        'tipo_cambio_mxn_usd',
     ];
 }

@@ -27,7 +27,10 @@ class SettingController extends Controller
             'contact_email' =>['required', 'max:200'],
             'currency_name' =>['required', 'max:200'],
             'currency_icon' =>['required', 'max:200'],
-            'time_zone' =>['required', 'max:200']
+            'time_zone' =>['required', 'max:200'],
+            // Exclusivos del módulo de Cotizaciones — ver App\Support\CotizacionExchange.
+            'tipo_cambio_usd_mxn' => ['required', 'numeric', 'min:0.0001'],
+            'tipo_cambio_mxn_usd' => ['required', 'numeric', 'min:0.0001'],
         ]);
 
         GeneralSetting::updateOrCreate(
@@ -38,7 +41,9 @@ class SettingController extends Controller
                 'contact_email' => $request->contact_email,
                 'currency_name' => $request->currency_name,
                 'currency_icon' => $request->currency_icon,
-                'time_zone' => $request->time_zone
+                'time_zone' => $request->time_zone,
+                'tipo_cambio_usd_mxn' => $request->tipo_cambio_usd_mxn,
+                'tipo_cambio_mxn_usd' => $request->tipo_cambio_mxn_usd,
             ]
         );
 

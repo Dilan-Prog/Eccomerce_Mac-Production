@@ -67,6 +67,23 @@
                     </div>
                 </div>
 
+                <div class="au-card-header" style="padding-left:0;padding-right:0">
+                    <div class="au-card-title">Tipos de cambio de Cotizaciones</div>
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+                    <div class="au-field">
+                        <label class="au-label">Tipo de cambio USD &rarr; MXN (pesos por dólar)<span class="au-required-mark">*</span></label>
+                        <input type="number" step="0.0001" min="0.0001" class="au-input" name="tipo_cambio_usd_mxn" value="{{ old('tipo_cambio_usd_mxn', $generalSettings->tipo_cambio_usd_mxn ?? '') }}" required>
+                        <span class="au-help-text">Se usa para convertir a pesos los productos cuyo precio en Aspel está en dólares.</span>
+                    </div>
+                    <div class="au-field">
+                        <label class="au-label">Tipo de cambio MXN &rarr; USD (dólares por peso)<span class="au-required-mark">*</span></label>
+                        <input type="number" step="0.0001" min="0.0001" class="au-input" name="tipo_cambio_mxn_usd" value="{{ old('tipo_cambio_mxn_usd', $generalSettings->tipo_cambio_mxn_usd ?? '') }}" required>
+                        <span class="au-help-text">Se usa para mostrar en dólares una cotización armada con productos en pesos.</span>
+                    </div>
+                </div>
+                <span class="au-help-text" style="display:block;margin:-8px 0 16px">Estos dos tipos de cambio son exclusivos del módulo de Cotizaciones — no afectan los precios del catálogo de Productos ni la sincronización con Aspel.</span>
+
                 <button type="submit" class="au-btn au-btn-primary">Guardar</button>
             </form>
         </div>

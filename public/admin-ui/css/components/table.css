@@ -61,6 +61,13 @@
   user-select: none;
 }
 
+/* .au-text-right alone loses to the more specific rule above — this makes
+   a right-aligned header actually sit above its right-aligned column
+   values instead of appearing shifted apart from them. */
+.admin-ui-v2 table.au-table thead th.au-text-right {
+  text-align: right;
+}
+
 .admin-ui-v2 table.au-table thead th.is-sortable {
   cursor: pointer;
 }

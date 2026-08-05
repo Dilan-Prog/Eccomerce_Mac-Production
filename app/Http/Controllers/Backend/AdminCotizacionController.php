@@ -10,6 +10,7 @@ use App\Models\Product;
 use App\Models\ProductVariantCombinations;
 use App\Models\ProductVariantItem;
 use App\Models\User;
+use App\Support\CotizacionExchange;
 use App\Support\CotizacionPricing;
 use App\Support\AdminTable\AdminTableExport;
 use App\Support\AdminTable\AdminTableRequest;
@@ -136,7 +137,14 @@ class AdminCotizacionController extends Controller
         $variantItemNames = ProductVariantItem::whereIn('id', $allVariantItemIds)
             ->pluck('name', 'id');
 
-        $results = $products->map(function (Product $product) use ($combinationsByProduct, $variantItemNames) {
+        // Ruta global (sin cotización aún — se usa igual en create.blade.php
+        // antes de que exista un borrador), así que solo puede convertir con
+        // el tipo de cambio DEFAULT de Configuración General, no con el
+        // override de una cotización específica. La conversión real y
+        // definitiva ocurre en storeItem(), que sí conoce la cotización.
+        $defaultRateUsdMxn = CotizacionExchange::defaultUsdToMxn();
+
+        $results = $products->map(function (Product $product) use ($combinationsByProduct, $variantItemNames, $defaultRateUsdMxn) {
             $combinations = $combinationsByProduct->get($product->id, collect());
             $hasVariants = $combinations->isNotEmpty();
 
@@ -145,8 +153,11 @@ class AdminCotizacionController extends Controller
             // las combinaciones de variante no tienen su propio cve_art, así que
             // nunca traen price_tiers. Vía CotizacionPricing (NO AspelPricing):
             // esta es la lógica de precios propia de cotizaciones, aislada de
-            // Aspel — sin IVA, sin conversión de moneda de monedas_aspel.
+            // Aspel — sin IVA, sin conversión de moneda de monedas_aspel (la
+            // conversión de moneda si aplica es de CotizacionExchange, también
+            // aislada, ver abajo).
             $priceTiers = $product->sku ? CotizacionPricing::optionsForSku($product->sku) : [];
+            $nativeCurrency = $product->sku ? CotizacionExchange::nativeCurrencyForSku($product->sku) : null;
 
             $entry = [
                 'id' => $product->id,
@@ -160,13 +171,22 @@ class AdminCotizacionController extends Controller
                 'price_tiers' => array_map(fn ($tier) => [
                     'cve_precio' => $tier['cve_precio'],
                     'descripcion' => $tier['descripcion'],
-                    'precio' => round($tier['precio'], 2),
+                    'precio' => CotizacionExchange::normalizeToMxn($tier['precio'], $nativeCurrency, $defaultRateUsdMxn),
                 ], $priceTiers),
                 // Referencias para el campo de precio personalizado: piso (mínimo,
                 // o 1 si no hay/está en 0) y techo informativo (público).
-                'precio_minimo' => $product->sku ? (CotizacionPricing::minimoFor($product->sku) ?: 1.0) : 1.0,
-                'precio_publico' => $product->sku ? CotizacionPricing::publicoFor($product->sku) : null,
+                'precio_minimo' => $product->sku
+                    ? CotizacionExchange::normalizeToMxn(CotizacionPricing::minimoFor($product->sku) ?: 1.0, $nativeCurrency, $defaultRateUsdMxn)
+                    : 1.0,
+                'precio_publico' => null,
             ];
+
+            if ($product->sku) {
+                $publico = CotizacionPricing::publicoFor($product->sku);
+                if ($publico) {
+                    $entry['precio_publico'] = CotizacionExchange::normalizeToMxn($publico, $nativeCurrency, $defaultRateUsdMxn);
+                }
+            }
 
             if ($hasVariants) {
                 $entry['combinations'] = $combinations->map(function ($combination) use ($variantItemNames) {
@@ -329,14 +349,16 @@ class AdminCotizacionController extends Controller
      *
      * - Price tier: if the client sends `precio_tier` (a precio_x_product_aspel
      *   cve_precio: 1=público, 2=mínimo, 3=liquidación, 4=mayorista) AND the
-     *   product has that price level available, the line uses that raw MXN
-     *   amount (via App\Support\CotizacionPricing — no IVA, isolated from
+     *   product has that price level available, the line uses that amount
+     *   (via App\Support\CotizacionPricing — no IVA, isolated from
      *   App\Support\AspelPricing/monedas_aspel on purpose) instead of
-     *   Product::effectivePrice(). Combos never have tiers (no cve_art at
-     *   combination level), so precio_tier is ignored there. An invalid/
-     *   unavailable tier silently falls back to the normal effective price
-     *   rather than erroring — the tier is a pricing *option*, not a required
-     *   input.
+     *   Product::effectivePrice(), normalized to MXN via
+     *   App\Support\CotizacionExchange if the SKU's native Aspel currency is
+     *   USD (see the "Currency" note below). Combos never have tiers (no
+     *   cve_art at combination level), so precio_tier is ignored there. An
+     *   invalid/unavailable tier silently falls back to the normal effective
+     *   price rather than erroring — the tier is a pricing *option*, not a
+     *   required input.
      * - Custom price: `precio_personalizado` overrides both the tier and the
      *   effective price. Must be >= the "mínimo" tier (or >= 1 if that SKU has
      *   no mínimo tier / it's 0) — anything lower is rejected with a 422.
@@ -350,6 +372,13 @@ class AdminCotizacionController extends Controller
      *   `tiempo_entrega` note (the vendor types it — no automatic ETA source
      *   exists in this system yet); if it's missing this returns a 422 with
      *   code `needs_tiempo_entrega` so the UI can prompt for it and resubmit.
+     * - Currency: any price sourced from CotizacionPricing (tier or the
+     *   mínimo floor for precio_personalizado) gets normalized to MXN via
+     *   App\Support\CotizacionExchange when the SKU's native Aspel currency
+     *   is USD, using this quote's own exchange_rate (or the Configuración
+     *   General default if the quote has none yet). Frozen at add-time like
+     *   everything else here: changing the quote's exchange rate later does
+     *   NOT retroactively recompute already-added lines.
      */
     public function storeItem(Request $request, Cotizacion $cotizacion)
     {
@@ -403,10 +432,22 @@ class AdminCotizacionController extends Controller
             $precioUnitario = $product->effectivePrice();
             $disponible = $product->effectiveStock();
 
+            // Moneda nativa del SKU en Aspel + tipo de cambio efectivo de ESTA
+            // cotización (su propio override si lo tiene, si no el default de
+            // Configuración General) — ver App\Support\CotizacionExchange.
+            // Product::effectivePrice() (rama sin tier/personalizado, arriba)
+            // NO necesita esto: ya llega en MXN vía App\Support\AspelPricing.
+            // Solo los precios crudos de CotizacionPricing (tier/mínimo) lo
+            // necesitan, porque esa clase lee precio_x_product_aspel tal cual,
+            // sin saber en qué moneda está.
+            $nativeCurrency = $product->sku ? CotizacionExchange::nativeCurrencyForSku($product->sku) : null;
+            $rateUsdMxn = CotizacionExchange::effectiveUsdToMxnRate($cotizacion);
+
             if ($request->filled('precio_personalizado') && $product->sku) {
                 $personalizado = (float) $request->input('precio_personalizado');
                 $minimo = CotizacionPricing::minimoFor($product->sku);
                 $piso = ($minimo === null || $minimo <= 0) ? 1.0 : $minimo;
+                $piso = CotizacionExchange::normalizeToMxn($piso, $nativeCurrency, $rateUsdMxn);
 
                 if ($personalizado < $piso) {
                     return response()->json([
@@ -421,7 +462,7 @@ class AdminCotizacionController extends Controller
             } elseif ($request->filled('precio_tier') && $product->sku) {
                 foreach (CotizacionPricing::optionsForSku($product->sku) as $tier) {
                     if ($tier['cve_precio'] === (int) $request->input('precio_tier')) {
-                        $precioUnitario = round($tier['precio'], 2);
+                        $precioUnitario = CotizacionExchange::normalizeToMxn($tier['precio'], $nativeCurrency, $rateUsdMxn);
                         $tieredPrecio = $tier['cve_precio'];
                         $tieredLabel = $tier['descripcion'];
                         break;
@@ -546,24 +587,39 @@ class AdminCotizacionController extends Controller
     }
 
     /**
-     * Sets the quote's display currency (MXN/USD) and, when USD, the manual
-     * exchange rate used to convert it — a per-quote setting, entered by the
-     * vendor, entirely separate from Aspel's monedas_aspel rates.
-     * cotizacion_items.precio_unitario is never touched by this: every price
-     * always stays in raw MXN, conversion only ever happens at display/PDF
-     * time via Cotizacion::displayAmount().
+     * Sets the quote's display currency (MXN/USD) and/or its two manual
+     * exchange rate overrides — per-quote settings, entered by the vendor
+     * (or defaulted from Configuración General, see
+     * App\Support\CotizacionExchange), entirely separate from Aspel's
+     * monedas_aspel rates. cotizacion_items.precio_unitario is never touched
+     * by this directly: every price is always stored in raw MXN.
+     *
+     * `exchange_rate` (pesos por dólar, USD→MXN) is no longer cleared when
+     * currency goes back to MXN — unlike before, it's now also used by
+     * storeItem() to normalize USD-native SKUs to MXN regardless of which
+     * currency the quote displays in, so it needs to persist independently
+     * of `currency`. `exchange_rate_mxn_usd` (dólares por peso, MXN→USD) is
+     * only ever read by Cotizacion::displayAmount() when currency='USD'.
      */
     public function updateCurrency(Request $request, Cotizacion $cotizacion)
     {
         abort_if($cotizacion->status !== 'borrador', 403);
 
         $validated = $request->validate([
-            'currency' => ['required', 'in:MXN,USD'],
-            'exchange_rate' => ['nullable', 'numeric', 'min:0.0001', 'required_if:currency,USD'],
+            'currency' => ['sometimes', 'in:MXN,USD'],
+            'exchange_rate' => ['sometimes', 'nullable', 'numeric', 'min:0.0001'],
+            'exchange_rate_mxn_usd' => ['sometimes', 'nullable', 'numeric', 'min:0.0001'],
         ]);
 
-        $cotizacion->currency = $validated['currency'];
-        $cotizacion->exchange_rate = $validated['currency'] === 'USD' ? $validated['exchange_rate'] : null;
+        if (array_key_exists('currency', $validated)) {
+            $cotizacion->currency = $validated['currency'];
+        }
+        if (array_key_exists('exchange_rate', $validated)) {
+            $cotizacion->exchange_rate = $validated['exchange_rate'];
+        }
+        if (array_key_exists('exchange_rate_mxn_usd', $validated)) {
+            $cotizacion->exchange_rate_mxn_usd = $validated['exchange_rate_mxn_usd'];
+        }
         $cotizacion->save();
 
         return response()->json([
@@ -571,6 +627,7 @@ class AdminCotizacionController extends Controller
             'cotizacion' => [
                 'currency' => $cotizacion->currency,
                 'exchange_rate' => $cotizacion->exchange_rate ? (float) $cotizacion->exchange_rate : null,
+                'exchange_rate_mxn_usd' => $cotizacion->exchange_rate_mxn_usd ? (float) $cotizacion->exchange_rate_mxn_usd : null,
             ],
         ]);
     }

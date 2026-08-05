@@ -38,26 +38,43 @@ class Cotizacion extends Model
         'total',
         'currency',
         'exchange_rate',
+        'exchange_rate_mxn_usd',
         'status',
         'pdf_path',
     ];
 
     protected $casts = [
-        'productos_json' => 'array',
-        'subtotal'       => 'decimal:2',
-        'total'          => 'decimal:2',
-        'exchange_rate'  => 'decimal:4',
+        'productos_json'        => 'array',
+        'subtotal'               => 'decimal:2',
+        'total'                  => 'decimal:2',
+        'exchange_rate'          => 'decimal:4',
+        'exchange_rate_mxn_usd'  => 'decimal:4',
     ];
 
     /**
      * Converts a raw MXN amount (how every price is always stored — see
-     * App\Support\CotizacionPricing) into this quote's chosen display
-     * currency. Deliberately isolated from Aspel's monedas_aspel exchange
-     * rates: this is a manual, per-quote rate entered by the vendor.
+     * App\Support\CotizacionPricing/CotizacionExchange) into this quote's
+     * chosen display currency. Deliberately isolated from Aspel's
+     * monedas_aspel exchange rates: these are manual, per-quote rates
+     * entered by the vendor (or defaulted from Configuración General — see
+     * App\Support\CotizacionExchange).
+     *
+     * Uses exchange_rate_mxn_usd (dollars per peso, multiplication) when
+     * present. Falls back to dividing by the older `exchange_rate` (pesos
+     * per dollar) for quotes finalized before exchange_rate_mxn_usd existed,
+     * so their PDFs keep producing the exact same total they always had.
      */
     public function displayAmount(float $mxnAmount): float
     {
-        if ($this->currency === 'USD' && $this->exchange_rate) {
+        if ($this->currency !== 'USD') {
+            return round($mxnAmount, 2);
+        }
+
+        if ($this->exchange_rate_mxn_usd) {
+            return round($mxnAmount * (float) $this->exchange_rate_mxn_usd, 2);
+        }
+
+        if ($this->exchange_rate) {
             return round($mxnAmount / (float) $this->exchange_rate, 2);
         }
 

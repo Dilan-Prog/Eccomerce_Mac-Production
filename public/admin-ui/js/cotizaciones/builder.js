@@ -4,17 +4,25 @@
  * Reads its config from window.AU_COTIZACION_BUILDER (set inline by
  * _builder.blade.php right before this script tag):
  *   {
- *     cotizacionId, items: [...], total, currency, exchangeRate,
+ *     cotizacionId, items: [...], total, currency,
+ *     exchangeRate, exchangeRateMxnUsd,
+ *     defaultExchangeRateUsdMxn, defaultExchangeRateMxnUsd,
  *     routes: { clientsSearch, productsSearch, store, editUrlBase,
  *               itemsStore, itemBase, currency, finalize, showUrlBase,
  *               customerCreateFragment, customerStore }
  *   }
  *
- * currency/exchangeRate: every price from the server is always raw MXN
- * (cotizacion_items.precio_unitario never changes) — these two only control
- * how amounts are *displayed* here (see toDisplayAmount()/formatMoney()) and
- * in the final PDF (Cotizacion::displayAmount()). Manual, per-quote, entered
- * by the vendor — deliberately not sourced from Aspel's monedas_aspel rates.
+ * Two independent, per-quote exchange rates (manual, entered by the vendor
+ * or defaulted from Configuración General — deliberately not sourced from
+ * Aspel's monedas_aspel rates, see App\Support\CotizacionExchange):
+ *   - exchangeRate (pesos por dólar, USD->MXN): used server-side by
+ *     storeItem() to normalize USD-native products to MXN when adding them,
+ *     regardless of the quote's display currency.
+ *   - exchangeRateMxnUsd (dólares por peso, MXN->USD): used here and by
+ *     Cotizacion::displayAmount() to convert the always-MXN stored amounts
+ *     to USD for display, only when currency==='USD'.
+ * cotizacion_items.precio_unitario itself is never re-derived client-side —
+ * it's already been normalized server-side at add time.
  *
  * On the create page (cotizacionId === null) only the client picker is wired
  * up: picking/creating a client immediately POSTs to `store` and redirects
@@ -31,18 +39,26 @@ window.AU = window.AU || {};
   let items = Array.isArray(config.items) ? config.items.slice() : [];
   let currency = config.currency || "MXN";
   let exchangeRate = config.exchangeRate || null;
+  let exchangeRateMxnUsd = config.exchangeRateMxnUsd || null;
   let lastTotals = { item_count: items.length, total: config.total || 0 };
 
   /*
    * Every price the server sends is always raw MXN (see
-   * App\Support\CotizacionPricing / Cotizacion::displayAmount() — the same
+   * App\Support\CotizacionExchange / Cotizacion::displayAmount() — the same
    * conversion, mirrored here so the builder doesn't need a round-trip just
    * to preview totals as the vendor changes currency/tipo de cambio).
+   * Prefers exchangeRateMxnUsd (dólares por peso, multiplica); si la
+   * cotización todavía no tiene ese campo (o es una cotización vieja),
+   * cae a dividir por exchangeRate (pesos por dólar) — mismo fallback que
+   * Cotizacion::displayAmount() en PHP.
    */
   function toDisplayAmount(mxnValue) {
     const num = typeof mxnValue === "number" ? mxnValue : parseFloat(mxnValue);
     if (isNaN(num)) return 0;
-    return currency === "USD" && exchangeRate ? num / exchangeRate : num;
+    if (currency !== "USD") return num;
+    if (exchangeRateMxnUsd) return num * exchangeRateMxnUsd;
+    if (exchangeRate) return num / exchangeRate;
+    return num;
   }
 
   function formatMoney(mxnValue) {
@@ -55,18 +71,16 @@ window.AU = window.AU || {};
 
   function wireCurrencyControls() {
     const currencySelect = AU.qs("[data-au-quote-currency]");
-    const rateField = AU.qs("[data-au-quote-exchange-rate-field]");
-    const rateInput = AU.qs("[data-au-quote-exchange-rate]");
-    if (!currencySelect || !config.routes.currency) return;
+    const rateUsdMxnInput = AU.qs("[data-au-quote-rate-usd-mxn]");
+    const rateMxnUsdInput = AU.qs("[data-au-quote-rate-mxn-usd]");
+    if (!config.routes.currency) return;
 
-    async function save() {
-      const payload = { currency: currencySelect.value };
-      if (currencySelect.value === "USD") payload.exchange_rate = rateInput.value;
-
+    async function save(payload) {
       try {
         const data = await AU.request(config.routes.currency, { method: "PUT", body: payload });
         currency = data.cotizacion.currency;
         exchangeRate = data.cotizacion.exchange_rate;
+        exchangeRateMxnUsd = data.cotizacion.exchange_rate_mxn_usd;
         renderItems();
         renderSummary(lastTotals.item_count, lastTotals.total);
       } catch (err) {
@@ -74,13 +88,20 @@ window.AU = window.AU || {};
       }
     }
 
-    currencySelect.addEventListener("change", () => {
-      if (rateField) rateField.style.display = currencySelect.value === "USD" ? "" : "none";
-      if (currencySelect.value === "MXN" || (rateInput && rateInput.value)) save();
-    });
-
-    if (rateInput) {
-      rateInput.addEventListener("input", AU.debounce(save, 500));
+    if (currencySelect) {
+      currencySelect.addEventListener("change", () => save({ currency: currencySelect.value }));
+    }
+    if (rateUsdMxnInput) {
+      rateUsdMxnInput.addEventListener(
+        "input",
+        AU.debounce(() => save({ exchange_rate: rateUsdMxnInput.value }), 500)
+      );
+    }
+    if (rateMxnUsdInput) {
+      rateMxnUsdInput.addEventListener(
+        "input",
+        AU.debounce(() => save({ exchange_rate_mxn_usd: rateMxnUsdInput.value }), 500)
+      );
     }
   }
 

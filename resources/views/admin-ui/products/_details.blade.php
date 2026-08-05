@@ -151,22 +151,39 @@
     </div>
 
     @if (count($aspelPriceOptions))
+        @php
+            $aspelCurrencyCode = $aspelCurrency->cve_moned ?? 'MXN';
+            $aspelExchangeRate = (float) ($aspelCurrency->tipo_cambio ?? 1);
+            $isAspelMxn = $aspelCurrencyCode === 'MXN';
+        @endphp
         <div class="au-card">
             <div class="au-card-header">
                 <div class="au-card-title">Niveles de precio Aspel</div>
             </div>
+            @if (!$isAspelMxn)
+                <div class="au-card-body" style="border-bottom:1px solid var(--au-border);font-size:12.5px;color:var(--au-text-subdued)">
+                    Moneda Aspel: <strong>{{ $aspelCurrencyCode }}</strong> &nbsp;·&nbsp; Tipo de cambio usado: <strong>{{ number_format($aspelExchangeRate, 4) }}</strong> MXN por {{ $aspelCurrencyCode }}
+                </div>
+            @endif
             <div class="au-table-wrap">
                 <table class="au-table">
                     <thead>
                         <tr>
                             <th>Nivel</th>
-                            <th class="au-text-right">Precio (IVA incl.)</th>
+                            <th class="au-text-right">{{ $aspelCurrencyCode }} sin IVA</th>
+                            <th class="au-text-right">{{ $aspelCurrencyCode }} con IVA</th>
+                            <th class="au-text-right">MXN sin IVA</th>
+                            <th class="au-text-right">MXN con IVA</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach ($aspelPriceOptions as $tier)
+                        @foreach (collect($aspelPriceOptions)->sortByDesc('with_iva')->values() as $tier)
+                            @php($rawConIva = $tier['raw'] * (1 + $ivaValue / 100))
                             <tr>
                                 <td>{{ $tier['descripcion'] }}</td>
+                                <td class="au-text-right au-mono">${{ number_format($tier['raw'], 2) }}</td>
+                                <td class="au-text-right au-mono">${{ number_format($rawConIva, 2) }}</td>
+                                <td class="au-text-right au-mono">${{ number_format($tier['converted'], 2) }}</td>
                                 <td class="au-text-right au-mono">${{ number_format($tier['with_iva'], 2) }}</td>
                             </tr>
                         @endforeach

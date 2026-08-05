@@ -188,7 +188,14 @@
 </table>
 
 @if ($cotizacion->currency === 'USD')
-<div class="exchange-rate-note">Tipo de cambio: {{ $cotizacion->exchange_rate }} MXN por USD</div>
+<div class="exchange-rate-note">
+    Tipo de cambio:
+    @if ($cotizacion->exchange_rate_mxn_usd)
+        {{ $cotizacion->exchange_rate_mxn_usd }} USD por MXN
+    @elseif ($cotizacion->exchange_rate)
+        {{ $cotizacion->exchange_rate }} MXN por USD
+    @endif
+</div>
 @endif
 
 <div class="note-line">TIEMPO DE ENTREGA INMEDIATA, ENVIO GRATIS</div>
@@ -198,7 +205,11 @@
     <span class="val">{{ $cotizacion->created_at->copy()->addDays(15)->format('d/m/Y') }}</span>
 </div>
 
-<div class="en-letras">{{ numeroALetras($cotizacion->displayAmount($totalConIva)) }}</div>
+<div class="en-letras">
+    {{ $cotizacion->currency === 'USD'
+        ? numeroALetras($cotizacion->displayAmount($totalConIva), 'dólares', 'usd')
+        : numeroALetras($cotizacion->displayAmount($totalConIva)) }}
+</div>
 
 {{-- CUENTAS BANCARIAS --}}
 @php($bankAccounts = \App\Models\BankAccount::where('status', 1)->get())

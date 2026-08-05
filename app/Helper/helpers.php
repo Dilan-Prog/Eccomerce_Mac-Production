@@ -141,7 +141,7 @@ function getUrlcanonical(){
  * Sin acentos a propósito, para igualar el estilo de las cotizaciones Aspel
  * ya usadas por la empresa (ver referencia en resources/views/cotizaciones/pdf.blade.php).
  */
-function numeroALetras($numero): string
+function numeroALetras($numero, string $moneda = 'pesos', string $sufijo = 'm.n.'): string
 {
     $numero  = round((float) $numero, 2);
     $entero  = (int) floor($numero);
@@ -149,7 +149,7 @@ function numeroALetras($numero): string
 
     $texto = _numALetrasApocope(trim($entero === 0 ? 'cero' : _numALetrasEntero($entero)));
 
-    return strtoupper($texto . ' pesos ' . str_pad((string) $centavos, 2, '0', STR_PAD_LEFT) . '/100 m.n.');
+    return mb_strtoupper($texto . ' ' . $moneda . ' ' . str_pad((string) $centavos, 2, '0', STR_PAD_LEFT) . '/100 ' . $sufijo);
 }
 
 function _numALetrasApocope(string $texto): string

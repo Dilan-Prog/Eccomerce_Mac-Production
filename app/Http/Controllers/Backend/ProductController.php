@@ -210,6 +210,8 @@ class ProductController extends Controller
             $aspelPriceOptions = [];
         }
 
+        $ivaValue = (float) (DB::table('general_settings')->value('iva_mexico') ?? 16.00);
+
         $aspelTierLabel = null;
         if (!empty($product->aspel_price_tier)) {
             $tier = collect($aspelPriceOptions)->firstWhere('cve_precio', (int) $product->aspel_price_tier);
@@ -297,7 +299,7 @@ class ProductController extends Controller
 
         return view('admin-ui.products._details', compact(
             'product', 'category', 'brand', 'subCategory', 'childCategory',
-            'galleryImages', 'aspelTierLabel', 'aspelOffertTierLabel', 'aspelPriceOptions',
+            'galleryImages', 'aspelTierLabel', 'aspelOffertTierLabel', 'aspelPriceOptions', 'ivaValue',
             'aspelSync', 'aspelCurrency', 'combinations', 'effectivePrice', 'effectiveStock',
             'effectiveOffertPrice', 'hasActiveOffer'
         ));

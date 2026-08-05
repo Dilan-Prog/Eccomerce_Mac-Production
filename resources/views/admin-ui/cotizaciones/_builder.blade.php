@@ -10,6 +10,12 @@
     /** @var \App\Models\Cotizacion|null $cotizacion */
     $isEdit = isset($cotizacion) && $cotizacion;
 
+    // Defaults de Configuración General — se muestran siempre (aun antes de
+    // crear la cotización) para que el vendedor vea "a cuánto lo está
+    // poniendo" el sistema; ver App\Support\CotizacionExchange.
+    $defaultRateUsdMxn = \App\Support\CotizacionExchange::defaultUsdToMxn();
+    $defaultRateMxnUsd = \App\Support\CotizacionExchange::defaultMxnToUsd();
+
     $builderConfig = [
         'cotizacionId' => $isEdit ? $cotizacion->id : null,
         'items' => $isEdit
@@ -32,6 +38,9 @@
         'total' => $isEdit ? (float) $cotizacion->total : 0,
         'currency' => $isEdit ? $cotizacion->currency : 'MXN',
         'exchangeRate' => $isEdit && $cotizacion->exchange_rate ? (float) $cotizacion->exchange_rate : null,
+        'exchangeRateMxnUsd' => $isEdit && $cotizacion->exchange_rate_mxn_usd ? (float) $cotizacion->exchange_rate_mxn_usd : null,
+        'defaultExchangeRateUsdMxn' => $defaultRateUsdMxn,
+        'defaultExchangeRateMxnUsd' => $defaultRateMxnUsd,
         'routes' => [
             'clientsSearch' => route('admin.cotizaciones.clients-search'),
             'productsSearch' => route('admin.cotizaciones.products-search'),
@@ -143,11 +152,32 @@
                             <option value="USD" {{ $cotizacion->currency === 'USD' ? 'selected' : '' }}>Dólares (USD)</option>
                         </select>
                     </div>
-                    <div class="au-field" data-au-quote-exchange-rate-field style="margin-bottom:10px; {{ $cotizacion->currency === 'USD' ? '' : 'display:none' }}">
-                        <label class="au-label">Tipo de cambio (MXN por USD)</label>
-                        <input type="number" step="0.0001" min="0" class="au-input" data-au-quote-exchange-rate value="{{ $cotizacion->exchange_rate ?? '' }}">
-                    </div>
                 @endif
+
+                {{-- Los dos tipos de cambio siempre son visibles (no solo cuando
+                     currency=USD): el USD->MXN también normaliza a MXN los
+                     productos nativos-USD al agregarlos, sin importar en qué
+                     moneda se esté mostrando la cotización — ver
+                     App\Support\CotizacionExchange y
+                     AdminCotizacionController::storeItem(). --}}
+                <div class="au-field" style="margin-bottom:10px">
+                    <label class="au-label">Tipo de cambio USD &rarr; MXN (pesos por dólar)</label>
+                    @if ($isEdit)
+                        <input type="number" step="0.0001" min="0" class="au-input" data-au-quote-rate-usd-mxn value="{{ $cotizacion->exchange_rate ?? $defaultRateUsdMxn }}">
+                    @else
+                        <div class="au-input" style="background:var(--au-surface-header)">{{ number_format($defaultRateUsdMxn, 4) }}</div>
+                        <span class="au-help-text">Valor de Configuración General. Podrás personalizarlo al crear la cotización.</span>
+                    @endif
+                </div>
+                <div class="au-field" style="margin-bottom:10px">
+                    <label class="au-label">Tipo de cambio MXN &rarr; USD (dólares por peso)</label>
+                    @if ($isEdit)
+                        <input type="number" step="0.0001" min="0" class="au-input" data-au-quote-rate-mxn-usd value="{{ $cotizacion->exchange_rate_mxn_usd ?? $defaultRateMxnUsd }}">
+                    @else
+                        <div class="au-input" style="background:var(--au-surface-header)">{{ number_format($defaultRateMxnUsd, 4) }}</div>
+                        <span class="au-help-text">Valor de Configuración General. Podrás personalizarlo al crear la cotización.</span>
+                    @endif
+                </div>
                 <div class="au-quote-summary-count" data-au-quote-summary-count>0 artículos</div>
                 <div class="au-quote-summary-total" data-au-quote-summary-total>{{ "$0.00" }}</div>
                 @if ($isEdit)
