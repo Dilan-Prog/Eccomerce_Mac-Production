@@ -19,6 +19,8 @@ class CotizacionItem extends Model
         'precio_unitario',
         'precio_tier',
         'precio_tier_label',
+        'moneda_origen',
+        'precio_unitario_origen',
         'cantidad',
         'es_pendiente',
         'tiempo_entrega',
@@ -33,6 +35,7 @@ class CotizacionItem extends Model
         'sort_order'      => 'integer',
         'precio_tier'     => 'integer',
         'es_pendiente'    => 'boolean',
+        'precio_unitario_origen' => 'decimal:4',
     ];
 
     public function cotizacion()

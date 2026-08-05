@@ -168,10 +168,21 @@ class AdminCotizacionController extends Controller
                 'price' => $product->effectivePrice(),
                 'stock' => $product->effectiveStock(),
                 'has_variants' => $hasVariants,
+                // moneda_origen viaja junto con cada tier para que el picker
+                // (antes de agregar la partida) pueda mostrar el precio EXACTO
+                // sin convertir cuando coincide con la moneda elegida para la
+                // cotización — mismo passthrough que ya aplica a las partidas
+                // ya agregadas (Cotizacion::displayItemAmount()). Sin esto, el
+                // picker corría TODO por la conversión en bloque y un producto
+                // ya en USD se veía distorsionado (doble conversión) en la
+                // vista previa aunque la partida real, ya guardada, sí saliera
+                // exacta.
+                'moneda_origen' => $nativeCurrency,
                 'price_tiers' => array_map(fn ($tier) => [
                     'cve_precio' => $tier['cve_precio'],
                     'descripcion' => $tier['descripcion'],
                     'precio' => CotizacionExchange::normalizeToMxn($tier['precio'], $nativeCurrency, $defaultRateUsdMxn),
+                    'precio_origen' => round((float) $tier['precio'], 2),
                 ], $priceTiers),
                 // Referencias para el campo de precio personalizado: piso (mínimo,
                 // o 1 si no hay/está en 0) y techo informativo (público).
@@ -406,6 +417,14 @@ class AdminCotizacionController extends Controller
         $cantidad = (int) $request->input('cantidad');
         $tieredPrecio = null;
         $tieredLabel = null;
+        // Moneda nativa Aspel del SKU + su precio CRUDO (sin normalizar a
+        // MXN) — solo se llenan en la rama de precio_tier para producto
+        // simple (abajo); precio_personalizado y combinaciones los dejan
+        // NULL. Sirven para el passthrough exacto de
+        // Cotizacion::displayItemAmount() cuando la moneda nativa coincide
+        // con la moneda de la cotización — ver ese método para el porqué.
+        $monedaOrigen = null;
+        $precioUnitarioOrigen = null;
 
         if ($hasCombination) {
             $combination = ProductVariantCombinations::with('product.brand')
@@ -465,6 +484,8 @@ class AdminCotizacionController extends Controller
                         $precioUnitario = CotizacionExchange::normalizeToMxn($tier['precio'], $nativeCurrency, $rateUsdMxn);
                         $tieredPrecio = $tier['cve_precio'];
                         $tieredLabel = $tier['descripcion'];
+                        $monedaOrigen = $nativeCurrency;
+                        $precioUnitarioOrigen = (float) $tier['precio'];
                         break;
                     }
                 }
@@ -500,6 +521,8 @@ class AdminCotizacionController extends Controller
             'precio_unitario' => $precioUnitario,
             'precio_tier' => $tieredPrecio,
             'precio_tier_label' => $tieredLabel,
+            'moneda_origen' => $monedaOrigen,
+            'precio_unitario_origen' => $precioUnitarioOrigen,
         ];
 
         if ($inmediataQty > 0) {
@@ -534,6 +557,8 @@ class AdminCotizacionController extends Controller
                 'marca' => $item->marca,
                 'precio_unitario' => (float) $item->precio_unitario,
                 'precio_tier_label' => $item->precio_tier_label,
+                'moneda_origen' => $item->moneda_origen,
+                'precio_unitario_origen' => $item->precio_unitario_origen !== null ? (float) $item->precio_unitario_origen : null,
                 'cantidad' => $item->cantidad,
                 'es_pendiente' => $item->es_pendiente,
                 'tiempo_entrega' => $item->tiempo_entrega,
@@ -692,6 +717,8 @@ class AdminCotizacionController extends Controller
                     'marca' => $item->marca,
                     'precio' => (float) $item->precio_unitario,
                     'precio_tier_label' => $item->precio_tier_label,
+                    'moneda_origen' => $item->moneda_origen,
+                    'precio_origen' => $item->precio_unitario_origen !== null ? (float) $item->precio_unitario_origen : null,
                     'cantidad' => $item->cantidad,
                     'es_pendiente' => (bool) $item->es_pendiente,
                     'tiempo_entrega' => $item->tiempo_entrega,
@@ -738,6 +765,7 @@ class AdminCotizacionController extends Controller
             'subtotalSinIva' => $subtotalSinIva,
             'iva' => $iva,
             'totalConIva' => $totalConIva,
+            'ivaValue' => $ivaValue,
         ])->setPaper('letter', 'portrait');
 
         $filename = $cotizacion->folio . '.pdf';

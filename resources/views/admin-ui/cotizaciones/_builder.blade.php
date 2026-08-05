@@ -28,6 +28,8 @@
                     'marca' => $item->marca,
                     'precio_unitario' => (float) $item->precio_unitario,
                     'precio_tier_label' => $item->precio_tier_label,
+                    'moneda_origen' => $item->moneda_origen,
+                    'precio_unitario_origen' => $item->precio_unitario_origen !== null ? (float) $item->precio_unitario_origen : null,
                     'cantidad' => $item->cantidad,
                     'es_pendiente' => (bool) $item->es_pendiente,
                     'tiempo_entrega' => $item->tiempo_entrega,
@@ -159,24 +161,43 @@
                      productos nativos-USD al agregarlos, sin importar en qué
                      moneda se esté mostrando la cotización — ver
                      App\Support\CotizacionExchange y
-                     AdminCotizacionController::storeItem(). --}}
-                <div class="au-field" style="margin-bottom:10px">
-                    <label class="au-label">Tipo de cambio USD &rarr; MXN (pesos por dólar)</label>
-                    @if ($isEdit)
-                        <input type="number" step="0.0001" min="0" class="au-input" data-au-quote-rate-usd-mxn value="{{ $cotizacion->exchange_rate ?? $defaultRateUsdMxn }}">
-                    @else
-                        <div class="au-input" style="background:var(--au-surface-header)">{{ number_format($defaultRateUsdMxn, 4) }}</div>
-                        <span class="au-help-text">Valor de Configuración General. Podrás personalizarlo al crear la cotización.</span>
-                    @endif
+                     AdminCotizacionController::storeItem().
+
+                     Los campos de referencia (Configuración General) son
+                     siempre de solo-lectura y nunca se envían al servidor.
+                     Los campos personalizados empiezan vacíos (no prellenados
+                     con el default) para que el vendedor deba tocarlos
+                     explícitamente si quiere fijar un override — de lo
+                     contrario el placeholder ya deja claro que se usará el
+                     de Configuración General. --}}
+                <div class="au-field" style="margin-bottom:6px">
+                    <label class="au-label">Tipo de cambio USD &rarr; MXN (Configuración General)</label>
+                    <input type="text" class="au-input" value="{{ number_format($defaultRateUsdMxn, 4) }}" disabled>
                 </div>
                 <div class="au-field" style="margin-bottom:10px">
-                    <label class="au-label">Tipo de cambio MXN &rarr; USD (dólares por peso)</label>
+                    <label class="au-label">Tipo de cambio personalizado USD &rarr; MXN</label>
                     @if ($isEdit)
-                        <input type="number" step="0.0001" min="0" class="au-input" data-au-quote-rate-mxn-usd value="{{ $cotizacion->exchange_rate_mxn_usd ?? $defaultRateMxnUsd }}">
+                        <input type="number" step="0.0001" min="0" class="au-input" data-au-quote-rate-usd-mxn
+                               value="{{ $cotizacion->exchange_rate ?? '' }}" placeholder="Usar el de Configuración General">
                     @else
-                        <div class="au-input" style="background:var(--au-surface-header)">{{ number_format($defaultRateMxnUsd, 4) }}</div>
-                        <span class="au-help-text">Valor de Configuración General. Podrás personalizarlo al crear la cotización.</span>
+                        <input type="number" step="0.0001" min="0" class="au-input" placeholder="Podrás personalizarlo al crear la cotización" disabled>
                     @endif
+                    <span class="au-help-text">Se aplicará solo a los productos cuya moneda en Aspel sea USD (no afecta a los que ya están en MXN).</span>
+                </div>
+
+                <div class="au-field" style="margin-bottom:6px">
+                    <label class="au-label">Tipo de cambio MXN &rarr; USD (Configuración General)</label>
+                    <input type="text" class="au-input" value="{{ number_format($defaultRateMxnUsd, 4) }}" disabled>
+                </div>
+                <div class="au-field" style="margin-bottom:10px">
+                    <label class="au-label">Tipo de cambio personalizado MXN &rarr; USD</label>
+                    @if ($isEdit)
+                        <input type="number" step="0.0001" min="0" class="au-input" data-au-quote-rate-mxn-usd
+                               value="{{ $cotizacion->exchange_rate_mxn_usd ?? '' }}" placeholder="Usar el de Configuración General">
+                    @else
+                        <input type="number" step="0.0001" min="0" class="au-input" placeholder="Podrás personalizarlo al crear la cotización" disabled>
+                    @endif
+                    <span class="au-help-text">Se aplicará solo a los productos cuya moneda en Aspel sea MXN (no afecta a los que ya están en USD).</span>
                 </div>
                 <div class="au-quote-summary-count" data-au-quote-summary-count>0 artículos</div>
                 <div class="au-quote-summary-total" data-au-quote-summary-total>{{ "$0.00" }}</div>

@@ -225,6 +225,7 @@ class CotizacionController extends Controller
             'subtotalSinIva' => $subtotalSinIva,
             'iva'            => $iva,
             'totalConIva'    => $totalConIva,
+            'ivaValue'       => $ivaValue,
         ])->setPaper('letter', 'portrait');
 
         $filename = $cotizacion->folio . '.pdf';

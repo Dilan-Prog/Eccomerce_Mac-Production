@@ -144,6 +144,21 @@
     </tr>
 </table>
 
+<?php
+    $displayRows = [];
+    $displaySubtotal = 0;
+    foreach ($cotizacion->productos_json as $p) {
+        $montoOrigenSubtotal = ($p['precio_origen'] ?? null) !== null ? $p['precio_origen'] * $p['cantidad'] : null;
+        $puDisplay = $cotizacion->displayItemAmount($p['precio'], $p['moneda_origen'] ?? null, $p['precio_origen'] ?? null);
+        $subtotalDisplay = $cotizacion->displayItemAmount($p['subtotal'], $p['moneda_origen'] ?? null, $montoOrigenSubtotal);
+        $displayRows[] = ['p' => $p, 'pu' => $puDisplay, 'subtotal' => $subtotalDisplay];
+        $displaySubtotal += $subtotalDisplay;
+    }
+    $displaySubtotal = round($displaySubtotal, 2);
+    $displayIva = round($displaySubtotal * $ivaValue / 100, 2);
+    $displayTotal = $displaySubtotal + $displayIva;
+?>
+
 {{-- TABLA DE PRODUCTOS --}}
 <table class="prod-table">
     <thead>
@@ -156,7 +171,8 @@
         </tr>
     </thead>
     <tbody>
-        @foreach ($cotizacion->productos_json as $p)
+        @foreach ($displayRows as $row)
+        @php($p = $row['p'])
         <tr>
             <td>{{ number_format($p['cantidad'], 2) }}</td>
             <td>{{ $p['sku'] ?? '' }}</td>
@@ -173,8 +189,8 @@
                     </div>
                 @endif
             </td>
-            <td class="right">{{ number_format($cotizacion->displayAmount($p['precio']), 2, '.', ',') }}</td>
-            <td class="right">{{ number_format($cotizacion->displayAmount($p['subtotal']), 2, '.', ',') }}</td>
+            <td class="right">{{ number_format($row['pu'], 2, '.', ',') }}</td>
+            <td class="right">{{ number_format($row['subtotal'], 2, '.', ',') }}</td>
         </tr>
         @endforeach
     </tbody>
@@ -182,9 +198,9 @@
 
 {{-- TOTALES --}}
 <table class="totals-table">
-    <tr><td class="lbl">Subtotal</td><td class="val">{{ number_format($cotizacion->displayAmount($subtotalSinIva), 2, '.', ',') }}</td></tr>
-    <tr><td class="lbl">I.V.A.</td><td class="val">{{ number_format($cotizacion->displayAmount($iva), 2, '.', ',') }}</td></tr>
-    <tr><td class="lbl">Total ({{ $cotizacion->currency }})</td><td class="val">{{ number_format($cotizacion->displayAmount($totalConIva), 2, '.', ',') }}</td></tr>
+    <tr><td class="lbl">Subtotal</td><td class="val">{{ number_format($displaySubtotal, 2, '.', ',') }}</td></tr>
+    <tr><td class="lbl">I.V.A.</td><td class="val">{{ number_format($displayIva, 2, '.', ',') }}</td></tr>
+    <tr><td class="lbl">Total ({{ $cotizacion->currency }})</td><td class="val">{{ number_format($displayTotal, 2, '.', ',') }}</td></tr>
 </table>
 
 @if ($cotizacion->currency === 'USD')
@@ -194,6 +210,8 @@
         {{ $cotizacion->exchange_rate_mxn_usd }} USD por MXN
     @elseif ($cotizacion->exchange_rate)
         {{ $cotizacion->exchange_rate }} MXN por USD
+    @else
+        {{ \App\Support\CotizacionExchange::defaultMxnToUsd() }} USD por MXN (Configuración General)
     @endif
 </div>
 @endif
@@ -207,8 +225,8 @@
 
 <div class="en-letras">
     {{ $cotizacion->currency === 'USD'
-        ? numeroALetras($cotizacion->displayAmount($totalConIva), 'dólares', 'usd')
-        : numeroALetras($cotizacion->displayAmount($totalConIva)) }}
+        ? numeroALetras($displayTotal, 'dólares', 'usd')
+        : numeroALetras($displayTotal) }}
 </div>
 
 {{-- CUENTAS BANCARIAS --}}

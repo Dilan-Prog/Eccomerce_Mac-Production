@@ -50,6 +50,39 @@
         // admin.js — no bespoke JS needed for this button.
         $actions .= ' <a href="' . route('admin.cotizaciones.regenerate-pdf', $cotizacion->id) . '" class="au-btn au-btn-sm au-action-item" data-method="POST">Regenerar PDF</a>';
     }
+
+    // Per-line display amounts, resolved via Cotizacion::displayItemAmount()
+    // so that native-USD line items shown on a USD-currency quote pass
+    // through exactly instead of being re-converted from their aggregated
+    // MXN equivalent (same fix as applied to the PDF template).
+    $displayRows = [];
+    $displaySubtotal = 0;
+
+    if ($useDraftItems) {
+        foreach ($cotizacion->items as $item) {
+            $monedaOrigen = $item->moneda_origen;
+            $precioOrigen = $item->precio_unitario_origen !== null ? (float) $item->precio_unitario_origen : null;
+            $montoOrigenSubtotal = $precioOrigen !== null ? $precioOrigen * $item->cantidad : null;
+            $pu = $cotizacion->displayItemAmount((float) $item->precio_unitario, $monedaOrigen, $precioOrigen);
+            $subtotalLinea = $cotizacion->displayItemAmount((float) $item->subtotal, $monedaOrigen, $montoOrigenSubtotal);
+            $displayRows[] = ['item' => $item, 'pu' => $pu, 'subtotal' => $subtotalLinea];
+            $displaySubtotal += $subtotalLinea;
+        }
+    } else {
+        foreach (($cotizacion->productos_json ?? []) as $p) {
+            $monedaOrigen = $p['moneda_origen'] ?? null;
+            $precioOrigen = $p['precio_origen'] ?? null;
+            $montoOrigenSubtotal = $precioOrigen !== null ? $precioOrigen * $p['cantidad'] : null;
+            $pu = $cotizacion->displayItemAmount($p['precio'], $monedaOrigen, $precioOrigen);
+            $subtotalLinea = $cotizacion->displayItemAmount($p['subtotal'], $monedaOrigen, $montoOrigenSubtotal);
+            $displayRows[] = ['p' => $p, 'pu' => $pu, 'subtotal' => $subtotalLinea];
+            $displaySubtotal += $subtotalLinea;
+        }
+    }
+
+    $displaySubtotal = round($displaySubtotal, 2);
+    $displayIva = round($displaySubtotal * $ivaPercent / 100, 2);
+    $displayTotal = $displaySubtotal + $displayIva;
 @endphp
 @extends('admin-ui.layouts.master')
 
@@ -98,8 +131,8 @@
                                         </td>
                                         <td>{{ $item->marca ?? '—' }}</td>
                                         <td class="au-text-right">{{ $item->cantidad }}</td>
-                                        <td class="au-text-right au-mono">${{ number_format($item->precio_unitario, 2, '.', ',') }}</td>
-                                        <td class="au-text-right au-mono"><strong>${{ number_format($item->subtotal, 2, '.', ',') }}</strong></td>
+                                        <td class="au-text-right au-mono">${{ number_format($displayRows[$i]['pu'], 2, '.', ',') }} {{ $cotizacion->currency }}</td>
+                                        <td class="au-text-right au-mono"><strong>${{ number_format($displayRows[$i]['subtotal'], 2, '.', ',') }} {{ $cotizacion->currency }}</strong></td>
                                     </tr>
                                 @empty
                                     <tr>
@@ -127,8 +160,8 @@
                                         </td>
                                         <td>{{ $p['marca'] ?? '—' }}</td>
                                         <td class="au-text-right">{{ $p['cantidad'] }}</td>
-                                        <td class="au-text-right au-mono">${{ number_format($p['precio'], 2, '.', ',') }}</td>
-                                        <td class="au-text-right au-mono"><strong>${{ number_format($p['subtotal'], 2, '.', ',') }}</strong></td>
+                                        <td class="au-text-right au-mono">${{ number_format($displayRows[$i]['pu'], 2, '.', ',') }} {{ $cotizacion->currency }}</td>
+                                        <td class="au-text-right au-mono"><strong>${{ number_format($displayRows[$i]['subtotal'], 2, '.', ',') }} {{ $cotizacion->currency }}</strong></td>
                                     </tr>
                                 @empty
                                     <tr>
@@ -148,17 +181,26 @@
                 </div>
                 <div class="au-card-body">
                     <div class="au-flex" style="justify-content:space-between;padding:5px 0;font-size:13px;color:var(--au-text-subdued)">
-                        <span>Subtotal (s/IVA)</span><span class="au-mono">${{ number_format($cotizacion->displayAmount($subtotalSinIva), 2, '.', ',') }} {{ $cotizacion->currency }}</span>
+                        <span>Subtotal (s/IVA)</span><span class="au-mono">${{ number_format($displaySubtotal, 2, '.', ',') }} {{ $cotizacion->currency }}</span>
                     </div>
                     <div class="au-flex" style="justify-content:space-between;padding:5px 0;font-size:13px;color:var(--au-text-subdued)">
-                        <span>IVA ({{ number_format($ivaPercent, 0) }}%)</span><span class="au-mono">${{ number_format($cotizacion->displayAmount($iva), 2, '.', ',') }} {{ $cotizacion->currency }}</span>
+                        <span>IVA ({{ number_format($ivaPercent, 0) }}%)</span><span class="au-mono">${{ number_format($displayIva, 2, '.', ',') }} {{ $cotizacion->currency }}</span>
                     </div>
                     <hr style="border:0;border-top:1px solid var(--au-border);margin:6px 0">
                     <div class="au-flex" style="justify-content:space-between;padding:5px 0;font-size:15px;font-weight:700">
-                        <span>Total</span><span class="au-mono">${{ number_format($cotizacion->displayAmount($totalConIva), 2, '.', ',') }} {{ $cotizacion->currency }}</span>
+                        <span>Total</span><span class="au-mono">${{ number_format($displayTotal, 2, '.', ',') }} {{ $cotizacion->currency }}</span>
                     </div>
-                    @if ($cotizacion->currency === 'USD' && $cotizacion->exchange_rate)
-                    <div style="font-size:11px;color:var(--au-text-subdued);margin-top:4px">Tipo de cambio: {{ $cotizacion->exchange_rate }} MXN por USD</div>
+                    @if ($cotizacion->currency === 'USD')
+                    <div style="font-size:11px;color:var(--au-text-subdued);margin-top:4px">
+                        Tipo de cambio:
+                        @if ($cotizacion->exchange_rate_mxn_usd)
+                            {{ $cotizacion->exchange_rate_mxn_usd }} USD por MXN
+                        @elseif ($cotizacion->exchange_rate)
+                            {{ $cotizacion->exchange_rate }} MXN por USD
+                        @else
+                            {{ \App\Support\CotizacionExchange::defaultMxnToUsd() }} USD por MXN (Configuración General)
+                        @endif
+                    </div>
                     @endif
                 </div>
             </div>

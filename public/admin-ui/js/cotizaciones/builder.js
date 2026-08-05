@@ -58,11 +58,45 @@ window.AU = window.AU || {};
     if (currency !== "USD") return num;
     if (exchangeRateMxnUsd) return num * exchangeRateMxnUsd;
     if (exchangeRate) return num / exchangeRate;
-    return num;
+    return num * config.defaultExchangeRateMxnUsd;
+  }
+
+  /*
+   * Item-aware variants of toDisplayAmount(): when the quote is shown in USD
+   * and the item's native Aspel currency was already USD, use the raw
+   * pre-normalization unit price (precio_unitario_origen) instead of
+   * round-tripping the already-MXN-normalized value back through
+   * toDisplayAmount() — avoids the double-conversion rounding drift.
+   */
+  function toDisplayUnitAmount(item) {
+    if (currency === "USD" && item.moneda_origen === "USD" && item.precio_unitario_origen != null) {
+      return item.precio_unitario_origen;
+    }
+    return toDisplayAmount(item.precio_unitario);
+  }
+
+  function toDisplaySubtotalAmount(item) {
+    if (currency === "USD" && item.moneda_origen === "USD" && item.precio_unitario_origen != null) {
+      return item.precio_unitario_origen * item.cantidad;
+    }
+    return toDisplayAmount(item.subtotal);
   }
 
   function formatMoney(mxnValue) {
     return toDisplayAmount(mxnValue).toLocaleString("es-MX", { style: "currency", currency });
+  }
+
+  /*
+   * Unlike formatMoney() (raw MXN in, converts then formats), the
+   * toDisplayUnitAmount()/toDisplaySubtotalAmount() helpers above already
+   * return a value in the display currency (they either skip conversion
+   * entirely for native-USD items, or already ran it through
+   * toDisplayAmount() themselves). Formatting those with formatMoney() would
+   * run them through toDisplayAmount() a second time and double-convert —
+   * use this instead, which only formats.
+   */
+  function formatDisplayMoney(displayValue) {
+    return displayValue.toLocaleString("es-MX", { style: "currency", currency });
   }
 
   /* ---------------------------------------------------------------- *
@@ -82,7 +116,7 @@ window.AU = window.AU || {};
         exchangeRate = data.cotizacion.exchange_rate;
         exchangeRateMxnUsd = data.cotizacion.exchange_rate_mxn_usd;
         renderItems();
-        renderSummary(lastTotals.item_count, lastTotals.total);
+        renderSummary(lastTotals.item_count);
       } catch (err) {
         AU.toast.error((err.data && err.data.message) || "No se pudo guardar la moneda/tipo de cambio");
       }
@@ -109,17 +143,22 @@ window.AU = window.AU || {};
    * Summary sidebar
    * ---------------------------------------------------------------- */
 
-  function renderSummary(count, total) {
+  function computeDisplayTotal() {
+    return items.reduce((sum, item) => sum + toDisplaySubtotalAmount(item), 0);
+  }
+
+  function renderSummary(count) {
+    const total = computeDisplayTotal();
     lastTotals = { item_count: count, total };
     const countEl = AU.qs("[data-au-quote-summary-count]");
     const totalEl = AU.qs("[data-au-quote-summary-total]");
     if (countEl) countEl.textContent = count === 1 ? "1 artículo" : `${count} artículos`;
-    if (totalEl) totalEl.textContent = formatMoney(total);
+    if (totalEl) totalEl.textContent = formatDisplayMoney(total);
   }
 
   function applyServerTotals(totals) {
     if (!totals) return;
-    renderSummary(totals.item_count, totals.total);
+    renderSummary(totals.item_count);
   }
 
   /* ---------------------------------------------------------------- *
@@ -195,8 +234,8 @@ window.AU = window.AU || {};
           <input type="number" min="1" step="1" class="au-input au-quote-qty-input"
                  value="${item.cantidad}" data-au-quote-qty="${item.id}">
         </td>
-        <td class="au-text-right au-mono">${formatMoney(item.precio_unitario)}</td>
-        <td class="au-text-right au-mono" data-au-quote-item-subtotal="${item.id}">${formatMoney(item.subtotal)}</td>
+        <td class="au-text-right au-mono">${formatDisplayMoney(toDisplayUnitAmount(item))}</td>
+        <td class="au-text-right au-mono" data-au-quote-item-subtotal="${item.id}">${formatDisplayMoney(toDisplaySubtotalAmount(item))}</td>
         <td class="au-col-actions">
           <button type="button" class="au-btn au-btn-sm au-btn-critical" data-au-quote-remove="${item.id}" aria-label="Quitar">
             <i class="fas fa-trash"></i>
@@ -247,7 +286,7 @@ window.AU = window.AU || {};
         items[idx].subtotal = data.item.subtotal;
       }
       const subtotalCell = AU.qs(`[data-au-quote-item-subtotal="${itemId}"]`);
-      if (subtotalCell) subtotalCell.textContent = formatMoney(data.item.subtotal);
+      if (subtotalCell && idx !== -1) subtotalCell.textContent = formatDisplayMoney(toDisplaySubtotalAmount(items[idx]));
       applyServerTotals(data.total);
     } catch (err) {
       AU.toast.error((err.data && err.data.message) || "No se pudo actualizar la cantidad");
@@ -293,6 +332,22 @@ window.AU = window.AU || {};
    * Product search + add
    * ---------------------------------------------------------------- */
 
+  /*
+   * Same passthrough rule as toDisplayUnitAmount()/displayItemAmount(): if
+   * this product's native Aspel currency matches the quote's currency, show
+   * the tier's raw price exactly (no conversion) instead of running it
+   * through toDisplayAmount() — which would otherwise double-convert (the
+   * tier price already got normalized to MXN server-side via
+   * CotizacionExchange::normalizeToMxn(), so converting it again here for
+   * display would round-trip a native-currency price for no reason).
+   */
+  function tierDisplayAmount(p, tier) {
+    if (currency === p.moneda_origen && tier.precio_origen != null) {
+      return tier.precio_origen;
+    }
+    return toDisplayAmount(tier.precio);
+  }
+
   function productRowHtml(p) {
     const meta = [p.sku ? `SKU: ${AU.escapeHtml(p.sku)}` : null, p.modelo ? `Modelo: ${AU.escapeHtml(p.modelo)}` : null, p.marca ? AU.escapeHtml(p.marca) : null]
       .filter(Boolean)
@@ -305,7 +360,7 @@ window.AU = window.AU || {};
       const priceControl = tiers.length
         ? `<div class="au-quote-price-controls">
             <select class="au-select au-quote-tier-select" data-tier-select>
-              ${tiers.map((t) => `<option value="${t.cve_precio}">${AU.escapeHtml(t.descripcion)} — ${formatMoney(t.precio)}</option>`).join("")}
+              ${tiers.map((t) => `<option value="${t.cve_precio}">${AU.escapeHtml(t.descripcion)} — ${formatDisplayMoney(tierDisplayAmount(p, t))}</option>`).join("")}
             </select>
             <input type="number" min="0" step="0.01" class="au-input au-quote-custom-price" data-custom-price
                    data-minimo="${minimo}" data-publico="${publico || ""}" placeholder="Precio personalizado (opcional)">
@@ -549,7 +604,7 @@ window.AU = window.AU || {};
    * ---------------------------------------------------------------- */
 
   renderItems();
-  renderSummary(items.length, config.total || 0);
+  renderSummary(items.length);
   wireItemsTable();
   wireProductSearch();
   wireClientPicker();

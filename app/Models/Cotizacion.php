@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Support\CotizacionExchange;
 use Illuminate\Database\Eloquent\Model;
 
 class Cotizacion extends Model
@@ -62,7 +63,12 @@ class Cotizacion extends Model
      * Uses exchange_rate_mxn_usd (dollars per peso, multiplication) when
      * present. Falls back to dividing by the older `exchange_rate` (pesos
      * per dollar) for quotes finalized before exchange_rate_mxn_usd existed,
-     * so their PDFs keep producing the exact same total they always had.
+     * so their PDFs keep producing the exact same total they always had. If
+     * NEITHER is set on this quote (e.g. the vendor picked USD but never
+     * touched any override input), falls back to the LIVE Configuración
+     * General default via CotizacionExchange::effectiveMxnToUsdRate() —
+     * without this, a quote could sit at currency='USD' with both rate
+     * columns null and simply never convert anything.
      */
     public function displayAmount(float $mxnAmount): float
     {
@@ -78,7 +84,31 @@ class Cotizacion extends Model
             return round($mxnAmount / (float) $this->exchange_rate, 2);
         }
 
-        return round($mxnAmount, 2);
+        return round($mxnAmount * CotizacionExchange::effectiveMxnToUsdRate($this), 2);
+    }
+
+    /**
+     * Like displayAmount(), but resolves ONE line's amount with a single
+     * special case: when the item's native Aspel currency EXACTLY matches
+     * this quote's display currency (USD-native item, quote shown in USD),
+     * it returns the original raw amount as-is — no MXN round-trip, no
+     * rounding drift. Every other combination (MXN-native shown in MXN,
+     * MXN-native shown in USD, USD-native shown in MXN, or missing origin
+     * data because the line predates this feature / came from
+     * precio_personalizado / a variant combination) delegates to
+     * displayAmount(), which already handles those correctly.
+     *
+     * $mxnAmount and $montoOrigenEquivalente must already be aligned by the
+     * caller to the same quantity (both per-unit, or both already
+     * multiplied by cantidad) — this method doesn't know about quantities.
+     */
+    public function displayItemAmount(float $mxnAmount, ?string $monedaOrigen, ?float $montoOrigenEquivalente): float
+    {
+        if ($this->currency === 'USD' && $monedaOrigen === 'USD' && $montoOrigenEquivalente !== null) {
+            return round($montoOrigenEquivalente, 2);
+        }
+
+        return $this->displayAmount($mxnAmount);
     }
 
     public function user()

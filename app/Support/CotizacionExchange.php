@@ -73,6 +73,17 @@ class CotizacionExchange
     }
 
     /**
+     * Tipo de cambio MXN->USD EFECTIVO para una cotización concreta: su
+     * propio override (cotizacion.exchange_rate_mxn_usd) si lo tiene, si no
+     * el default global — mismo patrón que effectiveUsdToMxnRate(), en la
+     * dirección inversa.
+     */
+    public static function effectiveMxnToUsdRate(Cotizacion $cotizacion): float
+    {
+        return $cotizacion->exchange_rate_mxn_usd ? (float) $cotizacion->exchange_rate_mxn_usd : static::defaultMxnToUsd();
+    }
+
+    /**
      * Normaliza un precio crudo de Aspel a MXN: si la moneda nativa es USD
      * lo multiplica por el tipo de cambio USD->MXN; si es MXN o no se pudo
      * determinar (SKU sin datos Aspel, moneda desconocida), lo regresa tal
