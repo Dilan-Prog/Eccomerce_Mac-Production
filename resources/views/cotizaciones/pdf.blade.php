@@ -44,8 +44,6 @@
   .totals-table .lbl { font-weight: 700; }
   .totals-table .val { text-align: right; font-weight: 700; }
 
-  .exchange-rate-note { width: 220px; margin-left: auto; margin-top: 2px; font-size: 8px; text-align: right; }
-
   .note-line { margin-top: 10px; font-size: 9px; font-weight: 700; }
   .vigencia-line { margin-top: 20px; font-size: 10px; }
   .vigencia-line .lbl { font-weight: 700; }
@@ -202,19 +200,6 @@
     <tr><td class="lbl">I.V.A.</td><td class="val">{{ number_format($displayIva, 2, '.', ',') }}</td></tr>
     <tr><td class="lbl">Total ({{ $cotizacion->currency }})</td><td class="val">{{ number_format($displayTotal, 2, '.', ',') }}</td></tr>
 </table>
-
-@if ($cotizacion->currency === 'USD')
-<div class="exchange-rate-note">
-    Tipo de cambio:
-    @if ($cotizacion->exchange_rate_mxn_usd)
-        {{ $cotizacion->exchange_rate_mxn_usd }} USD por MXN
-    @elseif ($cotizacion->exchange_rate)
-        {{ $cotizacion->exchange_rate }} MXN por USD
-    @else
-        {{ \App\Support\CotizacionExchange::defaultMxnToUsd() }} USD por MXN (Configuración General)
-    @endif
-</div>
-@endif
 
 <div class="note-line">TIEMPO DE ENTREGA INMEDIATA, ENVIO GRATIS</div>
 
