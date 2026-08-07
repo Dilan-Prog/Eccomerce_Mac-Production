@@ -86,7 +86,11 @@
                     @endif
                   </td>
                   <td>
-                    <a href="{{ route('technician.reports.index') }}" class="btn btn-sm btn-primary">Ver</a>
+                    @if($r->status === 'completed')
+                      <a href="{{ route('technician.reports.index') }}?ver={{ $r->id }}" class="btn btn-sm btn-primary">Ver</a>
+                    @else
+                      <a href="{{ route('technician.reports.create') }}?draft={{ $r->id }}" class="btn btn-sm btn-primary">Continuar</a>
+                    @endif
                   </td>
                 </tr>
                 @empty

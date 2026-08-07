@@ -408,7 +408,7 @@ window.AU = window.AU || {};
           </div>
           ${priceControl}
           <div class="au-quote-product-add">
-            <input type="number" min="1" step="1" value="1" class="au-input au-quote-qty-input">
+            <input type="number" min="1" step="1" value="1" class="au-input au-quote-qty-input" data-qty-input>
             <button type="button" class="au-btn au-btn-sm au-btn-primary" data-au-quote-add-product="${p.id}">Agregar</button>
           </div>
         </div>`;
@@ -424,7 +424,7 @@ window.AU = window.AU || {};
         </div>
         <div class="au-quote-product-price au-mono">${formatMoney(c.price)}</div>
         <div class="au-quote-product-add">
-          <input type="number" min="1" step="1" value="1" class="au-input au-quote-qty-input">
+          <input type="number" min="1" step="1" value="1" class="au-input au-quote-qty-input" data-qty-input>
           <button type="button" class="au-btn au-btn-sm au-btn-primary" data-au-quote-add-combo="${c.id}">Agregar</button>
         </div>
       </div>`
@@ -489,7 +489,7 @@ window.AU = window.AU || {};
     AU.qsa("[data-au-quote-add-product]", container).forEach((btn) => {
       btn.addEventListener("click", () => {
         const row = btn.closest(".au-quote-product-row");
-        const qtyInput = row.querySelector("input[type=\"number\"]");
+        const qtyInput = row.querySelector("[data-qty-input]");
         const qty = Math.max(1, parseInt(qtyInput.value, 10) || 1);
         const tierSelect = row.querySelector("[data-tier-select]");
         const customPriceInput = row.querySelector("[data-custom-price]");
@@ -514,7 +514,7 @@ window.AU = window.AU || {};
     AU.qsa("[data-au-quote-add-combo]", container).forEach((btn) => {
       btn.addEventListener("click", () => {
         const row = btn.closest(".au-quote-combo-row");
-        const qtyInput = row.querySelector("input[type=\"number\"]");
+        const qtyInput = row.querySelector("[data-qty-input]");
         const qty = Math.max(1, parseInt(qtyInput.value, 10) || 1);
         addItem({ product_variant_combination_id: btn.getAttribute("data-au-quote-add-combo"), cantidad: qty });
       });

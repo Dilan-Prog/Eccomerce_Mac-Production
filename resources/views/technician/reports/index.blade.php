@@ -75,8 +75,8 @@
                 @if($r->status === 'completed')
                   <button onclick="verPDF({{ $r->id }})"
                           class="btn btn-sm text-white me-1" style="background:var(--navy-mid)"
-                          title="Generar PDF">
-                    <i class="fas fa-file-pdf"></i> PDF
+                          title="Ver reporte">
+                    <i class="fas fa-file-pdf"></i> Ver
                   </button>
                 @else
                   <a href="{{ route('technician.reports.create') }}?draft={{ $r->id }}"
@@ -112,6 +112,29 @@
     </div>
   </div>
 </div>
+
+{{-- Modal de vista previa del PDF ya generado — se muestra en vez de forzar
+     la descarga; el botón "Descargar" adentro sí la dispara si el técnico
+     quiere guardar el archivo. --}}
+<div class="modal fade" id="pdfPreviewModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-centered" style="height:90vh">
+    <div class="modal-content" style="height:100%">
+      <div class="modal-header">
+        <h5 class="modal-title" id="pdfPreviewTitle">Vista previa del reporte</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body p-0" style="min-height:0">
+        <iframe id="pdfPreviewFrame" src="" style="width:100%;height:100%;border:0"></iframe>
+      </div>
+      <div class="modal-footer">
+        <a id="pdfPreviewDownload" href="#" class="btn text-white" style="background:var(--orange)">
+          <i class="fas fa-download"></i> Descargar
+        </a>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+      </div>
+    </div>
+  </div>
+</div>
 @endsection
 
 @push('scripts')
@@ -143,6 +166,12 @@ async function loadLogo() {
   } catch(e) { /* logo no disponible, se usará texto */ }
 }
 loadLogo();
+
+const __verId = new URLSearchParams(location.search).get('ver');
+if (__verId) {
+  history.replaceState(null, '', location.pathname);
+  $(function () { verPDF(__verId); });
+}
 
 /* Convierte una URL de imagen a base64 vía fetch (maneja espacios y guiones en nombre) */
 async function urlToBase64(url) {
@@ -200,6 +229,12 @@ async function enrichFotos(fotos) {
   return result;
 }
 
+let __lastPdfBlobUrl = null;
+$('#pdfPreviewModal').on('hidden.bs.modal', function () {
+  if (__lastPdfBlobUrl) { URL.revokeObjectURL(__lastPdfBlobUrl); __lastPdfBlobUrl = null; }
+  $('#pdfPreviewFrame').attr('src', '');
+});
+
 async function verPDF(id) {
   if (typeof window.jspdf === 'undefined') {
     toastr.error('La librería PDF no está disponible. Recarga la página.');
@@ -228,7 +263,15 @@ async function verPDF(id) {
 
   $('#pdfModal .modal-title').text('Generando PDF…');
   try {
-    generatePDF(report);
+    const pdf = generatePDF(report);
+    if (pdf && pdf.blobUrl) {
+      if (__lastPdfBlobUrl) { URL.revokeObjectURL(__lastPdfBlobUrl); }
+      __lastPdfBlobUrl = pdf.blobUrl;
+      $('#pdfPreviewTitle').text('Reporte ' + (report.folio || ''));
+      $('#pdfPreviewFrame').attr('src', pdf.blobUrl);
+      $('#pdfPreviewDownload').attr('href', pdf.blobUrl).attr('download', pdf.filename);
+      $('#pdfPreviewModal').modal('show');
+    }
   } catch(e) {
     console.error('[PDF Error]', e);
     toastr.error('Error al generar PDF: ' + e.message);
@@ -583,7 +626,14 @@ function generatePDF(report) {
   y += garH + 4;
 
   addFooters();
-  doc.save('Reporte_' + (report.folio || 'MAC') + '.pdf');
+
+  // En vez de forzar la descarga (doc.save), se guarda un blob URL para que
+  // el llamador (verPDF) lo muestre en el modal de vista previa — el botón
+  // "Descargar" de ese modal es el único punto que sí descarga el archivo.
+  return {
+    blobUrl: doc.output('bloburl'),
+    filename: 'Reporte_' + (report.folio || 'MAC') + '.pdf',
+  };
 }
 </script>
 @endpush

@@ -496,6 +496,29 @@
   <div class="spinner-border text-warning" style="width:48px;height:48px" role="status"></div>
   <p id="savingMsg">Guardando…</p>
 </div>
+
+{{-- Modal de vista previa del PDF ya generado — se muestra en vez de forzar
+     la descarga; el botón "Descargar" adentro sí la dispara si el técnico
+     quiere guardar el archivo. Mismo patrón usado en reports/index.blade.php. --}}
+<div class="modal fade" id="pdfPreviewModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-centered" style="height:90vh">
+    <div class="modal-content" style="height:100%">
+      <div class="modal-header">
+        <h5 class="modal-title" id="pdfPreviewTitle">Vista previa del reporte</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body p-0" style="min-height:0">
+        <iframe id="pdfPreviewFrame" src="" style="width:100%;height:100%;border:0"></iframe>
+      </div>
+      <div class="modal-footer">
+        <a id="pdfPreviewDownload" href="#" class="btn text-white" style="background:var(--orange)">
+          <i class="fas fa-download"></i> Descargar
+        </a>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+      </div>
+    </div>
+  </div>
+</div>
 @endsection
 
 @push('scripts')
@@ -1051,16 +1074,27 @@ async function finishReport() {
   showOverlay('Generando PDF...');
 
   try {
-    generatePDF(reportFull);
-    toastr.success('Reporte completado y PDF generado correctamente.');
+    const pdf = generatePDF(reportFull);
+    toastr.success('Reporte completado. Aquí tienes la vista previa del PDF.');
+    if (pdf && pdf.blobUrl) {
+      $('#pdfPreviewTitle').text('Reporte ' + (reportFull.folio || ''));
+      $('#pdfPreviewFrame').attr('src', pdf.blobUrl);
+      $('#pdfPreviewDownload').attr('href', pdf.blobUrl).attr('download', pdf.filename);
+      // Al cerrar la vista previa, regresamos al listado de reportes.
+      $('#pdfPreviewModal').one('hidden.bs.modal', () => {
+        window.location.href = '{{ route("technician.reports.index") }}';
+      });
+      $('#pdfPreviewModal').modal('show');
+    } else {
+      setTimeout(() => window.location.href = '{{ route("technician.reports.index") }}', 2500);
+    }
   } catch(e) {
     console.error('[PDF Error]', e);
     toastr.warning('Reporte guardado. Error al generar PDF: ' + e.message);
+    setTimeout(() => window.location.href = '{{ route("technician.reports.index") }}', 2500);
   } finally {
     hideOverlay();
   }
-
-  setTimeout(() => window.location.href = '{{ route("technician.reports.index") }}', 2500);
 }
 
 /* ══════════════════════════════════════════════════════════════
@@ -1392,7 +1426,15 @@ function generatePDF(report) {
   y += garH + 4;
 
   addFooters();
-  doc.save('Reporte_' + (report.folio || 'MAC') + '.pdf');
+
+  // En vez de forzar la descarga (doc.save), se devuelve un blob URL para
+  // mostrarlo en el modal de vista previa (#pdfPreviewModal) — el botón
+  // "Descargar" de ese modal es el único punto que sí descarga el archivo.
+  // Mismo patrón usado en reports/index.blade.php.
+  return {
+    blobUrl: doc.output('bloburl'),
+    filename: 'Reporte_' + (report.folio || 'MAC') + '.pdf',
+  };
 }
 </script>
 @endpush

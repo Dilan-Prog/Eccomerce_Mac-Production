@@ -5,10 +5,13 @@ namespace App\Http\Controllers\Technician;
 
 use App\Http\Controllers\Controller;
 use App\Models\ServiceReport;
+use App\Traits\ImageUploadTrait;
 use Illuminate\Http\Request;
 
 class ServiceReportController extends Controller
 {
+    use ImageUploadTrait;
+
     public function index()
     {
         $reports = ServiceReport::where('user_id', auth()->id())
@@ -45,6 +48,14 @@ class ServiceReportController extends Controller
         return response()->json(['folio' => 'MAC-' . $date . '-M' . str_pad($seq, 4, '0', STR_PAD_LEFT)]);
     }
 
+    /**
+     * Sube las fotos usando el mismo mecanismo de UPLOADS_BASE_PATH que el
+     * resto del proyecto (App\Traits\ImageUploadTrait::uploadMultiImage() ->
+     * App\Support\UploadPath), en vez de $file->store(..., 'public')
+     * (storage/app/public, symlink de Laravel) que se usaba antes. Así las
+     * fotos sobreviven un deploy/git reset igual que las de Marca/Slider/
+     * Producto, y se sirven con el mismo patrón de URL en toda la app.
+     */
     public function uploadFotos(Request $request, $id)
     {
         $report = ServiceReport::where('id', $id)
@@ -54,9 +65,10 @@ class ServiceReportController extends Controller
         $fotos  = $report->fotos ?? ['antes' => [], 'despues' => []];
         $tipo   = in_array($request->input('tipo'), ['antes', 'despues']) ? $request->input('tipo') : 'antes';
 
-        foreach ($request->file('fotos', []) as $file) {
-            $path          = $file->store("service-reports/{$id}", 'public');
-            $fotos[$tipo][] = ['path' => $path, 'url' => asset('storage/' . $path)];
+        $paths = $this->uploadMultiImage($request, 'fotos', "uploads/service-reports/{$id}") ?? [];
+
+        foreach ($paths as $path) {
+            $fotos[$tipo][] = ['path' => $path, 'url' => asset($path)];
         }
 
         $report->fotos = $fotos;
@@ -124,14 +136,22 @@ class ServiceReportController extends Controller
             ->where('user_id', auth()->id())
             ->firstOrFail();
 
-        // Regenerar URLs de fotos desde path (evita URLs stale de otro entorno)
+        // Regenerar URLs de fotos desde path (evita URLs stale de otro entorno).
+        // Compatibilidad: las fotos subidas ANTES de este fix tienen un path
+        // tipo "service-reports/{id}/archivo.jpg" servido vía el disco
+        // 'public' de Laravel (storage/app/public); las subidas después usan
+        // "uploads/service-reports/{id}/archivo.webp" vía UploadPath — cada
+        // una necesita su propio prefijo al reconstruir la URL.
         if (!empty($report->fotos)) {
             $fotos = $report->fotos;
             foreach (['antes', 'despues'] as $tipo) {
                 foreach ($fotos[$tipo] ?? [] as &$foto) {
-                    if (!empty($foto['path'])) {
-                        $foto['url'] = asset('storage/' . $foto['path']);
+                    if (empty($foto['path'])) {
+                        continue;
                     }
+                    $foto['url'] = str_starts_with($foto['path'], 'uploads/')
+                        ? asset($foto['path'])
+                        : asset('storage/' . $foto['path']);
                 }
                 unset($foto);
             }
