@@ -49,6 +49,7 @@
             'store' => route('admin.cotizaciones.store'),
             'editUrlBase' => url('admin/cotizaciones'),
             'itemsStore' => $isEdit ? route('admin.cotizaciones.items.store', $cotizacion->id) : null,
+            'manualItemFragment' => $isEdit ? route('admin.cotizaciones.items.manual-fragment', $cotizacion->id) : null,
             'itemBase' => $isEdit ? url('admin/cotizaciones/' . $cotizacion->id . '/items') : null,
             'currency' => $isEdit ? route('admin.cotizaciones.currency', $cotizacion->id) : null,
             'finalize' => $isEdit ? route('admin.cotizaciones.finalize', $cotizacion->id) : null,
@@ -99,6 +100,9 @@
         <div class="au-card">
             <div class="au-card-header">
                 <div class="au-card-title">Agregar productos</div>
+                @if ($isEdit)
+                    <button type="button" class="au-btn au-btn-sm" data-au-quote-add-manual>+ Agregar personalizado</button>
+                @endif
             </div>
             <div class="au-card-body">
                 @if ($isEdit)

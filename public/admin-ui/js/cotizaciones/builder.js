@@ -280,13 +280,20 @@ window.AU = window.AU || {};
     syncFinalizeButton();
   }
 
+  // Compartida con el flujo de "Agregar personalizado" (modal), que llega
+  // por su propio submit vía AU.FormModal en vez de por addItem() — ambos
+  // caminos terminan en la misma respuesta {items, total} del backend.
+  function applyAddItemResult(data) {
+    items.push(...data.items);
+    renderItems();
+    applyServerTotals(data.total);
+  }
+
   async function addItem(payload) {
     if (!config.routes.itemsStore) return;
     try {
       const data = await AU.request(config.routes.itemsStore, { method: "POST", body: payload });
-      items.push(...data.items);
-      renderItems();
-      applyServerTotals(data.total);
+      applyAddItemResult(data);
       const splitNote = data.items.some((i) => i.es_pendiente) ? " (parte quedó pendiente de surtir)" : "";
       AU.toast.success(`Producto agregado${splitNote}`);
     } catch (err) {
@@ -631,6 +638,23 @@ window.AU = window.AU || {};
     }
   }
 
+  function wireManualItemButton() {
+    const btn = AU.qs("[data-au-quote-add-manual]");
+    if (!btn || !config.routes.manualItemFragment) return;
+
+    btn.addEventListener("click", () => {
+      AU.FormModal.open({
+        title: "Agregar producto personalizado",
+        subtitle: "Producto que no está dado de alta en el catálogo",
+        icon: "fas fa-plus-circle",
+        fragmentUrl: config.routes.manualItemFragment,
+        submitUrl: config.routes.itemsStore,
+        method: "POST",
+        onSuccess: applyAddItemResult,
+      });
+    });
+  }
+
   /* ---------------------------------------------------------------- *
    * Init
    * ---------------------------------------------------------------- */
@@ -640,6 +664,7 @@ window.AU = window.AU || {};
   wireItemsTable();
   wireProductSearch();
   wireClientPicker();
+  wireManualItemButton();
   wireFinalizeButton();
   wireCurrencyControls();
 })();

@@ -351,10 +351,20 @@ class AdminCotizacionController extends Controller
         return view('admin-ui.cotizaciones.edit', compact('cotizacion'));
     }
 
+    /** Bare form fragment for the "Agregar personalizado" modal (AU.FormModal). */
+    public function manualItemFragment(Cotizacion $cotizacion)
+    {
+        abort_if($cotizacion->status !== 'borrador', 403);
+
+        return view('admin-ui.cotizaciones._manual-item-form', compact('cotizacion'));
+    }
+
     /**
      * Adds one line item to a draft quote. Body must contain exactly one of
-     * product_id / product_variant_combination_id — price/name/sku/modelo/
-     * marca are always resolved server-side, never trusted from the client.
+     * product_id / product_variant_combination_id, OR neither plus a manual
+     * nombre+precio_unitario (a product not in the catalog — price/name/sku/
+     * modelo/marca are trusted from the client only in this manual case,
+     * everything else is always resolved server-side).
      *
      * Two extra behaviors layered on top of the base "add a line" flow:
      *
@@ -390,6 +400,13 @@ class AdminCotizacionController extends Controller
      *   General default if the quote has none yet). Frozen at add-time like
      *   everything else here: changing the quote's exchange rate later does
      *   NOT retroactively recompute already-added lines.
+     * - Manual item: no product_id/product_variant_combination_id, no stock
+     *   to split (always fully "disponible"), no precio_tier. The price is
+     *   typed directly in the quote's CURRENT currency; if that's USD, it's
+     *   stored as moneda_origen='USD'+precio_unitario_origen (raw, for the
+     *   same passthrough Cotizacion::displayItemAmount() already does for
+     *   Aspel tiers) plus precio_unitario normalized to MXN; if MXN, it's
+     *   stored as-is with moneda_origen/precio_unitario_origen left null.
      */
     public function storeItem(Request $request, Cotizacion $cotizacion)
     {
@@ -402,15 +419,30 @@ class AdminCotizacionController extends Controller
             'precio_tier' => ['nullable', 'integer', 'between:1,4'],
             'precio_personalizado' => ['nullable', 'numeric', 'min:0'],
             'tiempo_entrega' => ['nullable', 'string', 'max:255'],
+            // Solo usados por la partida manual (ningún product_id/combination_id) —
+            // ver rama "manual" más abajo.
+            'nombre' => ['nullable', 'string', 'max:255'],
+            'marca' => ['nullable', 'string', 'max:255'],
+            'modelo' => ['nullable', 'string', 'max:255'],
+            'sku' => ['nullable', 'string', 'max:255'],
+            'precio_unitario' => ['nullable', 'numeric', 'min:0'],
         ]);
 
         $hasProduct = $request->filled('product_id');
         $hasCombination = $request->filled('product_variant_combination_id');
+        $isManual = !$hasProduct && !$hasCombination;
 
-        if ($hasProduct === $hasCombination) {
+        if ($hasProduct && $hasCombination) {
             return response()->json([
                 'status' => 'error',
                 'message' => 'Debes especificar exactamente un producto o una combinación de variante.',
+            ], 422);
+        }
+
+        if ($isManual && (!$request->filled('nombre') || !$request->filled('precio_unitario'))) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Selecciona un producto del catálogo o captura nombre y precio unitario del producto personalizado.',
             ], 422);
         }
 
@@ -439,7 +471,7 @@ class AdminCotizacionController extends Controller
             $marca = $product->brand->name ?? null;
             $precioUnitario = $combination->effectivePrice();
             $disponible = (int) $combination->qty;
-        } else {
+        } elseif ($hasProduct) {
             $product = Product::with('brand')->findOrFail($request->input('product_id'));
 
             $productId = $product->id;
@@ -490,6 +522,37 @@ class AdminCotizacionController extends Controller
                     }
                 }
             }
+        } else {
+            // Partida manual: producto que no está dado de alta en el
+            // catálogo. Sin product_id/combination_id, sin stock que
+            // partir (ver $disponible abajo), sin precio_tier.
+            $productId = null;
+            $combinationId = null;
+            $nombre = $request->input('nombre');
+            $sku = $request->input('sku');
+            $modelo = $request->input('modelo');
+            $marca = $request->input('marca');
+
+            $rawPrecio = (float) $request->input('precio_unitario');
+            $rateUsdMxn = CotizacionExchange::effectiveUsdToMxnRate($cotizacion);
+
+            if ($cotizacion->currency === 'USD') {
+                // El vendedor tecleó el precio en USD (moneda ACTUAL de la
+                // cotización, no viene de Aspel) -> se guarda crudo en
+                // precio_unitario_origen para el passthrough exacto de
+                // Cotizacion::displayItemAmount()/toDisplayUnitAmount(), y
+                // se normaliza a MXN para precio_unitario (columna siempre
+                // en MXN, igual que el resto del sistema).
+                $precioUnitario = CotizacionExchange::normalizeToMxn($rawPrecio, 'USD', $rateUsdMxn);
+                $monedaOrigen = 'USD';
+                $precioUnitarioOrigen = $rawPrecio;
+            } else {
+                $precioUnitario = round($rawPrecio, 2);
+            }
+
+            // Sin stock que verificar: una partida manual siempre está
+            // disponible de inmediato (nunca es_pendiente/tiempo_entrega).
+            $disponible = $cantidad;
         }
 
         $disponible = max(0, $disponible);

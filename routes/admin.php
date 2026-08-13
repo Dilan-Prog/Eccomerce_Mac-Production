@@ -79,6 +79,7 @@ Route::get('cotizaciones/products-search', [AdminCotizacionController::class, 'p
 Route::get('cotizaciones/create', [AdminCotizacionController::class, 'create'])->name('cotizaciones.create');
 Route::post('cotizaciones', [AdminCotizacionController::class, 'store'])->name('cotizaciones.store');
 Route::get('cotizaciones/{cotizacion}/edit', [AdminCotizacionController::class, 'edit'])->name('cotizaciones.edit');
+Route::get('cotizaciones/{cotizacion}/items/manual-fragment', [AdminCotizacionController::class, 'manualItemFragment'])->name('cotizaciones.items.manual-fragment');
 Route::post('cotizaciones/{cotizacion}/items', [AdminCotizacionController::class, 'storeItem'])->name('cotizaciones.items.store');
 Route::put('cotizaciones/{cotizacion}/items/{item}', [AdminCotizacionController::class, 'updateItem'])->name('cotizaciones.items.update');
 Route::delete('cotizaciones/{cotizacion}/items/{item}', [AdminCotizacionController::class, 'destroyItem'])->name('cotizaciones.items.delete');
