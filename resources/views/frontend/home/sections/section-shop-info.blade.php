@@ -60,13 +60,13 @@
                     <div class="col-3 shop-info-item">
                         <img src="{{ asset('frontend/images/iconos/box-free-home.webp') }}" alt="Envío gratis">
                         <h4>Envío gratis</h4>
-                        <p>Envío sin costo en pedidos mayores a $3,000 MXN.</p>
+                        <p>Envío sin costo en pedidos mayores a $2,299 MXN.</p>
                     </div>
 
                     <div class="col-3 shop-info-item">
                         <img src="{{ asset('frontend/images/iconos/how-to-pay-home.webp') }}" alt="Formas de Pago">
-                        <h4>Elige cómo pagar</h4>
-                        <p>Tarjeta de débito, crédito, PayPal, transferencia bancaria y más.</p>
+                        <h4>Compra a MSI</h4>
+                        <p>Meses sin intereses con PayPal en tus compras.</p>
                     </div>
 
                     <div class="col-3 shop-info-item">
