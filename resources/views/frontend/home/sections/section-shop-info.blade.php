@@ -43,6 +43,39 @@
         line-height: 1.55;
         margin: 0;
     }
+
+    /* Tarjeta destacada (Compra a MSI): fondo + borde + badge + título en color */
+    .shop-info-item--highlight {
+        position: relative;
+        background: var(--azul-claro, #E6EFF8);
+        border: 2px solid var(--accent-cta, #F7941D);
+        border-radius: 14px;
+        box-shadow: 0 6px 18px rgba(247, 148, 29, 0.18);
+    }
+    .shop-info-item--highlight .shop-info-badge {
+        position: absolute;
+        top: -12px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: var(--accent-cta, #F7941D);
+        color: #fff;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.3px;
+        text-transform: uppercase;
+        padding: 4px 12px;
+        border-radius: 999px;
+        white-space: nowrap;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    }
+    .shop-info-item--highlight h4 {
+        color: var(--accent-cta, #F7941D);
+        font-size: 16px;
+    }
+    .shop-info-item--highlight p {
+        color: var(--azul-principal, #003E7E);
+        font-weight: 500;
+    }
 </style>
 
 <div class="container">
@@ -63,7 +96,8 @@
                         <p>Envío sin costo en pedidos mayores a $2,299 MXN.</p>
                     </div>
 
-                    <div class="col-3 shop-info-item">
+                    <div class="col-3 shop-info-item shop-info-item--highlight">
+                        <span class="shop-info-badge">¡Con PayPal!</span>
                         <img src="{{ asset('frontend/images/iconos/how-to-pay-home.webp') }}" alt="Formas de Pago">
                         <h4>Compra a MSI</h4>
                         <p>Meses sin intereses con PayPal en tus compras.</p>
