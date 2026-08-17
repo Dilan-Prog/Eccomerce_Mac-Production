@@ -87,6 +87,8 @@ Route::put('cotizaciones/{cotizacion}/currency', [AdminCotizacionController::cla
 Route::post('cotizaciones/{cotizacion}/finalize', [AdminCotizacionController::class, 'finalize'])->name('cotizaciones.finalize');
 Route::get('cotizaciones/{cotizacion}/pdf', [AdminCotizacionController::class, 'pdf'])->name('cotizaciones.pdf');
 Route::post('cotizaciones/{cotizacion}/regenerate-pdf', [AdminCotizacionController::class, 'regeneratePdf'])->name('cotizaciones.regenerate-pdf');
+Route::post('cotizaciones/{cotizacion}/mark-sent', [AdminCotizacionController::class, 'markSent'])->name('cotizaciones.mark-sent');
+Route::post('cotizaciones/{cotizacion}/authorize-min-price', [AdminCotizacionController::class, 'authorizeMinPrice'])->name('cotizaciones.authorize-min-price');
 Route::get('cotizaciones/{cotizacion}', [AdminCotizacionController::class, 'show'])->name('cotizaciones.show');
 
 /**Slider routes */

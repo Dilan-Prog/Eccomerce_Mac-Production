@@ -38,7 +38,7 @@ class CotizacionPricing
 
     /** cve_precio codes, per the existing convention documented in AdminCotizacionController::storeItem(). */
     private const CVE_PUBLICO = 1;
-    private const CVE_MINIMO = 2;
+    public const CVE_MINIMO = 2;
 
     /**
      * The "mínimo" tier's raw price for a SKU, or null if that SKU has no

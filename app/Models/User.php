@@ -77,4 +77,15 @@ class User extends Authenticatable
         }
         return in_array($moduleKey, $role->allowedModuleKeys(), true);
     }
+
+    /**
+     * Same pattern already used inline in RoleController::__construct() and
+     * StaffUserController::__construct() — role==='admin' && role_id===null
+     * means "unrestricted admin" (legacy/full admin), as opposed to a
+     * restricted staff account scoped to specific modules via a custom Role.
+     */
+    public function isUnrestrictedAdmin(): bool
+    {
+        return $this->role === 'admin' && $this->role_id === null;
+    }
 }

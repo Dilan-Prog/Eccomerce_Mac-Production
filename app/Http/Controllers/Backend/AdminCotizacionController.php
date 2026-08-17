@@ -229,7 +229,7 @@ class AdminCotizacionController extends Controller
 
     public function show(Cotizacion $cotizacion)
     {
-        $cotizacion->load(['user', 'perfil', 'items', 'createdByAdmin']);
+        $cotizacion->load(['user', 'perfil', 'items', 'createdByAdmin', 'autorizadorPrecioMinimo']);
 
         // Cache-busting query param (the file's own mtime) so a browser that
         // already cached this exact PDF URL from before a regeneratePdf()
@@ -337,14 +337,13 @@ class AdminCotizacionController extends Controller
     }
 
     /**
-     * The builder page for an existing admin-authored draft. Only reachable
-     * while the quote is still a 'borrador' and was created via this admin
-     * flow — a finalized or customer-originated quote must never be editable
-     * here.
+     * The builder page for an admin-authored quote — draft or already
+     * finalized/enviada. A customer-originated quote must never be editable
+     * here regardless of its status.
      */
     public function edit(Cotizacion $cotizacion)
     {
-        abort_if($cotizacion->source !== 'admin' || $cotizacion->status !== 'borrador', 403);
+        abort_if($cotizacion->source !== 'admin', 403);
 
         $cotizacion->load(['items', 'user', 'perfil']);
 
@@ -354,7 +353,7 @@ class AdminCotizacionController extends Controller
     /** Bare form fragment for the "Agregar personalizado" modal (AU.FormModal). */
     public function manualItemFragment(Cotizacion $cotizacion)
     {
-        abort_if($cotizacion->status !== 'borrador', 403);
+        abort_if($cotizacion->source !== 'admin', 403);
 
         return view('admin-ui.cotizaciones._manual-item-form', compact('cotizacion'));
     }
@@ -410,7 +409,7 @@ class AdminCotizacionController extends Controller
      */
     public function storeItem(Request $request, Cotizacion $cotizacion)
     {
-        abort_if($cotizacion->status !== 'borrador', 403);
+        abort_if($cotizacion->source !== 'admin', 403);
 
         $request->validate([
             'product_id' => ['nullable', 'integer', 'exists:products,id'],
@@ -513,6 +512,13 @@ class AdminCotizacionController extends Controller
             } elseif ($request->filled('precio_tier') && $product->sku) {
                 foreach (CotizacionPricing::optionsForSku($product->sku) as $tier) {
                     if ($tier['cve_precio'] === (int) $request->input('precio_tier')) {
+                        if ($tier['cve_precio'] === CotizacionPricing::CVE_MINIMO && !$cotizacion->precio_minimo_autorizado_at) {
+                            return response()->json([
+                                'status' => 'error',
+                                'message' => 'Este precio requiere autorización de un administrador.',
+                            ], 422);
+                        }
+
                         $precioUnitario = CotizacionExchange::normalizeToMxn($tier['precio'], $nativeCurrency, $rateUsdMxn);
                         $tieredPrecio = $tier['cve_precio'];
                         $tieredLabel = $tier['descripcion'];
@@ -610,6 +616,10 @@ class AdminCotizacionController extends Controller
 
         $totals = $this->recalculateTotals($cotizacion);
 
+        if ($cotizacion->status !== 'borrador') {
+            $this->syncFinalizedSnapshot($cotizacion);
+        }
+
         return response()->json([
             'status' => 'success',
             'items' => collect($createdItems)->map(fn (CotizacionItem $item) => [
@@ -634,7 +644,7 @@ class AdminCotizacionController extends Controller
     /** Updates only the quantity of an existing line item (re-add to change product). */
     public function updateItem(Request $request, Cotizacion $cotizacion, CotizacionItem $item)
     {
-        abort_if($cotizacion->status !== 'borrador', 403);
+        abort_if($cotizacion->source !== 'admin', 403);
         abort_unless($item->cotizacion_id === $cotizacion->id, 404);
 
         $validated = $request->validate([
@@ -647,6 +657,10 @@ class AdminCotizacionController extends Controller
 
         $totals = $this->recalculateTotals($cotizacion);
 
+        if ($cotizacion->status !== 'borrador') {
+            $this->syncFinalizedSnapshot($cotizacion);
+        }
+
         return response()->json([
             'status' => 'success',
             'item' => [
@@ -658,15 +672,19 @@ class AdminCotizacionController extends Controller
         ]);
     }
 
-    /** Removes a line item from a draft quote. */
+    /** Removes a line item from an admin-authored quote. */
     public function destroyItem(Cotizacion $cotizacion, CotizacionItem $item)
     {
-        abort_if($cotizacion->status !== 'borrador', 403);
+        abort_if($cotizacion->source !== 'admin', 403);
         abort_unless($item->cotizacion_id === $cotizacion->id, 404);
 
         $item->delete();
 
         $totals = $this->recalculateTotals($cotizacion);
+
+        if ($cotizacion->status !== 'borrador') {
+            $this->syncFinalizedSnapshot($cotizacion);
+        }
 
         return response()->json([
             'status' => 'success',
@@ -691,7 +709,7 @@ class AdminCotizacionController extends Controller
      */
     public function updateCurrency(Request $request, Cotizacion $cotizacion)
     {
-        abort_if($cotizacion->status !== 'borrador', 403);
+        abort_if($cotizacion->source !== 'admin', 403);
 
         $validated = $request->validate([
             'currency' => ['sometimes', 'in:MXN,USD'],
@@ -709,6 +727,16 @@ class AdminCotizacionController extends Controller
             $cotizacion->exchange_rate_mxn_usd = $validated['exchange_rate_mxn_usd'];
         }
         $cotizacion->save();
+
+        // productos_json guarda precio/subtotal siempre en MXN crudo, igual
+        // que cotizacion_items — el cambio de moneda de despliegue no altera
+        // esos valores, solo cómo se muestran vía Cotizacion::displayAmount()
+        // en tiempo de lectura. Se mantiene por uniformidad con
+        // storeItem/updateItem/destroyItem y como salvaguarda si el shape de
+        // productos_json llegara a depender de la moneda en el futuro.
+        if ($cotizacion->status !== 'borrador') {
+            $this->syncFinalizedSnapshot($cotizacion);
+        }
 
         return response()->json([
             'status' => 'success',
@@ -742,16 +770,52 @@ class AdminCotizacionController extends Controller
     }
 
     /**
-     * Turns an admin-authored draft into a real, immutable quote: assigns the
+     * Re-snapshotea productos_json desde las cotizacion_items actuales, en el
+     * MISMO shape que finalize() ya usa. Necesario porque tanto
+     * cotizaciones.pdf.blade.php como admin-ui/cotizaciones/show.blade.php
+     * SIEMPRE leen productos_json (nunca la relación items en vivo) para
+     * cualquier cotización que no esté en 'borrador' — así que cualquier
+     * edición sobre una cotización ya finalizada/enviada debe re-escribir
+     * este snapshot, o el próximo "Regenerar PDF"/la vista de detalle
+     * seguirían mostrando datos viejos. No toca folio/status/pdf_path — solo
+     * productos_json + totales.
+     */
+    private function syncFinalizedSnapshot(Cotizacion $cotizacion): void
+    {
+        $cotizacion->load('items');
+
+        $cotizacion->productos_json = $cotizacion->items->sortBy('sort_order')->values()->map(function (CotizacionItem $item) {
+            return [
+                'nombre' => $item->nombre,
+                'sku' => $item->sku,
+                'modelo' => $item->modelo,
+                'marca' => $item->marca,
+                'precio' => (float) $item->precio_unitario,
+                'precio_tier_label' => $item->precio_tier_label,
+                'moneda_origen' => $item->moneda_origen,
+                'precio_origen' => $item->precio_unitario_origen !== null ? (float) $item->precio_unitario_origen : null,
+                'cantidad' => $item->cantidad,
+                'es_pendiente' => (bool) $item->es_pendiente,
+                'tiempo_entrega' => $item->tiempo_entrega,
+                'subtotal' => (float) $item->subtotal,
+            ];
+        })->all();
+
+        $cotizacion->save();
+    }
+
+    /**
+     * Turns an admin-authored draft into a real quote: assigns the
      * definitive folio (same scheme as the customer-facing flow), snapshots
-     * cotizacion_items into productos_json in the EXACT shape
-     * CotizacionController::generarCotizacion() already produces (nombre,
-     * sku, modelo, marca, precio, cantidad, subtotal — note precio_unitario
-     * on the items table becomes `precio` in the JSON, matching the frontend
-     * convention exactly), generates the PDF, and marks the quote
-     * 'finalizada'. Only a 'borrador' created via this admin builder can be
-     * finalized, and only once — a second attempt is rejected by the guard
-     * below because status is no longer 'borrador'.
+     * cotizacion_items into productos_json (via syncFinalizedSnapshot(), same
+     * shape CotizacionController::generarCotizacion() already produces),
+     * generates the PDF, and marks the quote 'finalizada'. Only a 'borrador'
+     * created via this admin builder can be finalized, and only once — a
+     * second attempt is rejected by the guard below because status is no
+     * longer 'borrador'. Editing a quote after this point (storeItem/
+     * updateItem/destroyItem/updateCurrency, now allowed regardless of
+     * status) never re-runs finalize() — it stays 'finalizada'/'enviada' and
+     * just re-syncs the snapshot; see markSent() for the next status step.
      */
     public function finalize(Cotizacion $cotizacion)
     {
@@ -767,30 +831,13 @@ class AdminCotizacionController extends Controller
         // Authoritative, final re-sum from the real cotizacion_items rows —
         // never trust any client-sent total.
         $this->recalculateTotals($cotizacion);
-        $cotizacion->load(['items', 'user', 'perfil']);
 
         DB::transaction(function () use ($cotizacion) {
             $cotizacion->folio = Cotizacion::buildFolio($cotizacion->id);
-
-            $cotizacion->productos_json = $cotizacion->items->sortBy('sort_order')->values()->map(function (CotizacionItem $item) {
-                return [
-                    'nombre' => $item->nombre,
-                    'sku' => $item->sku,
-                    'modelo' => $item->modelo,
-                    'marca' => $item->marca,
-                    'precio' => (float) $item->precio_unitario,
-                    'precio_tier_label' => $item->precio_tier_label,
-                    'moneda_origen' => $item->moneda_origen,
-                    'precio_origen' => $item->precio_unitario_origen !== null ? (float) $item->precio_unitario_origen : null,
-                    'cantidad' => $item->cantidad,
-                    'es_pendiente' => (bool) $item->es_pendiente,
-                    'tiempo_entrega' => $item->tiempo_entrega,
-                    'subtotal' => (float) $item->subtotal,
-                ];
-            })->all();
-
             $cotizacion->status = 'finalizada';
             $cotizacion->save();
+
+            $this->syncFinalizedSnapshot($cotizacion);
 
             $cotizacion->pdf_path = $this->generateFinalizedPdf($cotizacion);
             $cotizacion->save();
@@ -801,6 +848,48 @@ class AdminCotizacionController extends Controller
             'message' => 'Cotización finalizada correctamente.',
             'folio' => $cotizacion->folio,
             'redirect' => route('admin.cotizaciones.show', $cotizacion->id),
+        ]);
+    }
+
+    /**
+     * Marca una cotización ya finalizada como enviada al cliente. No toca
+     * productos_json/pdf_path — es puramente un marcador de estado. Solo
+     * permite la transición 'finalizada' -> 'enviada' (nunca desde
+     * 'borrador'), así que un doble intento sobre una ya 'enviada' devuelve
+     * 403 en vez de reintentar la transición.
+     */
+    public function markSent(Cotizacion $cotizacion)
+    {
+        abort_if($cotizacion->source !== 'admin' || $cotizacion->status !== 'finalizada', 403);
+
+        $cotizacion->status = 'enviada';
+        $cotizacion->save();
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Cotización marcada como enviada.',
+        ]);
+    }
+
+    /**
+     * Otorga a ESTA cotización, y solo a esta, permiso para usar el tier
+     * "Precio mínimo" (CotizacionPricing::CVE_MINIMO) en storeItem(). Solo un
+     * admin sin restricciones (User::isUnrestrictedAdmin()) puede otorgarlo,
+     * y solo sobre una cotización de origen admin — las de cliente nunca son
+     * editables, así que no hay nada que autorizar ahí.
+     */
+    public function authorizeMinPrice(Cotizacion $cotizacion)
+    {
+        abort_if($cotizacion->source !== 'admin', 403);
+        abort_unless(auth()->user()->isUnrestrictedAdmin(), 403);
+
+        $cotizacion->precio_minimo_autorizado_at = now();
+        $cotizacion->precio_minimo_autorizado_por = auth()->id();
+        $cotizacion->save();
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Precio mínimo autorizado para esta cotización.',
         ]);
     }
 

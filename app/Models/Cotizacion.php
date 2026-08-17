@@ -42,14 +42,17 @@ class Cotizacion extends Model
         'exchange_rate_mxn_usd',
         'status',
         'pdf_path',
+        'precio_minimo_autorizado_at',
+        'precio_minimo_autorizado_por',
     ];
 
     protected $casts = [
-        'productos_json'        => 'array',
-        'subtotal'               => 'decimal:2',
-        'total'                  => 'decimal:2',
-        'exchange_rate'          => 'decimal:4',
-        'exchange_rate_mxn_usd'  => 'decimal:4',
+        'productos_json'               => 'array',
+        'subtotal'                     => 'decimal:2',
+        'total'                        => 'decimal:2',
+        'exchange_rate'                => 'decimal:4',
+        'exchange_rate_mxn_usd'        => 'decimal:4',
+        'precio_minimo_autorizado_at'  => 'datetime',
     ];
 
     /**
@@ -124,6 +127,11 @@ class Cotizacion extends Model
     public function createdByAdmin()
     {
         return $this->belongsTo(User::class, 'created_by_admin_id');
+    }
+
+    public function autorizadorPrecioMinimo()
+    {
+        return $this->belongsTo(User::class, 'precio_minimo_autorizado_por');
     }
 
     public function items(): \Illuminate\Database\Eloquent\Relations\HasMany

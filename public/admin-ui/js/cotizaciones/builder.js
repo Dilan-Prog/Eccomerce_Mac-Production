@@ -399,7 +399,20 @@ window.AU = window.AU || {};
       const priceControl = tiers.length
         ? `<div class="au-quote-price-controls">
             <select class="au-select au-quote-tier-select" data-tier-select>
-              ${tiers.map((t) => `<option value="${t.cve_precio}">${AU.escapeHtml(t.descripcion)} — ${formatDisplayMoney(tierDisplayAmount(p, t))}</option>`).join("")}
+              ${tiers
+                .map((t) => {
+                  // cve_precio 2 = "Precio mínimo" (App\Support\CotizacionPricing::CVE_MINIMO)
+                  // — bloqueado hasta que un admin sin restricciones autorice
+                  // ESTA cotización específica (ver AdminCotizacionController::
+                  // authorizeMinPrice()). Este candado es solo UX: el enforcement
+                  // real vive en storeItem(), que rechaza con 422 si se fuerza.
+                  const isMinimoLocked = t.cve_precio === 2 && !config.precioMinimoAutorizado;
+                  const label = isMinimoLocked
+                    ? `${AU.escapeHtml(t.descripcion)} (requiere autorización)`
+                    : `${AU.escapeHtml(t.descripcion)} — ${formatDisplayMoney(tierDisplayAmount(p, t))}`;
+                  return `<option value="${t.cve_precio}"${isMinimoLocked ? " disabled" : ""}>${label}</option>`;
+                })
+                .join("")}
             </select>
             <input type="number" min="0" step="0.01" class="au-input au-quote-custom-price" data-custom-price
                    data-minimo="${minimo}" data-publico="${publico || ""}" placeholder="Precio personalizado (opcional)">

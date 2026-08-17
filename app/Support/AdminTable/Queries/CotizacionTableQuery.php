@@ -70,6 +70,7 @@ class CotizacionTableQuery extends AdminTableQuery
                     'generada' => ['label' => 'Generada', 'tone' => 'info'],
                     'borrador' => ['label' => 'Borrador', 'tone' => 'warning'],
                     'finalizada' => ['label' => 'Finalizada', 'tone' => 'success'],
+                    'enviada' => ['label' => 'Enviada', 'tone' => 'purple'],
                     default => ['label' => ucfirst($row->status), 'tone' => 'info'],
                 },
             ],
@@ -138,12 +139,12 @@ class CotizacionTableQuery extends AdminTableQuery
             ],
         ];
 
-        // Only an admin-authored draft can still be edited here — a
-        // customer-originated row (source = 'cliente') or an already-
-        // finalized quote must never get this action.
-        if ($row->source === 'admin' && $row->status === 'borrador') {
+        // Any admin-authored quote is editable here regardless of status — a
+        // customer-originated row (source = 'cliente') must never get this
+        // action.
+        if ($row->source === 'admin') {
             $actions[] = [
-                'label' => 'Continuar edición',
+                'label' => 'Editar cotización',
                 'url' => route('admin.cotizaciones.edit', $row->id),
             ];
         }

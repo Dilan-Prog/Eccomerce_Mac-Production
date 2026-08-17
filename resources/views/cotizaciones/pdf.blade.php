@@ -201,7 +201,9 @@
     <tr><td class="lbl">Total ({{ $cotizacion->currency }})</td><td class="val">{{ number_format($displayTotal, 2, '.', ',') }}</td></tr>
 </table>
 
+@if ($cotizacion->total >= 2299)
 <div class="note-line">TIEMPO DE ENTREGA INMEDIATA, ENVIO GRATIS</div>
+@endif
 
 <div class="vigencia-line">
     <span class="lbl">La cotización será vigente hasta el día</span>

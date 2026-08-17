@@ -3,12 +3,14 @@
         'generada' => 'info',
         'borrador' => 'warning',
         'finalizada' => 'success',
+        'enviada' => 'purple',
         default => 'info',
     };
     $statusLabel = match ($cotizacion->status) {
         'generada' => 'Generada',
         'borrador' => 'Borrador',
         'finalizada' => 'Finalizada',
+        'enviada' => 'Enviada',
         default => ucfirst($cotizacion->status),
     };
     $sourceTone = $cotizacion->source === 'cliente' ? 'info' : 'warning';
@@ -30,8 +32,11 @@
     $useDraftItems = $cotizacion->status === 'borrador';
 
     $actions = '<a href="' . route('admin.cotizaciones.index') . '" class="au-btn au-btn-sm">Volver</a>';
-    if ($cotizacion->source === 'admin' && $cotizacion->status === 'borrador') {
-        $actions .= ' <a href="' . route('admin.cotizaciones.edit', $cotizacion->id) . '" class="au-btn au-btn-sm au-btn-primary">Continuar edición</a>';
+    // Cualquier cotización de origen admin es editable ahora, sin importar
+    // su status (ver AdminCotizacionController::edit()) — la de cliente
+    // (source='cliente') nunca obtiene este link.
+    if ($cotizacion->source === 'admin') {
+        $actions .= ' <a href="' . route('admin.cotizaciones.edit', $cotizacion->id) . '" class="au-btn au-btn-sm au-btn-primary">Editar cotización</a>';
     }
     if ($pdfUrl) {
         // AU.PdfPreview (public/admin-ui/js/core/pdf-preview.js) opens an
@@ -49,6 +54,9 @@
         // .au-action-item is the generic POST+toast+reload handler in
         // admin.js — no bespoke JS needed for this button.
         $actions .= ' <a href="' . route('admin.cotizaciones.regenerate-pdf', $cotizacion->id) . '" class="au-btn au-btn-sm au-action-item" data-method="POST">Regenerar PDF</a>';
+    }
+    if ($cotizacion->source === 'admin' && $cotizacion->status === 'finalizada') {
+        $actions .= ' <a href="' . route('admin.cotizaciones.mark-sent', $cotizacion->id) . '" class="au-btn au-btn-sm au-action-item" data-method="POST">Marcar como enviada</a>';
     }
 
     // Per-line display amounts, resolved via Cotizacion::displayItemAmount()
@@ -225,6 +233,29 @@
                     @endif
                 </div>
             </div>
+
+            @if ($cotizacion->source === 'admin')
+            {{-- PRECIO MÍNIMO AUTHORIZATION --}}
+            <div class="au-card">
+                <div class="au-card-header">
+                    <div class="au-card-title">Precio mínimo</div>
+                </div>
+                <div class="au-card-body" style="font-size:13px;line-height:1.9">
+                    @if ($cotizacion->precio_minimo_autorizado_at)
+                        <span style="color:var(--au-text-subdued)">
+                            Precio mínimo autorizado por
+                            <strong>{{ $cotizacion->autorizadorPrecioMinimo->name ?? 'usuario eliminado' }}</strong>
+                            el {{ $cotizacion->precio_minimo_autorizado_at->format('d/m/Y H:i') }}.
+                        </span>
+                    @elseif (auth()->user()->isUnrestrictedAdmin())
+                        <p style="color:var(--au-text-subdued);margin-bottom:8px">Esta cotización aún no tiene autorización para usar el tier "Precio mínimo".</p>
+                        <a href="{{ route('admin.cotizaciones.authorize-min-price', $cotizacion->id) }}" class="au-btn au-btn-sm au-action-item" data-method="POST">Autorizar precio mínimo</a>
+                    @else
+                        <span style="color:var(--au-text-subdued)">Precio mínimo no autorizado para esta cotización.</span>
+                    @endif
+                </div>
+            </div>
+            @endif
 
             {{-- FISCAL PROFILE --}}
             <div class="au-card">

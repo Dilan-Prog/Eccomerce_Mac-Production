@@ -41,6 +41,7 @@
         'currency' => $isEdit ? $cotizacion->currency : 'MXN',
         'exchangeRate' => $isEdit && $cotizacion->exchange_rate ? (float) $cotizacion->exchange_rate : null,
         'exchangeRateMxnUsd' => $isEdit && $cotizacion->exchange_rate_mxn_usd ? (float) $cotizacion->exchange_rate_mxn_usd : null,
+        'precioMinimoAutorizado' => $isEdit ? (bool) $cotizacion->precio_minimo_autorizado_at : false,
         'defaultExchangeRateUsdMxn' => $defaultRateUsdMxn,
         'defaultExchangeRateMxnUsd' => $defaultRateMxnUsd,
         'routes' => [
@@ -205,12 +206,19 @@
                 </div>
                 <div class="au-quote-summary-count" data-au-quote-summary-count>0 artículos</div>
                 <div class="au-quote-summary-total" data-au-quote-summary-total>{{ "$0.00" }}</div>
-                @if ($isEdit)
+                @if ($isEdit && $cotizacion->status === 'borrador')
                     <button type="button" id="au-quote-finalize" class="au-btn au-btn-primary"
                             style="width:100%;justify-content:center;margin-top:16px"
                             {{ $cotizacion->items->isEmpty() ? 'disabled' : '' }}>
                         <i class="fas fa-check-circle"></i> Finalizar cotización
                     </button>
+                @elseif ($isEdit)
+                    <div style="margin-top:16px;padding:10px;font-size:12px;color:var(--au-text-subdued);background:var(--au-neutral-bg, #F5F7FA);border-radius:var(--au-radius-sm, 8px)">
+                        Esta cotización ya está <strong>{{ $cotizacion->status }}</strong>. Los cambios que hagas aquí no actualizan el PDF ya generado — usa "Regenerar PDF" en la vista de detalle cuando termines de editar.
+                        <div style="margin-top:8px">
+                            <a href="{{ route('admin.cotizaciones.show', $cotizacion->id) }}" class="au-btn au-btn-sm" style="width:100%;justify-content:center">Ir a la vista de detalle</a>
+                        </div>
+                    </div>
                 @endif
                 <a href="{{ route('admin.cotizaciones.index') }}" class="au-btn" style="width:100%;justify-content:center;margin-top:8px">
                     <i class="fas fa-arrow-left"></i> Volver a Cotizaciones
