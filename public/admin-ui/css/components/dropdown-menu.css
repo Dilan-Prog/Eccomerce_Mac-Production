@@ -6,15 +6,19 @@
 }
 
 .admin-ui-v2 .au-dropdown-panel {
-  position: absolute;
-  top: calc(100% + 4px);
-  right: 0;
+  /* position:fixed (no absolute): un ancestro con overflow (ej. la tabla,
+     que necesita overflow-x:auto para el scroll horizontal — lo que por
+     regla del spec de CSS también vuelve overflow-y auto/scrolleable, no
+     visible) recortaría/atraparía un panel absoluto. Con fixed, JS
+     (core/dropdown.js) calcula top/left en cada apertura relativo al
+     trigger, y el panel queda fuera de cualquier contenedor con scroll. */
+  position: fixed;
   background: var(--au-surface);
   border: 1px solid var(--au-border);
   border-radius: var(--au-radius-md);
   box-shadow: var(--au-shadow-popover);
   min-width: 160px;
-  z-index: 100;
+  z-index: 1000;
   display: none;
   padding: var(--au-space-1);
 }

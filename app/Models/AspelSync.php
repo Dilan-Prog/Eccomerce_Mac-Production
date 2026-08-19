@@ -46,7 +46,7 @@ class AspelSync extends Model
         'vtas_anl_c', 'vtas_anl_m', 'comp_anl_c', 'comp_anl_m',
         
         // Atributos del producto
-        'prefijo', 'talla', 'color', 'cve_imagen',
+        'prefijo', 'talla', 'color', 'cve_imagen', 'campo_libre_modelo',
         
         // Estado y controles
         'blk_cst_ext', 'status', 'man_ieps', 'apl_man_imp', 'cuota_ieps', 'apl_man_ieps',

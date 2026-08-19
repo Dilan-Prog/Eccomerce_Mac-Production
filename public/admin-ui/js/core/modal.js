@@ -99,4 +99,53 @@ window.AU = window.AU || {};
         resolve(true);
       });
     });
+
+  /**
+   * Modal para mostrar un valor sensible (ej. el secreto de un token API)
+   * exactamente una vez, con un campo de solo lectura + botón "Copiar" —
+   * reemplaza window.prompt() para dar una mejor experiencia. El botón usa
+   * el mismo atributo data-au-copy que ya maneja admin.js en cualquier
+   * otro lugar del panel, así que no duplica lógica de portapapeles.
+   */
+  AU.revealSecret = ({ title, text, value }) =>
+    new Promise((resolve) => {
+      const overlay = document.createElement("div");
+      overlay.className = "au-modal-overlay";
+      overlay.innerHTML = `
+        <div class="au-modal" role="dialog" aria-modal="true">
+          <div class="au-modal-head">
+            <div class="au-modal-icon is-success">&#10003;</div>
+            <div style="display:flex;flex-direction:column;gap:6px">
+              <div class="au-modal-title"></div>
+              <div class="au-modal-text"></div>
+            </div>
+          </div>
+          <div class="au-field" style="margin:2px 0 4px">
+            <div style="display:flex;gap:8px">
+              <input type="text" class="au-input au-mono" readonly style="flex:1">
+              <button type="button" class="au-btn au-btn-primary" data-au-copy="${AU.escapeHtml(value || "")}">Copiar</button>
+            </div>
+          </div>
+          <div class="au-modal-actions">
+            <button type="button" class="au-btn au-btn-primary au-modal-confirm">Cerrar</button>
+          </div>
+        </div>`;
+      overlay.querySelector(".au-modal-title").textContent = title || "";
+      overlay.querySelector(".au-modal-text").textContent = text || "";
+      const input = overlay.querySelector("input");
+      input.value = value || "";
+      input.addEventListener("click", () => input.select());
+
+      (document.querySelector(".admin-ui-v2") || document.body).appendChild(overlay);
+      requestAnimationFrame(() => overlay.classList.add("is-open"));
+
+      const finish = () => {
+        destroy(overlay);
+        resolve(true);
+      };
+      overlay.querySelector(".au-modal-confirm").addEventListener("click", finish);
+      overlay.addEventListener("click", (e) => {
+        if (e.target === overlay) finish();
+      });
+    });
 })();

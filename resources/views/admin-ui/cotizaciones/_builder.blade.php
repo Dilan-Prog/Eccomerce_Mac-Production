@@ -46,6 +46,7 @@
         'defaultExchangeRateMxnUsd' => $defaultRateMxnUsd,
         'routes' => [
             'clientsSearch' => route('admin.cotizaciones.clients-search'),
+            'resolveAspelClientBase' => $isEdit ? null : url('admin/cotizaciones/clients'),
             'productsSearch' => route('admin.cotizaciones.products-search'),
             'store' => route('admin.cotizaciones.store'),
             'editUrlBase' => url('admin/cotizaciones'),
@@ -93,6 +94,10 @@
                         <input type="text" placeholder="Buscar cliente por nombre o correo..." data-au-quote-client-search>
                     </div>
                     <div class="au-quote-client-results" data-au-quote-client-results></div>
+                    <div class="au-quote-client-aspel-section" data-au-quote-client-aspel-section style="display:none;margin-top:12px">
+                        <div class="au-quote-client-aspel-heading">Clientes de Aspel (sin cuenta en el sitio)</div>
+                        <div class="au-quote-client-aspel-results" data-au-quote-client-aspel-results></div>
+                    </div>
                     <button type="button" class="au-btn" data-au-quote-client-new>+ Crear cliente nuevo</button>
                 </div>
             </div>

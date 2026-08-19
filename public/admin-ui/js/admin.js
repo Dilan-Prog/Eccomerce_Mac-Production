@@ -64,6 +64,13 @@
     try {
       const data = await AU.request(href, { method });
       if (data.status === "success") {
+        if (data.reveal_secret) {
+          await AU.revealSecret({
+            title: "Copia este secreto ahora",
+            text: "No se volverá a mostrar completo — solo sus últimos 4 caracteres, en la lista.",
+            value: data.reveal_secret,
+          });
+        }
         AU.toast.success(data.message || "Listo");
         setTimeout(() => window.location.reload(), 600);
       } else {
@@ -80,10 +87,25 @@
     const value = trigger.getAttribute("data-au-copy");
     if (!value) return;
     try {
-      await navigator.clipboard.writeText(value);
-      AU.toast.success("URL copiada");
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(value);
+      } else {
+        // navigator.clipboard no existe en contextos no seguros (ej. este
+        // mismo panel corriendo en http:// en local) — fallback con
+        // execCommand, deprecado pero soportado en todos los navegadores,
+        // para que "Copiar" funcione igual en local que en producción.
+        const textarea = document.createElement("textarea");
+        textarea.value = value;
+        textarea.style.position = "fixed";
+        textarea.style.opacity = "0";
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand("copy");
+        textarea.remove();
+      }
+      AU.toast.success("Copiado al portapapeles");
     } catch (err) {
-      AU.toast.error("No se pudo copiar la URL");
+      AU.toast.error("No se pudo copiar");
     }
   });
 
@@ -146,7 +168,18 @@
     e.preventDefault();
     try {
       const config = JSON.parse(trigger.getAttribute("data-au-open-modal"));
-      AU.FormModal.open(Object.assign({}, config, { onSuccess: () => window.location.reload() }));
+      AU.FormModal.open(Object.assign({}, config, {
+        onSuccess: async (data) => {
+          if (data && data.reveal_secret) {
+            await AU.revealSecret({
+              title: "Copia este secreto ahora",
+              text: "No se volverá a mostrar completo — solo sus últimos 4 caracteres, en la lista.",
+              value: data.reveal_secret,
+            });
+          }
+          window.location.reload();
+        },
+      }));
     } catch (err) {
       AU.toast.error("No se pudo abrir el formulario");
     }

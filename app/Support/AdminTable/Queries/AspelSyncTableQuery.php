@@ -69,6 +69,12 @@ class AspelSyncTableQuery extends AdminTableQuery
                 'searchable' => true,
             ],
             [
+                'key' => 'campo_libre_modelo',
+                'label' => 'Modelo',
+                'sortable' => true,
+                'searchable' => true,
+            ],
+            [
                 'key' => 'precio_publico',
                 'label' => 'Precio Público',
                 'type' => 'mono',
@@ -113,15 +119,18 @@ class AspelSyncTableQuery extends AdminTableQuery
     }
 
     /**
-     * Mirrors AspelSyncDataTable's ->filter() closure exactly: free-text
-     * search across cve_art, descr and nombre.
+     * Originally mirrored AspelSyncDataTable's ->filter() closure (cve_art,
+     * descr, nombre); campo_libre_modelo added on top so the "Modelo" campo
+     * libre (INVE_CLIB01.CAMPLIB3, see migration 2026_08_17_120000) is also
+     * searchable from this listing.
      */
     public function search(Builder $query, string $term): Builder
     {
         return $query->where(function (Builder $q) use ($term) {
             $q->where('aspel_products.cve_art', 'like', "%{$term}%")
                 ->orWhere('aspel_products.descr', 'like', "%{$term}%")
-                ->orWhere('aspel_products.nombre', 'like', "%{$term}%");
+                ->orWhere('aspel_products.nombre', 'like', "%{$term}%")
+                ->orWhere('aspel_products.campo_libre_modelo', 'like', "%{$term}%");
         });
     }
 }

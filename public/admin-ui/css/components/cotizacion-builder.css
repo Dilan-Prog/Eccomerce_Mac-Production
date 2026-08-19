@@ -48,6 +48,7 @@
 }
 
 .admin-ui-v2 .au-quote-client-results,
+.admin-ui-v2 .au-quote-client-aspel-results,
 .admin-ui-v2 .au-quote-product-results {
   display: flex;
   flex-direction: column;
@@ -55,6 +56,13 @@
   max-height: 320px;
   overflow-y: auto;
   margin-bottom: var(--au-space-3);
+}
+
+.admin-ui-v2 .au-quote-client-aspel-heading {
+  font-size: var(--au-fs-sm);
+  font-weight: 600;
+  color: var(--au-text-subdued);
+  margin-bottom: var(--au-space-2);
 }
 
 .admin-ui-v2 .au-quote-client-result {

@@ -71,7 +71,7 @@ class CustomerListController extends Controller
         $customer = new User();
         $customer->name = $request->name;
         $customer->last_name = ''; // not part of this simplified admin form; matches self-registration's default (RegisteredUserController)
-        $customer->email = $request->email ?: $this->generatePlaceholderEmail();
+        $customer->email = $request->email ?: User::generatePlaceholderEmail();
         $customer->phone = $request->phone;
         $customer->company = $request->company;
         $customer->rfc = $request->rfc;
@@ -91,16 +91,6 @@ class CustomerListController extends Controller
                 'email' => $customer->email,
             ],
         ]);
-    }
-
-    /** Unique, obviously-fake placeholder — used only when the admin explicitly skips correo at creation. */
-    private function generatePlaceholderEmail(): string
-    {
-        do {
-            $candidate = 'pendiente-' . Str::random(10) . '@sin-correo.macdelnorte.com';
-        } while (User::where('email', $candidate)->exists());
-
-        return $candidate;
     }
 
     /** Edits an existing customer's info. Does not touch role/password. */

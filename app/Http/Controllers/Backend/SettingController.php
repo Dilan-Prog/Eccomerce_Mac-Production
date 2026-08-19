@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Backend;
 use App\Http\Controllers\Controller;
 use App\Models\GeneralSetting;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class SettingController extends Controller
 {
@@ -15,7 +16,15 @@ class SettingController extends Controller
 
     public function index(){
         $generalSettings = GeneralSetting::first();
-        return view('admin-ui.settings.index', compact('generalSettings'));
+
+        // Último tipo de cambio USD->MXN sincronizado desde Aspel para
+        // Cotizaciones (cotizacion_monedas_aspel, ver
+        // App\Support\CotizacionExchange) — solo para mostrarlo en la vista;
+        // los dos campos manuales de abajo siguen siendo el respaldo si esto
+        // es null.
+        $cotizacionAspelRate = DB::table('cotizacion_monedas_aspel')->where('cve_moned', 'USD')->first();
+
+        return view('admin-ui.settings.index', compact('generalSettings', 'cotizacionAspelRate'));
 
     }
 

@@ -13,7 +13,7 @@
 @import url("components/toast.css");
 @import url("components/tabs.css");
 @import url("components/pagination.css");
-@import url("components/dropdown-menu.css");
+@import url("components/dropdown-menu.css?v=2");
 @import url("components/duplicate-images.css");
 @import url("components/cotizacion-builder.css");
 @import url("components/product-sku-search.css");

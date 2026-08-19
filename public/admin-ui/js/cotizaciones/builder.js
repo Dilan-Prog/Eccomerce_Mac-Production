@@ -7,9 +7,9 @@
  *     cotizacionId, items: [...], total, currency,
  *     exchangeRate, exchangeRateMxnUsd,
  *     defaultExchangeRateUsdMxn, defaultExchangeRateMxnUsd,
- *     routes: { clientsSearch, productsSearch, store, editUrlBase,
- *               itemsStore, itemBase, currency, finalize, showUrlBase,
- *               customerCreateFragment, customerStore }
+ *     routes: { clientsSearch, resolveAspelClientBase, productsSearch, store,
+ *               editUrlBase, itemsStore, itemBase, currency, finalize,
+ *               showUrlBase, customerCreateFragment, customerStore }
  *   }
  *
  * Two independent, per-quote exchange rates (manual, entered by the vendor
@@ -596,10 +596,52 @@ window.AU = window.AU || {};
     });
   }
 
+  /*
+   * Clientes de Aspel sin cuenta de sitio vinculada todavía — no son
+   * directamente seleccionables (una cotización siempre necesita un
+   * users.id real, ver store()); primero se resuelven/materializan vía
+   * resolveAspelClient(), y solo entonces se reusa selectClient() con el
+   * User ya real, igual que el flujo "+ Crear cliente nuevo".
+   */
+  function renderAspelClientResults(results) {
+    const section = AU.qs("[data-au-quote-client-aspel-section]");
+    const container = AU.qs("[data-au-quote-client-aspel-results]");
+    if (!section || !container) return;
+
+    if (!results.length) {
+      section.style.display = "none";
+      container.innerHTML = "";
+      return;
+    }
+
+    section.style.display = "";
+    container.innerHTML = results
+      .map(
+        (c) => `
+      <button type="button" class="au-quote-client-result" data-au-quote-client-aspel-pick="${c.id}"
+              data-name="${AU.escapeHtml(c.name || "")}" data-rfc="${AU.escapeHtml(c.rfc || "")}">
+        <span class="au-quote-client-result-name">${AU.escapeHtml(c.name || "Sin nombre")}</span>
+        <span class="au-quote-client-result-email">${AU.escapeHtml(c.rfc || c.email || "")}</span>
+      </button>`
+      )
+      .join("");
+
+    AU.qsa("[data-au-quote-client-aspel-pick]", container).forEach((btn) => {
+      btn.addEventListener("click", () => {
+        selectAspelClient({
+          id: btn.getAttribute("data-au-quote-client-aspel-pick"),
+          name: btn.getAttribute("data-name"),
+          rfc: btn.getAttribute("data-rfc"),
+        });
+      });
+    });
+  }
+
   async function fetchClients(term) {
     try {
       const data = await AU.request(`${config.routes.clientsSearch}?q=${encodeURIComponent(term)}`);
       renderClientResults(data.results || []);
+      renderAspelClientResults(data.aspel_results || []);
     } catch (err) {
       AU.toast.error("No se pudo buscar clientes");
     }
@@ -616,6 +658,23 @@ window.AU = window.AU || {};
       window.location.href = `${config.routes.editUrlBase}/${data.cotizacion.id}/edit`;
     } catch (err) {
       AU.toast.error((err.data && err.data.message) || "No se pudo crear la cotización");
+      if (searchInput) searchInput.disabled = false;
+      if (newClientBtn) newClientBtn.disabled = false;
+    }
+  }
+
+  async function selectAspelClient(client) {
+    if (!config.routes.resolveAspelClientBase) return;
+    const searchInput = AU.qs("[data-au-quote-client-search]");
+    const newClientBtn = AU.qs("[data-au-quote-client-new]");
+    if (searchInput) searchInput.disabled = true;
+    if (newClientBtn) newClientBtn.disabled = true;
+
+    try {
+      const data = await AU.request(`${config.routes.resolveAspelClientBase}/${client.id}/resolve`, { method: "POST" });
+      if (data && data.client) await selectClient(data.client);
+    } catch (err) {
+      AU.toast.error((err.data && err.data.message) || "No se pudo vincular el cliente de Aspel");
       if (searchInput) searchInput.disabled = false;
       if (newClientBtn) newClientBtn.disabled = false;
     }

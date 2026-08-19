@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Backend;
 
 use App\Http\Controllers\Controller;
+use App\Models\AspelClient;
 use App\Models\Cotizacion;
 use App\Models\CotizacionItem;
 use App\Models\CotizacionPerfil;
@@ -68,33 +69,112 @@ class AdminCotizacionController extends Controller
      * Matches on the same field set as CustomerTableQuery::search() (name,
      * email, id). An empty term still returns the first 20 clients ordered
      * by name, so the picker has something to show on initial load.
+     *
+     * Also returns a second list, `aspel_results`, of clients that exist in
+     * Aspel (aspel_clients) but don't have a linked site User yet — these
+     * aren't directly selectable (a cotización always needs a real
+     * users.id), the picker must call resolveAspelClient() first. Aspel
+     * clients that ARE already linked are intentionally left out of this
+     * second list: they should already surface in $results above if the
+     * term matches their linked User's name/email.
      */
     public function clientsSearch(Request $request)
     {
         $term = (string) $request->input('q', '');
 
-        $query = User::where('role', 'user');
+        $userQuery = User::where('role', 'user');
 
         if ($term !== '') {
-            $query->where(function ($q) use ($term) {
+            $userQuery->where(function ($q) use ($term) {
                 $q->where('name', 'like', "%{$term}%")
                     ->orWhere('email', 'like', "%{$term}%")
                     ->orWhere('id', $term);
             });
         }
 
-        $results = $query->orderBy('name')->limit(20)->get(['id', 'name', 'email', 'account_type']);
+        $users = $userQuery->orderBy('name')->limit(20)->get(['id', 'name', 'email', 'account_type']);
 
-        $userIdsWithProfile = CotizacionPerfil::whereIn('user_id', $results->pluck('id'))
+        $userIdsWithProfile = CotizacionPerfil::whereIn('user_id', $users->pluck('id'))
             ->pluck('user_id')
             ->all();
 
-        return response()->json(['results' => $results->map(fn ($u) => [
+        $userResults = $users->map(fn ($u) => [
             'id' => $u->id,
             'name' => $u->name,
             'email' => $u->email,
             'has_profile' => in_array($u->id, $userIdsWithProfile, true),
-        ])]);
+        ]);
+
+        $aspelQuery = AspelClient::whereNull('user_id');
+
+        if ($term !== '') {
+            $aspelQuery->where(function ($q) use ($term) {
+                $q->where('nombre', 'like', "%{$term}%")
+                    ->orWhere('rfc', 'like', "%{$term}%")
+                    ->orWhere('clave', 'like', "%{$term}%");
+            });
+        }
+
+        $aspelResults = $aspelQuery->orderBy('nombre')->limit(20)->get(['id', 'clave', 'nombre', 'rfc', 'email'])
+            ->map(fn ($c) => [
+                'id' => $c->id,
+                'name' => $c->nombre,
+                'rfc' => $c->rfc,
+                'email' => $c->email,
+            ]);
+
+        return response()->json([
+            'results' => $userResults,
+            'aspel_results' => $aspelResults,
+        ]);
+    }
+
+    /**
+     * Materializes the real User that an Aspel client (aspel_clients row)
+     * corresponds to, so it can be used by store() (which requires a real
+     * users.id via `exists:users,id`). Already-linked rows just return their
+     * linked User (idempotent — the picker can safely call this again).
+     * Otherwise, tries an RFC match against users.rfc (unique-indexed); if
+     * none is found, creates a new User — same placeholder-email pattern as
+     * "+ Crear cliente nuevo" (see User::generatePlaceholderEmail()) — and
+     * links it.
+     */
+    public function resolveAspelClient(AspelClient $aspelClient)
+    {
+        if ($aspelClient->user_id) {
+            $user = User::findOrFail($aspelClient->user_id);
+
+            return response()->json(['status' => 'success', 'client' => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+            ]]);
+        }
+
+        $user = !empty($aspelClient->rfc) ? User::where('rfc', $aspelClient->rfc)->first() : null;
+
+        if (!$user) {
+            $user = new User();
+            $user->name = $aspelClient->nombre ?: ('Cliente ' . $aspelClient->clave);
+            $user->last_name = '';
+            $user->email = $aspelClient->email ?: User::generatePlaceholderEmail();
+            $user->phone = $aspelClient->telefono;
+            $user->rfc = $aspelClient->rfc;
+            $user->account_type = 'personal';
+            $user->role = 'user';
+            $user->status = 'active';
+            $user->password = bcrypt(\Illuminate\Support\Str::random(16));
+            $user->save();
+        }
+
+        $aspelClient->user_id = $user->id;
+        $aspelClient->save();
+
+        return response()->json(['status' => 'success', 'client' => [
+            'id' => $user->id,
+            'name' => $user->name,
+            'email' => $user->email,
+        ]]);
     }
 
     /**

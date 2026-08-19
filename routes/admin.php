@@ -32,6 +32,7 @@ use App\Http\Controllers\Backend\TrackConversionController;
 use App\Http\Controllers\Backend\TransactionController;
 use App\Http\Controllers\Backend\TransferController;
 use App\Http\Controllers\Backend\AdminCotizacionController;
+use App\Http\Controllers\Backend\AspelApiTokenController;
 use App\Http\Controllers\Backend\ProductVariantCombinationsController;
 use App\Models\Subcategory;
 use Illuminate\Support\Facades\Route;
@@ -75,6 +76,7 @@ Route::get('cotizaciones',          [AdminCotizacionController::class, 'index'])
 Route::get('cotizaciones/table-data', [AdminCotizacionController::class, 'tableData'])->name('cotizaciones.table-data');
 Route::get('cotizaciones/export', [AdminCotizacionController::class, 'export'])->name('cotizaciones.export');
 Route::get('cotizaciones/clients-search', [AdminCotizacionController::class, 'clientsSearch'])->name('cotizaciones.clients-search');
+Route::post('cotizaciones/clients/{aspelClient}/resolve', [AdminCotizacionController::class, 'resolveAspelClient'])->name('cotizaciones.clients.resolve');
 Route::get('cotizaciones/products-search', [AdminCotizacionController::class, 'productsSearch'])->name('cotizaciones.products-search');
 Route::get('cotizaciones/create', [AdminCotizacionController::class, 'create'])->name('cotizaciones.create');
 Route::post('cotizaciones', [AdminCotizacionController::class, 'store'])->name('cotizaciones.store');
@@ -179,6 +181,13 @@ Route::resource('products',ProductController::class)->except(['create', 'edit'])
 Route::get('/sync-aspel', [AspelSyncController::class, 'index'])->name('sync-aspel.index');
 Route::get('sync-aspel/table-data', [AspelSyncController::class, 'tableData'])->name('sync-aspel.table-data');
 Route::get('sync-aspel/export', [AspelSyncController::class, 'export'])->name('sync-aspel.export');
+
+/** Aspel Integration — Tokens API (grupo "Aspel Integration" en el sidebar) */
+Route::get('aspel-tokens/table-data', [AspelApiTokenController::class, 'tableData'])->name('aspel-tokens.table-data');
+Route::get('aspel-tokens/create-fragment', [AspelApiTokenController::class, 'createFragment'])->name('aspel-tokens.create-fragment');
+Route::get('aspel-tokens/{id}/edit-fragment', [AspelApiTokenController::class, 'editFragment'])->name('aspel-tokens.edit-fragment');
+Route::post('aspel-tokens/{id}/regenerate', [AspelApiTokenController::class, 'regenerate'])->name('aspel-tokens.regenerate');
+Route::resource('aspel-tokens', AspelApiTokenController::class)->except(['create', 'edit']);
 
 /**Ads route */
 Route::get('track-conversion', [TrackConversionController::class, 'index'])->name('track-conversion.index');

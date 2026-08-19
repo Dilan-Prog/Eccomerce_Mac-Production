@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Str;
 use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
@@ -87,5 +88,15 @@ class User extends Authenticatable
     public function isUnrestrictedAdmin(): bool
     {
         return $this->role === 'admin' && $this->role_id === null;
+    }
+
+    /** Unique, obviously-fake placeholder — used whenever a real email isn't on hand yet (email is NOT NULL + UNIQUE). */
+    public static function generatePlaceholderEmail(): string
+    {
+        do {
+            $candidate = 'pendiente-' . Str::random(10) . '@sin-correo.macdelnorte.com';
+        } while (self::where('email', $candidate)->exists());
+
+        return $candidate;
     }
 }

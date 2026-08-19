@@ -1,6 +1,8 @@
 <?php
 
+use App\Http\Controllers\AspelSync\AspelClientSyncController;
 use App\Http\Controllers\AspelSync\AspelSyncController;
+use App\Http\Controllers\AspelSync\CotizacionMonedaSyncController;
 use App\Http\Controllers\AspelSync\PrecioXProductoController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -21,6 +23,13 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 // Route::post('/aspel/sync', [AspelSyncController::class, 'syncData']);
-Route::post('/aspel/sync', [AspelSyncController::class, 'sync']);
-Route::post('/aspel/precio-x-producto', [PrecioXProductoController::class, 'precioXProducto']);
 // Route::match(['GET', 'POST'], '/aspel/sync', [AspelSyncController::class, 'sync']);
+
+// Requiere `Authorization: Bearer {token}` con un token activo (ver
+// App\Http\Middleware\AspelApiTokenMiddleware / módulo "Integración").
+Route::middleware('aspel.token')->group(function () {
+    Route::post('/aspel/sync', [AspelSyncController::class, 'sync']);
+    Route::post('/aspel/precio-x-producto', [PrecioXProductoController::class, 'precioXProducto']);
+    Route::post('/aspel/clientes', [AspelClientSyncController::class, 'sync']);
+    Route::post('/aspel/tipo-cambio', [CotizacionMonedaSyncController::class, 'sync']);
+});

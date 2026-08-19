@@ -70,14 +70,6 @@
         </div>
         @endif
 
-        @if ($__auUser->canAccessModule('cotizaciones'))
-        <div class="au-nav-item {{ setActive(['admin.cotizaciones.*']) ? 'is-active' : '' }}">
-            <a href="{{ route('admin.cotizaciones.index') }}" class="au-nav-link">
-                <i class="fas fa-file-invoice au-nav-icon"></i><span>Cotizaciones</span>
-            </a>
-        </div>
-        @endif
-
         @php
             $catActive = setActive(['admin.category.*', 'admin.sub-category.*', 'admin.child-category.*']);
         @endphp
@@ -111,14 +103,22 @@
         </div>
         @endif
 
-        @if ($__auUser->canAccessModule('aspel'))
-        <div class="au-nav-item has-submenu {{ setActive(['admin.sync-aspel.*']) ? 'is-active is-open' : '' }}" data-nav-key="aspel">
+        @if ($__auUser->canAccessModule('cotizaciones') || $__auUser->canAccessModule('aspel') || $__auUser->canAccessModule('aspel-integracion'))
+        <div class="au-nav-item has-submenu {{ setActive(['admin.cotizaciones.*', 'admin.sync-aspel.*', 'admin.aspel-tokens.*']) ? 'is-active is-open' : '' }}" data-nav-key="aspel-integration">
             <a href="#" class="au-nav-link">
-                <i class="fas fa-tags au-nav-icon"></i><span>Aspel Sincronizacion</span>
+                <i class="fas fa-network-wired au-nav-icon"></i><span>Aspel Integration</span>
                 <i class="fas fa-chevron-right au-nav-caret"></i>
             </a>
             <div class="au-nav-submenu">
-                <a href="{{ route('admin.sync-aspel.index') }}" class="au-nav-link">Productos</a>
+                @if ($__auUser->canAccessModule('cotizaciones'))
+                    <a href="{{ route('admin.cotizaciones.index') }}" class="au-nav-link">Cotizaciones</a>
+                @endif
+                @if ($__auUser->canAccessModule('aspel'))
+                    <a href="{{ route('admin.sync-aspel.index') }}" class="au-nav-link">Sincronización</a>
+                @endif
+                @if ($__auUser->canAccessModule('aspel-integracion'))
+                    <a href="{{ route('admin.aspel-tokens.index') }}" class="au-nav-link">Integración</a>
+                @endif
             </div>
         </div>
         @endif

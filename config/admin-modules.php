@@ -17,6 +17,7 @@ return [
     'categories' => 'Administrar Categorías',
     'products' => 'Administrar Productos',
     'aspel' => 'Aspel Sincronización',
+    'aspel-integracion' => 'Aspel Integration',
     'ecommerce' => 'Ecommerce (Venta Flash, Cupones, Envío, Pagos)',
     'ads' => 'Publicidad',
     'clientes' => 'Usuarios / Clientes',

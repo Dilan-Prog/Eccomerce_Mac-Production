@@ -10,7 +10,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{{ asset('admin-ui/css/admin.css') }}">
+    <link rel="stylesheet" href="{{ asset('admin-ui/css/admin.css') }}?v={{ filemtime(public_path('admin-ui/css/admin.css')) }}">
     @stack('styles')
 </head>
 <body>
@@ -38,15 +38,22 @@
             success: @json(session('success')),
         };
     </script>
-    <script src="{{ asset('admin-ui/js/core/dom.js') }}"></script>
-    <script src="{{ asset('admin-ui/js/core/toast.js') }}"></script>
-    <script src="{{ asset('admin-ui/js/core/modal.js') }}"></script>
-    <script src="{{ asset('admin-ui/js/core/form-modal.js') }}"></script>
-    <script src="{{ asset('admin-ui/js/core/pdf-preview.js') }}"></script>
-    <script src="{{ asset('admin-ui/js/core/toggle.js') }}"></script>
-    <script src="{{ asset('admin-ui/js/core/image-picker.js') }}"></script>
-    <script src="{{ asset('admin-ui/js/core/dropdown.js') }}"></script>
-    <script src="{{ asset('admin-ui/js/core/sidebar.js') }}"></script>
+    {{--
+        Todos los scripts core llevan ?v={{ filemtime(...) }} — sin esto, el
+        navegador puede quedarse con una versión vieja en caché y romper
+        cosas en silencio (ya pasó dos veces: dropdown.js y modal.js). Nuevo
+        archivo core -> agregarlo aquí con el mismo patrón, no como línea
+        plana sin versionar.
+    --}}
+    <script src="{{ asset('admin-ui/js/core/dom.js') }}?v={{ filemtime(public_path('admin-ui/js/core/dom.js')) }}"></script>
+    <script src="{{ asset('admin-ui/js/core/toast.js') }}?v={{ filemtime(public_path('admin-ui/js/core/toast.js')) }}"></script>
+    <script src="{{ asset('admin-ui/js/core/modal.js') }}?v={{ filemtime(public_path('admin-ui/js/core/modal.js')) }}"></script>
+    <script src="{{ asset('admin-ui/js/core/form-modal.js') }}?v={{ filemtime(public_path('admin-ui/js/core/form-modal.js')) }}"></script>
+    <script src="{{ asset('admin-ui/js/core/pdf-preview.js') }}?v={{ filemtime(public_path('admin-ui/js/core/pdf-preview.js')) }}"></script>
+    <script src="{{ asset('admin-ui/js/core/toggle.js') }}?v={{ filemtime(public_path('admin-ui/js/core/toggle.js')) }}"></script>
+    <script src="{{ asset('admin-ui/js/core/image-picker.js') }}?v={{ filemtime(public_path('admin-ui/js/core/image-picker.js')) }}"></script>
+    <script src="{{ asset('admin-ui/js/core/dropdown.js') }}?v={{ filemtime(public_path('admin-ui/js/core/dropdown.js')) }}"></script>
+    <script src="{{ asset('admin-ui/js/core/sidebar.js') }}?v={{ filemtime(public_path('admin-ui/js/core/sidebar.js')) }}"></script>
     <script>
         // Consumed by admin.js's generic [data-au-image-slot] handler so
         // every module's fragment can wire a gallery picker without knowing
@@ -56,7 +63,7 @@
             uploadUrl: '{{ route('admin.media-library.store') }}',
         };
     </script>
-    <script src="{{ asset('admin-ui/js/admin.js') }}"></script>
+    <script src="{{ asset('admin-ui/js/admin.js') }}?v={{ filemtime(public_path('admin-ui/js/admin.js')) }}"></script>
     @stack('scripts')
 </body>
 </html>

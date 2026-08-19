@@ -17,7 +17,13 @@ class AspelSyncController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('can-access-module:aspel');
+        // sync() se excluye a propósito: la llama el script externo de Aspel
+        // sin sesión de admin, vía routes/api.php. can-access-module:aspel
+        // requiere $request->user() (que ahí siempre es null) y truena con
+        // 500 en vez de proteger nada — la protección real pendiente es un
+        // token compartido, no este middleware. index()/tableData()/export()
+        // sí son del panel admin y sí deben quedar protegidos.
+        $this->middleware('can-access-module:aspel')->except(['sync']);
     }
 
     public function sync(Request $request)
@@ -76,6 +82,7 @@ class AspelSyncController extends Controller
             'items.*.talla' => 'nullable|string|max:50',
             'items.*.color' => 'nullable|string|max:50',
             'items.*.cve_imagen' => 'nullable|string|max:255',
+            'items.*.campo_libre_modelo' => 'nullable|string|max:25',
             'items.*.blk_cst_ext' => 'nullable|string|size:1',
             'items.*.status' => 'nullable|string|size:1',
             'items.*.man_ieps' => 'nullable|string|size:1',
@@ -156,6 +163,7 @@ class AspelSyncController extends Controller
                         'talla' => $item['talla'] ?? null,
                         'color' => $item['color'] ?? null,
                         'cve_imagen' => $item['cve_imagen'] ?? null,
+                        'campo_libre_modelo' => $item['campo_libre_modelo'] ?? null,
                         'blk_cst_ext' => $item['blk_cst_ext'] ?? 'N',
                         'status' => $item['status'] ?? 'A',
                         'man_ieps' => $item['man_ieps'] ?? 'N',
@@ -189,7 +197,7 @@ class AspelSyncController extends Controller
                         'price' => $item['ult_costo'] ?? null,
                         'stock' => $item['exist'] ?? null,
                         'remote_updated_at' => now(),
-                        'sync_hash' => md5($item['cve_art'].$item['ult_costo'].$item['exist'] ?? '')
+                        'sync_hash' => md5(($item['cve_art'] ?? '') . ($item['ult_costo'] ?? '') . ($item['exist'] ?? ''))
                     ]
                 );
                 $synced++;
