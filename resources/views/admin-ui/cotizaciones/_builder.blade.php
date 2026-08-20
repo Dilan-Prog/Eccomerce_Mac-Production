@@ -237,5 +237,8 @@
     <script>
         window.AU_COTIZACION_BUILDER = @json($builderConfig);
     </script>
-    <script src="{{ asset('admin-ui/js/cotizaciones/builder.js') }}"></script>
+    {{-- ?v=filemtime evita que el navegador se quede con una versión vieja en
+         caché tras editar este archivo — mismo bug ya visto con dropdown.js/
+         modal.js, ver comentario en admin-ui/layouts/master.blade.php --}}
+    <script src="{{ asset('admin-ui/js/cotizaciones/builder.js') }}?v={{ filemtime(public_path('admin-ui/js/cotizaciones/builder.js')) }}"></script>
 @endpush

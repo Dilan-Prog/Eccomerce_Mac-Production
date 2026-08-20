@@ -185,6 +185,13 @@
                     <div class="item-desc-sub cond-highlight">
                         PENDIENTE DE SURTIR — TIEMPO DE ENTREGA: {{ $p['tiempo_entrega'] ?? 'Por confirmar' }}
                     </div>
+                @elseif (!empty($p['tiempo_entrega']))
+                    {{-- Nota de tiempo de entrega en un producto CON stock (o personalizado) —
+                         sin el prefijo "PENDIENTE DE SURTIR" ni el color de advertencia, para no
+                         implicar que falta inventario. Mismo criterio que en el builder admin. --}}
+                    <div class="item-desc-sub">
+                        TIEMPO DE ENTREGA: {{ $p['tiempo_entrega'] }}
+                    </div>
                 @endif
             </td>
             <td class="right">{{ number_format($row['pu'], 2, '.', ',') }}</td>

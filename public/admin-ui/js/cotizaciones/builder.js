@@ -236,6 +236,36 @@ window.AU = window.AU || {};
    * Line items table
    * ---------------------------------------------------------------- */
 
+  /*
+   * Tiempo de entrega es editable en CUALQUIER partida, no solo en las
+   * pendientes de surtir — si el item es es_pendiente, se ve con el mismo
+   * badge de advertencia de siempre (el sistema sí necesita ese tiempo para
+   * saber cuándo llega lo faltante). Si NO es pendiente pero el vendedor le
+   * puso un tiempo de entrega de todos modos (ej. tiempo de instalación/
+   * envío en un producto que sí hay en stock, o uno personalizado), se
+   * muestra como una nota aparte con el badge neutro — a propósito NO se
+   * marca como "Pendiente de surtir" para no implicar que falta stock.
+   */
+  function renderTiempoEntregaBlock(item) {
+    const editBtn = `<button type="button" class="au-btn au-btn-sm au-btn-plain" data-au-quote-edit-eta="${item.id}" aria-label="Editar tiempo de entrega" title="Editar tiempo de entrega"><i class="fas fa-pen"></i></button>`;
+
+    if (item.es_pendiente) {
+      return `<div class="au-quote-eta-row" style="margin-top:4px;display:flex;align-items:center;gap:6px">
+        <div class="au-badge au-badge-warning"><span class="au-badge-dot"></span>Pendiente de surtir — ${AU.escapeHtml(item.tiempo_entrega || "sin especificar")}</div>
+        ${editBtn}
+      </div>`;
+    }
+
+    if (item.tiempo_entrega) {
+      return `<div class="au-quote-eta-row" style="margin-top:4px;display:flex;align-items:center;gap:6px">
+        <div class="au-badge"><span class="au-badge-dot"></span>Tiempo de entrega: ${AU.escapeHtml(item.tiempo_entrega)}</div>
+        ${editBtn}
+      </div>`;
+    }
+
+    return `<button type="button" class="au-btn au-btn-sm au-btn-plain" style="margin-top:4px" data-au-quote-edit-eta="${item.id}">+ Tiempo de entrega</button>`;
+  }
+
   function renderItems() {
     const tbody = AU.qs("[data-au-quote-items-body]");
     if (!tbody) return;
@@ -255,11 +285,7 @@ window.AU = window.AU || {};
           ${AU.escapeHtml(item.nombre)}
           ${item.marca ? `<div class="au-quote-item-sub">${AU.escapeHtml(item.marca)}</div>` : ""}
           ${item.precio_tier_label ? `<div class="au-quote-item-sub">Precio: ${AU.escapeHtml(item.precio_tier_label)}</div>` : ""}
-          ${
-            item.es_pendiente
-              ? `<div class="au-badge au-badge-warning" style="margin-top:4px"><span class="au-badge-dot"></span>Pendiente de surtir — ${AU.escapeHtml(item.tiempo_entrega || "sin especificar")}</div>`
-              : ""
-          }
+          ${renderTiempoEntregaBlock(item)}
         </td>
         <td class="au-mono">${AU.escapeHtml(item.sku || "")}${item.modelo ? " / " + AU.escapeHtml(item.modelo) : ""}</td>
         <td>
@@ -333,6 +359,28 @@ window.AU = window.AU || {};
     }
   }
 
+  async function editTiempoEntrega(itemId) {
+    const item = items.find((i) => String(i.id) === String(itemId));
+    if (!item) return;
+
+    const value = await AU.promptTiempoEntrega({
+      title: item.nombre ? `Tiempo de entrega — ${item.nombre}` : "Tiempo de entrega",
+      currentValue: item.tiempo_entrega,
+    });
+    if (value === undefined) return; // cancelado
+
+    if (!config.routes.itemBase) return;
+    try {
+      const data = await AU.request(`${config.routes.itemBase}/${itemId}`, { method: "PUT", body: { tiempo_entrega: value } });
+      const idx = items.findIndex((i) => String(i.id) === String(itemId));
+      if (idx !== -1) items[idx].tiempo_entrega = data.item.tiempo_entrega;
+      renderItems();
+      AU.toast.success("Tiempo de entrega actualizado");
+    } catch (err) {
+      AU.toast.error((err.data && err.data.message) || "No se pudo actualizar el tiempo de entrega");
+    }
+  }
+
   async function removeItem(itemId) {
     if (!config.routes.itemBase) return;
     try {
@@ -364,6 +412,10 @@ window.AU = window.AU || {};
 
     AU.on(tbody, "click", "[data-au-quote-remove]", (e, target) => {
       removeItem(target.getAttribute("data-au-quote-remove"));
+    });
+
+    AU.on(tbody, "click", "[data-au-quote-edit-eta]", (e, target) => {
+      editTiempoEntrega(target.getAttribute("data-au-quote-edit-eta"));
     });
   }
 

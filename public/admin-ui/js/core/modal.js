@@ -148,4 +148,79 @@ window.AU = window.AU || {};
         if (e.target === overlay) finish();
       });
     });
+
+  /**
+   * Modal para capturar/editar el "tiempo de entrega" de una partida de
+   * cotización (número + unidad — días/semanas/meses/años) en vez de un
+   * campo de texto libre. Usado tanto para partidas pendientes de surtir
+   * como para cualquier otra partida (con stock completo o personalizada) —
+   * ver public/admin-ui/js/cotizaciones/builder.js. Devuelve la cadena ya
+   * compuesta (ej. "5 días") o undefined si se cancela.
+   */
+  AU.promptTiempoEntrega = ({ title, currentValue }) =>
+    new Promise((resolve) => {
+      const match = (currentValue || "").match(/^(\d+)\s*(d[ií]as?|semanas?|mes(?:es)?|a[ñn]os?)/i);
+      const unitMap = { d: "dias", s: "semanas", m: "meses", a: "anios" };
+      const prefillNumber = match ? match[1] : "";
+      const prefillUnit = match ? unitMap[match[2][0].toLowerCase()] : "dias";
+
+      const overlay = document.createElement("div");
+      overlay.className = "au-modal-overlay";
+      overlay.innerHTML = `
+        <div class="au-modal" role="dialog" aria-modal="true">
+          <div class="au-modal-head">
+            <div class="au-modal-icon">&#128337;</div>
+            <div style="display:flex;flex-direction:column;gap:6px">
+              <div class="au-modal-title"></div>
+            </div>
+          </div>
+          <div class="au-field">
+            <label class="au-label">Tiempo de entrega</label>
+            <div style="display:flex;gap:8px">
+              <input type="number" min="1" step="1" class="au-input" style="flex:1" data-eta-number>
+              <select class="au-select" style="flex:1" data-eta-unit>
+                <option value="dias">Días</option>
+                <option value="semanas">Semanas</option>
+                <option value="meses">Meses</option>
+                <option value="anios">Años</option>
+              </select>
+            </div>
+          </div>
+          <div class="au-modal-actions">
+            <button type="button" class="au-btn au-modal-cancel">Cancelar</button>
+            <button type="button" class="au-btn au-btn-primary au-modal-confirm">Guardar</button>
+          </div>
+        </div>`;
+      overlay.querySelector(".au-modal-title").textContent = title || "Tiempo de entrega";
+      overlay.querySelector("[data-eta-number]").value = prefillNumber;
+      overlay.querySelector("[data-eta-unit]").value = prefillUnit;
+
+      (document.querySelector(".admin-ui-v2") || document.body).appendChild(overlay);
+      requestAnimationFrame(() => overlay.classList.add("is-open"));
+
+      const finish = (value) => {
+        destroy(overlay);
+        resolve(value);
+      };
+
+      overlay.querySelector(".au-modal-cancel").addEventListener("click", () => finish(undefined));
+      overlay.querySelector(".au-modal-confirm").addEventListener("click", () => {
+        const num = parseInt(overlay.querySelector("[data-eta-number]").value, 10);
+        if (!num || num < 1) {
+          AU.toast.error("Captura un número válido.");
+          return;
+        }
+        const unit = overlay.querySelector("[data-eta-unit]").value;
+        const labels = {
+          dias: num === 1 ? "día" : "días",
+          semanas: num === 1 ? "semana" : "semanas",
+          meses: num === 1 ? "mes" : "meses",
+          anios: num === 1 ? "año" : "años",
+        };
+        finish(`${num} ${labels[unit] || labels.dias}`);
+      });
+      overlay.addEventListener("click", (e) => {
+        if (e.target === overlay) finish(undefined);
+      });
+    });
 })();

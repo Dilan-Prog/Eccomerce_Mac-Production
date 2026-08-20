@@ -722,17 +722,33 @@ class AdminCotizacionController extends Controller
     }
 
     /** Updates only the quantity of an existing line item (re-add to change product). */
+    /**
+     * `cantidad` y `tiempo_entrega` se validan con `sometimes` porque cada
+     * uno se edita por separado desde el builder (input de cantidad vs.
+     * botón de lápiz de tiempo de entrega) — solo se actualiza lo que
+     * realmente vino en el request. `tiempo_entrega` es editable en
+     * cualquier partida, no solo en las `es_pendiente`: no la toca esta
+     * ruta, es una nota independiente (ver builder.js::renderTiempoEntregaBlock()).
+     */
     public function updateItem(Request $request, Cotizacion $cotizacion, CotizacionItem $item)
     {
         abort_if($cotizacion->source !== 'admin', 403);
         abort_unless($item->cotizacion_id === $cotizacion->id, 404);
 
         $validated = $request->validate([
-            'cantidad' => ['required', 'integer', 'min:1'],
+            'cantidad' => ['sometimes', 'required', 'integer', 'min:1'],
+            'tiempo_entrega' => ['sometimes', 'nullable', 'string', 'max:255'],
         ]);
 
-        $item->cantidad = (int) $validated['cantidad'];
-        $item->subtotal = round($item->precio_unitario * $item->cantidad, 2);
+        if (array_key_exists('cantidad', $validated)) {
+            $item->cantidad = (int) $validated['cantidad'];
+            $item->subtotal = round($item->precio_unitario * $item->cantidad, 2);
+        }
+
+        if (array_key_exists('tiempo_entrega', $validated)) {
+            $item->tiempo_entrega = $validated['tiempo_entrega'];
+        }
+
         $item->save();
 
         $totals = $this->recalculateTotals($cotizacion);
@@ -747,6 +763,8 @@ class AdminCotizacionController extends Controller
                 'id' => $item->id,
                 'cantidad' => $item->cantidad,
                 'subtotal' => (float) $item->subtotal,
+                'tiempo_entrega' => $item->tiempo_entrega,
+                'es_pendiente' => (bool) $item->es_pendiente,
             ],
             'total' => $totals,
         ]);
