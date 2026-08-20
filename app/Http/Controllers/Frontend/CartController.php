@@ -250,6 +250,10 @@ class CartController extends Controller
 
         Cart::destroy();
 
+        if (auth()->check()) {
+            Cart::erase(auth()->id());
+        }
+
         return response(['status' => 'success', 'message' => 'carrito eliminado con exito con exito']);
 
     }
