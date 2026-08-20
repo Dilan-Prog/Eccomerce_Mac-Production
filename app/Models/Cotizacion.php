@@ -40,6 +40,7 @@ class Cotizacion extends Model
         'currency',
         'exchange_rate',
         'exchange_rate_mxn_usd',
+        'tiempo_entrega_general',
         'status',
         'pdf_path',
         'precio_minimo_autorizado_at',
@@ -53,6 +54,7 @@ class Cotizacion extends Model
         'exchange_rate'                => 'decimal:4',
         'exchange_rate_mxn_usd'        => 'decimal:4',
         'precio_minimo_autorizado_at'  => 'datetime',
+        'tiempo_entrega_general'       => 'date',
     ];
 
     /**

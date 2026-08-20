@@ -107,6 +107,7 @@ window.AU = window.AU || {};
     const currencySelect = AU.qs("[data-au-quote-currency]");
     const rateUsdMxnInput = AU.qs("[data-au-quote-rate-usd-mxn]");
     const rateMxnUsdInput = AU.qs("[data-au-quote-rate-mxn-usd]");
+    const tiempoEntregaGeneralInput = AU.qs("[data-au-quote-tiempo-entrega-general]");
     if (!config.routes.currency) return;
 
     async function save(payload) {
@@ -119,6 +120,18 @@ window.AU = window.AU || {};
         renderSummary(lastTotals.item_count);
       } catch (err) {
         AU.toast.error((err.data && err.data.message) || "No se pudo guardar la moneda/tipo de cambio");
+      }
+    }
+
+    // tiempo_entrega_general es texto libre puro para el encabezado del PDF —
+    // no afecta montos ni renderizado en pantalla, solo se guarda. Mismo
+    // guardado silencioso (sin toast) que los inputs de tipo de cambio de
+    // arriba, para no interrumpir al vendedor mientras escribe.
+    async function saveNote(payload) {
+      try {
+        await AU.request(config.routes.currency, { method: "PUT", body: payload });
+      } catch (err) {
+        AU.toast.error((err.data && err.data.message) || "No se pudo guardar");
       }
     }
 
@@ -169,6 +182,40 @@ window.AU = window.AU || {};
         AU.debounce(() => save({ exchange_rate_mxn_usd: rateMxnUsdInput.value }), 500)
       );
     }
+    if (tiempoEntregaGeneralInput) {
+      tiempoEntregaGeneralInput.addEventListener(
+        "input",
+        AU.debounce(() => saveNote({ tiempo_entrega_general: tiempoEntregaGeneralInput.value }), 500)
+      );
+    }
+  }
+
+  /* ---------------------------------------------------------------- *
+   * Envío — "gratis" no hace nada; "con costo" agrega el monto como una
+   * partida real (misma ruta que "Agregar personalizado" en storeItem()),
+   * así que después se ve/edita/borra en Partidas como cualquier otra línea.
+   * ---------------------------------------------------------------- */
+
+  function wireShippingControls() {
+    const typeSelect = AU.qs("[data-au-quote-shipping-type]");
+    const costWrap = AU.qs("[data-au-quote-shipping-cost-wrap]");
+    const costInput = AU.qs("[data-au-quote-shipping-cost]");
+    const addBtn = AU.qs("[data-au-quote-shipping-add]");
+    if (!typeSelect || !costWrap || !costInput || !addBtn) return;
+
+    typeSelect.addEventListener("change", () => {
+      costWrap.style.display = typeSelect.value === "con_costo" ? "block" : "none";
+    });
+
+    addBtn.addEventListener("click", async () => {
+      const cost = parseFloat(costInput.value);
+      if (!cost || cost <= 0) {
+        AU.toast.error("Captura un costo de envío válido.");
+        return;
+      }
+      await addItem({ nombre: "Envío", cantidad: 1, precio_unitario: cost });
+      costInput.value = "";
+    });
   }
 
   /* ---------------------------------------------------------------- *
@@ -292,7 +339,14 @@ window.AU = window.AU || {};
           <input type="number" min="1" step="1" class="au-input au-quote-qty-input"
                  value="${item.cantidad}" data-au-quote-qty="${item.id}">
         </td>
-        <td class="au-text-right au-mono">${formatDisplayMoney(toDisplayUnitAmount(item))}</td>
+        <td class="au-text-right au-mono">
+          ${formatDisplayMoney(toDisplayUnitAmount(item))}
+          ${
+            item.is_manual
+              ? `<button type="button" class="au-btn au-btn-sm au-btn-plain" data-au-quote-edit-price="${item.id}" aria-label="Editar precio" title="Editar precio"><i class="fas fa-pen"></i></button>`
+              : ""
+          }
+        </td>
         <td class="au-text-right au-mono" data-au-quote-item-subtotal="${item.id}">${formatDisplayMoney(toDisplaySubtotalAmount(item))}</td>
         <td class="au-col-actions">
           <button type="button" class="au-btn au-btn-sm au-btn-critical" data-au-quote-remove="${item.id}" aria-label="Quitar">
@@ -381,6 +435,42 @@ window.AU = window.AU || {};
     }
   }
 
+  /*
+   * Solo partidas manuales (item.is_manual — personalizado o "Envío", ver
+   * storeItem()) traen el botón de editar precio (ver renderItems()); el
+   * servidor igual lo rechaza con 422 si se intenta en una de catálogo, esto
+   * es solo para no ofrecer una acción que va a fallar. currentValue usa
+   * toDisplayUnitAmount() para que el vendedor edite el monto en la moneda
+   * que está viendo, no el MXN crudo interno.
+   */
+  async function editPrecio(itemId) {
+    const item = items.find((i) => String(i.id) === String(itemId));
+    if (!item) return;
+
+    const value = await AU.promptMonto({
+      title: item.nombre ? `Precio unitario — ${item.nombre}` : "Precio unitario",
+      currentValue: toDisplayUnitAmount(item),
+    });
+    if (value === undefined) return; // cancelado
+
+    if (!config.routes.itemBase) return;
+    try {
+      const data = await AU.request(`${config.routes.itemBase}/${itemId}`, { method: "PUT", body: { precio_unitario: value } });
+      const idx = items.findIndex((i) => String(i.id) === String(itemId));
+      if (idx !== -1) {
+        items[idx].precio_unitario = data.item.precio_unitario;
+        items[idx].precio_unitario_origen = data.item.precio_unitario_origen;
+        items[idx].moneda_origen = data.item.moneda_origen;
+        items[idx].subtotal = data.item.subtotal;
+      }
+      renderItems();
+      applyServerTotals(data.total);
+      AU.toast.success("Precio actualizado");
+    } catch (err) {
+      AU.toast.error((err.data && err.data.message) || "No se pudo actualizar el precio");
+    }
+  }
+
   async function removeItem(itemId) {
     if (!config.routes.itemBase) return;
     try {
@@ -416,6 +506,10 @@ window.AU = window.AU || {};
 
     AU.on(tbody, "click", "[data-au-quote-edit-eta]", (e, target) => {
       editTiempoEntrega(target.getAttribute("data-au-quote-edit-eta"));
+    });
+
+    AU.on(tbody, "click", "[data-au-quote-edit-price]", (e, target) => {
+      editPrecio(target.getAttribute("data-au-quote-edit-price"));
     });
   }
 
@@ -791,4 +885,5 @@ window.AU = window.AU || {};
   wireManualItemButton();
   wireFinalizeButton();
   wireCurrencyControls();
+  wireShippingControls();
 })();

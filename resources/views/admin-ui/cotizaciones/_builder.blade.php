@@ -34,6 +34,7 @@
                     'es_pendiente' => (bool) $item->es_pendiente,
                     'tiempo_entrega' => $item->tiempo_entrega,
                     'subtotal' => (float) $item->subtotal,
+                    'is_manual' => is_null($item->product_id) && is_null($item->product_variant_combination_id),
                 ];
             })->all()
             : [],
@@ -209,6 +210,44 @@
                     @endif
                     <span class="au-help-text">Se aplicará solo a los productos cuya moneda en Aspel sea MXN (no afecta a los que ya están en USD).</span>
                 </div>
+
+                {{-- Fecha real (no texto libre), sin ningún valor calculado
+                     detrás — antes esto salía automático y duplicaba por
+                     error la fecha de creación de la cotización. Ahora el
+                     vendedor la captura con el selector nativo del navegador;
+                     si se deja vacía, pdf.blade.php no imprime esa línea. --}}
+                <div class="au-field" style="margin-bottom:10px">
+                    <label class="au-label">Tiempo de entrega (encabezado del PDF)</label>
+                    @if ($isEdit)
+                        <input type="date" class="au-input" data-au-quote-tiempo-entrega-general
+                               value="{{ $cotizacion->tiempo_entrega_general?->format('Y-m-d') ?? '' }}">
+                    @else
+                        <input type="date" class="au-input" placeholder="Podrás capturarla al crear la cotización" disabled>
+                    @endif
+                </div>
+                {{-- Envío: "gratis" no agrega nada; "con costo" agrega el monto
+                     como una partida real de la cotización (misma ruta que
+                     "Agregar personalizado" en storeItem()) — ya NO es una
+                     leyenda de texto en el pie del PDF, así que se ve/edita/
+                     borra en la tabla de Partidas igual que cualquier otra
+                     línea. --}}
+                @if ($isEdit)
+                    <div class="au-field" style="margin-bottom:10px">
+                        <label class="au-label">Envío</label>
+                        <select class="au-select" data-au-quote-shipping-type>
+                            <option value="gratis">Envío gratis</option>
+                            <option value="con_costo">Envío con costo</option>
+                        </select>
+                        <div data-au-quote-shipping-cost-wrap style="display:none;margin-top:8px">
+                            <div style="display:flex;gap:8px">
+                                <input type="number" min="0" step="0.01" class="au-input" style="flex:1"
+                                       data-au-quote-shipping-cost placeholder="Costo de envío ({{ $cotizacion->currency }})">
+                                <button type="button" class="au-btn au-btn-sm au-btn-primary" data-au-quote-shipping-add>Agregar</button>
+                            </div>
+                        </div>
+                    </div>
+                @endif
+
                 <div class="au-quote-summary-count" data-au-quote-summary-count>0 artículos</div>
                 <div class="au-quote-summary-total" data-au-quote-summary-total>{{ "$0.00" }}</div>
                 @if ($isEdit && $cotizacion->status === 'borrador')

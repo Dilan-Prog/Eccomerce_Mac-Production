@@ -223,4 +223,56 @@ window.AU = window.AU || {};
         if (e.target === overlay) finish(undefined);
       });
     });
+
+  /**
+   * Modal simple para capturar/editar un monto en dinero (ej. el precio
+   * unitario de una partida manual de cotización — ver
+   * public/admin-ui/js/cotizaciones/builder.js::editPrecio()). Devuelve el
+   * número (float) ya capturado, o undefined si se cancela.
+   */
+  AU.promptMonto = ({ title, currentValue }) =>
+    new Promise((resolve) => {
+      const overlay = document.createElement("div");
+      overlay.className = "au-modal-overlay";
+      overlay.innerHTML = `
+        <div class="au-modal" role="dialog" aria-modal="true">
+          <div class="au-modal-head">
+            <div class="au-modal-icon">&#128176;</div>
+            <div style="display:flex;flex-direction:column;gap:6px">
+              <div class="au-modal-title"></div>
+            </div>
+          </div>
+          <div class="au-field">
+            <label class="au-label">Monto</label>
+            <input type="number" min="0" step="0.01" class="au-input" data-monto-value>
+          </div>
+          <div class="au-modal-actions">
+            <button type="button" class="au-btn au-modal-cancel">Cancelar</button>
+            <button type="button" class="au-btn au-btn-primary au-modal-confirm">Guardar</button>
+          </div>
+        </div>`;
+      overlay.querySelector(".au-modal-title").textContent = title || "Monto";
+      overlay.querySelector("[data-monto-value]").value = currentValue != null ? currentValue : "";
+
+      (document.querySelector(".admin-ui-v2") || document.body).appendChild(overlay);
+      requestAnimationFrame(() => overlay.classList.add("is-open"));
+
+      const finish = (value) => {
+        destroy(overlay);
+        resolve(value);
+      };
+
+      overlay.querySelector(".au-modal-cancel").addEventListener("click", () => finish(undefined));
+      overlay.querySelector(".au-modal-confirm").addEventListener("click", () => {
+        const value = parseFloat(overlay.querySelector("[data-monto-value]").value);
+        if (isNaN(value) || value < 0) {
+          AU.toast.error("Captura un monto válido.");
+          return;
+        }
+        finish(value);
+      });
+      overlay.addEventListener("click", (e) => {
+        if (e.target === overlay) finish(undefined);
+      });
+    });
 })();

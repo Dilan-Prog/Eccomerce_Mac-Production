@@ -716,19 +716,35 @@ class AdminCotizacionController extends Controller
                 'es_pendiente' => $item->es_pendiente,
                 'tiempo_entrega' => $item->tiempo_entrega,
                 'subtotal' => (float) $item->subtotal,
+                // Sin product_id/combination_id -> partida manual (personalizado
+                // o envío) -> su precio se puede editar libremente en
+                // updateItem(); una partida de catálogo no, para no saltarse el
+                // candado de precio mínimo/autorización de storeItem().
+                'is_manual' => is_null($item->product_id) && is_null($item->product_variant_combination_id),
             ])->values(),
             'total' => $totals,
         ]);
     }
 
-    /** Updates only the quantity of an existing line item (re-add to change product). */
     /**
-     * `cantidad` y `tiempo_entrega` se validan con `sometimes` porque cada
-     * uno se edita por separado desde el builder (input de cantidad vs.
-     * botón de lápiz de tiempo de entrega) — solo se actualiza lo que
-     * realmente vino en el request. `tiempo_entrega` es editable en
-     * cualquier partida, no solo en las `es_pendiente`: no la toca esta
-     * ruta, es una nota independiente (ver builder.js::renderTiempoEntregaBlock()).
+     * `cantidad`, `tiempo_entrega` y `precio_unitario` se validan con
+     * `sometimes` porque cada uno se edita por separado desde el builder
+     * (input de cantidad vs. botón de lápiz de tiempo de entrega vs. botón
+     * de lápiz de precio) — solo se actualiza lo que realmente vino en el
+     * request. `tiempo_entrega` es editable en cualquier partida, no solo
+     * en las `es_pendiente`: no la toca esta ruta, es una nota independiente
+     * (ver builder.js::renderTiempoEntregaBlock()).
+     *
+     * `precio_unitario` SOLO es editable en partidas manuales (sin
+     * product_id/product_variant_combination_id — personalizado o envío,
+     * ver storeItem()): una partida de catálogo ya pasó por el sistema de
+     * tiers/precio mínimo con su candado de autorización, y editar el
+     * precio aquí directamente lo saltaría. Mismo passthrough de moneda que
+     * storeItem() usa para partidas manuales: si la cotización se muestra en
+     * USD, el monto que manda el cliente se interpreta como USD (se guarda
+     * crudo en precio_unitario_origen para el passthrough exacto de
+     * displayItemAmount()) y se normaliza a MXN para precio_unitario; si no,
+     * se guarda tal cual.
      */
     public function updateItem(Request $request, Cotizacion $cotizacion, CotizacionItem $item)
     {
@@ -738,10 +754,34 @@ class AdminCotizacionController extends Controller
         $validated = $request->validate([
             'cantidad' => ['sometimes', 'required', 'integer', 'min:1'],
             'tiempo_entrega' => ['sometimes', 'nullable', 'string', 'max:255'],
+            'precio_unitario' => ['sometimes', 'required', 'numeric', 'min:0'],
         ]);
+
+        if (array_key_exists('precio_unitario', $validated)) {
+            $isManual = is_null($item->product_id) && is_null($item->product_variant_combination_id);
+            abort_unless($isManual, 422, 'Solo se puede editar el precio de partidas manuales (personalizado/envío).');
+
+            $rawPrecio = (float) $validated['precio_unitario'];
+            if ($cotizacion->currency === 'USD') {
+                $item->precio_unitario = CotizacionExchange::normalizeToMxn(
+                    $rawPrecio,
+                    'USD',
+                    CotizacionExchange::effectiveUsdToMxnRate($cotizacion)
+                );
+                $item->moneda_origen = 'USD';
+                $item->precio_unitario_origen = $rawPrecio;
+            } else {
+                $item->precio_unitario = round($rawPrecio, 2);
+                $item->moneda_origen = null;
+                $item->precio_unitario_origen = null;
+            }
+        }
 
         if (array_key_exists('cantidad', $validated)) {
             $item->cantidad = (int) $validated['cantidad'];
+        }
+
+        if (array_key_exists('precio_unitario', $validated) || array_key_exists('cantidad', $validated)) {
             $item->subtotal = round($item->precio_unitario * $item->cantidad, 2);
         }
 
@@ -762,6 +802,9 @@ class AdminCotizacionController extends Controller
             'item' => [
                 'id' => $item->id,
                 'cantidad' => $item->cantidad,
+                'precio_unitario' => (float) $item->precio_unitario,
+                'precio_unitario_origen' => $item->precio_unitario_origen !== null ? (float) $item->precio_unitario_origen : null,
+                'moneda_origen' => $item->moneda_origen,
                 'subtotal' => (float) $item->subtotal,
                 'tiempo_entrega' => $item->tiempo_entrega,
                 'es_pendiente' => (bool) $item->es_pendiente,
@@ -791,12 +834,16 @@ class AdminCotizacionController extends Controller
     }
 
     /**
-     * Sets the quote's display currency (MXN/USD) and/or its two manual
-     * exchange rate overrides — per-quote settings, entered by the vendor
-     * (or defaulted from Configuración General, see
-     * App\Support\CotizacionExchange), entirely separate from Aspel's
-     * monedas_aspel rates. cotizacion_items.precio_unitario is never touched
-     * by this directly: every price is always stored in raw MXN.
+     * Sets the quote's display currency (MXN/USD), its two manual exchange
+     * rate overrides, and its free-text PDF header note — all per-quote
+     * settings entered by the vendor, saved via the same debounced-input
+     * pattern in builder.js (wireCurrencyControls()). Currency/exchange rate
+     * behavior unchanged — see original notes below. `tiempo_entrega_general`
+     * (encabezado del PDF) reemplaza lo que antes era un valor fijo en
+     * pdf.blade.php (duplicaba por error la fecha de creación) — ahora el
+     * vendedor lo captura a mano; si se deja vacío, pdf.blade.php no imprime
+     * esa línea. (El costo de envío ya NO vive aquí — ver storeItem(): se
+     * agrega como una partida real, igual que un producto personalizado.)
      *
      * `exchange_rate` (pesos por dólar, USD→MXN) is no longer cleared when
      * currency goes back to MXN — unlike before, it's now also used by
@@ -813,6 +860,7 @@ class AdminCotizacionController extends Controller
             'currency' => ['sometimes', 'in:MXN,USD'],
             'exchange_rate' => ['sometimes', 'nullable', 'numeric', 'min:0.0001'],
             'exchange_rate_mxn_usd' => ['sometimes', 'nullable', 'numeric', 'min:0.0001'],
+            'tiempo_entrega_general' => ['sometimes', 'nullable', 'date'],
         ]);
 
         if (array_key_exists('currency', $validated)) {
@@ -823,6 +871,9 @@ class AdminCotizacionController extends Controller
         }
         if (array_key_exists('exchange_rate_mxn_usd', $validated)) {
             $cotizacion->exchange_rate_mxn_usd = $validated['exchange_rate_mxn_usd'];
+        }
+        if (array_key_exists('tiempo_entrega_general', $validated)) {
+            $cotizacion->tiempo_entrega_general = $validated['tiempo_entrega_general'];
         }
         $cotizacion->save();
 
@@ -842,6 +893,7 @@ class AdminCotizacionController extends Controller
                 'currency' => $cotizacion->currency,
                 'exchange_rate' => $cotizacion->exchange_rate ? (float) $cotizacion->exchange_rate : null,
                 'exchange_rate_mxn_usd' => $cotizacion->exchange_rate_mxn_usd ? (float) $cotizacion->exchange_rate_mxn_usd : null,
+                'tiempo_entrega_general' => $cotizacion->tiempo_entrega_general?->format('Y-m-d'),
             ],
         ]);
     }

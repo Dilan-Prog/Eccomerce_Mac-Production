@@ -90,7 +90,11 @@
             <div><span class="lbl">COTIZACIÓN No.:</span></div>
             <div class="folio-val">{{ $cotizacion->folio }}</div>
             <div class="block"><span class="lbl">Fecha</span><br>{{ $cotizacion->created_at->format('d/m/Y') }}</div>
-            <div class="block"><span class="lbl">Tiempo de entrega</span><br>{{ $cotizacion->created_at->format('d/m/Y') }}</div>
+            @if (!empty($cotizacion->tiempo_entrega_general))
+                {{-- Fecha capturada por el vendedor (AdminCotizacionController::updateCurrency()) —
+                     sin ningún valor por defecto; antes esto duplicaba por error la fecha de creación. --}}
+                <div class="block"><span class="lbl">Tiempo de entrega</span><br>{{ $cotizacion->tiempo_entrega_general->format('d/m/Y') }}</div>
+            @endif
             <div class="block"><span class="lbl">Condiciones de pago</span><br>CONTADO</div>
         </td>
     </tr>
@@ -208,9 +212,12 @@
     <tr><td class="lbl">Total ({{ $cotizacion->currency }})</td><td class="val">{{ number_format($displayTotal, 2, '.', ',') }}</td></tr>
 </table>
 
-@if ($cotizacion->total >= 2299)
-<div class="note-line">TIEMPO DE ENTREGA INMEDIATA, ENVIO GRATIS</div>
-@endif
+{{-- El costo de envío (si aplica) ya no es una leyenda fija en el pie —
+     antes decía "TIEMPO DE ENTREGA INMEDIATA, ENVIO GRATIS" si el total
+     >= $2,299 MXN, lo cual podía contradecir el tiempo de entrega real de
+     cada producto (ver arriba). Ahora, si el vendedor eligió "Envío con
+     costo" en el builder, ese monto ya viene como una partida más en la
+     tabla de productos de arriba — no necesita tratamiento aparte aquí. --}}
 
 <div class="vigencia-line">
     <span class="lbl">La cotización será vigente hasta el día</span>
