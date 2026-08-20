@@ -380,12 +380,17 @@ window.AU = window.AU || {};
       // El servidor detectó que la cantidad pedida supera el stock disponible
       // y necesita que el vendedor capture manualmente el tiempo de entrega
       // de la parte pendiente (no hay fuente automática de ETA hoy) — se
-      // pide con un prompt nativo y se reintenta la misma petición con ese
-      // dato ya incluido.
+      // pide con el mismo modal que usa editTiempoEntrega(), sin la opción
+      // "Inmediato" (por definición esa cantidad no está disponible ahora),
+      // y se reintenta la misma petición con ese dato ya incluido.
       if (err.data && err.data.code === "needs_tiempo_entrega") {
-        const nota = window.prompt(err.data.message + "\n\nTiempo de entrega para lo pendiente:");
-        if (nota && nota.trim()) {
-          await addItem({ ...payload, tiempo_entrega: nota.trim() });
+        const nota = await AU.promptTiempoEntrega({
+          title: "Tiempo de entrega para lo pendiente",
+          text: err.data.message,
+          allowInmediato: false,
+        });
+        if (nota) {
+          await addItem({ ...payload, tiempo_entrega: nota });
           return;
         }
         AU.toast.error("Cancelado: se necesita el tiempo de entrega para agregar el producto.");

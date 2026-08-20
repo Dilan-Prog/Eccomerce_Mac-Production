@@ -151,18 +151,31 @@ window.AU = window.AU || {};
 
   /**
    * Modal para capturar/editar el "tiempo de entrega" de una partida de
-   * cotización (número + unidad — días/semanas/meses/años) en vez de un
-   * campo de texto libre. Usado tanto para partidas pendientes de surtir
-   * como para cualquier otra partida (con stock completo o personalizada) —
-   * ver public/admin-ui/js/cotizaciones/builder.js. Devuelve la cadena ya
-   * compuesta (ej. "5 días") o undefined si se cancela.
+   * cotización. Primero se elige Inmediato/Personalizado con un select; solo
+   * "Personalizado" revela los campos de número + unidad (días/semanas/
+   * meses/años). Usado tanto para partidas pendientes de surtir como para
+   * cualquier otra partida (con stock completo o personalizada) — ver
+   * public/admin-ui/js/cotizaciones/builder.js.
+   *
+   * opts.allowInmediato (default true): en false oculta el select de modo y
+   * va directo a los campos de número/unidad — usado cuando storeItem()
+   * exige un tiempo de entrega para la parte de una partida que quedó
+   * pendiente de surtir (ahí "Inmediato" no aplica: por definición esa
+   * cantidad no está disponible ahora). opts.text: línea informativa opcional
+   * bajo el título (ej. cuántas piezas hay disponibles vs. pendientes).
+   *
+   * Devuelve "Inmediato", la cadena compuesta (ej. "5 días"), o undefined si
+   * se cancela.
    */
-  AU.promptTiempoEntrega = ({ title, currentValue }) =>
+  AU.promptTiempoEntrega = ({ title, text, currentValue, allowInmediato = true }) =>
     new Promise((resolve) => {
       const match = (currentValue || "").match(/^(\d+)\s*(d[ií]as?|semanas?|mes(?:es)?|a[ñn]os?)/i);
       const unitMap = { d: "dias", s: "semanas", m: "meses", a: "anios" };
       const prefillNumber = match ? match[1] : "";
       const prefillUnit = match ? unitMap[match[2][0].toLowerCase()] : "dias";
+      // Sin match numérico: si ya había un valor que no es "Inmediato" (o no
+      // aplica Inmediato), arranca directo en modo personalizado.
+      const initialMode = allowInmediato && (!currentValue || currentValue === "Inmediato") ? "inmediato" : "personalizado";
 
       const overlay = document.createElement("div");
       overlay.className = "au-modal-overlay";
@@ -172,10 +185,22 @@ window.AU = window.AU || {};
             <div class="au-modal-icon">&#128337;</div>
             <div style="display:flex;flex-direction:column;gap:6px">
               <div class="au-modal-title"></div>
+              <div class="au-modal-text"></div>
             </div>
           </div>
-          <div class="au-field">
-            <label class="au-label">Tiempo de entrega</label>
+          ${
+            allowInmediato
+              ? `<div class="au-field" style="margin-bottom:${initialMode === "personalizado" ? "10px" : "2px"}">
+                  <label class="au-label">Tiempo de entrega</label>
+                  <select class="au-select" data-eta-mode>
+                    <option value="inmediato">Inmediato</option>
+                    <option value="personalizado">Personalizado</option>
+                  </select>
+                </div>`
+              : ""
+          }
+          <div class="au-field" data-eta-custom-wrap style="display:${initialMode === "personalizado" ? "block" : "none"}">
+            ${allowInmediato ? "" : '<label class="au-label">Tiempo de entrega</label>'}
             <div style="display:flex;gap:8px">
               <input type="number" min="1" step="1" class="au-input" style="flex:1" data-eta-number>
               <select class="au-select" style="flex:1" data-eta-unit>
@@ -192,8 +217,18 @@ window.AU = window.AU || {};
           </div>
         </div>`;
       overlay.querySelector(".au-modal-title").textContent = title || "Tiempo de entrega";
+      overlay.querySelector(".au-modal-text").textContent = text || "";
       overlay.querySelector("[data-eta-number]").value = prefillNumber;
       overlay.querySelector("[data-eta-unit]").value = prefillUnit;
+
+      const modeSelect = overlay.querySelector("[data-eta-mode]");
+      const customWrap = overlay.querySelector("[data-eta-custom-wrap]");
+      if (modeSelect) {
+        modeSelect.value = initialMode;
+        modeSelect.addEventListener("change", () => {
+          customWrap.style.display = modeSelect.value === "personalizado" ? "block" : "none";
+        });
+      }
 
       (document.querySelector(".admin-ui-v2") || document.body).appendChild(overlay);
       requestAnimationFrame(() => overlay.classList.add("is-open"));
@@ -205,6 +240,10 @@ window.AU = window.AU || {};
 
       overlay.querySelector(".au-modal-cancel").addEventListener("click", () => finish(undefined));
       overlay.querySelector(".au-modal-confirm").addEventListener("click", () => {
+        if (modeSelect && modeSelect.value === "inmediato") {
+          finish("Inmediato");
+          return;
+        }
         const num = parseInt(overlay.querySelector("[data-eta-number]").value, 10);
         if (!num || num < 1) {
           AU.toast.error("Captura un número válido.");

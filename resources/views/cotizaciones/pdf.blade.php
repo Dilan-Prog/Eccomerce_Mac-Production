@@ -219,6 +219,15 @@
      costo" en el builder, ese monto ya viene como una partida más en la
      tabla de productos de arriba — no necesita tratamiento aparte aquí. --}}
 
+@unless (collect($cotizacion->productos_json)->contains(fn ($p) => ($p['nombre'] ?? null) === 'Envío'))
+    {{-- Sin partida "Envío" en la cotización = el vendedor dejó/eligió
+         "Envío gratis" en el builder (ver storeItem() y Envío#4 arriba).
+         Si SÍ hay una partida "Envío" (envío con costo), no se imprime nada
+         aquí — el monto ya se ve en la tabla de productos, no hace falta
+         repetirlo como leyenda. --}}
+    <div class="note-line">ENVÍO GRATIS</div>
+@endunless
+
 <div class="vigencia-line">
     <span class="lbl">La cotización será vigente hasta el día</span>
     <span class="val">{{ $cotizacion->created_at->copy()->addDays(15)->format('d/m/Y') }}</span>
