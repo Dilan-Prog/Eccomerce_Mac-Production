@@ -369,6 +369,11 @@
     height: 64px;
     opacity: 0.6;
   }
+  .team-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
   .team-info {
     padding: 20px;
     text-align: center;
@@ -855,7 +860,7 @@
           <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
         </div>
         <div class="team-info">
-          <div class="team-name">[Nombre del Director]</div>
+          <div class="team-name">Brenda Rodriguez</div>
           <div class="team-role">Director General</div>
           <p class="team-specialty">7+ años liderando proyectos industriales en el norte de México.</p>
         </div>
@@ -867,9 +872,9 @@
           <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
         </div>
         <div class="team-info">
-          <div class="team-name">[Nombre del Ingeniero]</div>
-          <div class="team-role">Ingeniero de Aplicación</div>
-          <p class="team-specialty">Especialista en transmisores y sistemas de control Honeywell.</p>
+          <div class="team-name">Max Diaz</div>
+          <div class="team-role">Product Manager</div>
+          <p class="team-specialty">Gestiona el catálogo de productos, precios y disponibilidad en la plataforma.</p>
         </div>
       </div>
 
@@ -879,7 +884,7 @@
           <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
         </div>
         <div class="team-info">
-          <div class="team-name">[Nombre del Ejecutivo]</div>
+          <div class="team-name">Angel Navarro</div>
           <div class="team-role">Ventas y Cotizaciones</div>
           <p class="team-specialty">Atención técnica-comercial. Tu primer contacto en el equipo.</p>
         </div>
@@ -887,13 +892,12 @@
 
       <div class="team-card">
         <div class="team-photo">
-          <div class="placeholder-tag">Foto Real</div>
-          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+          <img src="{{ asset('fotos-nosotros/fotodilan.webp') }}" alt="Dilan Garcia — Marketing y Sistemas">
         </div>
         <div class="team-info">
-          <div class="team-name">[Nombre del Coordinador]</div>
-          <div class="team-role">Logística y Soporte</div>
-          <p class="team-specialty">Coordina envíos, garantías y soporte post-venta.</p>
+          <div class="team-name">Dilan Garcia</div>
+          <div class="team-role">Marketing y Sistemas</div>
+          <p class="team-specialty">Estrategia digital, campañas y mantenimiento de la plataforma en línea.</p>
         </div>
       </div>
 
