@@ -1,7 +1,7 @@
 @extends('frontend.layouts.master')
 
 @section('title')
-    Instalacion de Controles de Temperatura
+    Calibraciones EMA
 @endsection
 @section('content')
     <main>

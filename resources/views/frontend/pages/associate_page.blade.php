@@ -1,7 +1,7 @@
 @extends('frontend.layouts.master')
 
 @section('title')
-    {{ $settings->site_name }} || Calibracion y Puesta en Marcha
+    {{ $settings->site_name }} || Asociados y Revendedores
 @endsection
 
 @section('content')

@@ -1,7 +1,7 @@
 @extends('frontend.layouts.master')
 
 @section('title')
-    Instalacion de Controles de Temperatura
+    PLC — Configuración, Instalación y Llave en Mano
 @endsection
 @section('content')
     <main>

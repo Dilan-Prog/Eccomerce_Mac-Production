@@ -1,7 +1,7 @@
 @extends('frontend.layouts.master')
 
 @section('title')
-    Instalacion de Controles de Temperatura
+    Instalación de Medidores de Flujo
 @endsection
 @section('content')
     <main>

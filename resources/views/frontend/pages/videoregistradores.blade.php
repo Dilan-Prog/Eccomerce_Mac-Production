@@ -1,7 +1,7 @@
 @extends('frontend.layouts.master')
 
 @section('title')
-    Instalacion de Controles de Temperatura
+    Instalación de Videoregistradores
 @endsection
 @section('content')
     <main>
