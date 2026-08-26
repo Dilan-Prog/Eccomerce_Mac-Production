@@ -31,19 +31,28 @@ probar.
   "Calibracion y Puesta en Marcha" (copiado de otra página). Corregido a
   "Asociados y Revendedores".
 
-## Dejado a propósito sin tocar (declinado explícitamente antes)
+- **Prioridad media — años de experiencia inconsistentes.** Se encontraron
+  6 menciones con 4 cifras distintas (8, "7+", "más de 20" y "más de 7")
+  repartidas entre Inicio (2 lugares), Nosotros (2 lugares), Login (2
+  lugares) y el meta-description del layout maestro. El cliente confirmó
+  que la cifra real es **8 años** — las 6 menciones quedaron unificadas:
+  - `resources/views/frontend/home/sections/banner-slider.blade.php` (ya decía 8, sin cambios)
+  - `resources/views/frontend/home/sections/categories-why-us.blade.php` (2 menciones)
+  - `resources/views/frontend/pages/about.blade.php` (2 menciones — se dejó intacta la bio de un empleado que menciona su propia experiencia personal, no el dato de la empresa)
+  - `resources/views/auth/login.blade.php` (2 menciones)
+  - `resources/views/frontend/layouts/master.blade.php` (meta-description)
 
-- **Años de experiencia inconsistentes** (Inicio dice "8 años", Nosotros
-  "7+ años", Login "más de 20 años", y el meta-description del layout
-  maestro dice "más de 7 años" — un **cuarto** valor distinto encontrado de
-  paso). El usuario pidió explícitamente no tocar este texto. Falta que el
-  negocio confirme la cifra real antes de que alguien lo alinee en las 4
-  ubicaciones.
-- **Errores de consola JS sitewide** (`prefixesArray is not defined`,
-  `require is not defined`, ambos originados en el loader vendorizado de
-  Font Awesome Kit en `public/frontend/js/Font-Awesome.js`, flag
-  `autoA11y`). El usuario pidió explícitamente no tocarlo. No rompe
-  funcionalidad visible, solo ensucia la consola.
+- **Errores de consola JS sitewide — parcialmente corregido.**
+  `ReferenceError: prefixesArray is not defined` (el más frecuente, ~8 por
+  carga) venía del flag `autoA11y` del kit vendorizado de Font Awesome en
+  `public/frontend/js/Font-Awesome.js` — se desactivó y se regeneró el
+  build (`npm run build`). Verificado: ya no aparece.
+  Queda **sin corregir** `ReferenceError: require is not defined`, que
+  viene del wrapper UMD de `public/frontend/js/slick.min.js` (el carrusel)
+  chocando con cómo Vite/Rollup empaqueta scripts estilo CommonJS. El
+  carrusel sigue funcionando pese al error; arreglarlo de raíz requeriría
+  tocar la configuración de build o parchear el vendor — no se tocó sin
+  autorización explícita.
 
 ## Pendiente — necesita decisión antes de tocarse (alcance mayor al esperado)
 
