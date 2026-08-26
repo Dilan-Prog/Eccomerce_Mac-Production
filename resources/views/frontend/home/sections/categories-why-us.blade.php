@@ -563,10 +563,10 @@
           <div class="why-us-icon">
             <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/></svg>
           </div>
-          <h3>Más de 7 años en la industria</h3>
+          <h3>8 años en la industria</h3>
           <p>Conocemos las necesidades del comprador industrial mexicano. Servimos a plantas, técnicos y revendedores en 25 estados del país.</p>
           <div class="why-us-card-stat">
-            <div class="why-us-card-stat-num">7+ años</div>
+            <div class="why-us-card-stat-num">8 años</div>
             <div class="why-us-card-stat-label">Sirviendo a la industria mexicana</div>
           </div>
         </div>

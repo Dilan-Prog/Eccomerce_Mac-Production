@@ -104,7 +104,7 @@
     @yield('meta_tags')
 
     <meta name="author" content="{{$settings->site_name}}">
-    <meta name="description" content="Distribuidora y Comercializadora de productos Industriales, Expertos en Instrumentación y Automatización Industrial, Distribuidor Autorizado de productos Industriales.Servicios de Instrumentación de Campo mas de 7 años de experiencia.">
+    <meta name="description" content="Distribuidora y Comercializadora de productos Industriales, Expertos en Instrumentación y Automatización Industrial, Distribuidor Autorizado de productos Industriales.Servicios de Instrumentación de Campo con 8 años de experiencia.">
     <meta name="keywords" content="Distribuidor autorizado Honeywell, especialistas en instrumentación, automatización industrial, proveedor Honeywell México, equipos de control industrial, Dominion Electrónica, Electrónica Universal, soluciones industriales, refacciones industriales, sensores industriales">
     <meta name="robots" content="all">
     <meta name="currency" content="MXN">

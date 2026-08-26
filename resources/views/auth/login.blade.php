@@ -139,7 +139,7 @@
         <aside class="auth-sidebar" aria-label="Beneficios Mac Del Norte">
             <div class="auth-sidebar__content">
                 <h2 class="auth-sidebar__headline">Tu proveedor industrial<br>de confianza</h2>
-                <p class="auth-sidebar__sub">Más de 20 años llevando tecnología Honeywell a la industria del noroeste de México.</p>
+                <p class="auth-sidebar__sub">8 años llevando tecnología Honeywell a la industria del noroeste de México.</p>
 
                 <ul class="benefits-list">
                     <li class="benefits-list__item">
@@ -191,7 +191,7 @@
                     </div>
                     <div class="trust-badge">
                         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-                        +20 años
+                        8 años
                     </div>
                     <div class="trust-badge">
                         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>

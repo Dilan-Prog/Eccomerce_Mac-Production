@@ -736,7 +736,7 @@
   <div class="container">
     <div class="about-hero-inner">
       <div class="about-eyebrow">Quiénes somos</div>
-      <h1 class="about-hero-title">7+ años respaldando a la <span class="accent">industria mexicana</span></h1>
+      <h1 class="about-hero-title">8 años respaldando a la <span class="accent">industria mexicana</span></h1>
       <p class="about-hero-sub">
         Más que un distribuidor, somos el aliado técnico que tu planta necesita. Conoce al equipo que está detrás de cada cotización, cada envío y cada solución que entregamos.
       </p>
@@ -754,7 +754,7 @@
           <strong>Mac Del Norte</strong> nació en Monterrey con una misión clara: cerrar la brecha entre las marcas líderes de instrumentación industrial del mundo y las plantas mexicanas que dependen de ellas para operar.
         </p>
         <p>
-          Como <strong>distribuidor autorizado de Honeywell</strong>, hemos pasado más de 7 años acompañando a ingenieros de mantenimiento, jefes de planta y compradores industriales en sus proyectos más críticos —desde la cotización inicial hasta la puesta en marcha y el soporte post-venta.
+          Como <strong>distribuidor autorizado de Honeywell</strong>, hemos pasado 8 años acompañando a ingenieros de mantenimiento, jefes de planta y compradores industriales en sus proyectos más críticos —desde la cotización inicial hasta la puesta en marcha y el soporte post-venta.
         </p>
         <p>
           No somos un catálogo más. Somos el equipo que contesta el WhatsApp un sábado en la noche cuando tu controlador falló, el que envía el datasheet antes que la competencia, y el que se asegura de que tu transmisor llegue calibrado y listo para operar.
