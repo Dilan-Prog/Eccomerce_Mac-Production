@@ -64,7 +64,7 @@ class AspelSync extends Model
         'mat_peli',
         
         // Compatibilidad
-        'nombre', 'price', 'stock', 'remote_updated_at', 'sync_hash'
+        'price', 'stock', 'remote_updated_at', 'sync_hash'
     ];
 
     protected $casts = [

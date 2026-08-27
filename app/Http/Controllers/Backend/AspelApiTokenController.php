@@ -19,7 +19,10 @@ class AspelApiTokenController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('can-access-module:aspel-integracion');
+        $this->middleware('can-access-module:aspel-integracion,view')->only(['index', 'tableData']);
+        $this->middleware('can-access-module:aspel-integracion,create')->only(['createFragment', 'store']);
+        $this->middleware('can-access-module:aspel-integracion,edit')->only(['editFragment', 'update', 'regenerate']);
+        $this->middleware('can-access-module:aspel-integracion,delete')->only(['destroy']);
     }
 
     public function index()

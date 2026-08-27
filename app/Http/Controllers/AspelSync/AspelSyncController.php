@@ -22,8 +22,11 @@ class AspelSyncController extends Controller
         // requiere $request->user() (que ahí siempre es null) y truena con
         // 500 en vez de proteger nada — la protección real pendiente es un
         // token compartido, no este middleware. index()/tableData()/export()
-        // sí son del panel admin y sí deben quedar protegidos.
-        $this->middleware('can-access-module:aspel')->except(['sync']);
+        // sí son del panel admin y sí deben quedar protegidos, con permisos
+        // por acción (ver/exportar) — este controlador no tiene crear/editar/
+        // borrar, es un listado de solo lectura sincronizado desde Aspel.
+        $this->middleware('can-access-module:aspel,view')->only(['index', 'tableData']);
+        $this->middleware('can-access-module:aspel,export')->only(['export']);
     }
 
     public function sync(Request $request)
@@ -193,7 +196,6 @@ class AspelSyncController extends Controller
                         'en_catalogo' => $item['en_catalogo'] ?? null,
                         'id_catalogo' => $item['id_catalogo'] ?? null,
                         'mat_peli' => $item['mat_peli'] ?? null,
-                        'nombre' => $item['descr'] ?? null,
                         'price' => $item['ult_costo'] ?? null,
                         'stock' => $item['exist'] ?? null,
                         'remote_updated_at' => now(),

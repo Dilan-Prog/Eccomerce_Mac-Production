@@ -154,7 +154,7 @@ class RoleController extends Controller
             $role->is_system = false;
             $role->save();
 
-            $this->syncModulePermissions($role, $request->input('modules', []));
+            $this->syncModulePermissions($role, $request->input('modules', []), $request->input('module_actions', []));
 
             return $role;
         });
@@ -204,7 +204,7 @@ class RoleController extends Controller
                 $role->name = $request->name;
                 $role->save();
 
-                $this->syncModulePermissions($role, $request->input('modules', []));
+                $this->syncModulePermissions($role, $request->input('modules', []), $request->input('module_actions', []));
             }
         });
 
@@ -296,11 +296,20 @@ class RoleController extends Controller
         return $slug;
     }
 
-    /** Replaces every role_module_permissions row for $role with the checked, validated module keys. */
-    private function syncModulePermissions(Role $role, array $moduleKeys): void
+    /**
+     * Replaces every role_module_permissions row for $role: $moduleKeys son
+     * los checkboxes planos de los módulos "todo o nada" (validados contra
+     * config('admin-modules')); $moduleActions trae los checkboxes por
+     * acción (Ver/Crear/Editar/Borrar/Exportar) de los 3 módulos granulares
+     * (RoleModulePermission::GRANULAR_MODULE_KEYS), en la forma
+     * module_actions[moduleKey][action]=1.
+     */
+    private function syncModulePermissions(Role $role, array $moduleKeys, array $moduleActions = []): void
     {
         $validKeys = array_keys(config('admin-modules'));
-        $moduleKeys = array_values(array_intersect($moduleKeys, $validKeys));
+        $granularKeys = RoleModulePermission::GRANULAR_MODULE_KEYS;
+
+        $moduleKeys = array_values(array_diff(array_intersect($moduleKeys, $validKeys), $granularKeys));
 
         RoleModulePermission::where('role_id', $role->id)->delete();
 
@@ -310,6 +319,27 @@ class RoleController extends Controller
                 'module_key' => $moduleKey,
                 'can_access' => true,
             ]);
+        }
+
+        foreach ($granularKeys as $moduleKey) {
+            $checked = $moduleActions[$moduleKey] ?? [];
+            $flags = [];
+            foreach (RoleModulePermission::GRANULAR_ACTIONS as $action) {
+                $flags['can_' . $action] = !empty($checked[$action]);
+            }
+
+            // Nada marcado = sin fila, mismo criterio que los demás módulos.
+            if (!array_filter($flags)) {
+                continue;
+            }
+
+            RoleModulePermission::create(array_merge([
+                'role_id' => $role->id,
+                'module_key' => $moduleKey,
+                // can_access refleja "Ver": sin Ver el módulo no es
+                // alcanzable aunque otras acciones estén marcadas.
+                'can_access' => $flags['can_view'],
+            ], $flags));
         }
     }
 }

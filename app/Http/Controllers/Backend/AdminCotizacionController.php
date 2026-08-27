@@ -27,7 +27,17 @@ class AdminCotizacionController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('can-access-module:cotizaciones');
+        $this->middleware('can-access-module:cotizaciones,view')->only(['index', 'tableData', 'show', 'pdf', 'edit']);
+        $this->middleware('can-access-module:cotizaciones,create')->only([
+            'create', 'store', 'storeItem', 'manualItemFragment',
+            'clientsSearch', 'productsSearch', 'resolveAspelClient', 'finalize',
+        ]);
+        $this->middleware('can-access-module:cotizaciones,edit')->only(['updateItem', 'updateCurrency', 'regeneratePdf', 'markSent']);
+        $this->middleware('can-access-module:cotizaciones,delete')->only(['destroyItem']);
+        $this->middleware('can-access-module:cotizaciones,export')->only(['export']);
+        // authorizeMinPrice queda fuera de todos los buckets a propósito: ya
+        // tiene su propio guard más estricto (User::isUnrestrictedAdmin())
+        // dentro del método mismo, no se agrega el sistema de permisos aquí.
     }
 
     public function index(Request $request)
@@ -735,16 +745,18 @@ class AdminCotizacionController extends Controller
      * en las `es_pendiente`: no la toca esta ruta, es una nota independiente
      * (ver builder.js::renderTiempoEntregaBlock()).
      *
-     * `precio_unitario` SOLO es editable en partidas manuales (sin
-     * product_id/product_variant_combination_id — personalizado o envío,
-     * ver storeItem()): una partida de catálogo ya pasó por el sistema de
-     * tiers/precio mínimo con su candado de autorización, y editar el
-     * precio aquí directamente lo saltaría. Mismo passthrough de moneda que
-     * storeItem() usa para partidas manuales: si la cotización se muestra en
-     * USD, el monto que manda el cliente se interpreta como USD (se guarda
-     * crudo en precio_unitario_origen para el passthrough exacto de
-     * displayItemAmount()) y se normaliza a MXN para precio_unitario; si no,
-     * se guarda tal cual.
+     * `precio_unitario` es editable en cualquier partida. En partidas de
+     * catálogo (con product_id/product_variant_combination_id) no hay techo
+     * — se puede subir libremente — pero sí se respeta el mismo piso mínimo
+     * que storeItem() ya aplica a precio_personalizado (CotizacionPricing::
+     * minimoFor($item->sku)), para no abrir un hueco donde editar después
+     * evite el candado de precio mínimo que aplica al agregar. Partidas
+     * manuales (personalizado/envío) siguen sin ninguna restricción de piso.
+     * Mismo passthrough de moneda que storeItem() usa: si la cotización se
+     * muestra en USD, el monto que manda el cliente se interpreta como USD
+     * (se guarda crudo en precio_unitario_origen para el passthrough exacto
+     * de displayItemAmount()) y se normaliza a MXN para precio_unitario; si
+     * no, se guarda tal cual.
      */
     public function updateItem(Request $request, Cotizacion $cotizacion, CotizacionItem $item)
     {
@@ -759,22 +771,40 @@ class AdminCotizacionController extends Controller
 
         if (array_key_exists('precio_unitario', $validated)) {
             $isManual = is_null($item->product_id) && is_null($item->product_variant_combination_id);
-            abort_unless($isManual, 422, 'Solo se puede editar el precio de partidas manuales (personalizado/envío).');
-
             $rawPrecio = (float) $validated['precio_unitario'];
+
             if ($cotizacion->currency === 'USD') {
-                $item->precio_unitario = CotizacionExchange::normalizeToMxn(
+                $newPrecioMxn = CotizacionExchange::normalizeToMxn(
                     $rawPrecio,
                     'USD',
                     CotizacionExchange::effectiveUsdToMxnRate($cotizacion)
                 );
-                $item->moneda_origen = 'USD';
-                $item->precio_unitario_origen = $rawPrecio;
+                $newMonedaOrigen = 'USD';
+                $newPrecioOrigen = $rawPrecio;
             } else {
-                $item->precio_unitario = round($rawPrecio, 2);
-                $item->moneda_origen = null;
-                $item->precio_unitario_origen = null;
+                $newPrecioMxn = round($rawPrecio, 2);
+                $newMonedaOrigen = null;
+                $newPrecioOrigen = null;
             }
+
+            if (!$isManual && $item->sku) {
+                $nativeCurrency = CotizacionExchange::nativeCurrencyForSku($item->sku);
+                $rateUsdMxn = CotizacionExchange::effectiveUsdToMxnRate($cotizacion);
+                $minimo = CotizacionPricing::minimoFor($item->sku);
+                $piso = ($minimo === null || $minimo <= 0) ? 1.0 : $minimo;
+                $piso = CotizacionExchange::normalizeToMxn($piso, $nativeCurrency, $rateUsdMxn);
+
+                if ($newPrecioMxn < $piso) {
+                    return response()->json([
+                        'status' => 'error',
+                        'message' => 'No puedes poner un precio por debajo del precio mínimo.',
+                    ], 422);
+                }
+            }
+
+            $item->precio_unitario = $newPrecioMxn;
+            $item->moneda_origen = $newMonedaOrigen;
+            $item->precio_unitario_origen = $newPrecioOrigen;
         }
 
         if (array_key_exists('cantidad', $validated)) {

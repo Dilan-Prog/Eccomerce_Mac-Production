@@ -63,12 +63,6 @@ class AspelSyncTableQuery extends AdminTableQuery
                 'searchable' => true,
             ],
             [
-                'key' => 'nombre',
-                'label' => 'Nombre Alias',
-                'sortable' => true,
-                'searchable' => true,
-            ],
-            [
                 'key' => 'campo_libre_modelo',
                 'label' => 'Modelo',
                 'sortable' => true,
@@ -122,14 +116,15 @@ class AspelSyncTableQuery extends AdminTableQuery
      * Originally mirrored AspelSyncDataTable's ->filter() closure (cve_art,
      * descr, nombre); campo_libre_modelo added on top so the "Modelo" campo
      * libre (INVE_CLIB01.CAMPLIB3, see migration 2026_08_17_120000) is also
-     * searchable from this listing.
+     * searchable from this listing. `nombre` ("Nombre Alias") was dropped as
+     * a pure mirror of `descr` — see migration
+     * 2026_08_26_120000_drop_nombre_from_aspel_products_table.
      */
     public function search(Builder $query, string $term): Builder
     {
         return $query->where(function (Builder $q) use ($term) {
             $q->where('aspel_products.cve_art', 'like', "%{$term}%")
                 ->orWhere('aspel_products.descr', 'like', "%{$term}%")
-                ->orWhere('aspel_products.nombre', 'like', "%{$term}%")
                 ->orWhere('aspel_products.campo_libre_modelo', 'like', "%{$term}%");
         });
     }

@@ -17,6 +17,13 @@ use Symfony\Component\HttpFoundation\Response;
  * except StaffUserController and RoleController, which manage the
  * permission system itself and instead use a stricter
  * unrestricted-admin-only guard (see those controllers' constructors).
+ *
+ * Optional second argument — `can-access-module:{moduleKey},{action}` —
+ * delegates instead to User::canPerform() for granular Ver/Crear/Editar/
+ * Borrar/Exportar checks. Only meaningful for the 3 modules in
+ * RoleModulePermission::GRANULAR_MODULE_KEYS (aspel, aspel-integracion,
+ * cotizaciones); every other existing single-argument call site is
+ * unaffected ($action stays null, same behavior as before).
  */
 class ModuleAccessMiddleware
 {
@@ -25,9 +32,14 @@ class ModuleAccessMiddleware
      *
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
-    public function handle(Request $request, Closure $next, string $moduleKey): Response
+    public function handle(Request $request, Closure $next, string $moduleKey, ?string $action = null): Response
     {
-        if (!$request->user()->canAccessModule($moduleKey)) {
+        $user = $request->user();
+        $allowed = $action === null
+            ? $user->canAccessModule($moduleKey)
+            : $user->canPerform($moduleKey, $action);
+
+        if (!$allowed) {
             abort(403, 'No tienes acceso a este módulo.');
         }
 

@@ -2,6 +2,11 @@
 @php
     $isSystemRole = isset($role) && $role->is_system;
     $selectedModuleKeys = isset($role) ? $role->allowedModuleKeys() : [];
+    $granularKeys = \App\Models\RoleModulePermission::GRANULAR_MODULE_KEYS;
+    $actionLabels = \App\Models\RoleModulePermission::GRANULAR_ACTION_LABELS;
+    $granularPermissions = isset($role)
+        ? $role->permissions()->whereIn('module_key', $granularKeys)->get()->keyBy('module_key')
+        : collect();
 @endphp
 <form>
     @csrf
@@ -17,6 +22,7 @@
         @endif
         <div class="au-form-grid-3">
             @foreach (config('admin-modules') as $moduleKey => $moduleLabel)
+                @continue(in_array($moduleKey, $granularKeys, true))
                 <label class="au-flex au-gap-2" style="align-items:center;font-weight:400;">
                     <input class="au-checkbox" type="checkbox" name="modules[]" value="{{ $moduleKey }}"
                         {{ in_array($moduleKey, $selectedModuleKeys, true) ? 'checked' : '' }}
@@ -25,5 +31,24 @@
                 </label>
             @endforeach
         </div>
+    </div>
+
+    <div class="au-field">
+        <label class="au-label">Permisos de Aspel (por acción)</label>
+        @foreach ($granularKeys as $moduleKey)
+            @php $perm = $granularPermissions->get($moduleKey); @endphp
+            <div class="au-flex au-gap-2" style="align-items:center;margin-bottom:6px;">
+                <strong style="min-width:180px;">{{ config('admin-modules')[$moduleKey] }}</strong>
+                @foreach ($actionLabels as $action => $label)
+                    <label class="au-flex au-gap-2" style="align-items:center;font-weight:400;">
+                        <input class="au-checkbox" type="checkbox"
+                            name="module_actions[{{ $moduleKey }}][{{ $action }}]" value="1"
+                            {{ $perm && $perm->{'can_' . $action} ? 'checked' : '' }}
+                            {{ $isSystemRole ? 'disabled' : '' }}>
+                        {{ $label }}
+                    </label>
+                @endforeach
+            </div>
+        @endforeach
     </div>
 </form>

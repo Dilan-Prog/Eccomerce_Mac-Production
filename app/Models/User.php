@@ -80,6 +80,25 @@ class User extends Authenticatable
     }
 
     /**
+     * Granular counterpart to canAccessModule(), for the 3 Aspel modules
+     * (see RoleModulePermission::GRANULAR_MODULE_KEYS). $action is one of
+     * RoleModulePermission::GRANULAR_ACTIONS. Same legacy/full-admin and
+     * system-role bypass as canAccessModule() — those users are never
+     * restricted.
+     */
+    public function canPerform(string $moduleKey, string $action): bool
+    {
+        if ($this->role !== 'admin' || !$this->role_id) {
+            return true;
+        }
+        $role = $this->customRole;
+        if (!$role || $role->is_system) {
+            return true;
+        }
+        return $role->canPerformAction($moduleKey, $action);
+    }
+
+    /**
      * Same pattern already used inline in RoleController::__construct() and
      * StaffUserController::__construct() — role==='admin' && role_id===null
      * means "unrestricted admin" (legacy/full admin), as opposed to a

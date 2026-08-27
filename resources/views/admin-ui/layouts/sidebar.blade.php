@@ -106,7 +106,7 @@
         @if ($__auUser->canAccessModule('cotizaciones') || $__auUser->canAccessModule('aspel') || $__auUser->canAccessModule('aspel-integracion'))
         <div class="au-nav-item has-submenu {{ setActive(['admin.cotizaciones.*', 'admin.sync-aspel.*', 'admin.aspel-tokens.*']) ? 'is-active is-open' : '' }}" data-nav-key="aspel-integration">
             <a href="#" class="au-nav-link">
-                <i class="fas fa-network-wired au-nav-icon"></i><span>Aspel Integration</span>
+                <i class="fas fa-network-wired au-nav-icon"></i><span>Panel Administrativo</span>
                 <i class="fas fa-chevron-right au-nav-caret"></i>
             </a>
             <div class="au-nav-submenu">
@@ -114,7 +114,7 @@
                     <a href="{{ route('admin.cotizaciones.index') }}" class="au-nav-link">Cotizaciones</a>
                 @endif
                 @if ($__auUser->canAccessModule('aspel'))
-                    <a href="{{ route('admin.sync-aspel.index') }}" class="au-nav-link">Sincronización</a>
+                    <a href="{{ route('admin.sync-aspel.index') }}" class="au-nav-link">Productos</a>
                 @endif
                 @if ($__auUser->canAccessModule('aspel-integracion'))
                     <a href="{{ route('admin.aspel-tokens.index') }}" class="au-nav-link">Integración</a>
@@ -164,7 +164,7 @@
             </a>
             <div class="au-nav-submenu">
                 @if ($__auUser->canAccessModule('clientes'))
-                    <a href="{{ route('admin.customer.index') }}" class="au-nav-link">Usuarios/Clientes</a>
+                    <a href="{{ route('admin.customer.index') }}" class="au-nav-link">Clientes</a>
                 @endif
                 @if ($__auUser->canAccessModule('staff'))
                     <a href="{{ route('admin.staff-users.index') }}" class="au-nav-link">Personal / Staff</a>
