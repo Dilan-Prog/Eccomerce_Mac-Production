@@ -18,6 +18,7 @@ return [
     'products' => 'Administrar Productos',
     'aspel' => 'Aspel Productos',
     'aspel-integracion' => 'Panel Administrativo',
+    'marketing-integracion' => 'Marketing (Tokens API n8n)',
     'ecommerce' => 'Ecommerce (Venta Flash, Cupones, Envío, Pagos)',
     'ads' => 'Publicidad',
     'clientes' => 'Clientes',

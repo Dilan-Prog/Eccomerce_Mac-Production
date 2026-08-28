@@ -33,6 +33,8 @@ use App\Http\Controllers\Backend\TransactionController;
 use App\Http\Controllers\Backend\TransferController;
 use App\Http\Controllers\Backend\AdminCotizacionController;
 use App\Http\Controllers\Backend\AspelApiTokenController;
+use App\Http\Controllers\Backend\MarketingApiTokenController;
+use App\Http\Controllers\Backend\EmailTemplateController;
 use App\Http\Controllers\Backend\ProductVariantCombinationsController;
 use App\Models\Subcategory;
 use Illuminate\Support\Facades\Route;
@@ -188,6 +190,18 @@ Route::get('aspel-tokens/create-fragment', [AspelApiTokenController::class, 'cre
 Route::get('aspel-tokens/{id}/edit-fragment', [AspelApiTokenController::class, 'editFragment'])->name('aspel-tokens.edit-fragment');
 Route::post('aspel-tokens/{id}/regenerate', [AspelApiTokenController::class, 'regenerate'])->name('aspel-tokens.regenerate');
 Route::resource('aspel-tokens', AspelApiTokenController::class)->except(['create', 'edit']);
+
+/** Marketing — Tokens API para n8n (grupo "Marketing" en el sidebar, aislado de Aspel Integration) */
+Route::get('marketing-tokens/table-data', [MarketingApiTokenController::class, 'tableData'])->name('marketing-tokens.table-data');
+Route::get('marketing-tokens/create-fragment', [MarketingApiTokenController::class, 'createFragment'])->name('marketing-tokens.create-fragment');
+Route::get('marketing-tokens/{id}/edit-fragment', [MarketingApiTokenController::class, 'editFragment'])->name('marketing-tokens.edit-fragment');
+Route::post('marketing-tokens/{id}/regenerate', [MarketingApiTokenController::class, 'regenerate'])->name('marketing-tokens.regenerate');
+Route::resource('marketing-tokens', MarketingApiTokenController::class)->except(['create', 'edit']);
+
+/** Marketing — Plantillas de correo (grupo "Marketing" en el sidebar, junto a Integración) */
+Route::get('email-templates/table-data', [EmailTemplateController::class, 'tableData'])->name('email-templates.table-data');
+Route::post('email-templates/preview-blocks', [EmailTemplateController::class, 'previewBlocks'])->name('email-templates.preview-blocks');
+Route::resource('email-templates', EmailTemplateController::class)->except(['show']);
 
 /**Ads route */
 Route::get('track-conversion', [TrackConversionController::class, 'index'])->name('track-conversion.index');

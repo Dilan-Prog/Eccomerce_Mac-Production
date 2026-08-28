@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Backend;
 
 use App\Http\Controllers\Controller;
+use App\Models\Category;
 use App\Models\Coupon;
 use App\Support\AdminTable\AdminTableExport;
 use App\Support\AdminTable\AdminTableRequest;
@@ -85,14 +86,16 @@ class CouponController extends Controller
     /** Bare form fragment for the admin-ui Crear modal (AU.FormModal) — no page layout. */
     public function createFragment()
     {
-        return view('admin-ui.coupons._form');
+        $categories = Category::active()->orderBy('name')->get();
+        return view('admin-ui.coupons._form', compact('categories'));
     }
 
     /** Bare form fragment for the admin-ui Editar modal, pre-filled. */
     public function editFragment(string $id)
     {
         $coupon = Coupon::findOrFail($id);
-        return view('admin-ui.coupons._form', compact('coupon'));
+        $categories = Category::active()->orderBy('name')->get();
+        return view('admin-ui.coupons._form', compact('coupon', 'categories'));
     }
 
     /**
@@ -109,12 +112,14 @@ class CouponController extends Controller
             'end_date' => ['required'],
             'discount_type' => ['required', 'max:200'],
             'discount' => ['required', 'max:200'],
-            'status' => ['required', 'integer']
+            'status' => ['required', 'integer'],
+            'category_id' => ['nullable', 'integer', 'exists:categories,id']
         ]);
 
         $coupon = new Coupon();
         $coupon->name = $request->name;
         $coupon->cod = $request->cod;
+        $coupon->category_id = $request->category_id ?: null;
         $coupon->quantity = $request->quantity;
         $coupon->max_use = $request->max_use;
         $coupon->start_date = $request->start_date;
@@ -166,12 +171,14 @@ class CouponController extends Controller
             'end_date' => ['required'],
             'discount_type' => ['required', 'max:200'],
             'discount' => ['required', 'max:200'],
-            'status' => ['required', 'integer']
+            'status' => ['required', 'integer'],
+            'category_id' => ['nullable', 'integer', 'exists:categories,id']
         ]);
 
         $coupon = Coupon::findOrFail($id);
         $coupon->name = $request->name;
         $coupon->cod = $request->cod;
+        $coupon->category_id = $request->category_id ?: null;
         $coupon->quantity = $request->quantity;
         $coupon->max_use = $request->max_use;
         $coupon->start_date = $request->start_date;

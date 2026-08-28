@@ -78,22 +78,86 @@ function getCartTotal(){
     foreach (Cart::content() as $product) {
         $total += ($product->price * $product->qty);
     }
-    
+
     return $total;
+}
+
+/**
+ * Subtotal del carrito limitado a una sola categoria — usado por los cupones
+ * restringidos a categoria (coupons.category_id). Resuelve las combinaciones
+ * de variante (id con prefijo 'comb_') a su product_id real antes de comparar
+ * la categoria, ya que Cart::content() guarda el id de la combinacion, no el
+ * del producto.
+ */
+function getCouponCategorySubTotal($categoryId){
+    $subTotal = 0;
+
+    foreach (Cart::content() as $item) {
+        $productId = null;
+
+        if (strpos((string) $item->id, 'comb_') === 0 && isset($item->options['combination_id'])) {
+            $combination = \App\Models\ProductVariantCombinations::find($item->options['combination_id']);
+            $productId = $combination->product_id ?? null;
+        } else {
+            $productId = $item->id;
+        }
+
+        if ($productId === null) {
+            continue;
+        }
+
+        $product = \App\Models\Product::find($productId);
+        if ($product && (int) $product->category_id === (int) $categoryId) {
+            $subTotal += $item->price * $item->qty;
+        }
+    }
+
+    return $subTotal;
+}
+
+/**
+ * Calcula el monto de descuento de un cupon (array guardado en la sesion
+ * 'coupon' o con la misma forma). Centraliza la logica usada por el carrito
+ * (couponCalculation) y por getMainCartTotal()/getCartDiscount() para que el
+ * monto mostrado y el realmente cobrado (getFinalPayableAmount) coincidan
+ * siempre. Si el cupon no tiene category_id (cupon global) el calculo es
+ * identico al de antes, sobre el subtotal completo del carrito. Si tiene
+ * category_id, el descuento se limita al subtotal de esa categoria: 'amount'
+ * se topa a ese subtotal (no puede exceder lo que hay de esa categoria) y
+ * 'percent' se calcula solo sobre ese subtotal.
+ */
+function resolveCouponDiscount(array $coupon){
+    $categoryId = $coupon['category_id'] ?? null;
+
+    if ($categoryId) {
+        $categorySubTotal = getCouponCategorySubTotal($categoryId);
+
+        if ($coupon['discount_type'] === 'amount') {
+            return min((float) $coupon['discount'], $categorySubTotal);
+        } elseif ($coupon['discount_type'] === 'percent') {
+            return $categorySubTotal * $coupon['discount'] / 100;
+        }
+
+        return 0;
+    }
+
+    $subTotal = getCartTotal();
+
+    if ($coupon['discount_type'] === 'amount') {
+        return $coupon['discount'];
+    } elseif ($coupon['discount_type'] === 'percent') {
+        return $subTotal * $coupon['discount'] / 100;
+    }
+
+    return 0;
 }
 
 function getMainCartTotal(){
     if(Session::has('coupon')){
         $coupon = Session::get('coupon');
         $subTotal = getCartTotal();
-        if($coupon['discount_type'] === 'amount'){
-            $total = $subTotal - $coupon['discount'];
-            return $total;
-        }elseif($coupon['discount_type'] === 'percent'){
-            $discount = ($subTotal * $coupon['discount'] / 100);
-            $total = $subTotal - $discount;
-            return $total;
-        }
+        $discount = resolveCouponDiscount($coupon);
+        return $subTotal - $discount;
     }else{
         return getCartTotal();
     }
@@ -101,13 +165,7 @@ function getMainCartTotal(){
 function getCartDiscount(){
     if(Session::has('coupon')){
         $coupon = Session::get('coupon');
-        $subTotal = getCartTotal();
-        if($coupon['discount_type'] === 'amount'){
-            return $coupon['discount'];
-        }elseif($coupon['discount_type'] === 'percent'){
-            $discount = ($subTotal * $coupon['discount'] / 100);
-            return $discount;
-        }
+        return resolveCouponDiscount($coupon);
     }else{
         return 0;
     }

@@ -309,19 +309,25 @@ class CartController extends Controller
             return response(['status' => 'error', 'message' => 'you can not apply this coupon']);
         }
 
+        if($coupon->category_id !== null && getCouponCategorySubTotal($coupon->category_id) <= 0){
+            return response(['status' => 'error', 'message' => 'you can not apply this coupon']);
+        }
+
         if($coupon->discount_type === 'amount'){
             Session::put('coupon', [
                 'coupon_name' => $coupon->name,
                 'coupon_code' => $coupon->cod,
                 'discount_type' => 'amount',
-                'discount' => $coupon->discount
+                'discount' => $coupon->discount,
+                'category_id' => $coupon->category_id
             ]);
         }elseif($coupon->discount_type === 'percent'){
             Session::put('coupon', [
                 'coupon_name' => $coupon->name,
                 'coupon_code' => $coupon->cod,
                 'discount_type' => 'percent',
-                'discount' => $coupon->discount
+                'discount' => $coupon->discount,
+                'category_id' => $coupon->category_id
             ]);
         }
 
@@ -335,14 +341,9 @@ class CartController extends Controller
         if(Session::has('coupon')){
             $coupon = Session::get('coupon');
             $subTotal = getCartTotal();
-            if($coupon['discount_type'] === 'amount'){
-                $total = $subTotal - $coupon['discount'];
-                return response(['status' => 'success', 'cart_total' => $total, 'discount' => $coupon['discount']]);
-            }elseif($coupon['discount_type'] === 'percent'){
-                $discount = ($subTotal * $coupon['discount'] / 100);
-                $total = $subTotal - $discount;
-                return response(['status' => 'success', 'cart_total' => $total, 'discount' => $discount]);
-            }
+            $discount = resolveCouponDiscount($coupon);
+            $total = $subTotal - $discount;
+            return response(['status' => 'success', 'cart_total' => $total, 'discount' => $discount]);
         }else {
             $total = getCartTotal();
             return response(['status' => 'success', 'cart_total' => $total, 'discount' => 0]);

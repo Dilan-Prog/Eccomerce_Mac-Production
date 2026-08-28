@@ -9,6 +9,15 @@
         <label class="au-label">Codigo<span class="au-required-mark">*</span></label>
         <input type="text" class="au-input" name="cod" value="{{ $coupon->cod ?? '' }}" required>
     </div>
+    <div class="au-field">
+        <label class="au-label">Restringir a una categoria (opcional)</label>
+        <select class="au-select" name="category_id">
+            <option value="" {{ !isset($coupon) || !$coupon->category_id ? 'selected' : '' }}>Ninguna / Global</option>
+            @foreach ($categories as $category)
+                <option value="{{ $category->id }}" {{ isset($coupon) && (int) $coupon->category_id === (int) $category->id ? 'selected' : '' }}>{{ $category->name }}</option>
+            @endforeach
+        </select>
+    </div>
     <div class="au-form-grid-2">
         <div class="au-field">
             <label class="au-label">Cantidad<span class="au-required-mark">*</span></label>

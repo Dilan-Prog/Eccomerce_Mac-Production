@@ -67,6 +67,17 @@ class User extends Authenticatable
         return $this->belongsTo(Role::class, 'role_id');
     }
 
+    /**
+     * Aditiva — no existía (antes solo Order::user() existía en la
+     * dirección inversa). Usada por MarketingDataController/
+     * MarketingOfferBuilder para consultas limpias del historial de compra
+     * de un cliente, en vez de repetir Order::where('user_id', ...) suelto.
+     */
+    public function orders()
+    {
+        return $this->hasMany(Order::class);
+    }
+
     public function canAccessModule(string $moduleKey): bool
     {
         if ($this->role !== 'admin' || !$this->role_id) {

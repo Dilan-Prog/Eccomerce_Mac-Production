@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class RoleModulePermission extends Model
 {
     /** Módulos con permisos por acción (los demás solo usan can_access). */
-    public const GRANULAR_MODULE_KEYS = ['aspel', 'aspel-integracion', 'cotizaciones'];
+    public const GRANULAR_MODULE_KEYS = ['aspel', 'aspel-integracion', 'cotizaciones', 'marketing-integracion'];
 
     public const GRANULAR_ACTIONS = ['view', 'create', 'edit', 'delete', 'export'];
 

@@ -1,9 +1,11 @@
 <?php
 
 use App\Http\Controllers\AspelSync\AspelClientSyncController;
+use App\Http\Controllers\AspelSync\AspelSalesSyncController;
 use App\Http\Controllers\AspelSync\AspelSyncController;
 use App\Http\Controllers\AspelSync\CotizacionMonedaSyncController;
 use App\Http\Controllers\AspelSync\PrecioXProductoController;
+use App\Http\Controllers\Api\MarketingDataController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -32,4 +34,13 @@ Route::middleware('aspel.token')->group(function () {
     Route::post('/aspel/precio-x-producto', [PrecioXProductoController::class, 'precioXProducto']);
     Route::post('/aspel/clientes', [AspelClientSyncController::class, 'sync']);
     Route::post('/aspel/tipo-cambio', [CotizacionMonedaSyncController::class, 'sync']);
+    Route::post('/aspel/ventas', [AspelSalesSyncController::class, 'sync']);
+});
+
+// Datos de clientes/compras para el flujo de n8n de email marketing (ver
+// App\Http\Middleware\MarketingApiTokenMiddleware / módulo "Marketing").
+// Sistema de tokens aislado de aspel.token — no comparten universo.
+Route::middleware('marketing.token')->group(function () {
+    Route::get('/marketing/customers', [MarketingDataController::class, 'customers']);
+    Route::get('/marketing/email/{userId}', [MarketingDataController::class, 'email']);
 });
