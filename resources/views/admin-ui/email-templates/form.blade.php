@@ -68,17 +68,20 @@
                                     </div>
                                 </div>
                                 <div class="eb-topbar-right">
+                                    <div class="eb-field eb-field-inline" id="eb-advanced-toggle-wrap">
+                                        <label>Modo avanzado</label>
+                                        <label class="au-toggle" id="eb-advanced-toggle" data-au-toggle>
+                                            <input type="checkbox" class="au-toggle-input" hidden>
+                                            <span class="au-toggle-track"><span class="au-toggle-knob"></span></span>
+                                        </label>
+                                        <input type="hidden" id="eb-advanced-mode-value" data-au-toggle-value value="0">
+                                    </div>
                                     <div class="eb-field eb-field-inline">
                                         <label>Fondo del correo</label>
                                         <input type="color" id="eb-theme-bg" class="eb-color-input" value="#F4F6F8">
                                     </div>
                                     <button type="button" id="eb-preview-btn" class="eb-btn eb-btn-primary"><i class="fas fa-eye"></i> Vista previa</button>
                                 </div>
-                            </div>
-
-                            <div id="eb-legacy-notice" class="eb-legacy-notice" style="display:none">
-                                <i class="fas fa-circle-info"></i>
-                                Esta plantilla usa el editor de texto simple todavía — agrega un bloque para empezar a usar el editor visual por bloques.
                             </div>
 
                             <div class="eb-workspace">
@@ -126,14 +129,15 @@
                             </div>
                         </div>
 
-                        {{-- El textarea real que se envía al backend queda oculto. Mientras el
-                        renderer del backend no consuma blocks_json directamente, aquí se
-                        mantiene una copia HTML equivalente generada a partir de los bloques
-                        (ver buildFallbackBodyHtml en el script de abajo), para no romper la
-                        validación "required" del campo body ni el envío real de correos. Si
-                        la plantilla es vieja (sin blocks_json) y el admin no agrega bloques,
-                        se conserva el body original tal cual, sin tocarlo. --}}
-                        <textarea name="body" id="body-hidden" style="display:none" required>{{ old('body', $emailTemplate->body ?? '') }}</textarea>
+                        {{-- El textarea real que se envía al backend. En modo bloques queda
+                        oculto (display:none por CSS) y aquí se mantiene una copia HTML
+                        equivalente generada a partir de los bloques (ver
+                        buildFallbackBodyHtml en el script de abajo), para no romper la
+                        validación "required" del campo body ni el envío real de correos.
+                        En "Modo avanzado" este mismo textarea se muestra tal cual (clase
+                        eb-html-textarea) y el admin edita su HTML directamente — ver
+                        setAdvancedMode() en el script de abajo. --}}
+                        <textarea name="body" id="body-hidden" required>{{ old('body', $emailTemplate->body ?? '') }}</textarea>
                         <input type="hidden" name="blocks_json" id="blocks-json-field" value="">
                         <input type="hidden" name="builder_mode" id="builder-mode-field" value="{{ old('builder_mode', $emailTemplate->builder_mode ?? 'code') }}">
                     </div>
@@ -367,17 +371,26 @@
                 color: #fff;
             }
 
-            .eb-legacy-notice {
-                display: flex;
-                align-items: center;
-                gap: 8px;
-                background: var(--eb-warning-bg);
-                border: 1px solid var(--eb-warning-border);
-                color: var(--eb-warning);
-                border-radius: 8px;
-                padding: 10px 12px;
+            /* ---- Modo avanzado: textarea de HTML crudo (reemplaza al lienzo) ---- */
+            #body-hidden {
+                display: none;
+            }
+
+            #body-hidden.eb-html-textarea {
+                display: block;
+                width: 100%;
+                min-height: 420px;
+                margin-top: 12px;
+                font-family: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
                 font-size: 13px;
-                margin-bottom: 12px;
+                line-height: 1.6;
+                color: #16202A;
+                background: #FFFFFF;
+                border: 1px solid #D5DCE7;
+                border-radius: 10px;
+                padding: 14px;
+                box-sizing: border-box;
+                resize: vertical;
             }
 
             /* ---- Layout de 3 columnas tipo IDE ---- */
@@ -1032,11 +1045,15 @@
                 // ================================================================
 
                 var themeBgInput = document.getElementById('eb-theme-bg');
-                var legacyNotice = document.getElementById('eb-legacy-notice');
                 var jsonField = document.getElementById('blocks-json-field');
                 var bodyHiddenField = document.getElementById('body-hidden');
                 var builderModeField = document.getElementById('builder-mode-field');
                 var form = jsonField.closest('form');
+
+                // ---- Toggle "Modo avanzado" (HTML crudo en vez del editor de bloques) ----
+                var advancedToggleLabel = document.getElementById('eb-advanced-toggle');
+                var advancedModeValue = document.getElementById('eb-advanced-mode-value');
+                var ebWorkspace = document.querySelector('#eb-editor .eb-workspace');
 
                 var layersHost = document.getElementById('eb-layers-list');
                 var layersCountBadge = document.getElementById('eb-layers-count');
@@ -1072,6 +1089,7 @@
                 // Dato inicial: null si la plantilla es nueva o vieja (solo "body" plano).
                 var initialData = @json($emailTemplate->blocks_json ?? null);
                 var hasSavedBlocksJson = !!(initialData && Array.isArray(initialData.blocks));
+                var isEditTemplate = @json($isEdit);
 
                 var state = {
                     theme: { backgroundColor: '#F4F6F8' },
@@ -1095,7 +1113,6 @@
                 }
 
                 themeBgInput.value = state.theme.backgroundColor;
-                legacyNotice.style.display = hasSavedBlocksJson ? 'none' : 'block';
 
                 var quillInstances = {};
                 var idCounter = 0;
@@ -1563,7 +1580,6 @@
                         var type = btn.getAttribute('data-type');
                         var block = defaultBlock(type);
                         state.blocks.push(block);
-                        legacyNotice.style.display = 'none';
                         state.selectedId = block.id;
                         renderAll();
                     });
@@ -1583,6 +1599,49 @@
                         btn.classList.add('is-active');
                         canvasPaper.classList.toggle('eb-canvas-paper--mobile', btn.getAttribute('data-device') === 'mobile');
                     });
+                });
+
+                // ---- Toggle "Modo avanzado" ----
+                // Refleja el estado visual del switch (usado también para activarlo
+                // programáticamente al cargar, sin simular un click real).
+                function applyAdvancedModeUI(isOn) {
+                    advancedToggleLabel.classList.toggle('is-on', isOn);
+                    var checkbox = advancedToggleLabel.querySelector('.au-toggle-input');
+                    if (checkbox) checkbox.checked = isOn;
+                    advancedModeValue.value = isOn ? '1' : '0';
+                }
+
+                // Aplica el efecto real de encender/apagar el modo avanzado: muestra u
+                // oculta el editor de bloques vs. el textarea de HTML, y vacía el
+                // arreglo de bloques al encenderlo (buildFallbackBodyHtml está definido
+                // más abajo pero, al ser "function foo(){}", queda disponible en todo
+                // este scope gracias al hoisting).
+                function setAdvancedMode(isOn) {
+                    if (isOn) {
+                        // Si había bloques armados, se vuelca su HTML equivalente al
+                        // textarea en vez de dejar el último "body" guardado — así no se
+                        // pierde de vista lo que se veía en el lienzo. Si no había
+                        // bloques (plantilla nueva, o plantilla vieja sin blocks_json),
+                        // el body original se conserva tal cual.
+                        var fallback = buildFallbackBodyHtml();
+                        if (fallback !== null) {
+                            bodyHiddenField.value = fallback;
+                        }
+                        state.blocks = [];
+                        state.selectedId = null;
+                        ebWorkspace.style.display = 'none';
+                        bodyHiddenField.classList.add('eb-html-textarea');
+                    } else {
+                        ebWorkspace.style.display = '';
+                        bodyHiddenField.classList.remove('eb-html-textarea');
+                    }
+                    // syncJson() (dentro de renderAll) manda blocks_json vacío y
+                    // recalcula builder_mode a 'code' cuando no hay bloques.
+                    renderAll();
+                }
+
+                advancedModeValue.addEventListener('change', function () {
+                    setAdvancedMode(advancedModeValue.value === '1');
                 });
 
                 // ---- Fallback HTML simple para el campo "body" heredado ----
@@ -1661,8 +1720,18 @@
                 previewModal.querySelector('.eb-modal-backdrop').addEventListener('click', closePreview);
 
                 // ---- Render inicial ----
-                state.selectedId = state.blocks.length ? state.blocks[0].id : null;
-                renderAll();
+                // Plantilla existente sin bloques guardados (el caso que antes solo
+                // mostraba un aviso pasivo): se activa el modo avanzado de una vez, con
+                // su "body" actual ya cargado en el textarea, en vez de mostrar un
+                // editor de bloques vacío. Una plantilla nueva arranca en modo bloques
+                // (comportamiento actual, sin cambios).
+                if (isEditTemplate && !hasSavedBlocksJson) {
+                    applyAdvancedModeUI(true);
+                    setAdvancedMode(true);
+                } else {
+                    state.selectedId = state.blocks.length ? state.blocks[0].id : null;
+                    renderAll();
+                }
             })();
         </script>
     @endpush
