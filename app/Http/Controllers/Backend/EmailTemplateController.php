@@ -105,23 +105,33 @@ class EmailTemplateController extends Controller
     /**
      * POST /admin/email-templates/preview-blocks
      *
-     * Previsualización en vivo para el editor visual por bloques: recibe el
-     * mismo JSON que se guarda en `blocks_json` y regresa el HTML final ya
-     * armado (con datos ficticios para productos/cupón/marcadores — nunca un
-     * cliente real). El editor visual (JS) llama esto cada vez que el
-     * usuario cambia algo para refrescar el iframe de previsualización.
+     * Previsualización en vivo. Dos modos, según qué mande el editor (JS):
+     * - Editor visual por bloques: recibe el mismo JSON que se guarda en
+     *   `blocks_json` y arma el HTML a partir de los bloques.
+     * - Modo avanzado (HTML crudo): recibe `html` directo — el textarea no
+     *   pasa por bloques, así que no hay nada que armar, solo se sustituyen
+     *   los marcadores. Antes esto no se distinguía y siempre se intentaba
+     *   armar a partir de `blocks_json` (vacío en modo avanzado), lo que
+     *   dejaba la vista previa en blanco al escribir/pegar HTML crudo.
+     * En ambos casos se usan datos ficticios para productos/cupón/marcadores
+     * — nunca un cliente real.
      */
     public function previewBlocks(Request $request)
     {
-        $blocksJson = $this->decodeBlocksJson($request->input('blocks_json'));
+        $rawHtml = $request->input('html');
 
-        $html = app(BlockEmailRenderer::class)->render($blocksJson, BlockEmailRenderer::dummyPlaceholderData());
+        if (is_string($rawHtml) && trim($rawHtml) !== '') {
+            $html = $rawHtml;
+        } else {
+            $blocksJson = $this->decodeBlocksJson($request->input('blocks_json'));
+            $html = app(BlockEmailRenderer::class)->render($blocksJson, BlockEmailRenderer::dummyPlaceholderData());
+        }
 
-        // Vista previa "de ejemplo": sustituye también los marcadores de
-        // texto ({{nombre_cliente}}, etc.) con los mismos datos ficticios,
-        // reutilizando el mecanismo de EmailTemplateRenderer para no
-        // duplicar esa lógica — usamos un EmailTemplate efímero (no se
-        // guarda) solo para pasar por ese renderer.
+        // Sustituye también los marcadores de texto ({{nombre_cliente}},
+        // etc.) con los mismos datos ficticios, reutilizando el mecanismo de
+        // EmailTemplateRenderer para no duplicar esa lógica — usamos un
+        // EmailTemplate efímero (no se guarda) solo para pasar por ese
+        // renderer.
         $previewTemplate = new EmailTemplate(['subject' => '', 'body' => $html]);
         $rendered = app(EmailTemplateRenderer::class)->render($previewTemplate, BlockEmailRenderer::dummyPlaceholderData());
 

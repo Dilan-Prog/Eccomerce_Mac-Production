@@ -1686,6 +1686,15 @@
                     previewLoading.style.display = 'block';
                     previewLoading.textContent = 'Generando vista previa…';
 
+                    // En modo avanzado no hay bloques (state.blocks queda vacío al
+                    // activarlo), así que blocks_json no tiene nada que armar — hay que
+                    // mandar el HTML crudo del textarea directo, o la vista previa sale
+                    // en blanco aunque el HTML escrito/pegado sea válido.
+                    var isAdvanced = advancedModeValue.value === '1';
+                    var payload = isAdvanced
+                        ? { html: bodyHiddenField.value }
+                        : { blocks_json: jsonField.value };
+
                     fetch('{{ url('admin/email-templates/preview-blocks') }}', {
                         method: 'POST',
                         headers: {
@@ -1693,7 +1702,7 @@
                             'Accept': 'application/json',
                             'X-CSRF-TOKEN': '{{ csrf_token() }}'
                         },
-                        body: JSON.stringify({ blocks_json: jsonField.value })
+                        body: JSON.stringify(payload)
                     })
                         .then(function (res) {
                             if (!res.ok) {
