@@ -96,20 +96,25 @@ class MarketingDataController extends Controller
     }
 
     /**
-     * GET /api/marketing/email/{userId}
+     * GET /api/marketing/email/{userId}[?template_id=N]
      *
      * Arma la oferta personalizada (MarketingOfferBuilder) y regresa el
      * HTML ya renderizado — n8n lo toma tal cual y lo pasa a la API
      * transaccional de Brevo (no al editor de campañas).
      *
      * El contenido viene de una plantilla editable desde el admin (ver
-     * App\Models\EmailTemplate + App\Http\Controllers\Backend\EmailTemplateController):
-     * primero se busca una específica para la categoría dominante del
-     * cliente, si no hay se cae a la plantilla general (category_id null),
-     * y si todavía no existe ninguna plantilla en la base de datos (instalación
-     * nueva / antes de sembrar la default) se cae por completo a la vista
-     * Blade fija de siempre para que esto nunca se rompa por falta de
-     * configuración.
+     * App\Models\EmailTemplate + App\Http\Controllers\Backend\EmailTemplateController).
+     * Selección de plantilla, en orden:
+     * 1. Si se manda `template_id` en la query string, se usa esa (si existe
+     *    y está activa) — permite forzar una plantilla específica a mano,
+     *    ej. para probar una plantilla nueva antes de dejarla en automático.
+     * 2. Si no se manda (o no es válida), se busca una específica para la
+     *    categoría dominante del cliente.
+     * 3. Si no hay, se cae a la plantilla general (category_id null).
+     * 4. Si todavía no existe ninguna plantilla en la base de datos
+     *    (instalación nueva / antes de sembrar la default) se cae por
+     *    completo a la vista Blade fija de siempre para que esto nunca se
+     *    rompa por falta de configuración.
      */
     public function email(Request $request, string $userId)
     {
@@ -117,7 +122,10 @@ class MarketingDataController extends Controller
         $offer = $this->offerBuilder->build($user);
 
         $template = null;
-        if ($offer['category']) {
+        if ($request->filled('template_id')) {
+            $template = EmailTemplate::where('id', $request->query('template_id'))->where('status', true)->first();
+        }
+        if (!$template && $offer['category']) {
             $template = EmailTemplate::where('category_id', $offer['category']->id)->where('status', true)->first();
         }
         if (!$template) {
