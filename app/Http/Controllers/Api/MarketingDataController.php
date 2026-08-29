@@ -239,13 +239,17 @@ class MarketingDataController extends Controller
                 $sale = $sales->firstWhere('cve_doc', $item->cve_doc);
 
                 return [
+                    // Estos 4 vienen de Aspel (aspel_sale_items/aspel_sales) tal cual.
                     'product_sku' => $item->cve_art,
                     'product_name' => $item->descr_art,
-                    'category' => $item->category_name,
-                    'sub_category' => $item->sub_category_name,
-                    'child_category' => $item->child_category_name,
                     'qty' => (float) $item->cant,
                     'purchased_at' => optional($sale)->fecha_doc,
+                    // Estos 3 vienen del catalogo del sitio (products/categories/
+                    // subcategories/child_categories), cruzados por SKU -- prefijo
+                    // "ecommerce_" para que quede claro que es otro origen de datos.
+                    'ecommerce_category' => $item->category_name,
+                    'ecommerce_sub_category' => $item->sub_category_name,
+                    'ecommerce_child_category' => $item->child_category_name,
                 ];
             })->values();
 
