@@ -222,12 +222,16 @@ class MarketingDataController extends Controller
                 ->leftJoin('aspel_products', 'aspel_products.cve_art', '=', 'aspel_sale_items.cve_art')
                 ->leftJoin('products', 'products.sku', '=', 'aspel_products.cve_art')
                 ->leftJoin('categories', 'categories.id', '=', 'products.category_id')
+                ->leftJoin('subcategories', 'subcategories.id', '=', 'products.sub_category_id')
+                ->leftJoin('child_categories', 'child_categories.id', '=', 'products.child_category_id')
                 ->select(
                     'aspel_sale_items.cve_doc',
                     'aspel_sale_items.cve_art',
                     'aspel_sale_items.descr_art',
                     'aspel_sale_items.cant',
-                    'categories.name as category_name'
+                    'categories.name as category_name',
+                    'subcategories.name as sub_category_name',
+                    'child_categories.name as child_category_name'
                 )
                 ->get();
 
@@ -238,6 +242,8 @@ class MarketingDataController extends Controller
                     'product_sku' => $item->cve_art,
                     'product_name' => $item->descr_art,
                     'category' => $item->category_name,
+                    'sub_category' => $item->sub_category_name,
+                    'child_category' => $item->child_category_name,
                     'qty' => (float) $item->cant,
                     'purchased_at' => optional($sale)->fecha_doc,
                 ];
