@@ -52,6 +52,11 @@ Route::middleware('marketing.token')->group(function () {
     Route::get('/marketing/aspel-customers', [MarketingDataController::class, 'aspelCustomers']);
     Route::get('/marketing/aspel-email/{clave}', [MarketingDataController::class, 'aspelEmail']);
 
+    // Contenido crudo de una plantilla (marcadores {{...}} sin sustituir) —
+    // para cuando n8n prefiere decidir el relleno de variables por su
+    // cuenta en vez de pedir el correo ya armado por cliente.
+    Route::get('/marketing/templates/{id}', [MarketingDataController::class, 'template']);
+
     // Campañas: envío masivo de una plantilla a una lista de contactos.
     // n8n manda el ritmo — pregunta qué hay pendiente, reclama, pide el
     // render de cada destinatario y reporta el resultado. Laravel no tiene

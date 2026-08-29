@@ -336,4 +336,42 @@ class MarketingDataController extends Controller
             'recipient_email' => $aspelClient->email,
         ]);
     }
+
+    /**
+     * GET /api/marketing/templates/{id}
+     *
+     * Contenido CRUDO de una plantilla (asunto + HTML, con los marcadores
+     * {{...}} todavía SIN sustituir) — para cuando n8n quiere decidir el
+     * relleno de variables por su cuenta en vez de pedir el correo ya
+     * armado por cliente (ver email()/aspelEmail() de arriba, que sí
+     * sustituyen contra un cliente real).
+     *
+     * Ojo con plantillas armadas con el editor visual por bloques
+     * (builder_mode = 'blocks'): su columna `body` es solo una copia de
+     * respaldo renderizada con datos FICTICIOS (ver
+     * EmailTemplateController::validateData()) — los bloques de
+     * productos/cupón ya vienen con tarjetas de ejemplo "quemadas", no con
+     * un marcador {{productos}} sustituible. Para esas, sigue siendo mejor
+     * usar email()/aspelEmail() con ?template_id= para que el sistema arme
+     * el HTML final con datos reales por cliente. Este endpoint es más útil
+     * para plantillas en modo "código" (HTML crudo), donde `body` es
+     * exactamente lo que se escribió en el editor, marcadores incluidos —
+     * por eso se marca uses_dummy_preview_data para que quien consuma esto
+     * sepa a qué atenerse.
+     */
+    public function template(Request $request, string $id)
+    {
+        $template = EmailTemplate::where('status', true)->findOrFail($id);
+
+        return response()->json([
+            'id' => $template->id,
+            'name' => $template->name,
+            'type' => $template->type,
+            'category_id' => $template->category_id,
+            'builder_mode' => $template->builder_mode,
+            'subject' => $template->subject,
+            'body' => $template->body,
+            'uses_dummy_preview_data' => $template->builder_mode === 'blocks',
+        ]);
+    }
 }
