@@ -186,11 +186,18 @@ class MarketingDataController extends Controller
      * fuente es puramente Aspel: AspelClient con al menos una factura real
      * (aspel_sales, cruzando por clave = cve_clpv) que no esté cancelada —
      * no requiere que el cliente tenga cuenta en el sitio
-     * (aspel_clients.user_id puede ser null). Paginado (50).
+     * (aspel_clients.user_id puede ser null). También se exige un email
+     * real (CLIE01.EMAILPRED viene vacío/null en varios registros según
+     * confirmado en producción) — un cliente sin correo nunca es un
+     * destinatario válido, y dejarlo pasar solo desperdicia llamadas de n8n
+     * (render + intento de envío) contra un contacto que no puede recibir
+     * nada. Paginado (50).
      */
     public function aspelCustomers(Request $request)
     {
         $clients = AspelClient::query()
+            ->whereNotNull('email')
+            ->where('email', '!=', '')
             ->whereExists(function ($query) {
                 $query->select(DB::raw(1))
                     ->from('aspel_sales')
