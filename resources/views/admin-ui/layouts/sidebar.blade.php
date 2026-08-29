@@ -124,14 +124,18 @@
         @endif
 
         @if ($__auUser->canAccessModule('marketing-integracion'))
-        <div class="au-nav-item has-submenu {{ setActive(['admin.marketing-tokens.*', 'admin.email-templates.*']) ? 'is-active is-open' : '' }}" data-nav-key="marketing">
+        <div class="au-nav-item has-submenu {{ setActive(['admin.marketing-tokens.*', 'admin.email-templates.*', 'admin.email-marketing.*', 'admin.email-lists.*', 'admin.email-campaigns.*', 'admin.email-sequences.*']) ? 'is-active is-open' : '' }}" data-nav-key="marketing">
             <a href="#" class="au-nav-link">
                 <i class="fas fa-bullhorn au-nav-icon"></i><span>Marketing</span>
                 <i class="fas fa-chevron-right au-nav-caret"></i>
             </a>
             <div class="au-nav-submenu">
                 <a href="{{ route('admin.marketing-tokens.index') }}" class="au-nav-link">Integración (n8n)</a>
-                <a href="{{ route('admin.email-templates.index') }}" class="au-nav-link">Plantillas de correo</a>
+                {{-- Una sola entrada para todo el módulo: Plantillas, Listas,
+                     Campañas y Secuencias viven en pestañas de esta pantalla.
+                     Las rutas admin.email-templates.* siguen existiendo, así
+                     que cualquier enlace o marcador viejo sigue funcionando. --}}
+                <a href="{{ route('admin.email-marketing.index') }}" class="au-nav-link">Email Marketing</a>
             </div>
         </div>
         @endif

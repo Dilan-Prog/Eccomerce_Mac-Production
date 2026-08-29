@@ -32,6 +32,7 @@ class EmailTemplate extends Model
 
     protected $fillable = [
         'name',
+        'type',
         'subject',
         'body',
         'blocks_json',

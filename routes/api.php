@@ -5,7 +5,9 @@ use App\Http\Controllers\AspelSync\AspelSalesSyncController;
 use App\Http\Controllers\AspelSync\AspelSyncController;
 use App\Http\Controllers\AspelSync\CotizacionMonedaSyncController;
 use App\Http\Controllers\AspelSync\PrecioXProductoController;
+use App\Http\Controllers\Api\MarketingCampaignController;
 use App\Http\Controllers\Api\MarketingDataController;
+use App\Http\Controllers\Api\MarketingSequenceController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -49,4 +51,23 @@ Route::middleware('marketing.token')->group(function () {
     // Ver MarketingDataController::aspelCustomers()/aspelEmail().
     Route::get('/marketing/aspel-customers', [MarketingDataController::class, 'aspelCustomers']);
     Route::get('/marketing/aspel-email/{clave}', [MarketingDataController::class, 'aspelEmail']);
+
+    // Campañas: envío masivo de una plantilla a una lista de contactos.
+    // n8n manda el ritmo — pregunta qué hay pendiente, reclama, pide el
+    // render de cada destinatario y reporta el resultado. Laravel no tiene
+    // cron ni reintentos propios (ver MarketingCampaignController).
+    Route::get('/marketing/campaigns/due', [MarketingCampaignController::class, 'due']);
+    Route::post('/marketing/campaigns/{id}/claim', [MarketingCampaignController::class, 'claim']);
+    Route::get('/marketing/campaigns/{id}/recipients', [MarketingCampaignController::class, 'recipients']);
+    Route::get('/marketing/campaigns/{id}/recipients/{recipientId}/render', [MarketingCampaignController::class, 'render']);
+    Route::post('/marketing/campaigns/{id}/recipients/{recipientId}/report', [MarketingCampaignController::class, 'report']);
+
+    // Secuencias de seguimiento de cotizaciones. `sequences/due` es además
+    // el disparador del housekeeping completo (App\Support\SequenceProcessor):
+    // inscribir, sacar por compra, vencer pasos y cerrar ocurren justo
+    // cuando n8n pregunta. {id} aquí es un email_sequence_step_sends.id.
+    Route::get('/marketing/sequences/due', [MarketingSequenceController::class, 'due']);
+    Route::post('/marketing/sequences/due/{id}/claim', [MarketingSequenceController::class, 'claim']);
+    Route::get('/marketing/sequences/due/{id}/render', [MarketingSequenceController::class, 'render']);
+    Route::post('/marketing/sequences/due/{id}/report', [MarketingSequenceController::class, 'report']);
 });

@@ -2,6 +2,8 @@
 
 namespace App\Support;
 
+use App\Models\Cotizacion;
+
 /**
  * Renderiza el HTML final de una plantilla de correo armada con el editor
  * visual por bloques (JSON guardado en email_templates.blocks_json — ver
@@ -304,6 +306,23 @@ class BlockEmailRenderer
             </td>
         </tr>';
 
+        // Datos de ejemplo también para los namespaces {{contact.*}},
+        // {{quote.*}} y {{cart.*}} (ver App\Support\EmailTemplateRenderer).
+        // Sin esto, la vista previa del editor mostraba esos marcadores sin
+        // sustituir, aunque en el envío real sí se llenan (campañas y
+        // secuencias) — el editor ofrece esos tokens como chips, así que la
+        // vista previa tiene que poder dibujarlos.
+        //
+        // La cotización se arma en memoria y NUNCA se guarda: dummyPlaceholderData()
+        // es estática y no debe tocar la base de datos. created_at se fija a
+        // mano porque {{quote.valid_until}} se calcula a partir de ella.
+        $quote = new Cotizacion([
+            'folio' => 'COT-2026-04500',
+            'total' => 12500.00,
+            'currency' => 'MXN',
+        ]);
+        $quote->created_at = now();
+
         return [
             'nombre_cliente' => 'Cliente Ejemplo',
             'categoria' => 'Laptops',
@@ -311,6 +330,19 @@ class BlockEmailRenderer
             'cupon_codigo' => 'EJEMPLO10',
             'cupon_descuento' => '10%',
             'cupon_bloque' => $cuponBloque,
+            'contact' => [
+                'name' => 'Cliente Ejemplo',
+                'email' => 'cliente@ejemplo.com',
+                'company' => 'Empresa Ejemplo',
+            ],
+            'quote' => $quote,
+            'cart' => [
+                'total' => 15398.00,
+                'items' => [
+                    ['name' => 'Laptop Ejemplo 14"', 'price' => 14999.00, 'qty' => 1, 'line_total' => 14999.00],
+                    ['name' => 'Mouse inalámbrico Ejemplo', 'price' => 399.00, 'qty' => 1, 'line_total' => 399.00],
+                ],
+            ],
         ];
     }
 }

@@ -1,0 +1,1161 @@
+/*
+ * Editor visual de plantillas de correo (AU.EmailBuilder).
+ *
+ * Estos estilos vivían embebidos en
+ * resources/views/admin-ui/email-templates/form.blade.php. Se sacaron a un
+ * archivo propio porque el editor ahora también se monta por AJAX dentro de
+ * la pantalla de pestañas de Email Marketing — un <style> dentro de un
+ * fragmento inyectado con innerHTML se aplicaría de forma frágil y se
+ * duplicaría en cada apertura.
+ *
+ * Todo sigue contenido a #eb-editor y al panel de vista previa, así que no
+ * afecta al resto del panel de administración.
+ */
+/* ==========================================================
+   Editor visual por bloques (email-templates) — paleta y
+   tipografía inspiradas en el mockup "Maildeck" compartido
+   por el dueño del negocio. IBM Plex Sans / Mono ya se cargan
+   globalmente en admin-ui/layouts/master.blade.php, aquí solo
+   se referencian. Todo queda contenido a #eb-editor y al
+   modal de vista previa para no afectar el resto del panel.
+   ========================================================== */
+#eb-editor,
+.eb-modal {
+    --eb-bg: #EEF1F6;
+    --eb-surface: #FFFFFF;
+    --eb-ink: #0F2138;
+    --eb-ink-strong: #16202A;
+    --eb-ink-soft: #4A5A72;
+    --eb-ink-muted: #64748B;
+    --eb-accent: #1B3A6B;
+    --eb-accent-hover: #27508F;
+    --eb-accent-soft: #E9EEF7;
+    --eb-line: #D5DCE7;
+    --eb-line-soft: #E1E7F0;
+    --eb-warning: #8a6d1f;
+    --eb-warning-bg: #FFF7E6;
+    --eb-warning-border: #F3D999;
+    --eb-critical: #b3383c;
+    --eb-critical-bg: #fdf0f0;
+    --eb-success: #1a7040;
+    --eb-success-bg: #eafaf0;
+    --eb-font-sans: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --eb-font-mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-family: var(--eb-font-sans);
+    color: var(--eb-ink);
+}
+
+.eb-editor {
+    border: 1px solid var(--eb-line);
+    border-radius: 10px;
+    background: var(--eb-bg);
+    padding: 14px;
+}
+
+.eb-mono-label {
+    font-family: var(--eb-font-mono);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 600;
+}
+
+/* ---- Barra superior ---- */
+.eb-topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 12px;
+}
+
+.eb-topbar-left {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+}
+
+.eb-topbar-title {
+    font-family: var(--eb-font-mono);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--eb-ink-soft);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.eb-device-toggle {
+    display: inline-flex;
+    background: var(--eb-surface);
+    border: 1px solid var(--eb-line);
+    border-radius: 8px;
+    padding: 3px;
+    gap: 2px;
+}
+
+.eb-device-btn {
+    border: none;
+    background: transparent;
+    color: var(--eb-ink-soft);
+    font-family: var(--eb-font-sans);
+    font-size: 12.5px;
+    font-weight: 600;
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: background 0.12s ease, color 0.12s ease;
+}
+
+.eb-device-btn:hover {
+    background: var(--eb-accent-soft);
+    color: var(--eb-accent);
+}
+
+.eb-device-btn.is-active {
+    background: var(--eb-accent);
+    color: #fff;
+}
+
+.eb-topbar-right {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+}
+
+.eb-field-inline {
+    flex-direction: row !important;
+    align-items: center;
+    gap: 8px !important;
+}
+
+.eb-field-inline label {
+    margin: 0;
+}
+
+.eb-btn {
+    font-family: var(--eb-font-sans);
+    font-size: 12.5px;
+    font-weight: 600;
+    border-radius: 7px;
+    border: 1px solid var(--eb-line);
+    background: var(--eb-surface);
+    color: var(--eb-ink);
+    padding: 8px 14px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    transition: background 0.12s ease, border-color 0.12s ease, color 0.12s ease;
+}
+
+.eb-btn:hover {
+    border-color: var(--eb-accent);
+    color: var(--eb-accent);
+}
+
+.eb-btn-primary {
+    background: var(--eb-accent);
+    border-color: var(--eb-accent);
+    color: #fff;
+}
+
+.eb-btn-primary:hover {
+    background: var(--eb-accent-hover);
+    border-color: var(--eb-accent-hover);
+    color: #fff;
+}
+
+/* ---- Modo avanzado: textarea de HTML crudo (reemplaza al lienzo) ---- */
+#body-hidden {
+    display: none;
+}
+
+#body-hidden.eb-html-textarea {
+    display: block;
+    width: 100%;
+    min-height: 420px;
+    margin-top: 12px;
+    font-family: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 13px;
+    line-height: 1.6;
+    color: #16202A;
+    background: #FFFFFF;
+    border: 1px solid #D5DCE7;
+    border-radius: 10px;
+    padding: 14px;
+    box-sizing: border-box;
+    resize: vertical;
+}
+
+/* ---- Layout de 3 columnas tipo IDE ---- */
+.eb-workspace {
+    display: grid;
+    grid-template-columns: 248px minmax(200px, 1fr) 296px;
+    border: 1px solid var(--eb-line);
+    border-radius: 10px;
+    overflow: hidden;
+    background: var(--eb-surface);
+}
+
+.eb-editor {
+    overflow-x: auto;
+    min-width: 0;
+}
+
+.eb-col {
+    min-height: 0;
+}
+
+.eb-col-left {
+    border-right: 1px solid var(--eb-line-soft);
+    background: var(--eb-surface);
+    display: flex;
+    flex-direction: column;
+    max-height: 640px;
+    overflow-y: auto;
+}
+
+.eb-col-right {
+    border-left: 1px solid var(--eb-line-soft);
+    background: var(--eb-surface);
+    max-height: 640px;
+    overflow-y: auto;
+}
+
+.eb-col-center {
+    background: repeating-conic-gradient(#F1F3F8 0% 25%, #EAEDF3 0% 50%) 50% / 16px 16px;
+    max-height: 640px;
+    overflow: hidden;
+    display: flex;
+    min-width: 0;
+}
+
+.eb-panel-section {
+    padding: 14px;
+    border-bottom: 1px solid var(--eb-line-soft);
+}
+
+.eb-panel-section:last-child {
+    border-bottom: none;
+}
+
+.eb-panel-label {
+    font-family: var(--eb-font-mono);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--eb-ink-muted);
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.eb-count-badge {
+    font-family: var(--eb-font-mono);
+    background: var(--eb-accent-soft);
+    color: var(--eb-accent);
+    border-radius: 999px;
+    padding: 1px 7px;
+    font-size: 10.5px;
+    font-weight: 700;
+}
+
+/* ---- Cuadrícula "agregar bloque" ---- */
+.eb-block-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+}
+
+.eb-block-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 12px 6px;
+    border: 1px solid var(--eb-line);
+    border-radius: 8px;
+    background: var(--eb-surface);
+    color: var(--eb-ink-soft);
+    cursor: pointer;
+    font-family: var(--eb-font-sans);
+    font-size: 11px;
+    font-weight: 600;
+    text-align: center;
+    line-height: 1.2;
+    transition: border-color 0.12s ease, background 0.12s ease, color 0.12s ease, transform 0.08s ease;
+}
+
+.eb-block-btn i {
+    font-size: 15px;
+    color: var(--eb-accent);
+}
+
+.eb-block-btn:hover {
+    border-color: var(--eb-accent);
+    background: var(--eb-accent-soft);
+    color: var(--eb-accent);
+    transform: translateY(-1px);
+}
+
+/* ---- Lista de capas ---- */
+.eb-layers-section {
+    flex: 1 1 auto;
+}
+
+.eb-layers-list {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.eb-layers-empty {
+    margin: 0;
+    font-size: 12px;
+    color: var(--eb-ink-muted);
+}
+
+.eb-layer-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 8px;
+    border-radius: 7px;
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: background 0.12s ease, border-color 0.12s ease;
+}
+
+.eb-layer-row:hover {
+    background: var(--eb-bg);
+}
+
+.eb-layer-row.is-selected {
+    background: var(--eb-accent-soft);
+    border-color: var(--eb-accent);
+}
+
+.eb-layer-index {
+    font-family: var(--eb-font-mono);
+    font-size: 10.5px;
+    color: var(--eb-ink-muted);
+    width: 16px;
+    flex: 0 0 auto;
+}
+
+.eb-layer-icon {
+    width: 22px;
+    height: 22px;
+    border-radius: 6px;
+    background: var(--eb-bg);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--eb-accent);
+    font-size: 11px;
+    flex: 0 0 auto;
+}
+
+.eb-layer-row.is-selected .eb-layer-icon {
+    background: var(--eb-accent);
+    color: #fff;
+}
+
+.eb-layer-info {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    flex: 1 1 auto;
+}
+
+.eb-layer-name {
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--eb-ink);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.eb-layer-snippet {
+    font-size: 11px;
+    color: var(--eb-ink-muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* ---- Validación ---- */
+.eb-validation-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.eb-validation-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 7px;
+    font-size: 11.5px;
+    line-height: 1.4;
+    padding: 7px 8px;
+    border-radius: 7px;
+    border: 1px solid transparent;
+}
+
+.eb-validation-item i {
+    margin-top: 1px;
+    flex: 0 0 auto;
+}
+
+.eb-validation-warning {
+    background: var(--eb-warning-bg);
+    border-color: var(--eb-warning-border);
+    color: var(--eb-warning);
+}
+
+.eb-validation-success {
+    background: var(--eb-success-bg);
+    color: var(--eb-success);
+}
+
+.eb-validation-info {
+    background: var(--eb-bg);
+    color: var(--eb-ink-soft);
+}
+
+/* ---- Lienzo central ---- */
+.eb-canvas-scroll {
+    flex: 1 1 auto;
+    overflow: auto;
+    padding: 28px 20px;
+    display: flex;
+    justify-content: flex-start;
+}
+
+.eb-canvas-paper {
+    margin: 0 auto;
+}
+
+.eb-canvas-paper {
+    width: 680px;
+    max-width: 680px;
+    flex: 0 0 auto;
+    background: #F4F6F8;
+    border-radius: 4px;
+    box-shadow: 0 4px 18px rgba(15, 33, 56, 0.12);
+    min-height: 240px;
+    height: fit-content;
+    transition: width 0.15s ease, max-width 0.15s ease;
+}
+
+.eb-canvas-paper.eb-canvas-paper--mobile {
+    width: 390px;
+    max-width: 390px;
+}
+
+.eb-canvas-blocks {
+    min-height: 240px;
+}
+
+.eb-canvas-empty {
+    margin: 0;
+    padding: 48px 20px;
+    text-align: center;
+    font-size: 12.5px;
+    color: var(--eb-ink-muted);
+}
+
+.eb-canvas-block {
+    position: relative;
+    border: 2px solid transparent;
+    transition: border-color 0.12s ease;
+    cursor: pointer;
+}
+
+.eb-canvas-block:hover {
+    border-color: var(--eb-line);
+}
+
+.eb-canvas-block.is-selected {
+    border-color: var(--eb-accent);
+    z-index: 1;
+}
+
+.eb-canvas-block-inner {
+    pointer-events: none;
+}
+
+.eb-canvas-block-inner img {
+    max-width: 100%;
+}
+
+.eb-canvas-toolbar {
+    position: absolute;
+    top: -14px;
+    right: 6px;
+    display: none;
+    gap: 3px;
+    background: var(--eb-ink-strong);
+    border-radius: 7px;
+    padding: 3px;
+    box-shadow: 0 4px 10px rgba(15, 33, 56, 0.25);
+    z-index: 2;
+}
+
+.eb-canvas-block:hover .eb-canvas-toolbar,
+.eb-canvas-block.is-selected .eb-canvas-toolbar {
+    display: inline-flex;
+}
+
+.eb-canvas-tool-btn {
+    border: none;
+    background: transparent;
+    color: #fff;
+    width: 24px;
+    height: 24px;
+    border-radius: 5px;
+    font-size: 11px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.eb-canvas-tool-btn:hover {
+    background: rgba(255, 255, 255, 0.18);
+}
+
+.eb-canvas-tool-btn:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+}
+
+.eb-canvas-tool-btn:disabled:hover {
+    background: transparent;
+}
+
+.eb-canvas-tool-critical:hover {
+    background: var(--eb-critical);
+}
+
+/* ---- Inspector (panel derecho) ---- */
+.eb-inspector {
+    padding: 14px;
+}
+
+.eb-inspector-empty {
+    text-align: center;
+    padding: 32px 12px;
+    color: var(--eb-ink-muted);
+}
+
+.eb-inspector-empty i {
+    font-size: 20px;
+    margin-bottom: 8px;
+    display: block;
+    color: var(--eb-line);
+}
+
+.eb-inspector-empty p {
+    margin: 0;
+    font-size: 12.5px;
+    line-height: 1.5;
+}
+
+.eb-inspector-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--eb-line-soft);
+}
+
+.eb-inspector-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    background: var(--eb-accent);
+    color: #fff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    flex: 0 0 auto;
+}
+
+.eb-inspector-title {
+    font-size: 13.5px;
+    font-weight: 700;
+    color: var(--eb-ink-strong);
+}
+
+.eb-inspector-sub {
+    font-family: var(--eb-font-mono);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-size: 10px;
+    color: var(--eb-ink-muted);
+}
+
+.eb-tabs {
+    display: flex;
+    gap: 4px;
+    background: var(--eb-bg);
+    border-radius: 8px;
+    padding: 3px;
+    margin-bottom: 14px;
+}
+
+.eb-tab-btn {
+    flex: 1 1 0;
+    border: none;
+    background: transparent;
+    color: var(--eb-ink-soft);
+    font-family: var(--eb-font-mono);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-size: 10.5px;
+    font-weight: 700;
+    padding: 7px 4px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.12s ease, color 0.12s ease;
+}
+
+.eb-tab-btn:hover {
+    color: var(--eb-accent);
+}
+
+.eb-tab-btn.is-active {
+    background: var(--eb-surface);
+    color: var(--eb-accent);
+    box-shadow: 0 1px 2px rgba(15, 33, 56, 0.1);
+}
+
+.eb-tab-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.eb-inspector-note {
+    margin: 0;
+    font-size: 12px;
+    line-height: 1.5;
+    color: var(--eb-ink-soft);
+    background: var(--eb-bg);
+    border-radius: 7px;
+    padding: 10px;
+}
+
+.eb-logo-preview {
+    background: #0B4C87;
+    border-radius: 6px;
+    padding: 10px;
+    display: inline-flex;
+    align-self: flex-start;
+    margin-bottom: 10px;
+}
+
+/* ---- Campos reutilizables dentro del inspector ---- */
+.eb-fields-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: flex-end;
+}
+
+.eb-field {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.eb-field label {
+    font-family: var(--eb-font-mono);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-size: 10.5px;
+    font-weight: 600;
+    color: var(--eb-ink-muted);
+}
+
+.eb-field-wide {
+    flex: 1 1 100%;
+}
+
+.eb-field-wide input,
+.eb-field-wide .au-input {
+    width: 100%;
+    font-family: var(--eb-font-sans);
+}
+
+.eb-color-input {
+    width: 40px;
+    height: 30px;
+    padding: 2px;
+    border: 1px solid var(--eb-line);
+    border-radius: 6px;
+    background: var(--eb-surface);
+    cursor: pointer;
+}
+
+.eb-number-input {
+    width: 100%;
+    font-family: var(--eb-font-sans);
+}
+
+.eb-tab-panel .au-input,
+.eb-tab-panel .au-select {
+    font-family: var(--eb-font-sans);
+    font-size: 13px;
+    border: 1px solid var(--eb-line);
+    border-radius: 7px;
+}
+
+.eb-quill-mount {
+    background: #fff;
+    min-height: 140px;
+    border: 1px solid var(--eb-line);
+    border-radius: 7px;
+    overflow: hidden;
+}
+
+.eb-quill-mount .ql-editor {
+    min-height: 100px;
+    font-family: var(--eb-font-sans);
+    font-size: 13.5px;
+}
+
+.eb-quill-mount .ql-toolbar.ql-snow {
+    border: none;
+    border-bottom: 1px solid var(--eb-line);
+    font-family: var(--eb-font-sans);
+}
+
+.eb-quill-mount .ql-container.ql-snow {
+    border: none;
+}
+
+/* ---- Responsivo: apilar columnas en pantallas angostas ---- */
+@media (max-width: 900px) {
+    .eb-workspace {
+        grid-template-columns: 1fr;
+        min-width: 0;
+    }
+
+    .eb-col-left,
+    .eb-col-right {
+        max-height: 320px;
+        border-right: none;
+        border-left: none;
+        border-bottom: 1px solid var(--eb-line-soft);
+    }
+
+    .eb-col-center {
+        max-height: 480px;
+    }
+}
+
+/* ===== Modal de vista previa ===== */
+.eb-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 1050;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--eb-font-sans);
+}
+
+.eb-modal-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(15, 33, 56, 0.55);
+}
+
+.eb-modal-dialog {
+    position: relative;
+    width: min(720px, 92vw);
+    max-height: 88vh;
+    background: var(--eb-surface);
+    border-radius: 12px;
+    box-shadow: 0 20px 60px rgba(15, 33, 56, 0.35);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.eb-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--eb-line);
+    color: var(--eb-ink-strong);
+}
+
+.eb-modal-body {
+    padding: 18px;
+    overflow: auto;
+}
+
+#eb-preview-frame {
+    width: 100%;
+    height: 60vh;
+    border: 1px solid var(--eb-line);
+    border-radius: 8px;
+    background: #fff;
+}
+
+/* ==========================================================================
+   Layout v2 — dos columnas: editor a la izquierda, vista previa en vivo a la
+   derecha, con una barra superior de acciones.
+
+   Reemplaza al layout anterior de tres columnas (paleta | lienzo | inspector)
+   sin tocar sus reglas: las de arriba siguen ahí para los elementos internos
+   (bloques, capas, inspector, lienzo), y aquí solo se recolocan los
+   contenedores. Las dos "caras" del panel derecho — el lienzo de bloques y el
+   iframe de vista previa — se alternan con la clase .eb-editor--advanced en la
+   raíz, que pone y quita AU.EmailBuilder al cambiar de modo.
+   ========================================================================== */
+.eb-editor--v2 {
+    border: 1px solid var(--eb-line);
+    border-radius: 12px;
+    overflow: hidden;
+    background: var(--eb-surface);
+}
+
+/* ---- Barra superior: campos + modo + acciones ---- */
+.eb-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    padding: 12px 14px;
+    background: var(--eb-surface);
+    border-bottom: 1px solid var(--eb-line);
+}
+/* Nombre y asunto se encogen antes de que la barra se parta en dos líneas:
+   los botones de acción deben quedar siempre a la vista, a la derecha. */
+.eb-bar-name {
+    flex: 1 1 200px;
+    min-width: 130px;
+}
+.eb-bar-subject {
+    flex: 2 1 240px;
+    min-width: 150px;
+}
+/* El <select> global de admin-ui es width:100%, lo que empujaba la barra a
+   una segunda línea: aquí se le fija un ancho propio. */
+.eb-bar-type {
+    flex: 0 0 150px;
+    width: 150px;
+}
+.eb-bar-spacer {
+    flex: 0 1 0;
+    min-width: 0;
+}
+.eb-bar input.au-input,
+.eb-bar select.au-select {
+    height: 38px;
+    font-size: 13px;
+}
+
+/* Segmentado Vista sencilla / Vista avanzada — sustituye al switch
+   "Modo avanzado" que estaba antes en la barra del editor. */
+.eb-mode-seg {
+    display: inline-flex;
+    background: var(--eb-bg);
+    border: 1px solid var(--eb-line);
+    border-radius: 8px;
+    padding: 3px;
+    gap: 3px;
+}
+.eb-mode-btn {
+    appearance: none;
+    border: 0;
+    background: transparent;
+    color: var(--eb-ink-soft);
+    font-size: 12.5px;
+    font-weight: 600;
+    padding: 7px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    white-space: nowrap;
+}
+.eb-mode-btn:hover {
+    color: var(--eb-ink);
+}
+.eb-mode-btn.is-active {
+    background: var(--eb-surface);
+    color: var(--eb-ink-strong);
+    box-shadow: 0 1px 3px rgba(15, 33, 56, 0.14);
+}
+
+/* ---- Segunda fila: ajustes que no caben en la barra principal ---- */
+.eb-subbar {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    flex-wrap: wrap;
+    padding: 10px 14px;
+    background: var(--eb-bg);
+    border-bottom: 1px solid var(--eb-line);
+    font-size: 12.5px;
+    color: var(--eb-ink-soft);
+}
+.eb-subbar-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.eb-subbar-item > label {
+    font-weight: 600;
+    white-space: nowrap;
+}
+.eb-subbar select.au-select {
+    height: 32px;
+    font-size: 12.5px;
+    min-width: 190px;
+}
+/* El toggle de Estado reusa la fila compartida _toggle-field, pensada para
+   un formulario a lo ancho; aquí se compacta para que quepa en la barra. */
+.eb-subbar .au-toggle-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+}
+.eb-subbar .au-toggle-row-desc {
+    display: none;
+}
+.eb-subbar .au-toggle-row-label {
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--eb-ink-soft);
+}
+
+/* ---- Cuerpo: dos columnas ---- */
+.eb-split {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    min-height: 560px;
+}
+.eb-split-left {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    border-right: 1px solid var(--eb-line);
+    background: var(--eb-surface);
+}
+.eb-split-right {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    background: var(--eb-bg);
+}
+.eb-pane-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 11px 14px;
+    border-bottom: 1px solid var(--eb-line-soft);
+    font-size: 11.5px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--eb-ink-muted);
+}
+.eb-pane-head i {
+    color: var(--eb-accent);
+    margin-right: 6px;
+}
+.eb-pane-note {
+    padding: 10px 14px;
+    border-top: 1px solid var(--eb-line-soft);
+    font-size: 12px;
+    color: var(--eb-ink-muted);
+}
+
+/* ---- Columna izquierda, vista sencilla: bloques + capas + inspector ---- */
+.eb-side-blocks {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    flex-direction: column;
+}
+.eb-side-blocks .eb-panel-section {
+    border-bottom: 1px solid var(--eb-line-soft);
+}
+.eb-side-blocks .eb-inspector {
+    border-top: 1px solid var(--eb-line-soft);
+}
+
+/* ---- Columna izquierda, vista avanzada: HTML crudo ---- */
+.eb-token-bar {
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--eb-line-soft);
+}
+.eb-token-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--eb-ink-soft);
+    margin-bottom: 8px;
+}
+.eb-token-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+.eb-token-chip {
+    appearance: none;
+    cursor: pointer;
+    font-family: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 11.5px;
+    color: var(--eb-ink);
+    background: var(--eb-surface);
+    border: 1px solid var(--eb-line);
+    border-radius: 6px;
+    padding: 5px 9px;
+}
+.eb-token-chip:hover {
+    border-color: var(--eb-accent);
+    color: var(--eb-accent);
+    background: var(--eb-accent-soft);
+}
+.eb-token-help {
+    margin-top: 8px;
+    font-size: 11.5px;
+    color: var(--eb-ink-muted);
+}
+.eb-html-host {
+    flex: 1 1 auto;
+    min-height: 0;
+    display: flex;
+}
+/* En el layout v2 el textarea ocupa toda la columna, no un bloque suelto
+   debajo del lienzo como en el layout anterior. */
+.eb-editor--v2 #body-hidden.eb-html-textarea {
+    margin-top: 0;
+    min-height: 360px;
+    height: 100%;
+    border: 0;
+    border-radius: 0;
+    resize: none;
+}
+
+/* ---- Columna derecha: lienzo (sencilla) / iframe (avanzada) ---- */
+.eb-canvas-host {
+    flex: 1 1 auto;
+    min-height: 0;
+    background: repeating-conic-gradient(#F1F3F8 0% 25%, #EAEDF3 0% 50%) 50% / 16px 16px;
+}
+.eb-editor--v2 .eb-canvas-scroll {
+    max-height: none;
+}
+.eb-editor--v2 .eb-canvas-paper {
+    width: 100%;
+    max-width: 620px;
+}
+.eb-editor--v2 .eb-canvas-paper--mobile {
+    max-width: 380px;
+}
+.eb-preview-pane {
+    flex: 1 1 auto;
+    min-height: 0;
+    flex-direction: column;
+    align-items: center;
+    padding: 16px;
+    overflow: auto;
+    background: var(--eb-bg);
+}
+.eb-preview-pane--mobile #eb-preview-frame {
+    max-width: 380px;
+}
+#eb-preview-frame {
+    width: 100%;
+    max-width: 620px;
+    flex: 1 1 auto;
+    min-height: 420px;
+    border: 1px solid var(--eb-line);
+    border-radius: 8px;
+    background: #FFFFFF;
+}
+#eb-preview-loading {
+    font-size: 12.5px;
+    color: var(--eb-ink-muted);
+    padding: 6px 0 10px;
+}
+.eb-preview-subject {
+    align-self: stretch;
+    font-size: 12.5px;
+    color: var(--eb-ink-soft);
+    padding: 0 2px 12px;
+}
+.eb-preview-subject strong {
+    color: var(--eb-ink-strong);
+}
+
+/* ---- Alternancia sencilla / avanzada ---- */
+.eb-editor--v2 .eb-side-html,
+.eb-editor--v2 .eb-preview-pane {
+    display: none;
+}
+.eb-editor--v2 .eb-side-blocks,
+.eb-editor--v2 .eb-canvas-host {
+    display: flex;
+}
+.eb-editor--v2.eb-editor--advanced .eb-side-blocks,
+.eb-editor--v2.eb-editor--advanced .eb-canvas-host {
+    display: none;
+}
+.eb-editor--v2.eb-editor--advanced .eb-side-html {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    min-height: 0;
+}
+.eb-editor--v2.eb-editor--advanced .eb-preview-pane {
+    display: flex;
+}
+
+/* ---- Responsivo: por debajo de 1100px las dos columnas se apilan ---- */
+@media (max-width: 1100px) {
+    .eb-split {
+        grid-template-columns: minmax(0, 1fr);
+    }
+    .eb-split-left {
+        border-right: 0;
+        border-bottom: 1px solid var(--eb-line);
+    }
+    .eb-editor--v2 .eb-canvas-host,
+    .eb-preview-pane {
+        min-height: 460px;
+    }
+}
+
+/* Cabecera fija + contenido desplazable dentro de cada cara de la columna
+   izquierda (la lista de bloques/capas/inspector puede crecer bastante). */
+.eb-side-scroll {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+}

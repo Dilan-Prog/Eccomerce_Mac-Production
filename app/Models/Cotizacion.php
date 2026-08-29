@@ -140,4 +140,15 @@ class Cotizacion extends Model
     {
         return $this->hasMany(CotizacionItem::class);
     }
+
+    /**
+     * Inscripciones de esta cotización en secuencias de seguimiento por
+     * correo. La usa App\Support\SequenceProcessor con whereDoesntHave para
+     * saber qué cotizaciones todavía no están inscritas en una secuencia
+     * dada — de ahí que la inscripción sea idempotente.
+     */
+    public function sequenceEnrollments(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(EmailSequenceEnrollment::class);
+    }
 }

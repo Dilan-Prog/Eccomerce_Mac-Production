@@ -28,7 +28,8 @@ use App\Models\User;
  * regla que ya cumplían los placeholders planos de arriba cuando no había
  * cupón/categoría, solo que ahora aplica por namespace completo:
  *
- * - {{contact.name}}     $data['contact'] instancia de App\Models\User
+ * - {{contact.name}}     $data['contact'] instancia de App\Models\User o
+ *                        arreglo plano {name, email, company} (campañas)
  * - {{contact.email}}
  * - {{contact.company}}
  * - {{quote.quote_number}}  $data['quote'] instancia de App\Models\Cotizacion (= folio)
@@ -72,7 +73,7 @@ class EmailTemplateRenderer
      * @param  array{
      *     nombre_cliente?: string, categoria?: string, productos?: string,
      *     cupon_codigo?: string, cupon_descuento?: string, cupon_bloque?: string,
-     *     contact?: ?User, quote?: ?Cotizacion, cart?: ?array{total: float, items: array<int, array{name?: string, image?: string, price?: float, qty?: int, line_total?: float}>},
+     *     contact?: User|array{name?: string, email?: string, company?: string}|null, quote?: ?Cotizacion, cart?: ?array{total: float, items: array<int, array{name?: string, image?: string, price?: float, qty?: int, line_total?: float}>},
      *     deal?: mixed
      * }  $data
      * @return array{subject: string, html: string}
@@ -141,8 +142,18 @@ class EmailTemplateRenderer
         $search = [];
         $replace = [];
 
-        if (($data['contact'] ?? null) instanceof User) {
-            [$s, $r] = $this->contactPlaceholders($data['contact']);
+        // El contacto puede venir como App\Models\User (flujo de ofertas 1 a 1
+        // y de secuencias, donde siempre hay una cuenta real detrás) o como
+        // arreglo plano {name, email, company} — ese es el caso de las
+        // campañas, cuyos destinatarios son un snapshot congelado que puede
+        // incluir contactos manuales o de Aspel sin cuenta en el sitio (ver
+        // App\Models\EmailCampaignRecipient). Los dos se normalizan al mismo
+        // arreglo antes de armar los marcadores; cualquier otra cosa (o su
+        // ausencia) deja el namespace {{contact.*}} sin sustituir, como
+        // siempre.
+        $contact = $this->normalizeContact($data['contact'] ?? null);
+        if ($contact !== null) {
+            [$s, $r] = $this->contactPlaceholders($contact);
             array_push($search, ...$s);
             array_push($replace, ...$r);
         }
@@ -162,20 +173,53 @@ class EmailTemplateRenderer
         return [$search, $replace];
     }
 
-    /** @return array{0: array<int, string>, 1: array<int, string>} */
-    private function contactPlaceholders(User $contact): array
+    /**
+     * Normaliza el contacto recibido a un arreglo {name, email, company},
+     * venga como User o ya como arreglo plano. Devuelve null si no vino nada
+     * usable — el llamador entonces no agrega ningún par y los marcadores
+     * {{contact.*}} se quedan tal cual.
+     *
+     * @return array{name: string, email: string, company: string}|null
+     */
+    private function normalizeContact(mixed $contact): ?array
     {
-        // name.' '.last_name solo si last_name viene con algo — evita dejar
-        // un espacio colgante al final para clientes sin apellido guardado
-        // (ej. cuentas viejas o creadas por un admin sin ese dato).
-        $name = trim($contact->name ?? '');
-        if (!empty($contact->last_name)) {
-            $name = trim($name . ' ' . $contact->last_name);
+        if ($contact instanceof User) {
+            // name.' '.last_name solo si last_name viene con algo — evita
+            // dejar un espacio colgante al final para clientes sin apellido
+            // guardado (ej. cuentas viejas o creadas por un admin sin ese
+            // dato).
+            $name = trim($contact->name ?? '');
+            if (!empty($contact->last_name)) {
+                $name = trim($name . ' ' . $contact->last_name);
+            }
+
+            return [
+                'name' => $name,
+                'email' => (string) ($contact->email ?? ''),
+                'company' => (string) ($contact->company ?? ''),
+            ];
         }
 
+        if (is_array($contact) && !empty($contact)) {
+            return [
+                'name' => trim((string) ($contact['name'] ?? '')),
+                'email' => (string) ($contact['email'] ?? ''),
+                'company' => (string) ($contact['company'] ?? ''),
+            ];
+        }
+
+        return null;
+    }
+
+    /**
+     * @param  array{name: string, email: string, company: string}  $contact
+     * @return array{0: array<int, string>, 1: array<int, string>}
+     */
+    private function contactPlaceholders(array $contact): array
+    {
         return [
             ['{{contact.name}}', '{{contact.email}}', '{{contact.company}}'],
-            [e($name), e($contact->email ?? ''), e($contact->company ?? '')],
+            [e($contact['name']), e($contact['email']), e($contact['company'])],
         ];
     }
 

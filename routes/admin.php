@@ -34,6 +34,10 @@ use App\Http\Controllers\Backend\TransferController;
 use App\Http\Controllers\Backend\AdminCotizacionController;
 use App\Http\Controllers\Backend\AspelApiTokenController;
 use App\Http\Controllers\Backend\MarketingApiTokenController;
+use App\Http\Controllers\Backend\EmailCampaignController;
+use App\Http\Controllers\Backend\EmailContactListController;
+use App\Http\Controllers\Backend\EmailMarketingController;
+use App\Http\Controllers\Backend\EmailSequenceController;
 use App\Http\Controllers\Backend\EmailTemplateController;
 use App\Http\Controllers\Backend\ProductVariantCombinationsController;
 use App\Models\Subcategory;
@@ -201,7 +205,56 @@ Route::resource('marketing-tokens', MarketingApiTokenController::class)->except(
 /** Marketing — Plantillas de correo (grupo "Marketing" en el sidebar, junto a Integración) */
 Route::get('email-templates/table-data', [EmailTemplateController::class, 'tableData'])->name('email-templates.table-data');
 Route::post('email-templates/preview-blocks', [EmailTemplateController::class, 'previewBlocks'])->name('email-templates.preview-blocks');
+// Fragmentos del editor (sin layout) para el panel de la pantalla de pestañas
+// de Email Marketing. Van antes del resource para que "create-fragment" no lo
+// capture la ruta de parámetro {email_template}.
+Route::get('email-templates/create-fragment', [EmailTemplateController::class, 'createFragment'])->name('email-templates.create-fragment');
+Route::get('email-templates/{id}/edit-fragment', [EmailTemplateController::class, 'editFragment'])->name('email-templates.edit-fragment');
 Route::resource('email-templates', EmailTemplateController::class)->except(['show']);
+
+/**
+ * Marketing — Email Marketing: landing con pestañas Plantillas / Listas /
+ * Campañas / Secuencias. Es la única entrada del sidebar del módulo; las
+ * rutas email-templates.* de arriba siguen existiendo tal cual (ninguna URL
+ * vieja se rompe), solo que ahora su listado se ve dentro de una pestaña.
+ */
+Route::get('email-marketing', [EmailMarketingController::class, 'index'])->name('email-marketing.index');
+
+/** Marketing — Listas de contactos (pestaña "Listas") */
+Route::get('email-lists/table-data', [EmailContactListController::class, 'tableData'])->name('email-lists.table-data');
+Route::get('email-lists/create-fragment', [EmailContactListController::class, 'createFragment'])->name('email-lists.create-fragment');
+Route::get('email-lists/{id}/edit-fragment', [EmailContactListController::class, 'editFragment'])->name('email-lists.edit-fragment');
+Route::get('email-lists/{id}/members/table-data', [EmailContactListController::class, 'membersTableData'])->name('email-lists.members.table-data');
+Route::post('email-lists/{id}/members/manual', [EmailContactListController::class, 'addManual'])->name('email-lists.members.manual');
+Route::post('email-lists/{id}/members/import-customers', [EmailContactListController::class, 'importCustomers'])->name('email-lists.members.import-customers');
+Route::post('email-lists/{id}/members/import-aspel', [EmailContactListController::class, 'importAspel'])->name('email-lists.members.import-aspel');
+Route::delete('email-lists/{id}/members/{memberId}', [EmailContactListController::class, 'removeMember'])->name('email-lists.members.destroy');
+Route::get('email-lists/{id}', [EmailContactListController::class, 'show'])->name('email-lists.show');
+Route::post('email-lists', [EmailContactListController::class, 'store'])->name('email-lists.store');
+Route::put('email-lists/{id}', [EmailContactListController::class, 'update'])->name('email-lists.update');
+Route::delete('email-lists/{id}', [EmailContactListController::class, 'destroy'])->name('email-lists.destroy');
+
+/** Marketing — Campañas (pestaña "Campañas") */
+Route::get('email-campaigns/table-data', [EmailCampaignController::class, 'tableData'])->name('email-campaigns.table-data');
+Route::get('email-campaigns/create-fragment', [EmailCampaignController::class, 'createFragment'])->name('email-campaigns.create-fragment');
+Route::get('email-campaigns/{id}/edit-fragment', [EmailCampaignController::class, 'editFragment'])->name('email-campaigns.edit-fragment');
+Route::get('email-campaigns/{id}/recipients/table-data', [EmailCampaignController::class, 'recipientsTableData'])->name('email-campaigns.recipients.table-data');
+Route::post('email-campaigns/{id}/schedule', [EmailCampaignController::class, 'schedule'])->name('email-campaigns.schedule');
+Route::post('email-campaigns/{id}/cancel', [EmailCampaignController::class, 'cancel'])->name('email-campaigns.cancel');
+Route::get('email-campaigns/{id}', [EmailCampaignController::class, 'show'])->name('email-campaigns.show');
+Route::post('email-campaigns', [EmailCampaignController::class, 'store'])->name('email-campaigns.store');
+Route::put('email-campaigns/{id}', [EmailCampaignController::class, 'update'])->name('email-campaigns.update');
+Route::delete('email-campaigns/{id}', [EmailCampaignController::class, 'destroy'])->name('email-campaigns.destroy');
+
+/** Marketing — Secuencias (pestaña "Secuencias") */
+Route::get('email-sequences/table-data', [EmailSequenceController::class, 'tableData'])->name('email-sequences.table-data');
+Route::get('email-sequences/create', [EmailSequenceController::class, 'create'])->name('email-sequences.create');
+Route::get('email-sequences/{id}/edit', [EmailSequenceController::class, 'edit'])->name('email-sequences.edit');
+Route::get('email-sequences/{id}/enrollments/table-data', [EmailSequenceController::class, 'enrollmentsTableData'])->name('email-sequences.enrollments.table-data');
+Route::get('email-sequences/{id}', [EmailSequenceController::class, 'show'])->name('email-sequences.show');
+Route::post('email-sequences', [EmailSequenceController::class, 'store'])->name('email-sequences.store');
+Route::put('email-sequences/{id}', [EmailSequenceController::class, 'update'])->name('email-sequences.update');
+Route::delete('email-sequences/{id}', [EmailSequenceController::class, 'destroy'])->name('email-sequences.destroy');
 
 /**Ads route */
 Route::get('track-conversion', [TrackConversionController::class, 'index'])->name('track-conversion.index');
