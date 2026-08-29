@@ -92,26 +92,67 @@ class MarketingOfferBuilder
             $aspelClient = AspelClient::where('user_id', $user->id)->first();
 
             if ($aspelClient) {
-                $aspelRows = AspelSaleItem::query()
-                    ->join('aspel_sales', 'aspel_sales.cve_doc', '=', 'aspel_sale_items.cve_doc')
-                    ->join('aspel_products', 'aspel_products.cve_art', '=', 'aspel_sale_items.cve_art')
-                    ->join('products', 'products.sku', '=', 'aspel_products.cve_art')
-                    ->where('aspel_sales.cve_clpv', $aspelClient->clave)
-                    ->whereNull('aspel_sales.fecha_cancela')
-                    ->select('products.category_id', 'aspel_sale_items.cant', 'aspel_sale_items.tot_partida')
-                    ->get();
-
-                foreach ($aspelRows as $row) {
-                    $categoryId = $row->category_id;
-                    if (!$categoryId) {
-                        continue;
-                    }
-                    $totals[$categoryId]['qty'] = ($totals[$categoryId]['qty'] ?? 0) + (float) $row->cant;
-                    $totals[$categoryId]['spent'] = ($totals[$categoryId]['spent'] ?? 0) + (float) $row->tot_partida;
-                }
+                $totals = $this->aspelPurchaseTotalsByCategory($aspelClient->clave);
             }
         }
 
+        return $this->dominantCategoryFromTotals($totals);
+    }
+
+    /**
+     * Igual que resolveDominantCategory(), pero para un cliente cuya única
+     * identidad es su ficha de Aspel (aspel_clients.clave) — sin requerir
+     * ningún vínculo a users.id. El ecommerce y Aspel son universos
+     * independientes: la mayoría de los clientes reales de la empresa nunca
+     * compran por el sitio web, así que este es el camino de entrada
+     * "directo" para el flujo de email marketing basado en facturación real
+     * (FACTF01/PAR_FACTF01, ya sincronizadas en aspel_sales/aspel_sale_items).
+     */
+    public function resolveDominantCategoryForAspelClient(AspelClient $aspelClient): ?int
+    {
+        return $this->dominantCategoryFromTotals($this->aspelPurchaseTotalsByCategory($aspelClient->clave));
+    }
+
+    /**
+     * Suma, por category_id, las unidades y el importe comprado por un
+     * cliente de Aspel (identificado por su clave) — cruzando
+     * aspel_sale_items -> aspel_sales (para filtrar por cliente y excluir
+     * facturas canceladas) -> aspel_products -> products (para llegar a la
+     * categoría real vía coincidencia de SKU). Extraído para que tanto el
+     * fallback de resolveDominantCategory() (cliente CON cuenta vinculada)
+     * como resolveDominantCategoryForAspelClient() (cliente SIN cuenta,
+     * entrada directa) usen exactamente la misma consulta.
+     *
+     * @return array<int, array{qty: float, spent: float}>
+     */
+    private function aspelPurchaseTotalsByCategory(string $claveCliente): array
+    {
+        $totals = [];
+
+        $aspelRows = AspelSaleItem::query()
+            ->join('aspel_sales', 'aspel_sales.cve_doc', '=', 'aspel_sale_items.cve_doc')
+            ->join('aspel_products', 'aspel_products.cve_art', '=', 'aspel_sale_items.cve_art')
+            ->join('products', 'products.sku', '=', 'aspel_products.cve_art')
+            ->where('aspel_sales.cve_clpv', $claveCliente)
+            ->whereNull('aspel_sales.fecha_cancela')
+            ->select('products.category_id', 'aspel_sale_items.cant', 'aspel_sale_items.tot_partida')
+            ->get();
+
+        foreach ($aspelRows as $row) {
+            $categoryId = $row->category_id;
+            if (!$categoryId) {
+                continue;
+            }
+            $totals[$categoryId]['qty'] = ($totals[$categoryId]['qty'] ?? 0) + (float) $row->cant;
+            $totals[$categoryId]['spent'] = ($totals[$categoryId]['spent'] ?? 0) + (float) $row->tot_partida;
+        }
+
+        return $totals;
+    }
+
+    /** @param  array<int, array{qty: float, spent: float}>  $totals */
+    private function dominantCategoryFromTotals(array $totals): ?int
+    {
         if (empty($totals)) {
             return null;
         }
@@ -119,6 +160,53 @@ class MarketingOfferBuilder
         uasort($totals, fn ($a, $b) => ($b['qty'] <=> $a['qty']) ?: ($b['spent'] <=> $a['spent']));
 
         return (int) array_key_first($totals);
+    }
+
+    /**
+     * Equivalente a build(User $user) pero para un cliente fuente Aspel sin
+     * cuenta en el sitio (ver resolveDominantCategoryForAspelClient()).
+     *
+     * @return array{category: ?Category, products: Collection<int, Product>, coupon: ?Coupon}
+     */
+    public function buildForAspelClient(AspelClient $aspelClient): array
+    {
+        $categoryId = $this->resolveDominantCategoryForAspelClient($aspelClient);
+
+        if ($categoryId) {
+            return [
+                'category' => Category::find($categoryId),
+                'products' => $this->recommendedProductsForAspelClient($categoryId, $aspelClient),
+                'coupon' => $this->couponForCategory($categoryId),
+            ];
+        }
+
+        return [
+            'category' => null,
+            'products' => $this->fallbackProducts(),
+            'coupon' => null,
+        ];
+    }
+
+    /**
+     * Igual que recommendedProducts(), pero excluye lo ya comprado según el
+     * SKU de los artículos de Aspel (aspel_sale_items.cve_art) en vez de
+     * order_products — este cliente no tiene historial de órdenes del
+     * ecommerce.
+     */
+    protected function recommendedProductsForAspelClient(int $categoryId, AspelClient $aspelClient): Collection
+    {
+        $purchasedSkus = AspelSaleItem::query()
+            ->join('aspel_sales', 'aspel_sales.cve_doc', '=', 'aspel_sale_items.cve_doc')
+            ->where('aspel_sales.cve_clpv', $aspelClient->clave)
+            ->pluck('aspel_sale_items.cve_art');
+
+        return Product::where('category_id', $categoryId)
+            ->where('status', 1)
+            ->where('is_approved', 1)
+            ->whereNotIn('sku', $purchasedSkus)
+            ->orderByDesc('id')
+            ->limit(self::MAX_RECOMMENDED_PRODUCTS)
+            ->get();
     }
 
     /**
@@ -206,6 +294,25 @@ class MarketingOfferBuilder
     {
         return [
             'nombre_cliente' => trim($user->name ?? ''),
+            'categoria' => $offer['category']->name ?? '',
+            'productos' => $this->renderProductsBlock($offer['products']),
+            'cupon_codigo' => $offer['coupon']->cod ?? '',
+            'cupon_descuento' => $this->couponDiscountText($offer['coupon']),
+            'cupon_bloque' => $this->renderCouponBlock($offer['coupon']),
+        ];
+    }
+
+    /**
+     * Igual que placeholderData(), pero leyendo nombre/empresa de la ficha
+     * de Aspel en vez de un User del ecommerce.
+     *
+     * @param  array{category: ?Category, products: Collection<int, Product>, coupon: ?Coupon}  $offer
+     * @return array{nombre_cliente: string, categoria: string, productos: string, cupon_codigo: string, cupon_descuento: string, cupon_bloque: string}
+     */
+    public function placeholderDataForAspelClient(AspelClient $aspelClient, array $offer): array
+    {
+        return [
+            'nombre_cliente' => trim($aspelClient->nombre ?? ''),
             'categoria' => $offer['category']->name ?? '',
             'productos' => $this->renderProductsBlock($offer['products']),
             'cupon_codigo' => $offer['coupon']->cod ?? '',

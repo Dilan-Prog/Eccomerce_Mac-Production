@@ -43,4 +43,10 @@ Route::middleware('aspel.token')->group(function () {
 Route::middleware('marketing.token')->group(function () {
     Route::get('/marketing/customers', [MarketingDataController::class, 'customers']);
     Route::get('/marketing/email/{userId}', [MarketingDataController::class, 'email']);
+
+    // Universo SEPARADO del de arriba: clientes fuente Aspel (facturación
+    // real FACTF01/PAR_FACTF01), sin requerir cuenta de usuario en el sitio.
+    // Ver MarketingDataController::aspelCustomers()/aspelEmail().
+    Route::get('/marketing/aspel-customers', [MarketingDataController::class, 'aspelCustomers']);
+    Route::get('/marketing/aspel-email/{clave}', [MarketingDataController::class, 'aspelEmail']);
 });

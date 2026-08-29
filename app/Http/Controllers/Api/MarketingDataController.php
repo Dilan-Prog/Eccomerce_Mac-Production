@@ -3,12 +3,16 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\AspelClient;
+use App\Models\AspelSale;
+use App\Models\AspelSaleItem;
 use App\Models\EmailTemplate;
 use App\Models\User;
 use App\Support\BlockEmailRenderer;
 use App\Support\EmailTemplateRenderer;
 use App\Support\MarketingOfferBuilder;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 /**
  * Datos de clientes/compras para el flujo de n8n de email marketing (Parte
@@ -169,6 +173,155 @@ class MarketingDataController extends Controller
             'html' => $html,
             'subject' => $subject,
             'recipient_email' => $user->email,
+        ]);
+    }
+
+    /**
+     * GET /api/marketing/aspel-customers
+     *
+     * Universo de clientes SEPARADO del de customers() de arriba — a
+     * propósito: el ecommerce y Aspel se tratan como canales
+     * independientes (la mayoría de los clientes reales de la empresa
+     * compran por facturación tradicional, no por el sitio web). Aquí la
+     * fuente es puramente Aspel: AspelClient con al menos una factura real
+     * (aspel_sales, cruzando por clave = cve_clpv) que no esté cancelada —
+     * no requiere que el cliente tenga cuenta en el sitio
+     * (aspel_clients.user_id puede ser null). Paginado (50).
+     */
+    public function aspelCustomers(Request $request)
+    {
+        $clients = AspelClient::query()
+            ->whereExists(function ($query) {
+                $query->select(DB::raw(1))
+                    ->from('aspel_sales')
+                    ->whereColumn('aspel_sales.cve_clpv', 'aspel_clients.clave')
+                    ->whereNull('aspel_sales.fecha_cancela');
+            })
+            ->orderBy('id')
+            ->paginate(50);
+
+        $data = $clients->getCollection()->map(function (AspelClient $client) {
+            $sales = AspelSale::where('cve_clpv', $client->clave)
+                ->whereNull('fecha_cancela')
+                ->orderByDesc('fecha_doc')
+                ->get();
+
+            $items = AspelSaleItem::whereIn('cve_doc', $sales->pluck('cve_doc'))
+                ->leftJoin('aspel_products', 'aspel_products.cve_art', '=', 'aspel_sale_items.cve_art')
+                ->leftJoin('products', 'products.sku', '=', 'aspel_products.cve_art')
+                ->leftJoin('categories', 'categories.id', '=', 'products.category_id')
+                ->select(
+                    'aspel_sale_items.cve_doc',
+                    'aspel_sale_items.cve_art',
+                    'aspel_sale_items.descr_art',
+                    'aspel_sale_items.cant',
+                    'categories.name as category_name'
+                )
+                ->get();
+
+            $products = $items->map(function ($item) use ($sales) {
+                $sale = $sales->firstWhere('cve_doc', $item->cve_doc);
+
+                return [
+                    'product_sku' => $item->cve_art,
+                    'product_name' => $item->descr_art,
+                    'category' => $item->category_name,
+                    'qty' => (float) $item->cant,
+                    'purchased_at' => optional($sale)->fecha_doc,
+                ];
+            })->values();
+
+            return [
+                'clave' => $client->clave,
+                'name' => $client->nombre,
+                'email' => $client->email,
+                'phone' => $client->telefono,
+                'company' => $client->nombre_comercial,
+                'purchase_summary' => [
+                    'total_spent' => round((float) $sales->sum('importe'), 2),
+                    'last_purchase_at' => optional($sales->first())->fecha_doc,
+                    'products' => $products,
+                ],
+            ];
+        })->values();
+
+        return response()->json([
+            'status' => 'success',
+            'data' => $data,
+            'meta' => [
+                'current_page' => $clients->currentPage(),
+                'per_page' => $clients->perPage(),
+                'total' => $clients->total(),
+                'last_page' => $clients->lastPage(),
+            ],
+        ]);
+    }
+
+    /**
+     * GET /api/marketing/aspel-email/{clave}[?template_id=N]
+     *
+     * Equivalente a email() de arriba pero para clientes fuente Aspel — el
+     * cliente se identifica por su clave real de Aspel
+     * (aspel_clients.clave), no por un id de la tabla users. Misma
+     * selección de plantilla (template_id -> categoría dominante -> general
+     * -> vista Blade de respaldo) y misma categoría dominante calculada por
+     * facturación real (FACTF01/PAR_FACTF01), solo que sin pasar por un
+     * User — ver MarketingOfferBuilder::buildForAspelClient().
+     */
+    public function aspelEmail(Request $request, string $clave)
+    {
+        $aspelClient = AspelClient::where('clave', $clave)->firstOrFail();
+        $offer = $this->offerBuilder->buildForAspelClient($aspelClient);
+
+        $template = null;
+        if ($request->filled('template_id')) {
+            $template = EmailTemplate::where('id', $request->query('template_id'))->where('status', true)->first();
+        }
+        if (!$template && $offer['category']) {
+            $template = EmailTemplate::where('category_id', $offer['category']->id)->where('status', true)->first();
+        }
+        if (!$template) {
+            $template = EmailTemplate::whereNull('category_id')->where('status', true)->first();
+        }
+
+        if ($template) {
+            $placeholderData = $this->offerBuilder->placeholderDataForAspelClient($aspelClient, $offer);
+            // {{contact.*}} también disponible aquí (ver el cambio de
+            // EmailTemplateRenderer que ya acepta un arreglo plano ademas de
+            // un User real) — útil para plantillas que se quieran reusar
+            // entre clientes de ecommerce y clientes de Aspel.
+            $placeholderData['contact'] = [
+                'name' => trim($aspelClient->nombre ?? ''),
+                'email' => (string) ($aspelClient->email ?? ''),
+                'company' => (string) ($aspelClient->nombre_comercial ?? ''),
+            ];
+
+            $effectiveTemplate = $template;
+            if (!empty($template->blocks_json['blocks'] ?? [])) {
+                $effectiveTemplate = $template->replicate();
+                $effectiveTemplate->body = app(BlockEmailRenderer::class)->render($template->blocks_json, $placeholderData);
+            }
+
+            $rendered = app(EmailTemplateRenderer::class)->render($effectiveTemplate, $placeholderData);
+            $html = $rendered['html'];
+            $subject = $rendered['subject'];
+        } else {
+            $subject = $offer['category']
+                ? 'Ofertas en ' . $offer['category']->name . ' para ti — Mac Del Norte'
+                : 'Ofertas especiales para ti — Mac Del Norte';
+
+            $html = view('emails.marketing-offer', [
+                'user' => (object) ['name' => $aspelClient->nombre],
+                'category' => $offer['category'],
+                'products' => $offer['products'],
+                'coupon' => $offer['coupon'],
+            ])->render();
+        }
+
+        return response()->json([
+            'html' => $html,
+            'subject' => $subject,
+            'recipient_email' => $aspelClient->email,
         ]);
     }
 }
