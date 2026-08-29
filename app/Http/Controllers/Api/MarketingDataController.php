@@ -229,6 +229,9 @@ class MarketingDataController extends Controller
                     'aspel_sale_items.cve_art',
                     'aspel_sale_items.descr_art',
                     'aspel_sale_items.cant',
+                    'aspel_products.campo_libre_modelo as aspel_modelo',
+                    'products.name as ecommerce_product_name',
+                    'products.productModel as ecommerce_modelo',
                     'categories.name as category_name',
                     'subcategories.name as sub_category_name',
                     'child_categories.name as child_category_name'
@@ -239,14 +242,18 @@ class MarketingDataController extends Controller
                 $sale = $sales->firstWhere('cve_doc', $item->cve_doc);
 
                 return [
-                    // Estos 4 vienen de Aspel (aspel_sale_items/aspel_sales) tal cual.
+                    // Estos vienen de Aspel (aspel_sale_items/aspel_sales/
+                    // aspel_products) tal cual.
                     'product_sku' => $item->cve_art,
                     'product_name' => $item->descr_art,
+                    'aspel_modelo' => $item->aspel_modelo,
                     'qty' => (float) $item->cant,
                     'purchased_at' => optional($sale)->fecha_doc,
-                    // Estos 3 vienen del catalogo del sitio (products/categories/
+                    // Estos vienen del catalogo del sitio (products/categories/
                     // subcategories/child_categories), cruzados por SKU -- prefijo
                     // "ecommerce_" para que quede claro que es otro origen de datos.
+                    'ecommerce_product_name' => $item->ecommerce_product_name,
+                    'ecommerce_modelo' => $item->ecommerce_modelo,
                     'ecommerce_category' => $item->category_name,
                     'ecommerce_sub_category' => $item->sub_category_name,
                     'ecommerce_child_category' => $item->child_category_name,
