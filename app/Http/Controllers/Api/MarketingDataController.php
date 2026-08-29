@@ -229,6 +229,7 @@ class MarketingDataController extends Controller
                     'aspel_sale_items.cve_art',
                     'aspel_sale_items.descr_art',
                     'aspel_sale_items.cant',
+                    'aspel_products.descr as aspel_product_name',
                     'aspel_products.campo_libre_modelo as aspel_modelo',
                     'products.name as ecommerce_product_name',
                     'products.productModel as ecommerce_modelo',
@@ -246,6 +247,7 @@ class MarketingDataController extends Controller
                     // aspel_products) tal cual.
                     'product_sku' => $item->cve_art,
                     'product_name' => $item->descr_art,
+                    'aspel_product_name' => $item->aspel_product_name,
                     'aspel_modelo' => $item->aspel_modelo,
                     'qty' => (float) $item->cant,
                     'purchased_at' => optional($sale)->fecha_doc,
