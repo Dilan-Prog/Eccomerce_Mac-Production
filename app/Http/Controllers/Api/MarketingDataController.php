@@ -191,10 +191,17 @@ class MarketingDataController extends Controller
      * decisión de separarlos por si tienen o no correo se deja a quien
      * consuma este endpoint (n8n), no se filtra aquí, para no ocultar ese
      * universo de clientes sin correo si se necesita para otra cosa (ej.
-     * limpieza de datos, seguimiento por otro canal). Paginado (50).
+     * limpieza de datos, seguimiento por otro canal). Paginado (50 por
+     * defecto) — se puede pedir un tamaño de página distinto con
+     * ?per_page=N (tope 1000, para no armar una respuesta enorme por
+     * accidente) si se prefiere traer todo de una sola llamada en vez de
+     * iterar página por página desde n8n.
      */
     public function aspelCustomers(Request $request)
     {
+        $perPage = (int) $request->query('per_page', 50);
+        $perPage = $perPage > 0 ? min($perPage, 1000) : 50;
+
         $clients = AspelClient::query()
             ->whereExists(function ($query) {
                 $query->select(DB::raw(1))
@@ -203,7 +210,7 @@ class MarketingDataController extends Controller
                     ->whereNull('aspel_sales.fecha_cancela');
             })
             ->orderBy('id')
-            ->paginate(50);
+            ->paginate($perPage);
 
         $data = $clients->getCollection()->map(function (AspelClient $client) {
             $sales = AspelSale::where('cve_clpv', $client->clave)
