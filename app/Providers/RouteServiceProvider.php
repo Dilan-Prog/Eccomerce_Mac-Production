@@ -28,6 +28,18 @@ class RouteServiceProvider extends ServiceProvider
             return Limit::perMinute(60)->by($request->user()?->id ?: $request->ip());
         });
 
+        // Limite propio y mas generoso para /api/marketing/* -- n8n necesita
+        // llamar el render de correo una vez por cada cliente de una campana
+        // (potencialmente cientos en una sola corrida), lo que choca con el
+        // limite general de 60/min pensado para trafico normal de API. Se
+        // deja como un limitador CON nombre distinto (no se toca el de
+        // arriba) para no afectar /api/aspel/* ni el resto. Ver
+        // app/Http/Kernel.php (throttle removido del grupo 'api') y
+        // routes/api.php (aplicado explicito por grupo).
+        RateLimiter::for('marketing-api', function (Request $request) {
+            return Limit::perMinute(600)->by($request->ip());
+        });
+
         $this->routes(function () {
             Route::middleware('api')
                 ->prefix('api')

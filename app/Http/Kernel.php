@@ -42,7 +42,13 @@ class Kernel extends HttpKernel
 
         'api' => [
             // \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
-            \Illuminate\Routing\Middleware\ThrottleRequests::class.':api',
+            // Throttle removido de aqui a proposito -- aplicarlo a nivel de
+            // grupo afectaba TODAS las rutas de routes/api.php por igual
+            // (incluyendo /api/marketing/*, que necesita un limite mas alto
+            // para n8n). Ahora se aplica explicito por sub-grupo dentro de
+            // routes/api.php (throttle:api para lo de siempre,
+            // throttle:marketing-api para marketing -- ver
+            // RouteServiceProvider::boot()).
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
         ],
     ];

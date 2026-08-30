@@ -22,7 +22,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+Route::middleware(['throttle:api', 'auth:sanctum'])->get('/user', function (Request $request) {
     return $request->user();
 });
 
@@ -31,7 +31,10 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 // Requiere `Authorization: Bearer {token}` con un token activo (ver
 // App\Http\Middleware\AspelApiTokenMiddleware / módulo "Integración").
-Route::middleware('aspel.token')->group(function () {
+// throttle:api explicito (60/min) -- mismo limite de siempre, ya no viene
+// gratis del grupo 'api' (ver Kernel.php) porque /marketing/* necesita uno
+// distinto y mas alto (ver mas abajo).
+Route::middleware(['throttle:api', 'aspel.token'])->group(function () {
     Route::post('/aspel/sync', [AspelSyncController::class, 'sync']);
     Route::post('/aspel/precio-x-producto', [PrecioXProductoController::class, 'precioXProducto']);
     Route::post('/aspel/clientes', [AspelClientSyncController::class, 'sync']);
@@ -42,7 +45,11 @@ Route::middleware('aspel.token')->group(function () {
 // Datos de clientes/compras para el flujo de n8n de email marketing (ver
 // App\Http\Middleware\MarketingApiTokenMiddleware / módulo "Marketing").
 // Sistema de tokens aislado de aspel.token — no comparten universo.
-Route::middleware('marketing.token')->group(function () {
+// throttle:marketing-api (600/min, ver RouteServiceProvider::boot()) en vez
+// de throttle:api (60/min) -- n8n necesita renderizar el correo de cada
+// cliente de una campaña en la misma corrida, lo que facilmente pasa de 60
+// llamadas.
+Route::middleware(['throttle:marketing-api', 'marketing.token'])->group(function () {
     Route::get('/marketing/customers', [MarketingDataController::class, 'customers']);
     Route::get('/marketing/email/{userId}', [MarketingDataController::class, 'email']);
 
