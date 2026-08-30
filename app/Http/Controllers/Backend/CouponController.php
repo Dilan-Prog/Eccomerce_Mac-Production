@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Backend;
 
 use App\Http\Controllers\Controller;
 use App\Models\Category;
+use App\Models\ChildCategory;
 use App\Models\Coupon;
+use App\Models\Subcategory;
 use App\Support\AdminTable\AdminTableExport;
 use App\Support\AdminTable\AdminTableRequest;
 use App\Support\AdminTable\Queries\CouponTableQuery;
@@ -12,6 +14,7 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use Maatwebsite\Excel\Excel as ExcelFormat;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 
 class CouponController extends Controller
 {
@@ -87,7 +90,13 @@ class CouponController extends Controller
     public function createFragment()
     {
         $categories = Category::active()->orderBy('name')->get();
-        return view('admin-ui.coupons._form', compact('categories'));
+        // Todas precargadas (no filtradas por categoria) -- el cascadeo
+        // categoria->subcategoria->categoria hija se hace en JS del lado del
+        // cliente, mismo patron ya usado en admin-ui/products/_form.blade.php.
+        $subCategories = Subcategory::orderBy('name')->get();
+        $childCategories = ChildCategory::orderBy('name')->get();
+
+        return view('admin-ui.coupons._form', compact('categories', 'subCategories', 'childCategories'));
     }
 
     /** Bare form fragment for the admin-ui Editar modal, pre-filled. */
@@ -95,7 +104,34 @@ class CouponController extends Controller
     {
         $coupon = Coupon::findOrFail($id);
         $categories = Category::active()->orderBy('name')->get();
-        return view('admin-ui.coupons._form', compact('coupon', 'categories'));
+        $subCategories = Subcategory::orderBy('name')->get();
+        $childCategories = ChildCategory::orderBy('name')->get();
+
+        return view('admin-ui.coupons._form', compact('coupon', 'categories', 'subCategories', 'childCategories'));
+    }
+
+    /**
+     * Un cupon ACTIVO no puede compartir exactamente la misma combinacion de
+     * categoria/subcategoria/categoria hija (los 3 en NULL cuenta como "cupon
+     * global", tambien unico) que otro cupon ya activo -- evita ambiguedad de
+     * cual gana al momento de que n8n arme la oferta de correo. Cupones
+     * inactivos no cuentan para esta regla (se pueden tener varios apagados
+     * apuntando al mismo lugar, ej. borradores).
+     */
+    private function assertNoActiveConflict(?int $categoryId, ?int $subCategoryId, ?int $childCategoryId, ?string $exceptId = null): void
+    {
+        $conflict = Coupon::where('status', 1)
+            ->where('category_id', $categoryId)
+            ->where('sub_category_id', $subCategoryId)
+            ->where('child_category_id', $childCategoryId)
+            ->when($exceptId, fn ($query) => $query->where('id', '!=', $exceptId))
+            ->first();
+
+        if ($conflict) {
+            throw ValidationException::withMessages([
+                'category_id' => "Ya existe un cupón activo (\"{$conflict->name}\") para exactamente esta misma combinación de categoría/subcategoría/categoría hija. Desactívalo primero, o cambia el alcance de este.",
+            ]);
+        }
     }
 
     /**
@@ -113,13 +149,21 @@ class CouponController extends Controller
             'discount_type' => ['required', 'max:200'],
             'discount' => ['required', 'max:200'],
             'status' => ['required', 'integer'],
-            'category_id' => ['nullable', 'integer', 'exists:categories,id']
+            'category_id' => ['nullable', 'integer', 'exists:categories,id'],
+            'sub_category_id' => ['nullable', 'integer', 'exists:subcategories,id'],
+            'child_category_id' => ['nullable', 'integer', 'exists:child_categories,id'],
         ]);
+
+        if ($request->boolean('status')) {
+            $this->assertNoActiveConflict($request->category_id ?: null, $request->sub_category_id ?: null, $request->child_category_id ?: null);
+        }
 
         $coupon = new Coupon();
         $coupon->name = $request->name;
         $coupon->cod = $request->cod;
         $coupon->category_id = $request->category_id ?: null;
+        $coupon->sub_category_id = $request->sub_category_id ?: null;
+        $coupon->child_category_id = $request->child_category_id ?: null;
         $coupon->quantity = $request->quantity;
         $coupon->max_use = $request->max_use;
         $coupon->start_date = $request->start_date;
@@ -172,13 +216,21 @@ class CouponController extends Controller
             'discount_type' => ['required', 'max:200'],
             'discount' => ['required', 'max:200'],
             'status' => ['required', 'integer'],
-            'category_id' => ['nullable', 'integer', 'exists:categories,id']
+            'category_id' => ['nullable', 'integer', 'exists:categories,id'],
+            'sub_category_id' => ['nullable', 'integer', 'exists:subcategories,id'],
+            'child_category_id' => ['nullable', 'integer', 'exists:child_categories,id'],
         ]);
+
+        if ($request->boolean('status')) {
+            $this->assertNoActiveConflict($request->category_id ?: null, $request->sub_category_id ?: null, $request->child_category_id ?: null, $id);
+        }
 
         $coupon = Coupon::findOrFail($id);
         $coupon->name = $request->name;
         $coupon->cod = $request->cod;
         $coupon->category_id = $request->category_id ?: null;
+        $coupon->sub_category_id = $request->sub_category_id ?: null;
+        $coupon->child_category_id = $request->child_category_id ?: null;
         $coupon->quantity = $request->quantity;
         $coupon->max_use = $request->max_use;
         $coupon->start_date = $request->start_date;
@@ -212,7 +264,17 @@ class CouponController extends Controller
     public function changeStatus(Request $request){
 
         $coupon = Coupon::findOrFail($request->id);
-        $coupon->status = $request->status == 'true' ? 1 : 0;
+        $activating = $request->status == 'true';
+
+        if ($activating) {
+            try {
+                $this->assertNoActiveConflict($coupon->category_id, $coupon->sub_category_id, $coupon->child_category_id, $coupon->id);
+            } catch (ValidationException $e) {
+                return response(['status' => 'error', 'message' => $e->validator->errors()->first()], 422);
+            }
+        }
+
+        $coupon->status = $activating ? 1 : 0;
         $coupon->save();
 
         return response(['message' =>'Status Changed Successfully!']);

@@ -57,6 +57,11 @@ Route::middleware('marketing.token')->group(function () {
     // cuenta en vez de pedir el correo ya armado por cliente.
     Route::get('/marketing/templates/{id}', [MarketingDataController::class, 'template']);
 
+    // Cupones activos con su alcance (categoria/sub/hija) -- n8n decide cual
+    // le toca a cada cliente comparando contra su clasificacion, el mas
+    // especifico que haga match gana. Ver MarketingDataController::coupons().
+    Route::get('/marketing/coupons', [MarketingDataController::class, 'coupons']);
+
     // Campañas: envío masivo de una plantilla a una lista de contactos.
     // n8n manda el ritmo — pregunta qué hay pendiente, reclama, pide el
     // render de cada destinatario y reporta el resultado. Laravel no tiene

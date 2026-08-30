@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\AspelClient;
 use App\Models\AspelSale;
 use App\Models\AspelSaleItem;
+use App\Models\Coupon;
 use App\Models\EmailTemplate;
 use App\Models\User;
 use App\Support\BlockEmailRenderer;
@@ -392,5 +393,41 @@ class MarketingDataController extends Controller
             'body' => $template->body,
             'uses_dummy_preview_data' => $template->builder_mode === 'blocks',
         ]);
+    }
+
+    /**
+     * GET /api/marketing/coupons
+     *
+     * Lista de cupones ACTIVOS con su alcance (categoria/subcategoria/
+     * categoria hija — cualquiera puede venir null, null en los 3 = cupon
+     * global). Deliberadamente NO decide aqui "cual cupon le toca a un
+     * cliente" — eso lo hace n8n, comparando esta lista contra la
+     * clasificacion de categoria_principal/subcategoria/categoria_hija que
+     * ya calcula del lado de n8n (el mas especifico que haga match gana).
+     */
+    public function coupons(Request $request)
+    {
+        $coupons = Coupon::where('status', 1)
+            ->where('start_date', '<=', now()->toDateString())
+            ->where('end_date', '>=', now()->toDateString())
+            ->with(['category:id,name', 'subCategory:id,name', 'childCategory:id,name'])
+            ->get();
+
+        $data = $coupons->map(function (Coupon $coupon) {
+            return [
+                'cod' => $coupon->cod,
+                'name' => $coupon->name,
+                'discount_type' => $coupon->discount_type,
+                'discount' => $coupon->discount,
+                'category_id' => $coupon->category_id,
+                'category_name' => optional($coupon->category)->name,
+                'sub_category_id' => $coupon->sub_category_id,
+                'sub_category_name' => optional($coupon->subCategory)->name,
+                'child_category_id' => $coupon->child_category_id,
+                'child_category_name' => optional($coupon->childCategory)->name,
+            ];
+        })->values();
+
+        return response()->json(['status' => 'success', 'data' => $data]);
     }
 }

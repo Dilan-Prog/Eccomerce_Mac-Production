@@ -309,7 +309,7 @@ class CartController extends Controller
             return response(['status' => 'error', 'message' => 'you can not apply this coupon']);
         }
 
-        if($coupon->category_id !== null && getCouponCategorySubTotal($coupon->category_id) <= 0){
+        if($coupon->category_id !== null && getCouponScopedSubTotal($coupon->category_id, $coupon->sub_category_id, $coupon->child_category_id) <= 0){
             return response(['status' => 'error', 'message' => 'you can not apply this coupon']);
         }
 
@@ -319,7 +319,9 @@ class CartController extends Controller
                 'coupon_code' => $coupon->cod,
                 'discount_type' => 'amount',
                 'discount' => $coupon->discount,
-                'category_id' => $coupon->category_id
+                'category_id' => $coupon->category_id,
+                'sub_category_id' => $coupon->sub_category_id,
+                'child_category_id' => $coupon->child_category_id
             ]);
         }elseif($coupon->discount_type === 'percent'){
             Session::put('coupon', [
@@ -327,7 +329,9 @@ class CartController extends Controller
                 'coupon_code' => $coupon->cod,
                 'discount_type' => 'percent',
                 'discount' => $coupon->discount,
-                'category_id' => $coupon->category_id
+                'category_id' => $coupon->category_id,
+                'sub_category_id' => $coupon->sub_category_id,
+                'child_category_id' => $coupon->child_category_id
             ]);
         }
 

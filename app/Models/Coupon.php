@@ -13,4 +13,14 @@ class Coupon extends Model
     {
         return $this->belongsTo(Category::class);
     }
+
+    public function subCategory()
+    {
+        return $this->belongsTo(Subcategory::class, 'sub_category_id');
+    }
+
+    public function childCategory()
+    {
+        return $this->belongsTo(ChildCategory::class, 'child_category_id');
+    }
 }

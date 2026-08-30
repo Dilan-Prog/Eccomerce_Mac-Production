@@ -83,13 +83,15 @@ function getCartTotal(){
 }
 
 /**
- * Subtotal del carrito limitado a una sola categoria — usado por los cupones
- * restringidos a categoria (coupons.category_id). Resuelve las combinaciones
- * de variante (id con prefijo 'comb_') a su product_id real antes de comparar
- * la categoria, ya que Cart::content() guarda el id de la combinacion, no el
- * del producto.
+ * Subtotal del carrito limitado a categoria/subcategoria/categoria hija —
+ * usado por los cupones restringidos (coupons.category_id/sub_category_id/
+ * child_category_id). Cualquiera de los 3 parametros en null significa "no
+ * filtrar por ese nivel" (ej. solo categoryId => toda la categoria). Resuelve
+ * las combinaciones de variante (id con prefijo 'comb_') a su product_id real
+ * antes de comparar, ya que Cart::content() guarda el id de la combinacion,
+ * no el del producto.
  */
-function getCouponCategorySubTotal($categoryId){
+function getCouponScopedSubTotal($categoryId, $subCategoryId = null, $childCategoryId = null){
     $subTotal = 0;
 
     foreach (Cart::content() as $item) {
@@ -107,12 +109,30 @@ function getCouponCategorySubTotal($categoryId){
         }
 
         $product = \App\Models\Product::find($productId);
-        if ($product && (int) $product->category_id === (int) $categoryId) {
-            $subTotal += $item->price * $item->qty;
+        if (!$product) {
+            continue;
         }
+
+        if ($categoryId !== null && (int) $product->category_id !== (int) $categoryId) {
+            continue;
+        }
+        if ($subCategoryId !== null && (int) $product->sub_category_id !== (int) $subCategoryId) {
+            continue;
+        }
+        if ($childCategoryId !== null && (int) $product->child_category_id !== (int) $childCategoryId) {
+            continue;
+        }
+
+        $price = \App\Support\CartPricing::resolve($item)['price'];
+        $subTotal += $price * $item->qty;
     }
 
     return $subTotal;
+}
+
+/** @deprecated usar getCouponScopedSubTotal() — se deja por compatibilidad, mismo comportamiento con solo categoria. */
+function getCouponCategorySubTotal($categoryId){
+    return getCouponScopedSubTotal($categoryId);
 }
 
 /**
@@ -122,20 +142,25 @@ function getCouponCategorySubTotal($categoryId){
  * monto mostrado y el realmente cobrado (getFinalPayableAmount) coincidan
  * siempre. Si el cupon no tiene category_id (cupon global) el calculo es
  * identico al de antes, sobre el subtotal completo del carrito. Si tiene
- * category_id, el descuento se limita al subtotal de esa categoria: 'amount'
- * se topa a ese subtotal (no puede exceder lo que hay de esa categoria) y
- * 'percent' se calcula solo sobre ese subtotal.
+ * category_id (y opcionalmente sub_category_id/child_category_id, el nivel
+ * mas especifico que traiga el cupon), el descuento se limita al subtotal de
+ * ESE alcance exacto: 'amount' se topa a ese subtotal (no puede exceder lo
+ * que hay ahi) y 'percent' se calcula solo sobre ese subtotal.
  */
 function resolveCouponDiscount(array $coupon){
     $categoryId = $coupon['category_id'] ?? null;
 
     if ($categoryId) {
-        $categorySubTotal = getCouponCategorySubTotal($categoryId);
+        $scopedSubTotal = getCouponScopedSubTotal(
+            $categoryId,
+            $coupon['sub_category_id'] ?? null,
+            $coupon['child_category_id'] ?? null
+        );
 
         if ($coupon['discount_type'] === 'amount') {
-            return min((float) $coupon['discount'], $categorySubTotal);
+            return min((float) $coupon['discount'], $scopedSubTotal);
         } elseif ($coupon['discount_type'] === 'percent') {
-            return $categorySubTotal * $coupon['discount'] / 100;
+            return $scopedSubTotal * $coupon['discount'] / 100;
         }
 
         return 0;
