@@ -123,8 +123,7 @@ function getCouponScopedSubTotal($categoryId, $subCategoryId = null, $childCateg
             continue;
         }
 
-        $price = \App\Support\CartPricing::resolve($item)['price'];
-        $subTotal += $price * $item->qty;
+        $subTotal += $item->price * $item->qty;
     }
 
     return $subTotal;
