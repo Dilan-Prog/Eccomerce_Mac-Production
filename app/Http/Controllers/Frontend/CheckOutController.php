@@ -28,8 +28,28 @@ class CheckOutController extends Controller
         $addresses      = UserAddress::where('user_id', Auth::user()->id)->get();
         $shippingMethod = ShippingRule::where('status', 1)->get();
         $transferInfo   = Transfer::first();
-        $paypalInfo     = PaypalSetting::where('status', 1)->first();
-        $stripeSetting  = StripeSetting::where('status', 1)->first();
+
+        // PaypalSetting/StripeSetting son configuraciones tipo "singleton"
+        // (el formulario de /admin/payment-settings siempre guarda/lee la
+        // misma fila vía updateOrCreate(['id' => 1], ...) — ver
+        // PaypalSettingController/StripeSettingController). Antes esta
+        // pantalla filtraba por status=1 en el WHERE: si por cualquier
+        // motivo existiera más de una fila en la tabla (ej. una fila
+        // huérfana de una migración/seed vieja) con status=1, el checkout
+        // seguía mostrando la pasarela aunque el admin apagara el toggle,
+        // porque el WHERE podía encontrar esa OTRA fila. Ahora se lee la
+        // misma fila que usa el resto del flujo de pago
+        // (PaymentController::payWithStripe()/paywithPaypal() también usan
+        // ::first() sin WHERE) y el status se revisa aparte, así el
+        // checkout siempre refleja exactamente lo que se va a cobrar.
+        $paypalInfo    = PaypalSetting::first();
+        if ($paypalInfo && !$paypalInfo->status) {
+            $paypalInfo = null;
+        }
+        $stripeSetting = StripeSetting::first();
+        if ($stripeSetting && !$stripeSetting->status) {
+            $stripeSetting = null;
+        }
 
         return view('frontend.pages.checkout', compact(
             'addresses', 'shippingMethod', 'transferInfo', 'paypalInfo', 'stripeSetting'
