@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Frontend;
 
 use App\Http\Controllers\Controller;
+use App\Models\Order;
 use App\Models\User;
 use App\Models\UserAddress;
 use Illuminate\Http\Request;
@@ -11,9 +12,21 @@ use Illuminate\Support\Facades\Storage;
 
 class UserProfileController extends Controller
 {
-    public function index(){
+    public function index(Request $request){
         $addresses = UserAddress::where('user_id', Auth::user()->id)->get();
-        return view('frontend.dashboard.profile', compact('addresses'));
+
+        // Los pedidos solo se consultan cuando esa pestaña está activa —
+        // reemplaza al viejo endpoint AJAX de DataTables (App\DataTables\UserOrderDataTable),
+        // ahora la tabla se renderiza server-side con paginación normal de Laravel.
+        $orders = null;
+        if ($request->get('tab', 'personal') === 'orders') {
+            $orders = Order::where('user_id', Auth::user()->id)
+                ->orderByDesc('created_at')
+                ->paginate(10)
+                ->withQueryString();
+        }
+
+        return view('frontend.dashboard.profile', compact('addresses', 'orders'));
     }
 
     public function updateProfile(Request $request){

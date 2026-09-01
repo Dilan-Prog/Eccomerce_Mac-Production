@@ -91,6 +91,12 @@
             </h2>
             <p class="cot-subtitle">Verifica que la información sea correcta antes de generar la cotización.</p>
 
+            @if(session('error'))
+                <div style="background:#FEF2F2;border:1px solid #E53E3E;border-radius:8px;padding:14px 18px;margin-bottom:20px;color:#E53E3E;font-size:13px;font-weight:600;text-align:left;">
+                    <i class="fas fa-exclamation-circle" style="margin-right:6px;"></i>{{ session('error') }}
+                </div>
+            @endif
+
             <div class="perfil-summary">
                 <div class="perfil-row">
                     <span class="label">Nombre</span>

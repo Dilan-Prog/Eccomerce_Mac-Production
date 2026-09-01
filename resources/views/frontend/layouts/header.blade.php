@@ -198,11 +198,11 @@
 
                         {{-- Grupo 2: Actividad --}}
                         <div class="account-dropdown-group">
-                            <a href="{{ route('user.orders.index') }}" class="account-dropdown-item" role="menuitem">
+                            <a href="{{ route('user.profile', ['tab' => 'orders']) }}" class="account-dropdown-item" role="menuitem">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
                                 Mis compras
                             </a>
-                            <a href="{{ route('user.address.index') }}" class="account-dropdown-item" role="menuitem">
+                            <a href="{{ route('user.profile', ['tab' => 'addresses']) }}" class="account-dropdown-item" role="menuitem">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
                                 Direcciones
                             </a>

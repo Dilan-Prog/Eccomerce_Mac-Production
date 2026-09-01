@@ -5,8 +5,6 @@
 @endsection
 
 @push('styles')
-{{-- DataTables (solo se usa en el tab de pedidos) --}}
-<link rel="stylesheet" href="https://cdn.datatables.net/1.13.8/css/dataTables.bootstrap5.min.css">
 <style>
 /* ── VARIABLES ADICIONALES ─────────────────────────────── */
 :root {
@@ -230,16 +228,28 @@
 .mdn-modal-body    { padding:24px 28px; }
 .mdn-modal-footer  { padding:16px 28px 24px; display:flex; gap:10px; justify-content:flex-end; border-top:1px solid var(--gris-borde); }
 
-/* ── DATATABLES OVERRIDE ────────────────────────────────── */
+/* ── TABLA DE PEDIDOS (server-side, sin DataTables) ────────── */
 .mdn-datatable-wrap { overflow-x:auto; }
-table.dataTable thead th { background:var(--gris-fondo); color:var(--azul-principal); font-weight:700; font-size:12px; text-transform:uppercase; letter-spacing:0.5px; border-bottom:2px solid var(--gris-borde) !important; }
-table.dataTable tbody tr:hover td { background:var(--azul-claro) !important; }
-table.dataTable tbody td { font-size:13px; color:var(--gris-texto); vertical-align:middle; border-top:1px solid var(--gris-borde); }
-.dataTables_wrapper .dataTables_paginate .paginate_button.current { background:var(--azul-principal) !important; color:#fff !important; border-color:var(--azul-principal) !important; border-radius:var(--radius-md); }
-.dataTables_wrapper .dataTables_paginate .paginate_button:hover { background:var(--azul-claro) !important; color:var(--azul-principal) !important; border-radius:var(--radius-md); }
-.dataTables_wrapper .dataTables_filter input { border:1.5px solid var(--gris-borde); border-radius:var(--radius-md); padding:8px 12px; font-size:13px; }
-.dataTables_wrapper .dataTables_filter input:focus { outline:none; border-color:var(--azul-principal); }
-.dataTables_wrapper .dataTables_length select { border:1.5px solid var(--gris-borde); border-radius:var(--radius-md); padding:6px 28px 6px 10px; }
+.mdn-orders-table { width:100%; border-collapse:collapse; }
+.mdn-orders-table thead th { background:var(--gris-fondo); color:var(--azul-principal); font-weight:700; font-size:12px; text-transform:uppercase; letter-spacing:0.5px; border-bottom:2px solid var(--gris-borde); padding:10px 12px; text-align:left; white-space:nowrap; }
+.mdn-orders-table tbody tr:hover td { background:var(--azul-claro); }
+.mdn-orders-table tbody td { font-size:13px; color:var(--gris-texto); vertical-align:middle; border-top:1px solid var(--gris-borde); padding:10px 12px; }
+.mdn-orders-empty { text-align:center; padding:40px; color:var(--gris-claro-texto); }
+.mdn-order-badge { display:inline-block; padding:3px 10px; border-radius:var(--radius-full); font-size:11px; font-weight:700; white-space:nowrap; }
+.mdn-order-badge.tone-warning { background:var(--amarillo-claro); color:#92400E; }
+.mdn-order-badge.tone-info { background:var(--azul-claro); color:var(--azul-principal); }
+.mdn-order-badge.tone-primary { background:var(--azul-claro); color:var(--azul-oscuro); }
+.mdn-order-badge.tone-success { background:var(--verde-claro); color:var(--verde-disponible); }
+.mdn-order-badge.tone-danger { background:#FEF2F2; color:var(--rojo-error); }
+.mdn-orders-action-btn { display:inline-flex; align-items:center; gap:4px; padding:6px 12px; background:var(--azul-principal); color:#fff; border-radius:var(--radius-md); font-size:12px; font-weight:700; text-decoration:none; white-space:nowrap; }
+.mdn-orders-action-btn:hover { background:var(--azul-oscuro); color:#fff; }
+.mdn-orders-pagination { display:flex; justify-content:flex-end; margin-top:16px; }
+.mdn-orders-pagination nav > div:first-child { display:none; } {{-- oculta el texto "Showing X to Y of Z results" de Laravel, redundante aquí --}}
+.mdn-orders-pagination .pagination { display:flex; gap:4px; list-style:none; padding:0; margin:0; flex-wrap:wrap; }
+.mdn-orders-pagination .page-link { display:inline-flex; align-items:center; justify-content:center; min-width:32px; height:32px; padding:0 8px; border:1.5px solid var(--gris-borde); border-radius:var(--radius-md); color:var(--gris-texto); text-decoration:none; font-size:13px; }
+.mdn-orders-pagination .page-item.active .page-link { background:var(--azul-principal); border-color:var(--azul-principal); color:#fff; }
+.mdn-orders-pagination .page-item.disabled .page-link { opacity:0.4; }
+.mdn-orders-pagination .page-link:hover { background:var(--azul-claro); border-color:var(--azul-principal); color:var(--azul-principal); }
 
 /* ── RESPONSIVE ─────────────────────────────────────────── */
 @media (max-width:960px) {
@@ -311,63 +321,7 @@ table.dataTable tbody td { font-size:13px; color:var(--gris-texto); vertical-ali
             {{-- ╔══════════════════════╗
                  ║     SIDEBAR          ║
                  ╚══════════════════════╝ --}}
-            <aside class="profile-sidebar">
-
-                <a href="{{ route('user.profile') }}"
-                   class="profile-sidebar-link {{ $activeTab === 'personal' ? 'active' : '' }}">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                    <span>Datos personales</span>
-                </a>
-
-                <a href="{{ route('user.profile') }}?tab=fiscal"
-                   class="profile-sidebar-link {{ $activeTab === 'fiscal' ? 'active' : '' }}">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-                    <span>Datos fiscales</span>
-                </a>
-
-                <a href="{{ route('user.profile') }}?tab=password"
-                   class="profile-sidebar-link {{ $activeTab === 'password' ? 'active' : '' }}">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
-                    <span>Contraseña</span>
-                </a>
-
-                <a href="{{ route('user.profile') }}?tab=notifications"
-                   class="profile-sidebar-link {{ $activeTab === 'notifications' ? 'active' : '' }}">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
-                    <span>Notificaciones</span>
-                </a>
-
-                <a href="{{ route('user.profile') }}?tab=b2b"
-                   class="profile-sidebar-link {{ $activeTab === 'b2b' ? 'active' : '' }}">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L1 21h22L12 2z"/></svg>
-                    <span>Plan B2B</span>
-                </a>
-
-                <div class="profile-sidebar-divider"></div>
-
-                <a href="{{ route('user.profile') }}?tab=orders"
-                   class="profile-sidebar-link {{ $activeTab === 'orders' ? 'active' : '' }}">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
-                    <span>Mis pedidos</span>
-                </a>
-
-                <a href="{{ route('user.profile') }}?tab=addresses"
-                   class="profile-sidebar-link {{ $activeTab === 'addresses' ? 'active' : '' }}">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
-                    <span>Direcciones</span>
-                </a>
-
-                <div class="profile-sidebar-divider"></div>
-
-                <form method="POST" action="{{ route('logout') }}" style="margin:0;">
-                    @csrf
-                    <button type="submit" class="profile-sidebar-link danger">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-                        <span>Cerrar sesión</span>
-                    </button>
-                </form>
-
-            </aside>
+            @include('frontend.dashboard.partials.account-sidebar', ['activeTab' => $activeTab])
 
             {{-- ╔══════════════════════╗
                  ║  CONTENIDO PRINCIPAL  ║
@@ -696,25 +650,72 @@ table.dataTable tbody td { font-size:13px; color:var(--gris-texto); vertical-ali
 
                 {{-- ═══════════ MIS PEDIDOS ═══════════ --}}
                 @if($activeTab === 'orders')
+                @php
+                    // Etiquetas seguras para el cliente — a propósito NO incluye
+                    // 'pendiente_de_surtir' (estado interno de inventario, solo
+                    // visible en el panel admin); cualquier estado sin mapear cae
+                    // al mismo badge genérico "Pendiente" en vez de mostrarse vacío.
+                    $orderStatusMeta = [
+                        'pending' => ['label' => 'Pendiente', 'tone' => 'warning'],
+                        'processed_and_ready_to_ship' => ['label' => 'Procesado y listo para enviar', 'tone' => 'info'],
+                        'dropped_off' => ['label' => 'Entregado al transportista', 'tone' => 'info'],
+                        'shipped' => ['label' => 'Enviado', 'tone' => 'info'],
+                        'out_for_delivery' => ['label' => 'En ruta de entrega', 'tone' => 'primary'],
+                        'delivered' => ['label' => 'Entregado', 'tone' => 'success'],
+                        'canceled' => ['label' => 'Cancelado', 'tone' => 'danger'],
+                    ];
+                @endphp
                 <div class="profile-section-header">
                     <h2>Mis pedidos</h2>
                     <p>Historial completo de tus órdenes de compra</p>
                 </div>
                 <div class="mdn-datatable-wrap">
-                    <table id="orders-table" class="table table-hover w-100" style="font-size:13px;">
+                    <table class="mdn-orders-table">
                         <thead>
                             <tr>
                                 <th># Orden</th>
                                 <th>Fecha</th>
                                 <th>Productos</th>
                                 <th>Total</th>
+                                <th>Método de pago</th>
                                 <th>Estado pago</th>
                                 <th>Estado orden</th>
-                                <th class="text-center">Acciones</th>
+                                <th>Acciones</th>
                             </tr>
                         </thead>
+                        <tbody>
+                            @php
+                                $paymentMethodLabels = ['paypal' => 'PayPal', 'stripe' => 'Tarjeta', 'transfer' => 'Transferencia'];
+                            @endphp
+                            @forelse($orders as $order)
+                                @php $statusMeta = $orderStatusMeta[$order->order_status] ?? ['label' => 'Pendiente', 'tone' => 'warning']; @endphp
+                                <tr>
+                                    <td>{{ $order->invocie_id ?: '#'.$order->id }}</td>
+                                    <td>{{ $order->created_at->format('d-M-Y') }}</td>
+                                    <td>{{ $order->product_qty }}</td>
+                                    <td>{{ $order->currency_icon }}{{ number_format($order->amount, 2) }}</td>
+                                    <td>{{ $paymentMethodLabels[$order->payment_method] ?? ucfirst($order->payment_method) }}</td>
+                                    <td>
+                                        @if((int) $order->payment_status === 1)
+                                            <span class="mdn-order-badge tone-success">Completada</span>
+                                        @else
+                                            <span class="mdn-order-badge tone-warning">Pendiente</span>
+                                        @endif
+                                    </td>
+                                    <td><span class="mdn-order-badge tone-{{ $statusMeta['tone'] }}">{{ $statusMeta['label'] }}</span></td>
+                                    <td><a href="{{ route('user.orders.show', $order->id) }}" class="mdn-orders-action-btn">Seguir envío</a></td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="8" class="mdn-orders-empty">Aún no tienes pedidos realizados</td>
+                                </tr>
+                            @endforelse
+                        </tbody>
                     </table>
                 </div>
+                @if($orders->hasPages())
+                <div class="mdn-orders-pagination">{{ $orders->links() }}</div>
+                @endif
                 @endif
 
                 {{-- ═══════════ DIRECCIONES ═══════════ --}}
@@ -862,8 +863,12 @@ table.dataTable tbody td { font-size:13px; color:var(--gris-texto); vertical-ali
                         <label for="addr-state">Estado <span style="color:var(--rojo-error)">*</span></label>
                         <select id="addr-state" name="state" class="mdn-form-select">
                             <option value="">Selecciona estado</option>
-                            @foreach(['Aguascalientes','Baja California','Baja California Sur','Campeche','Chiapas','Chihuahua','Ciudad de México','Coahuila','Colima','Durango','Estado de México','Guanajuato','Guerrero','Hidalgo','Jalisco','Michoacán','Morelos','Nayarit','Nuevo León','Oaxaca','Puebla','Querétaro','Quintana Roo','San Luis Potosí','Sinaloa','Sonora','Tabasco','Tamaulipas','Tlaxcala','Veracruz','Yucatán','Zacatecas'] as $st)
-                            <option value="{{ $st }}">{{ $st }}</option>
+                            {{-- Misma lista que UserAddress::validationRules() (Rule::in) usa para
+                                 validar — antes este modal tenía su propio arreglo con acentos que
+                                 no coincidía con config('settings.state_list'), así que guardar con
+                                 "Nuevo León"/"Michoacán"/etc. siempre fallaba la validación. --}}
+                            @foreach(config('settings.state_list', []) as $state)
+                            <option value="{{ $state }}">{{ $state }}</option>
                             @endforeach
                         </select>
                         <div class="mdn-field-error" id="err-state"></div>
@@ -890,8 +895,6 @@ table.dataTable tbody td { font-size:13px; color:var(--gris-texto); vertical-ali
 </div>
 
 @push('scripts')
-<script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"></script>
-<script src="https://cdn.datatables.net/1.13.8/js/dataTables.bootstrap5.min.js"></script>
 <script>
 (function () {
     'use strict';
@@ -940,32 +943,6 @@ table.dataTable tbody td { font-size:13px; color:var(--gris-texto); vertical-ali
             if (e.target.tagName !== 'SPAN' && e.target.tagName !== 'A') input.click();
         });
     })();
-
-    /* ─── DATATABLES (pedidos) ─────────────────────────── */
-    @if($activeTab === 'orders')
-    $(document).ready(function () {
-        $('#orders-table').DataTable({
-            processing : true,
-            serverSide : true,
-            ajax       : '{{ route("user.orders.index") }}',
-            language   : {
-                url: '//cdn.datatables.net/plug-ins/1.13.8/i18n/es-MX.json'
-            },
-            columns: [
-                { data:'Num.Orden',       name:'Num.Orden',       defaultContent:'—' },
-                { data:'Fecha',           name:'Fecha' },
-                { data:'Cantidad/Producto', name:'Cantidad/Producto', defaultContent:'—' },
-                { data:'Pago',            name:'Pago' },
-                { data:'Estado de Pago',  name:'Estado de Pago' },
-                { data:'Estado De Orden', name:'Estado De Orden' },
-                { data:'Acciones',        name:'Acciones', orderable:false, searchable:false },
-            ],
-            order: [[1, 'desc']],
-            pageLength: 10,
-            dom: '<"row mb-3"<"col-sm-6"l><"col-sm-6"f>>rt<"row mt-3"<"col-sm-5"i><"col-sm-7"p>>',
-        });
-    });
-    @endif
 
     /* ─── MODAL DE DIRECCIONES ─────────────────────────── */
     var backdrop   = document.getElementById('addr-modal-backdrop');
@@ -1035,6 +1012,46 @@ table.dataTable tbody td { font-size:13px; color:var(--gris-texto); vertical-ali
             }
         });
     }
+
+    /* Validación en vivo del modal de dirección — espejo de
+       App\Models\UserAddress::validationRules() en el backend, para
+       feedback inmediato mientras se escribe. El backend sigue siendo la
+       fuente de verdad (ver showErrors() arriba, que ya maneja los 422). */
+    var ADDR_FIELD_RULES = {
+        'addr-name':   { filter: /[^\p{L}\s.'-]/gu, test: /^[\p{L}\s.'-]+$/u, message: 'Solo letras y espacios.' },
+        'addr-phone':  { filter: /\D/g, test: /^\d{10}$/, message: 'Debe tener 10 dígitos (solo números).' },
+        'addr-email':  { filter: /[^A-Za-z0-9@._+-]/g, test: /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/, message: 'Correo electrónico no válido.' },
+        'addr-zip':    { filter: /\D/g, test: /^\d{5}$/, message: 'Debe tener 5 dígitos.' },
+        'addr-city':   { filter: /[^\p{L}\s.'-]/gu, test: /^[\p{L}\s.'-]+$/u, message: 'Solo letras y espacios.' },
+        'addr-col':    { filter: /[^\p{L}\p{N}\s.,#'-]/gu, test: /^[\p{L}\p{N}\s.,#'-]+$/u, message: 'Contiene caracteres no permitidos.' },
+        'addr-street': { filter: /[^\p{L}\p{N}\s.,#'-]/gu, test: /^[\p{L}\p{N}\s.,#'-]+$/u, message: 'Contiene caracteres no permitidos.' }
+    };
+    var ADDR_ERROR_IDS = { 'addr-name':'err-name', 'addr-phone':'err-phone', 'addr-email':'err-email', 'addr-zip':'err-zip', 'addr-city':'err-city', 'addr-col':'err-col', 'addr-street':'err-street' };
+
+    Object.keys(ADDR_FIELD_RULES).forEach(function (id) {
+        var input = document.getElementById(id);
+        if (!input) return;
+        var rule = ADDR_FIELD_RULES[id];
+        var errorEl = document.getElementById(ADDR_ERROR_IDS[id]);
+
+        input.addEventListener('input', function () {
+            if (rule.filter) {
+                var cleaned = input.value.replace(rule.filter, '');
+                if (cleaned !== input.value) input.value = cleaned;
+            }
+            input.classList.remove('is-invalid');
+            if (errorEl) errorEl.style.display = 'none';
+        });
+
+        input.addEventListener('blur', function () {
+            var value = input.value.trim();
+            if (!value) return; // vacío: lo atrapa el 422 del backend vía showErrors()
+            if (rule.test && !rule.test.test(value)) {
+                input.classList.add('is-invalid');
+                if (errorEl) { errorEl.textContent = rule.message; errorEl.style.display = 'block'; }
+            }
+        });
+    });
 
     /* Abrir modal nuevo */
     ['btn-add-address','btn-add-address-2'].forEach(function (id) {

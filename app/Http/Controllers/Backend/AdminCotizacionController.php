@@ -151,34 +151,38 @@ class AdminCotizacionController extends Controller
      */
     public function resolveAspelClient(AspelClient $aspelClient)
     {
-        if ($aspelClient->user_id) {
-            $user = User::findOrFail($aspelClient->user_id);
+        // lockForUpdate + re-chequeo de user_id dentro de la transacción:
+        // sin esto, dos requests concurrentes sobre el MISMO AspelClient sin
+        // vincular podrían crear dos Users duplicados antes de que cualquiera
+        // de los dos alcance a guardar el user_id.
+        $user = DB::transaction(function () use ($aspelClient) {
+            $locked = AspelClient::where('id', $aspelClient->id)->lockForUpdate()->first();
 
-            return response()->json(['status' => 'success', 'client' => [
-                'id' => $user->id,
-                'name' => $user->name,
-                'email' => $user->email,
-            ]]);
-        }
+            if ($locked->user_id) {
+                return User::findOrFail($locked->user_id);
+            }
 
-        $user = !empty($aspelClient->rfc) ? User::where('rfc', $aspelClient->rfc)->first() : null;
+            $user = !empty($locked->rfc) ? User::where('rfc', $locked->rfc)->first() : null;
 
-        if (!$user) {
-            $user = new User();
-            $user->name = $aspelClient->nombre ?: ('Cliente ' . $aspelClient->clave);
-            $user->last_name = '';
-            $user->email = $aspelClient->email ?: User::generatePlaceholderEmail();
-            $user->phone = $aspelClient->telefono;
-            $user->rfc = $aspelClient->rfc;
-            $user->account_type = 'personal';
-            $user->role = 'user';
-            $user->status = 'active';
-            $user->password = bcrypt(\Illuminate\Support\Str::random(16));
-            $user->save();
-        }
+            if (!$user) {
+                $user = new User();
+                $user->name = $locked->nombre ?: ('Cliente ' . $locked->clave);
+                $user->last_name = '';
+                $user->email = $locked->email ?: User::generatePlaceholderEmail();
+                $user->phone = $locked->telefono;
+                $user->rfc = $locked->rfc;
+                $user->account_type = 'personal';
+                $user->role = 'user';
+                $user->status = 'active';
+                $user->password = bcrypt(\Illuminate\Support\Str::random(16));
+                $user->save();
+            }
 
-        $aspelClient->user_id = $user->id;
-        $aspelClient->save();
+            $locked->user_id = $user->id;
+            $locked->save();
+
+            return $user;
+        });
 
         return response()->json(['status' => 'success', 'client' => [
             'id' => $user->id,
@@ -667,42 +671,57 @@ class AdminCotizacionController extends Controller
             ], 422);
         }
 
-        $nextSortOrder = ((int) $cotizacion->items()->max('sort_order')) + 1;
-        $createdItems = [];
+        // lockForUpdate + transacción sobre la propia cotización: sin esto,
+        // dos requests storeItem() concurrentes sobre el MISMO borrador
+        // podrían leer el mismo max(sort_order) antes de que cualquiera
+        // termine de insertar, produciendo sort_order duplicados entre
+        // renglones (glitch cosmético de orden, no pérdida de datos).
+        $createdItems = DB::transaction(function () use (
+            $cotizacion, $request, $productId, $combinationId, $nombre, $sku,
+            $modelo, $marca, $precioUnitario, $tieredPrecio, $tieredLabel,
+            $monedaOrigen, $precioUnitarioOrigen, $inmediataQty, $pendienteQty
+        ) {
+            $locked = Cotizacion::where('id', $cotizacion->id)->lockForUpdate()->first();
 
-        $baseAttributes = [
-            'product_id' => $productId,
-            'product_variant_combination_id' => $combinationId,
-            'nombre' => $nombre,
-            'sku' => $sku,
-            'modelo' => $modelo,
-            'marca' => $marca,
-            'precio_unitario' => $precioUnitario,
-            'precio_tier' => $tieredPrecio,
-            'precio_tier_label' => $tieredLabel,
-            'moneda_origen' => $monedaOrigen,
-            'precio_unitario_origen' => $precioUnitarioOrigen,
-        ];
+            $nextSortOrder = ((int) $locked->items()->max('sort_order')) + 1;
+            $createdItems = [];
 
-        if ($inmediataQty > 0) {
-            $createdItems[] = $cotizacion->items()->create($baseAttributes + [
-                'cantidad' => $inmediataQty,
-                'es_pendiente' => false,
-                'tiempo_entrega' => null,
-                'subtotal' => round($precioUnitario * $inmediataQty, 2),
-                'sort_order' => $nextSortOrder++,
-            ]);
-        }
+            $baseAttributes = [
+                'product_id' => $productId,
+                'product_variant_combination_id' => $combinationId,
+                'nombre' => $nombre,
+                'sku' => $sku,
+                'modelo' => $modelo,
+                'marca' => $marca,
+                'precio_unitario' => $precioUnitario,
+                'precio_tier' => $tieredPrecio,
+                'precio_tier_label' => $tieredLabel,
+                'moneda_origen' => $monedaOrigen,
+                'precio_unitario_origen' => $precioUnitarioOrigen,
+            ];
 
-        if ($pendienteQty > 0) {
-            $createdItems[] = $cotizacion->items()->create($baseAttributes + [
-                'cantidad' => $pendienteQty,
-                'es_pendiente' => true,
-                'tiempo_entrega' => $request->input('tiempo_entrega'),
-                'subtotal' => round($precioUnitario * $pendienteQty, 2),
-                'sort_order' => $nextSortOrder++,
-            ]);
-        }
+            if ($inmediataQty > 0) {
+                $createdItems[] = $cotizacion->items()->create($baseAttributes + [
+                    'cantidad' => $inmediataQty,
+                    'es_pendiente' => false,
+                    'tiempo_entrega' => null,
+                    'subtotal' => round($precioUnitario * $inmediataQty, 2),
+                    'sort_order' => $nextSortOrder++,
+                ]);
+            }
+
+            if ($pendienteQty > 0) {
+                $createdItems[] = $cotizacion->items()->create($baseAttributes + [
+                    'cantidad' => $pendienteQty,
+                    'es_pendiente' => true,
+                    'tiempo_entrega' => $request->input('tiempo_entrega'),
+                    'subtotal' => round($precioUnitario * $pendienteQty, 2),
+                    'sort_order' => $nextSortOrder++,
+                ]);
+            }
+
+            return $createdItems;
+        });
 
         $totals = $this->recalculateTotals($cotizacion);
 

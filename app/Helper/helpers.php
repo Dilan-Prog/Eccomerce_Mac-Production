@@ -76,7 +76,8 @@ function productType(string $type){
 function getCartTotal(){
     $total = 0;
     foreach (Cart::content() as $product) {
-        $total += ($product->price * $product->qty);
+        $price = \App\Support\CartPricing::resolve($product)['price'];
+        $total += ($price * $product->qty);
     }
 
     return $total;
@@ -123,7 +124,8 @@ function getCouponScopedSubTotal($categoryId, $subCategoryId = null, $childCateg
             continue;
         }
 
-        $subTotal += $item->price * $item->qty;
+        $price = \App\Support\CartPricing::resolve($item)['price'];
+        $subTotal += $price * $item->qty;
     }
 
     return $subTotal;

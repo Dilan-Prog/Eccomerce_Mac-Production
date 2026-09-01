@@ -1,10 +1,127 @@
-# Auditoría QA — Mac del Norte (2026-08-05 / 2026-08-25)
+# Auditoría QA — Mac del Norte (2026-08-05 / 2026-08-26)
 
 Notas de seguimiento de la auditoría funcional hecha en Chrome sobre
 `eccomerce-mac-del-norte.test`. El reporte visual completo (con capturas y
 evidencia) quedó publicado como Artifact aparte; este archivo es el registro
 de qué se corrigió, qué quedó pendiente a propósito, y qué no se alcanzó a
 probar.
+
+## Auditoría de Cotizaciones + Carrito (2026-08-26) — CORREGIDO (2026-08-31)
+
+Revisión de código completa (agente dedicado, leyó controllers/models/views
+de ambos módulos línea por línea) + verificación manual en navegador con una
+cuenta de prueba real. Todos los hallazgos de esta ronda ya se corrigieron,
+se verificaron (vía navegador real y/o `tinker` directo contra la base de
+datos), y quedaron limpios en el código actual.
+
+### 🔴 Confirmado en vivo, no solo en código — ✅ Corregido
+
+- **Cualquier cliente "Persona Moral (Empresa)" no podía generar una
+  cotización — error fatal 500.** `app/Http/Requests/CotizacionRequest.php:21`
+  tenía `$rfcSize = $tipo === 'fisica' ? 13 : a12;` — `a12` no era el número
+  12, era una referencia a una constante de PHP inexistente. Corregido a
+  `: 12;`. Verificado que el formulario ya no truena para Persona Moral.
+
+### 🔴 Alta prioridad — ✅ Corregido
+
+- **El carrito aceptaba cantidades negativas.** Se agregó validación
+  explícita (`qty`/`quantity` entero ≥ 1, existencia de producto/combinación)
+  en `CartController::addToCart()` y `updateProductQty()`.
+- **El checkout nunca revalidaba stock antes de cobrar.** Se reescribió
+  `PaymentController::storeOrder()` para resolver precio/stock en tiempo
+  real (con `lockForUpdate()`) justo antes de descontar, en vez de confiar en
+  el valor cacheado del carrito. Si el stock no alcanza para completar una
+  línea, el pedido se crea de todos modos (el pago ya se cobró) pero queda
+  marcado con el nuevo estado **"Pendiente de surtir"** en vez de sobrevender
+  o tronar.
+- **El stock que se descontaba no era el que se mostraba.** `storeOrder()`
+  ahora descuenta `qty_aspel` o `qty` según corresponda (mismo criterio que
+  `effectiveStock()`), y el stock de la combinación correcta cuando el
+  renglón es una variante — antes, cualquier producto con variante hacía
+  tronar el checkout por completo (bug encontrado durante esta corrección,
+  no estaba en la lista original).
+- **El precio cobrado era el de cuando se agregó al carrito, no el actual.**
+  Se centralizó la resolución de precio/stock en vivo en una clase nueva,
+  `App\Support\CartPricing`, usada tanto por los totales del carrito
+  (`helpers.php`) como por el checkout (`PaymentController::storeOrder()`),
+  para que ambos siempre coincidan con el precio real del momento del pago.
+- **Se podía agregar al carrito o cotizar un producto desactivado.** Se
+  agregó el filtro por `status` en ambos flujos.
+
+### 🟡 Media prioridad — ✅ Corregido (salvo lo marcado como decisión de negocio)
+
+- El piso de "precio mínimo" en cotizaciones para un producto sin SKU —
+  **revisado y confirmado como decisión de negocio, no un bug**: cuando el
+  precio es personalizado, se usa tal cual se escribió, sin piso artificial.
+  No requiere cambio de código.
+- El carrito multi-dispositivo (sobreescribe en vez de fusionar) — **fuera de
+  alcance por decisión explícita**, se deja como está.
+- "Cotizar" desde la ficha de producto ya usa `effectivePrice()` en vez de
+  `$product->price` crudo, igual que el carrito.
+- Ya no se puede generar una cotización de cliente vacía — se agregó la
+  misma validación que ya tenía el builder de admin.
+- Corregido junto con el punto anterior: un producto sin precio configurado
+  ya no se vuelve gratis en silencio (`Product::hasEffectivePrice()`).
+
+### 🟢 Baja prioridad — ✅ Corregido
+
+- Posible duplicado de `sort_order` en cotizaciones si dos requests agregan
+  un artículo al mismo tiempo — `AdminCotizacionController::storeItem()`
+  ahora usa `lockForUpdate()` dentro de una transacción.
+- Se encontró y corrigió una segunda condición de carrera del mismo tipo,
+  fuera de la lista original: `resolveAspelClient()` podía crear un `User`
+  duplicado si dos requests resolvían el mismo cliente Aspel sin vincular al
+  mismo tiempo.
+- `apply-coupon`/`coupon-calculation` ya son rutas `POST` (antes `GET`,
+  saltaban la protección CSRF).
+- El nombre de producto en el carrito ya se imprime escapado
+  (`{{ $item->name }}` en vez de `{!! !!}`).
+
+### Verificado manualmente en el navegador (funciona bien)
+
+- El selector de cantidad +/- en la ficha de producto (tanto ahí como en la
+  página del carrito) funciona correctamente y respeta el máximo de stock —
+  **mi primera prueba automatizada dio un falso positivo** (usé una forma de
+  llenar el campo que no dispara el JS real de sincronización); repetido con
+  clicks reales, el flujo completo (ficha → carrito, cantidad y subtotal)
+  funcionó perfecto.
+- El stepper +/- dentro de la página del carrito actualiza cantidad y total
+  correctamente vía AJAX.
+
+## Pasarelas de pago — necesita tu intervención directa
+
+Estado actual: **Stripe y PayPal siguen en modo LIVE** (`mode=1`) con sus
+credenciales reales cargadas. **No se ha intentado ningún checkout de
+prueba** — hacerlo así hubiera arriesgado un cargo real.
+
+**Novedad (2026-08-31):** `/admin/payment-settings` ahora tiene un campo
+separado para credenciales de **Sandbox** y de **Live** en cada pasarela,
+más un selector "Modo Activo" que decide cuál se usa para cobrar de verdad —
+ya no hay que borrar y volver a escribir las credenciales live cada vez que
+se quiera probar en sandbox y viceversa. Antes de este cambio, el selector
+de modo ni siquiera funcionaba: `PaymentController` leía siempre el mismo
+campo sin importar el modo elegido.
+
+Para probarlo juntos en modo seguro:
+1. En `/admin/payment-settings`, pega tus credenciales de prueba en el
+   bloque "Credenciales Sandbox" de cada pasarela (no las escribo yo — ni
+   siquiera de prueba, por política: no debo manejar API keys/secrets). Se
+   obtienen en:
+   - Stripe: Dashboard → activa "Modo de prueba" (switch arriba a la
+     derecha) → Developers → API keys → `pk_test_...` / `sk_test_...`.
+   - PayPal: developer.paypal.com → Apps & Credentials → pestaña Sandbox →
+     Client ID / Secret de tu app.
+2. Cambia "Modo Activo" a **Sandbox** y guarda — tus credenciales live
+   quedan intactas en su propio bloque, listas para cuando regreses el modo
+   a Live.
+3. Con eso cargado, puedo guiarte por un checkout de prueba completo (Stripe
+   tiene tarjetas de prueba públicas como `4242 4242 4242 4242`; PayPal
+   Sandbox usa una cuenta buyer de prueba que su Dashboard genera).
+
+**Cuenta de prueba para QA del carrito/checkout** (creada 2026-08-31,
+directamente en base de datos, cuenta personal ya activa):
+- Correo: `qa.pruebas@macdelnorte.test`
+- Contraseña: `QaPruebas2026!`
 
 ## Corregido en esta sesión
 

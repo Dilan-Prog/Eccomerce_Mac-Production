@@ -7,6 +7,7 @@ use App\Models\Adverisement;
 use App\Models\Coupon;
 use App\Models\Brand;
 use App\Models\Product;
+use App\Support\CartPricing;
 use Illuminate\Http\Request;
 use Cart;
 use Illuminate\Support\Facades\Session;
@@ -39,10 +40,36 @@ class CartController extends Controller
             ], 401);
         }
 
+        // Validación de entrada (Bug 1): qty inválido/negativo no debe pasar
+        // silenciosamente las comparaciones de stock más abajo. Se usa
+        // Validator::make() en vez de $request->validate() a propósito: este
+        // último lanza ValidationException -> respuesta 422, pero el
+        // manejador global de error AJAX en scripts.blade.php solo tiene
+        // lógica especial para 401, así que un 422 aquí fallaría en
+        // silencio. Se devuelve el mismo shape que el resto de rechazos de
+        // este método.
+        $validator = \Validator::make($request->all(), [
+            'qty' => 'required|integer|min:1',
+            'product_id' => 'nullable|exists:products,id',
+            'combination_id' => 'nullable|exists:product_variants_combinations,id',
+        ]);
+
+        if ($validator->fails()) {
+            return response(['status' => 'error', 'message' => $validator->errors()->first()]);
+        }
+
         // Si viene combination_id, busca la combinación, si no, el producto base
         if ($request->filled('combination_id')) {
             $combination = \App\Models\ProductVariantCombinations::findOrFail($request->combination_id);
             $product = \App\Models\Product::findOrFail($combination->product_id);
+
+            // Bug 2: no permitir agregar al carrito una combinación o
+            // producto desactivado. `status` es booleano/int con 1 =
+            // activo (mismo criterio que Product::where('status', 1) en
+            // AdminCotizacionController::productsSearch()).
+            if (!$combination->status || !$product->status) {
+                return response(['status' => 'error', 'message' => 'Producto no disponible']);
+            }
 
             // Validar stock de la combinación
             if ($combination->qty === 0) {
@@ -73,6 +100,11 @@ class CartController extends Controller
         } else {
             // Producto base
             $product = Product::findOrFail($request->product_id);
+
+            // Bug 2: no permitir agregar al carrito un producto desactivado.
+            if (!$product->status) {
+                return response(['status' => 'error', 'message' => 'Producto no disponible']);
+            }
 
             // Validar stock del producto base
             $stockQty = $product->qty_personalizated == 0 ? $product->qty_aspel : $product->qty;
@@ -164,7 +196,26 @@ class CartController extends Controller
 
     public function updateProductQty(Request $request)
     {
-        $cartItem = Cart::get($request->rowId);
+        // Bug 1: validar quantity antes de comparar contra stock (ver nota
+        // equivalente en addToCart() sobre por qué se usa Validator::make()
+        // en vez de $request->validate()).
+        $validator = \Validator::make($request->all(), [
+            'quantity' => 'required|integer|min:1',
+        ]);
+
+        if ($validator->fails()) {
+            return response(['status' => 'error', 'message' => $validator->errors()->first()]);
+        }
+
+        // Cart::get() lanza InvalidRowIDException (no devuelve null) si el
+        // rowId ya no existe — ej. otra pestaña eliminó la línea, o la
+        // sesión del carrito expiró — sin este try/catch tronaba con un 500
+        // en vez de la respuesta de error normal del endpoint.
+        try {
+            $cartItem = Cart::get($request->rowId);
+        } catch (\Gloudemans\Shoppingcart\Exceptions\InvalidRowIDException $e) {
+            return response(['status' => 'error', 'message' => 'Este producto ya no está en tu carrito']);
+        }
 
         // Si el ID del carrito tiene el prefijo 'comb_', es una combinación
         if (strpos($cartItem->id, 'comb_') === 0 && isset($cartItem->options['combination_id'])) {
@@ -225,8 +276,12 @@ class CartController extends Controller
 
     public function getProductTotal($rowId){
 
-        $product = Cart::get($rowId);
-        $total = ($product->price) * $product->qty;
+        $item = Cart::get($rowId);
+        // Bug 3: usar el precio resuelto en vivo (CartPricing) en vez del
+        // precio cacheado en el item del carrito, para que el total por
+        // línea del sidebar refleje cambios de precio posteriores al
+        // add-to-cart, igual que el resto del carrito/checkout.
+        $total = CartPricing::resolve($item)['price'] * $item->qty;
         return $total;
 
 

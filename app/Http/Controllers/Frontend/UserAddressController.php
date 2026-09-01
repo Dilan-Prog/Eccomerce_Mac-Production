@@ -10,41 +10,11 @@ use Illuminate\Support\Facades\Auth;
 class UserAddressController extends Controller
 {
     /**
-     * Display a listing of the resource.
-     */
-    public function index()
-    {
-        $addresses = UserAddress::where('user_id', Auth::user()->id)->get();
-        return view('frontend.dashboard.address.index', compact('addresses'));
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        return view('frontend.dashboard.address.create');
-    }
-
-    /**
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
     {
-        $request->validate([
-            'name'          => ['required', 'max:200'],
-            'email'         => ['required', 'max:200', 'email'],
-            'phone'         => ['required', 'max:200'],
-            'zip'           => ['required', 'max:200'],
-            'state'         => ['required', 'max:200'],
-            'city'          => ['required', 'max:200'],
-            'col'           => ['required', 'max:200'],
-            'street'        => ['required', 'max:200'],
-            'street_number' => ['max:200'],
-            'street_1'      => ['max:200'],
-            'street_2'      => ['max:200'],
-            'address'       => ['max:200'],
-        ]);
+        $request->validate(UserAddress::validationRules());
 
         $address = new UserAddress();
         $address->user_id      = Auth::user()->id;
@@ -62,29 +32,12 @@ class UserAddressController extends Controller
         $address->address      = $request->address;
         $address->save();
 
-        if ($request->ajax()) {
+        if ($request->wantsJson()) {
             return response()->json(['status' => 'success', 'message' => 'Dirección creada correctamente', 'id' => $address->id]);
         }
 
         toastr('Creado Con Exito', 'success', 'Success');
-        return redirect()->route('user.address.index');
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        $address = UserAddress::find($id);
-        return view('frontend.dashboard.address.edit', compact('address'));
+        return redirect()->route('user.profile', ['tab' => 'addresses']);
     }
 
     /**
@@ -92,22 +45,9 @@ class UserAddressController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $request->validate([
-            'name'          => ['required', 'max:200'],
-            'email'         => ['required', 'max:200', 'email'],
-            'phone'         => ['required', 'max:200'],
-            'zip'           => ['required', 'max:200'],
-            'state'         => ['required', 'max:200'],
-            'city'          => ['required', 'max:200'],
-            'col'           => ['required', 'max:200'],
-            'street'        => ['required', 'max:200'],
-            'street_number' => ['max:200'],
-            'street_1'      => ['max:200'],
-            'street_2'      => ['max:200'],
-            'address'       => ['max:200'],
-        ]);
+        $request->validate(UserAddress::validationRules());
 
-        $address = UserAddress::findOrFail($id);
+        $address = UserAddress::where('user_id', Auth::user()->id)->findOrFail($id);
         $address->user_id       = Auth::user()->id;
         $address->name          = $request->name;
         $address->email         = $request->email;
@@ -119,16 +59,24 @@ class UserAddressController extends Controller
         $address->street        = $request->street;
         $address->street_number = $request->street_number;
         $address->street_1      = $request->street_1;
-        $address->street_2      = $request->street_2;
-        $address->address       = $request->address;
+        // El modal de "Mis direcciones" (resources/views/frontend/dashboard/profile.blade.php)
+        // no tiene campos para street_2/address — sin este guard, cada edición
+        // desde ese modal borraba en silencio la calle 2 / indicaciones
+        // guardadas antes (ej. desde el viejo formulario de página completa).
+        if ($request->has('street_2')) {
+            $address->street_2 = $request->street_2;
+        }
+        if ($request->has('address')) {
+            $address->address = $request->address;
+        }
         $address->save();
 
-        if ($request->ajax()) {
+        if ($request->wantsJson()) {
             return response()->json(['status' => 'success', 'message' => 'Dirección actualizada correctamente']);
         }
 
         toastr('Actualizacion Exitosa', 'success', 'Success');
-        return redirect()->route('user.address.index');
+        return redirect()->route('user.profile', ['tab' => 'addresses']);
     }
 
     /**
@@ -136,7 +84,7 @@ class UserAddressController extends Controller
      */
     public function destroy(string $id)
     {
-        $address = UserAddress::findOrFail($id);
+        $address = UserAddress::where('user_id', Auth::user()->id)->findOrFail($id);
         $address->delete();
 
         return response(['status' => 'success', 'message' => 'Borrado Exitosamente']);

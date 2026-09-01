@@ -19,8 +19,12 @@ class PaypalSettingController extends Controller
             'country_name' => ['required', 'max:200'],
             'currency_name' => ['required', 'max:200'],
             'currency_rate' => ['required', 'integer'],
-            'client_id' => ['required'],
-            'secret_key' => ['required'],
+            'client_id' => ['required_if:mode,1'],
+            'secret_key' => ['required_if:mode,1'],
+            'webhook_id' => ['nullable', 'max:255'],
+            'sandbox_client_id' => ['required_if:mode,0'],
+            'sandbox_secret_key' => ['required_if:mode,0'],
+            'sandbox_webhook_id' => ['nullable', 'max:255'],
         ]);
        PaypalSetting::updateOrCreate(
             ['id' => $id],
@@ -32,6 +36,10 @@ class PaypalSettingController extends Controller
                 'currency_rate' => $request->currency_rate,
                 'client_id' => $request->client_id,
                 'secret_key' => $request->secret_key,
+                'webhook_id' => $request->webhook_id,
+                'sandbox_client_id' => $request->sandbox_client_id,
+                'sandbox_secret_key' => $request->sandbox_secret_key,
+                'sandbox_webhook_id' => $request->sandbox_webhook_id,
 
             ]);
             toastr('Actualizado Con exito', 'success', 'Success');

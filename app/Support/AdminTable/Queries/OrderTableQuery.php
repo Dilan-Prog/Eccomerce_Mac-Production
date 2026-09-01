@@ -18,6 +18,7 @@ class OrderTableQuery extends AdminTableQuery
 {
     private const STATUS_META = [
         'pending' => ['label' => 'Pendiente', 'tone' => 'warning'],
+        'pendiente_de_surtir' => ['label' => 'Pendiente de surtir', 'tone' => 'warning'],
         'processed_and_ready_to_ship' => ['label' => 'Procesado y listo para enviar', 'tone' => 'info'],
         'dropped_off' => ['label' => 'Entregado al transportista', 'tone' => 'info'],
         'shipped' => ['label' => 'Enviado', 'tone' => 'info'],
@@ -28,6 +29,7 @@ class OrderTableQuery extends AdminTableQuery
 
     private const FILTER_STATUS = [
         'pendiente' => 'pending',
+        'pendiente_de_surtir' => 'pendiente_de_surtir',
         'procesado' => 'processed_and_ready_to_ship',
         'entregado_transportista' => 'dropped_off',
         'enviado' => 'shipped',

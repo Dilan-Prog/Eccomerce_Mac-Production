@@ -77,7 +77,7 @@
         <div class="mdn-sidebar-group">
             <div class="mdn-sidebar-group-label">Actividad</div>
 
-            <a href="{{ route('user.orders.index') }}"
+            <a href="{{ route('user.profile', ['tab' => 'orders']) }}"
                class="mdn-sidebar-link {{ request()->routeIs('user.orders*') ? 'active' : '' }}">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/>
@@ -87,8 +87,8 @@
                 Mis pedidos
             </a>
 
-            <a href="{{ route('user.address.index') }}"
-               class="mdn-sidebar-link {{ request()->routeIs('user.address*') ? 'active' : '' }}">
+            <a href="{{ route('user.profile', ['tab' => 'addresses']) }}"
+               class="mdn-sidebar-link">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/>
                     <circle cx="12" cy="10" r="3"/>

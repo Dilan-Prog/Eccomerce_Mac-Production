@@ -161,6 +161,12 @@
             <h2><i class="fas fa-id-card" style="color:var(--accent-cta);margin-right:8px;"></i>Datos fiscales</h2>
             <p class="cot-subtitle">Estos datos aparecerán en el PDF de cotización. Los campos con <span style="color:var(--accent-cta);">*</span> son obligatorios.</p>
 
+            @if(session('error'))
+                <div style="background:#FEF2F2;border:1px solid #E53E3E;border-radius:8px;padding:14px 18px;margin-bottom:20px;color:#E53E3E;font-size:13px;font-weight:600;">
+                    <i class="fas fa-exclamation-circle" style="margin-right:6px;"></i>{{ session('error') }}
+                </div>
+            @endif
+
             @if($errors->any())
                 <div style="background:#FEF2F2;border:1px solid #E53E3E;border-radius:8px;padding:14px 18px;margin-bottom:20px;">
                     <ul style="margin:0;padding-left:18px;color:#E53E3E;font-size:13px;">

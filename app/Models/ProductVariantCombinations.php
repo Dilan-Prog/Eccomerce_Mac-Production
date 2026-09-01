@@ -37,4 +37,15 @@ public function product()
         return (float) ($this->offert_price ?? $this->price);
     }
 
+    /**
+     * Resuelve el stock efectivo de esta combinación. A diferencia de
+     * Product, las combinaciones no tienen el split qty_personalizated/
+     * qty_aspel — solo una columna `qty` plana (ver migración
+     * 2025_07_31_222020_product_variants_combinations.php).
+     */
+    public function effectiveStock(): int
+    {
+        return (int) $this->qty;
+    }
+
 }

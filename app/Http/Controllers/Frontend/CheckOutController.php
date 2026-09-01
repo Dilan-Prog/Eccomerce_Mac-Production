@@ -8,6 +8,7 @@ use App\Models\ShippingRule;
 use App\Models\StripeSetting;
 use App\Models\Transfer;
 use App\Models\UserAddress;
+use Cart;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
@@ -15,6 +16,14 @@ use Illuminate\Support\Facades\Session;
 class CheckOutController extends Controller
 {
     public function index(){
+
+        // Con el carrito vacío (ej. el usuario navegó de vuelta con el
+        // botón "Atrás" del navegador después de pagar) no hay nada que
+        // cobrar — regresar al carrito en vez de mostrar el checkout vacío.
+        if (Cart::content()->isEmpty()) {
+            toastr('Tu carrito está vacío. Agrega productos antes de continuar.', 'error', 'Carrito vacío');
+            return redirect()->route('cart-details');
+        }
 
         $addresses      = UserAddress::where('user_id', Auth::user()->id)->get();
         $shippingMethod = ShippingRule::where('status', 1)->get();
@@ -29,21 +38,7 @@ class CheckOutController extends Controller
 
     public function createAddress(Request $request){
 
-        $request->validate([
-            'name' => ['required', 'max:200'],
-            'email' => ['required', 'max:200', 'email'],
-            'phone' => ['required', 'max:200'],
-            'zip' => ['required', 'max:200'],
-            'state' => ['required', 'max:200'],
-            'city' => ['required', 'max:200'],
-            'col' => ['required', 'max:200'],
-            'street' => ['required', 'max:200'],
-            'street_number' => ['max:200'],
-            'street_1' => ['max:200'],
-            'street_2' => ['max:200'],
-            'address' => ['max:200'],
-            
-        ]);
+        $request->validate(UserAddress::validationRules());
 
         $address = new UserAddress();
         $address->user_id = Auth::user()->id;
@@ -68,6 +63,10 @@ class CheckOutController extends Controller
 
     public function checkOutFormSumit(Request $request){
 
+        if (Cart::content()->isEmpty()) {
+            return response(['status' => 'error', 'message' => 'Tu carrito está vacío.'], 422);
+        }
+
         $request->validate([
             'shipping_method_id' => ['required', 'integer'],
             'shipping_address_id' => ['required', 'integer'],
@@ -83,7 +82,7 @@ class CheckOutController extends Controller
             ]);
         }
 
-        $address = UserAddress::findOrFail($request->shipping_address_id)->toArray();
+        $address = UserAddress::where('user_id', Auth::user()->id)->findOrFail($request->shipping_address_id)->toArray();
         if($address){
             Session::put('address', $address);
         }

@@ -281,24 +281,28 @@
                                 <div class="form-row-2" style="margin-bottom:12px;">
                                     <div class="form-group">
                                         <label class="form-label">Nombre completo <span>*</span></label>
-                                        <input class="form-input @error('name') is-invalid @enderror" type="text" name="name" value="{{ old('name') }}" placeholder="Ej. Roberto Martínez">
+                                        <input class="form-input @error('name') is-invalid @enderror" type="text" id="address-name" name="name" value="{{ old('name') }}" placeholder="Ej. Roberto Martínez">
+                                        <div class="field-error" id="address-name-error" style="display:none"></div>
                                         @error('name')<div class="field-error">{{ $message }}</div>@enderror
                                     </div>
                                     <div class="form-group">
                                         <label class="form-label">Teléfono <span>*</span></label>
-                                        <input class="form-input @error('phone') is-invalid @enderror" type="text" name="phone" value="{{ old('phone') }}" placeholder="10 dígitos">
+                                        <input class="form-input @error('phone') is-invalid @enderror" type="text" id="address-phone" name="phone" value="{{ old('phone') }}" placeholder="10 dígitos" inputmode="numeric" maxlength="10">
+                                        <div class="field-error" id="address-phone-error" style="display:none"></div>
                                         @error('phone')<div class="field-error">{{ $message }}</div>@enderror
                                     </div>
                                 </div>
                                 <div class="form-group" style="margin-bottom:12px;">
-                                    <label class="form-label">Correo electrónico</label>
-                                    <input class="form-input @error('email') is-invalid @enderror" type="email" name="email" value="{{ old('email') }}" placeholder="correo@ejemplo.com">
+                                    <label class="form-label">Correo electrónico <span>*</span></label>
+                                    <input class="form-input @error('email') is-invalid @enderror" type="email" id="address-email" name="email" value="{{ old('email') }}" placeholder="correo@ejemplo.com">
+                                    <div class="field-error" id="address-email-error" style="display:none"></div>
                                     @error('email')<div class="field-error">{{ $message }}</div>@enderror
                                 </div>
                                 <div class="form-row-3" style="margin-bottom:12px;">
                                     <div class="form-group">
                                         <label class="form-label">Código Postal <span>*</span></label>
-                                        <input class="form-input @error('zip') is-invalid @enderror" type="text" name="zip" value="{{ old('zip') }}" placeholder="00000">
+                                        <input class="form-input @error('zip') is-invalid @enderror" type="text" id="address-zip" name="zip" value="{{ old('zip') }}" placeholder="00000" inputmode="numeric" maxlength="5">
+                                        <div class="field-error" id="address-zip-error" style="display:none"></div>
                                         @error('zip')<div class="field-error">{{ $message }}</div>@enderror
                                     </div>
                                     <div class="form-group">
@@ -313,19 +317,22 @@
                                     </div>
                                     <div class="form-group">
                                         <label class="form-label">Ciudad <span>*</span></label>
-                                        <input class="form-input @error('city') is-invalid @enderror" type="text" name="city" value="{{ old('city') }}" placeholder="Monterrey">
+                                        <input class="form-input @error('city') is-invalid @enderror" type="text" id="address-city" name="city" value="{{ old('city') }}" placeholder="Monterrey">
+                                        <div class="field-error" id="address-city-error" style="display:none"></div>
                                         @error('city')<div class="field-error">{{ $message }}</div>@enderror
                                     </div>
                                 </div>
                                 <div class="form-row-2" style="margin-bottom:12px;">
                                     <div class="form-group">
                                         <label class="form-label">Colonia <span>*</span></label>
-                                        <input class="form-input @error('col') is-invalid @enderror" type="text" name="col" value="{{ old('col') }}" placeholder="Colonia / Fraccionamiento">
+                                        <input class="form-input @error('col') is-invalid @enderror" type="text" id="address-col" name="col" value="{{ old('col') }}" placeholder="Colonia / Fraccionamiento">
+                                        <div class="field-error" id="address-col-error" style="display:none"></div>
                                         @error('col')<div class="field-error">{{ $message }}</div>@enderror
                                     </div>
                                     <div class="form-group">
                                         <label class="form-label">Calle <span>*</span></label>
-                                        <input class="form-input @error('street') is-invalid @enderror" type="text" name="street" value="{{ old('street') }}" placeholder="Nombre de la calle">
+                                        <input class="form-input @error('street') is-invalid @enderror" type="text" id="address-street" name="street" value="{{ old('street') }}" placeholder="Nombre de la calle">
+                                        <div class="field-error" id="address-street-error" style="display:none"></div>
                                         @error('street')<div class="field-error">{{ $message }}</div>@enderror
                                     </div>
                                 </div>
@@ -362,12 +369,17 @@
                     </div>
                     <div class="checkout-section-body">
 
-                        @php $hasShipping = false; @endphp
+                        @php $hasShipping = false; $autoSelectShippingId = null; @endphp
                         <div class="shipping-options">
                             @foreach ($shippingMethod as $method)
                                 @php $show = false; @endphp
                                 @if ($method->type == 'min_cost' && getCartTotal() >= $method->min_cost)
                                     @php $show = true; @endphp
+                                    {{-- El pedido ya califica para envío gratis: se pre-selecciona
+                                         automáticamente más abajo (ver autoSelectShippingId en el
+                                         <script>), sin ocultar ni deshabilitar el resto de opciones
+                                         (incluido Envío Internacional) por si el cliente prefiere otra. --}}
+                                    @php $autoSelectShippingId = $autoSelectShippingId ?? $method->id; @endphp
                                 @elseif ($method->type == 'flat_cost')
                                     @php $show = true; @endphp
                                 @endif
@@ -482,7 +494,6 @@
                                     <div class="payment-option-name">Transferencia SPEI · BBVA</div>
                                     <div class="payment-option-desc">Transferencia bancaria electrónica</div>
                                 </div>
-                                <span class="payment-discount-badge">2% descuento</span>
                             </label>
 
                             {{-- SPEI details + form (hidden until selected) --}}
@@ -512,7 +523,6 @@
                                     </div>
 
                                     <div class="spei-note">
-                                        Recibirás un <strong>2% de descuento</strong> al pagar por transferencia.<br>
                                         Envía el comprobante a <strong>ventas@macdelnorte.com</strong> indicando el número de referencia.
                                     </div>
 
@@ -627,10 +637,6 @@
                             <span>Método de pago</span>
                             <span id="sidebar-payment-value">—</span>
                         </div>
-                        <div class="checkout-total-row sidebar-spei-discount" id="sidebar-spei-discount">
-                            <span>Descuento SPEI (2%)</span>
-                            <span id="spei-discount-amount">−{{ $settings->currency_icon }}0.00</span>
-                        </div>
                         <div class="checkout-total-row main">
                             <span>Total</span>
                             <span class="amount" id="total_amount" data-id="{{ getMainCartTotal() }}">
@@ -693,7 +699,7 @@
 
 {{-- PayPal SDK: sandbox usa el mismo endpoint, el client_id determina el entorno --}}
 @if($paypalInfo)
-<script src="https://www.paypal.com/sdk/js?client-id={{ $paypalInfo->client_id }}&currency={{ $paypalInfo->currency_name }}&intent=capture{{ $paypalInfo->mode == 0 ? '&buyer-country=MX' : '' }}" defer></script>
+<script src="https://www.paypal.com/sdk/js?client-id={{ $paypalInfo->activeClientId() }}&currency={{ $paypalInfo->currency_name }}&intent=capture{{ $paypalInfo->mode == 0 ? '&buyer-country=MX' : '' }}" defer></script>
 @endif
 
 @vite(['resources/js/checkout.js'])
@@ -732,7 +738,7 @@
 @if($stripeSetting)
 var stripe = null, stripeElems = null, cardElement = null, stripeCardMounted = false;
 try {
-    stripe      = Stripe("{{ $stripeSetting->client_id }}");
+    stripe      = Stripe("{{ $stripeSetting->activeClientId() }}");
     stripeElems = stripe.elements();
     cardElement = stripeElems.create('card', {
         style: {
@@ -818,7 +824,9 @@ $(document).ready(function () {
 
     var baseTotal    = parseFloat($('#total_amount').attr('data-id')) || 0;
     var currentTotal = baseTotal;
-    var speiActive   = false;
+    // Id del método de envío gratis (type=min_cost) si el pedido ya califica
+    // por monto — null si ninguno aplica. Ver uso más abajo.
+    var autoSelectShippingId = {{ $autoSelectShippingId ?? 'null' }};
     var currIcon     = "{{ $settings->currency_icon }}";
 
     function fmt(num) { return num.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,'); }
@@ -839,16 +847,7 @@ $(document).ready(function () {
     }
 
     function updateTotalDisplay() {
-        if (speiActive) {
-            var discount = currentTotal * 0.02;
-            var final    = currentTotal - discount;
-            $('#spei-discount-amount').text('−' + currIcon + fmt(discount));
-            $('#sidebar-spei-discount').addClass('visible');
-            $('#total_amount').text(currIcon + fmt(final));
-        } else {
-            $('#sidebar-spei-discount').removeClass('visible');
-            $('#total_amount').text(currIcon + fmt(currentTotal));
-        }
+        $('#total_amount').text(currIcon + fmt(currentTotal));
     }
 
     // ── Shipping selection (escucha el label visible, no el radio oculto) ───
@@ -913,7 +912,6 @@ $(document).ready(function () {
             $('#spei-detail-panel').addClass('active');
         }
 
-        speiActive = (val === 'spei');
         updateTotalDisplay();
 
         // Sidebar payment label
@@ -961,6 +959,20 @@ $(document).ready(function () {
     }
     $(document).on('change', 'input[type="checkbox"]', validateSubmitBtn);
     validateSubmitBtn();
+
+    // ── Auto-selección de envío gratis ───────────────────────────────
+    // Si el pedido ya califica para el envío gratis (ej. "Envio Gratis"
+    // desde $2,299), se marca automáticamente para que el cliente no tenga
+    // que buscarlo entre las demás opciones. Dispara el mismo 'change' que
+    // un click real, así que el total, el badge de sección y el botón de
+    // continuar se actualizan igual — el resto de métodos (incluido Envío
+    // Internacional, a cargo del comprador) siguen visibles y elegibles
+    // por si el cliente prefiere cambiarlo.
+    if (autoSelectShippingId !== null) {
+        $('input.shipping_method[value="' + autoSelectShippingId + '"]')
+            .prop('checked', true)
+            .trigger('change');
+    }
 
     // ── Save session via AJAX (helper) ─────────────────────────────
     function saveSession(callback) {
@@ -1047,6 +1059,9 @@ $(document).ready(function () {
         e.preventDefault();
         var $btn = $(this);
         if ($btn.hasClass('saving')) return;
+        if (typeof window.validateAddressForm === 'function' && !window.validateAddressForm()) {
+            return;
+        }
         $btn.addClass('saving').text('Guardando...');
         $(this).closest('form').submit();
     });

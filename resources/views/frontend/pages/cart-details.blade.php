@@ -335,7 +335,7 @@
                         @endif
 
                         <a class="cart-item-name" href="{{ route('product-detail', $item->options->slug) }}">
-                            {!! $item->name !!}
+                            {{ $item->name }}
                         </a>
 
                         @if($item->options->sku)
@@ -599,7 +599,7 @@ $(document).ready(function () {
         let code = $('#coupon_code_input').val().trim();
         if (!code) { toastr.warning('Ingresa un código de cupón'); return; }
         $.ajax({
-            method: 'GET',
+            method: 'POST',
             url: "{{ route('apply-coupon') }}",
             data: { coupon_code: code },
             success: function (data) {
@@ -617,7 +617,7 @@ $(document).ready(function () {
     // ── REMOVE COUPON ──
     $('#remove-coupon-btn').on('click', function () {
         $.ajax({
-            method: 'GET',
+            method: 'POST',
             url: "{{ route('apply-coupon') }}",
             data: { coupon_code: '' },
             complete: function () { location.reload(); }
@@ -627,7 +627,7 @@ $(document).ready(function () {
     // ── COUPON CALCULATION ──
     function calculateCouponDiscount() {
         $.ajax({
-            method: 'GET',
+            method: 'POST',
             url: "{{ route('coupon-calculation') }}",
             success: function (data) {
                 if (data.status === 'success') {

@@ -151,7 +151,7 @@
 
 @push('scripts')
 {{-- CREAR LOGICA PARA &disable-funding=card POR EL PRECIO UNITARIO DEL PRODUCTO --}}
-<script src="https://www.paypal.com/sdk/js?client-id={{ $paypalInfo->client_id }}&currency=MXN"></script>
+<script src="https://www.paypal.com/sdk/js?client-id={{ $paypalClientId }}&currency=MXN"></script>
 <script>
     // Configuracion de Paypal
 

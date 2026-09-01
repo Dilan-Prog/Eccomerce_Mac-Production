@@ -7,6 +7,10 @@ return [
             'status' => 'Pendiente', // Pendiente
             'details' => 'Tu orden está actualmente pendiente' // Detalles: Tu orden está actualmente pendiente
         ],
+        'pendiente_de_surtir' => [
+            'status' => 'Pendiente de surtir', // Pendiente de surtir
+            'details' => 'Tu pago fue procesado pero no hay suficiente inventario para surtir tu orden por completo' // Detalles: Tu pago fue procesado pero no hay suficiente inventario para surtir tu orden por completo
+        ],
         'processed_and_ready_to_ship' => [
             'status' => 'Procesado y listo para enviar', // Procesado y listo para enviar
             'details' => 'Tu paquete ha sido procesado y pronto estará con nuestro socio de entrega' // Detalles: Tu paquete ha sido procesado y pronto estará con nuestro socio de entrega

@@ -19,6 +19,7 @@ use App\Models\Transfer;
 use App\Models\User;
 use App\Notifications\BuytoPay;
 use App\Notifications\buytopayAdmin;
+use App\Support\CartPricing;
 use Illuminate\Support\Facades\Notification;
 use Srmklive\PayPal\Services\PayPal as PayPalClient;
 use Stripe\Charge;
@@ -28,12 +29,22 @@ use Stripe\Exception\CardException;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
 
 
 class PaymentController extends Controller
 {
     public function index()
     {
+        // Mismo guard que CheckOutController::index() — sin esto, un carrito
+        // vaciado después de completar el paso de dirección (otra pestaña,
+        // stock agotado, botón "Atrás") deja ver la pantalla de pago con
+        // monto $0 y nada que cobrar.
+        if (\Cart::content()->isEmpty()) {
+            toastr('Tu carrito está vacío. Agrega productos antes de continuar.', 'error', 'Carrito vacío');
+            return redirect()->route('cart-details');
+        }
+
         $paypalInfo = PaypalSetting::first();
         $userInfo = User::first();
         $transferInfo = Transfer::first();
@@ -42,7 +53,7 @@ class PaymentController extends Controller
             return redirect()->route('user.checkout');
         }
 
-        $paypalClientId = $paypalInfo->mode == 1 ? $paypalInfo->client_id : $paypalInfo->client_id;
+        $paypalClientId = $paypalInfo->activeClientId();
         return view('frontend.pages.payment', compact('paypalInfo', 'userInfo', 'transferInfo', 'paypalClientId'));
     }
 
@@ -54,7 +65,10 @@ class PaymentController extends Controller
             return redirect()->route('index')->with('error', 'La URL de pago ha caducado.');
         }
 
-        $order = Order::where('payment_method', 'transfer')->latest()->first();
+        $order = Order::where('id', $request->query('order'))
+            ->where('user_id', Auth::id())
+            ->where('payment_method', 'transfer')
+            ->firstOrFail();
 
         return view('frontend.pages.payment-transfer-success', compact('order'));
     }
@@ -66,91 +80,130 @@ class PaymentController extends Controller
             return Redirect::route('index')->with('error', 'La URL de pago Exitoso ah caducado.');
         }
 
-        $order = Order::whereIn('payment_method', ['paypal', 'stripe'])
-            ->latest()
-            ->first();
+        $order = Order::where('id', $request->query('order'))
+            ->where('user_id', Auth::id())
+            ->firstOrFail();
 
-        $view = '';
-        switch ($order->payment_method) {
-            case 'paypal':
-                $view = 'frontend.pages.payment-success';
-                break;
-            case 'stripe':
-                $view = 'frontend.pages.payment-success';
-                break;
-            default:
-                abort(404); // Manejar cualquier otro método de pago no esperado
-        }
-        return view($view, compact('order'));
+        abort_unless(in_array($order->payment_method, ['paypal', 'stripe']), 404);
+
+        return view('frontend.pages.payment-success', compact('order'));
     }
 
 
     public function storeOrder($refBank, $paymentMethod, $paymentStatus, $transactionId, $paidAmount, $paidCurrencyName)
     {
-        $setting = GeneralSetting::first();
-        $order = new Order();
+        return DB::transaction(function () use ($refBank, $paymentMethod, $paymentStatus, $transactionId, $paidAmount, $paidCurrencyName) {
+            $setting = GeneralSetting::first();
+            $order = new Order();
 
 
-        if ($paymentMethod === 'transfer') {
-            $order->invocie_id = $refBank;
-            // Si es transferencia, usar el valor de refBank como invocie_id
+            if ($paymentMethod === 'transfer') {
+                $order->invocie_id = $refBank;
+                // Si es transferencia, usar el valor de refBank como invocie_id
+                $order->amount = getFinalPayableAmount();
+            } else {
+                // random_int + verificación de unicidad: rand() por sí solo puede
+                // repetir el mismo invocie_id entre dos órdenes distintas.
+                do {
+                    $invoiceId = random_int(100000, 999999);
+                } while (Order::where('invocie_id', $invoiceId)->exists());
+                $order->invocie_id = $invoiceId;
+                $order->amount = getFinalPayableAmount();
+            }
 
-            // Aplicar el descuento si es pago por transferencia
-            $discount = 0.02;
-            // por ejemplo, 10% de descuento
-            $finalPayableAmount = getFinalPayableAmount() * (1 - $discount);
-            $order->amount = $finalPayableAmount;
-        } else {
-            $order->invocie_id = rand(1, 999999);
-            // Generar aleatoriamente si no es transferencia
-            $order->amount = getFinalPayableAmount();
-        }
 
+            $order->user_id = Auth::user()->id;
+            $order->sub_total = getCartTotal();
 
-        $order->user_id = Auth::user()->id;
-        $order->sub_total = getCartTotal();
+            $order->currency_name = $setting->currency_name;
+            $order->currency_icon = $setting->currency_icon;
+            $order->product_qty = \Cart::content()->count();
+            $order->payment_method = $paymentMethod;
+            $order->payment_status =  $paymentStatus;
+            $order->order_address = json_encode(Session::get('address'));
+            $order->shipping_method = json_encode(Session::get('shipping_method'));
+            $order->coupon = json_encode(Session::get('coupon'));
+            $order->coupon_code = Session::get('coupon.coupon_code');
+            $order->order_status = 'pending';
+            $order->save();
 
-        $order->currency_name = $setting->currency_name;
-        $order->currency_icon = $setting->currency_icon;
-        $order->product_qty = \Cart::content()->count();
-        $order->payment_method = $paymentMethod;
-        $order->payment_status =  $paymentStatus;
-        $order->order_address = json_encode(Session::get('address'));
-        $order->shipping_method = json_encode(Session::get('shipping_method'));
-        $order->coupon = json_encode(Session::get('coupon'));
-        $order->order_status = 'pending';
-        $order->save();
+            // store order products — precio y stock se resuelven EN VIVO vía
+            // CartPricing (antes: Product::where('id', $item->id) truena con
+            // un id tipo "comb_45" de un producto con variante, y el precio
+            // usado era el valor cacheado en el carrito al momento de
+            // agregarlo, no el actual).
+            //
+            // Si el stock no alcanza para surtir algún renglón completo, el
+            // pedido NO se rechaza — el pago ya se cobró en los 4 métodos de
+            // pago (paypalSuccess/captureOrder/payWithStripe/payWithTransfer
+            // llaman a storeOrder() después de capturar el cobro) — en vez de
+            // eso se registra igual y se marca "pendiente_de_surtir" al final.
+            $pedidoIncompleto = false;
 
-        $order = Order::find($order->id);
-        // store order products
-        foreach (\Cart::content() as $item) {
-            $product = Product::find($item->id);
-            $orderProduct = new OrderProduct();
-            $orderProduct->order_id = $order->id;
-            $orderProduct->product_id = $product->id;
-            // $orderProduct->vendor_id = $product->vendor_id;
-            $orderProduct->product_name = $product->name;
-            $orderProduct->sku = $product->sku;
-            $orderProduct->productModel = $product->productModel;
-            $orderProduct->unit_price = $item->price;
-            $orderProduct->qty = $item->qty;
-            $orderProduct->save();
+            foreach (\Cart::content() as $item) {
+                $resolved = CartPricing::resolve($item, lockForUpdate: true);
+                $product = $resolved['product'];
+                $combination = $resolved['combination'];
 
-            // update product quantity
-            $updatedQty = ($product->qty - $item->qty);
-            $product->qty = $updatedQty;
-            $product->save();
-        }
+                if (!$product) {
+                    // Producto/combinación borrado entre que se agregó al
+                    // carrito y el checkout — no hay nada que descontar ni
+                    // registrar correctamente para este renglón.
+                    $pedidoIncompleto = true;
+                    continue;
+                }
 
-        // store transaction details
-        $transaction = new Transaction();
-        $transaction->order_id = $order->id;
-        $transaction->transaction_id = $transactionId;
-        $transaction->payment_method = $paymentMethod;
-        $transaction->amount = getFinalPayableAmount();
-        $transaction->amount_real_currency = $paidAmount;
-        $transaction->amount_real_name = $paidCurrencyName;
-        $transaction->save();
+                $unitPrice = $resolved['price'];
+                $availableQty = $resolved['stock'];
+
+                $orderProduct = new OrderProduct();
+                $orderProduct->order_id = $order->id;
+                $orderProduct->product_id = $product->id;
+                $orderProduct->product_name = $product->name;
+                $orderProduct->sku = $combination->sku ?? $product->sku;
+                $orderProduct->productModel = $product->productModel;
+                $orderProduct->unit_price = $unitPrice;
+                $orderProduct->qty = $item->qty;
+                $orderProduct->save();
+
+                if ($availableQty < $item->qty) {
+                    $pedidoIncompleto = true;
+                }
+
+                // Descuenta el campo correcto sin bajar de 0 — el faltante
+                // (si lo hay) queda reflejado solo en order_status, no en una
+                // columna de stock negativa.
+                $newQty = max(0, $availableQty - $item->qty);
+
+                if ($combination) {
+                    $combination->qty = $newQty;
+                    $combination->save();
+                } elseif ($product->qty_personalizated == 0) {
+                    $product->qty_aspel = $newQty;
+                    $product->save();
+                } else {
+                    $product->qty = $newQty;
+                    $product->save();
+                }
+            }
+
+            if ($pedidoIncompleto) {
+                $order->order_status = 'pendiente_de_surtir';
+                $order->save();
+            }
+
+            // store transaction details
+            $transaction = new Transaction();
+            $transaction->order_id = $order->id;
+            $transaction->transaction_id = $transactionId;
+            $transaction->payment_method = $paymentMethod;
+            $transaction->amount = getFinalPayableAmount();
+            $transaction->amount_real_currency = $paidAmount;
+            $transaction->amount_real_name = $paidCurrencyName;
+            $transaction->save();
+
+            return $order;
+        });
     }
 
     public function clearSession()
@@ -169,13 +222,13 @@ class PaymentController extends Controller
         $config = [
             'mode'    => $paypalSetting->mode == 1 ? 'live' : 'sandbox', // Can only be 'sandbox' Or 'live'. If empty or invalid, 'live' will be used.
             'sandbox' => [
-                'client_id'         => $paypalSetting->client_id,
-                'client_secret'     => $paypalSetting->secret_key,
+                'client_id'         => $paypalSetting->activeClientId(),
+                'client_secret'     => $paypalSetting->activeSecretKey(),
                 'app_id'            => 'APP-80W284485P519543T',
             ],
             'live' => [
-                'client_id'         => $paypalSetting->client_id,
-                'client_secret'     => $paypalSetting->secret_key,
+                'client_id'         => $paypalSetting->activeClientId(),
+                'client_secret'     => $paypalSetting->activeSecretKey(),
                 'app_id'            => '',
             ],
 
@@ -240,17 +293,16 @@ class PaymentController extends Controller
             $paypalSetting = PaypalSetting::first();
             $paidAmount = getFinalPayableAmount();
             /**Get Final Ammount */
-            $this->storeOrder(null, 'paypal', 1, $response['id'], $paidAmount, $paypalSetting->currency_name);
+            $order = $this->storeOrder(null, 'paypal', 1, $response['id'], $paidAmount, $paypalSetting->currency_name);
 
             // clear session
             $this->clearSession();
 
-            $order = Order::latest()->first();
             $signedUrl = URL::temporarySignedRoute(
                 'user.payment.success',
-                now()->addSeconds(30)
+                now()->addSeconds(30),
+                ['order' => $order->id]
             );
-            $this->notifyPaymentProcessed($order);
             try {
                 $this->notifyPaymentProcessed($order);
             } catch (\Exception $e) {
@@ -323,14 +375,13 @@ class PaymentController extends Controller
         if (isset($response['status']) && $response['status'] === 'COMPLETED') {
             $paypalSetting = PaypalSetting::first();
             $paidAmount = getFinalPayableAmount();
-            $this->storeOrder(null, 'paypal', 1, $response['id'], $paidAmount, $paypalSetting->currency_name);
+            $order = $this->storeOrder(null, 'paypal', 1, $response['id'], $paidAmount, $paypalSetting->currency_name);
             $this->clearSession();
 
-            $order = Order::latest()->first();
             $signedUrl = URL::temporarySignedRoute(
                 'user.payment.success',
                 now()->addSeconds(30),
-                ['order' => $order->id, 'slug' => $order->product->slug ?? null]
+                ['order' => $order->id]
             );
             /**AL MOMENTO DE ENVIAR EL CORREO POR LA LAPTOP NO SE ENVIA LA NOTIFICACION YA QUE A AHI UN PROBLEMA CON EL ARCHIVO .env
              * PERO AL MOMENTO DE ENVIAR LA NOTIFIACION POR LA COMPUTADORA DE ESCRITORIO ( CON UN DIFERENTE ARCHIVO .env) SI SE ENVIA
@@ -371,7 +422,7 @@ class PaymentController extends Controller
         /**Get Final Ammount */
 
         try {
-            Stripe::setApiKey($stripeSetting->secret_key);
+            Stripe::setApiKey($stripeSetting->activeSecretKey());
             $response = Charge::create([
                 // round() evita errores de punto flotante (ej. 1999.9999999999998) que Stripe rechaza por no ser entero
                 "amount" => (int) round($payableAmount * 100),
@@ -395,14 +446,14 @@ class PaymentController extends Controller
         }
 
         if ($response->status === 'succeeded') {
-            $this->storeOrder(null, 'stripe', 1, $response->id, $payableAmount, $stripeSetting->currency_name);
+            $order = $this->storeOrder(null, 'stripe', 1, $response->id, $payableAmount, $stripeSetting->currency_name);
             // clear session
             $this->clearSession();
 
-            $order = Order::latest()->first();
             $signedUrl = URL::temporarySignedRoute(
                 'user.payment.success',
-                now()->addSeconds(30)
+                now()->addSeconds(30),
+                ['order' => $order->id]
             );
             try {
                 $this->notifyPaymentProcessed($order);
@@ -432,18 +483,15 @@ class PaymentController extends Controller
         $paidCurrencyName = $setting->currency_name; // Nombre de la moneda
 
         // Guardar la orden
-        $this->storeOrder($refBank, $paymentMethod, $paymentStatus, $transactionId, $paidAmount, $paidCurrencyName);
+        $order = $this->storeOrder($refBank, $paymentMethod, $paymentStatus, $transactionId, $paidAmount, $paidCurrencyName);
 
         // Limpiar sesión después de completar la orden
         $this->clearSession();
 
-        // Obtener la orden recién guardada
-        $order = Order::latest()->first();
-
-
         $signedUrl = URL::temporarySignedRoute(
             'user.payment-transfer.success',
-            now()->addMinutes(1)
+            now()->addMinutes(1),
+            ['order' => $order->id]
         );
         // Disparar la notificación
         try {

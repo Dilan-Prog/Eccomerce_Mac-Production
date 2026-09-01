@@ -29,12 +29,12 @@ class CotizacionController extends Controller
             $product = Product::with('brand')->find($request->producto_id);
             if ($product) {
                 $cantidad = max(1, (int) $request->input('cantidad', 1));
-                $precio   = (float) $product->price;
+                $precio   = $product->effectivePrice();
 
                 if ($request->filled('comb_id')) {
                     $comb = ProductVariantCombinations::find($request->comb_id);
-                    if ($comb && $comb->price) {
-                        $precio = (float) $comb->price;
+                    if ($comb && $comb->effectivePrice() > 0) {
+                        $precio = $comb->effectivePrice();
                     }
                 }
 
@@ -67,6 +67,10 @@ class CotizacionController extends Controller
      */
     public function store(CotizacionRequest $request)
     {
+        if (! $this->hasQuotableItems()) {
+            return redirect()->back()->with('error', 'Tu carrito está vacío. Agrega productos antes de generar una cotización.');
+        }
+
         $user = auth()->user();
 
         // Usa el CIF ya subido en el registro a menos que suban uno nuevo.
@@ -100,6 +104,10 @@ class CotizacionController extends Controller
      */
     public function confirmar(Request $request)
     {
+        if (! $this->hasQuotableItems()) {
+            return redirect()->back()->with('error', 'Tu carrito está vacío. Agrega productos antes de generar una cotización.');
+        }
+
         $user   = auth()->user();
         $perfil = CotizacionPerfil::where('user_id', $user->id)->latest()->firstOrFail();
 
@@ -156,6 +164,15 @@ class CotizacionController extends Controller
     // ─────────────────────────────────────────────────────────────────
 
     /**
+     * Indica si hay algo que cotizar: ya sea un producto guardado en sesión
+     * (flujo "Cotizar este producto") o artículos en el carrito.
+     */
+    private function hasQuotableItems(): bool
+    {
+        return session()->has('cotizacion_productos') || Cart::content()->isNotEmpty();
+    }
+
+    /**
      * Crea el registro Cotizacion, genera el folio y el PDF.
      */
     private function generarCotizacion($user, CotizacionPerfil $perfil, string $telefono = ''): Cotizacion
@@ -168,14 +185,18 @@ class CotizacionController extends Controller
             $cartItems = Cart::content();
             $subtotal  = (float) getMainCartTotal();
             $productos = $cartItems->map(function ($item) {
+                // Precio en vivo (igual que $subtotal arriba, vía getMainCartTotal())
+                // en vez del precio cacheado al momento de agregar al carrito.
+                $precio = \App\Support\CartPricing::resolve($item)['price'];
+
                 return [
                     'nombre'   => $item->name,
                     'sku'      => $item->options->sku ?? '',
                     'modelo'   => $item->options->productModel ?? '',
                     'marca'    => $item->options->brand_name ?? '',
-                    'precio'   => $item->price,
+                    'precio'   => $precio,
                     'cantidad' => $item->qty,
-                    'subtotal' => round($item->price * $item->qty, 2),
+                    'subtotal' => round($precio * $item->qty, 2),
                 ];
             })->values()->toArray();
         }

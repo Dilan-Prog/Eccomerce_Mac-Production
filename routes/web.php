@@ -98,10 +98,6 @@ Route::middleware('auth')->group(function () {
 });
 
 
-/**send emails */
-Route::post('email', [PaymentController::class, 'emailFormSend'])->name('email-form');
-
-
 require __DIR__.'/auth.php';
 Route::get('flash-sale', [FlashSaleController::class, 'index'])->name('flash-sale');
 
@@ -139,8 +135,8 @@ Route::middleware('auth.cart')->group(function () {
     Route::get('clear.cart',                  [CartController::class, 'clearCart'])->name('clear.cart');
     Route::get('cart/remove-product/{rowId}', [CartController::class, 'removeProduct'])->name('cart.remove-product');
     Route::post('cart/remove-sidebar-product',[CartController::class, 'removeSidebarProduct'])->name('cart.remove-sidebar-product');
-    Route::get('apply-coupon',                [CartController::class, 'applyCoupon'])->name('apply-coupon');
-    Route::get('coupon-calculation',          [CartController::class, 'couponCalculation'])->name('coupon-calculation');
+    Route::post('apply-coupon',                [CartController::class, 'applyCoupon'])->name('apply-coupon');
+    Route::post('coupon-calculation',          [CartController::class, 'couponCalculation'])->name('coupon-calculation');
 });
 
 
@@ -155,10 +151,14 @@ Route::group(['middleware' => ['auth','verified','role:user'], 'prefix' => 'user
     Route::post('profile/b2b',[UserProfileController::class,'updateB2bInfo'])->name('profile.b2b.update');//Update B2B info
     Route::get('profile/csf/view',[UserProfileController::class,'viewCsf'])->name('profile.csf.view');//View own CSF
     /**User Address */
-    Route::resource('address', UserAddressController::class);
+    // Solo store/update/destroy: el listado y el formulario de alta/edición
+    // ahora viven dentro de /user/profile?tab=addresses (modal AJAX), la
+    // vista de página completa (index/create/edit) quedó retirada.
+    Route::resource('address', UserAddressController::class)->only(['store', 'update', 'destroy']);
 
     /**User Order */
-    Route::get('orders', [UserOrderController::class, 'index'])->name('orders.index');
+    // El listado ahora vive en /user/profile?tab=orders (tabla server-side
+    // paginada); solo el detalle de una orden sigue en su propia página.
     Route::get('orders/show/{id}', [UserOrderController::class, 'show'])->name('orders.show');
 
 

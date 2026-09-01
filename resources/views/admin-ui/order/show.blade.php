@@ -5,6 +5,7 @@
 
     $statusTone = [
         'pending' => 'warning',
+        'pendiente_de_surtir' => 'warning',
         'processed_and_ready_to_ship' => 'info',
         'dropped_off' => 'info',
         'shipped' => 'info',

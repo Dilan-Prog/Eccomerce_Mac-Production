@@ -106,6 +106,33 @@ class Product extends Model
     }
 
     /**
+     * Replica EXACTAMENTE la guarda de CartController::addToCart() que
+     * rechaza agregar un producto sin precio válido al carrito:
+     *
+     *     if (empty($basePrice) && empty($offerPrice)) { ... 'El producto no
+     *     tiene un precio válido' ... }
+     *
+     * No reemplaza a effectivePrice() (que sigue devolviendo 0.0 en
+     * silencio para AdminCotizacionController) — es un método aparte para
+     * que el llamador pueda distinguir "no hay precio válido" de "el precio
+     * válido es cero".
+     */
+    public function hasEffectivePrice(): bool
+    {
+        // Determinar precio base usando la lógica de price_personalizated
+        $basePrice = $this->price_personalizated == 1
+            ? $this->price
+            : ($this->aspel_price ?? $this->price);
+
+        // Determinar precio de oferta usando la lógica de price_offert_personalizated
+        $offerPrice = $this->price_offert_personalizated == 1
+            ? $this->offert_price
+            : ($this->aspel_offert_price ?? $this->offert_price);
+
+        return !(empty($basePrice) && empty($offerPrice));
+    }
+
+    /**
      * Resuelve el stock efectivo de este producto replicando EXACTAMENTE la
      * lógica de CartController::addToCart() / updateProductQty().
      */
