@@ -26,9 +26,9 @@ class StripeSetting extends Model
     /**
      * Resuelve la credencial que corresponde al modo activo (mode: 0 =
      * sandbox/test, 1 = live) — única fuente de verdad usada por
-     * PaymentController y StripeWebhookController, para que un cambio de
-     * modo en /admin/payment-settings baste para cambiar de credenciales
-     * sin tener que reescribir client_id/secret_key/webhook_secret a mano.
+     * PaymentController, para que un cambio de modo en
+     * /admin/payment-settings baste para cambiar de credenciales sin
+     * tener que reescribir client_id/secret_key/webhook_secret a mano.
      */
     public function activeClientId(): ?string
     {
