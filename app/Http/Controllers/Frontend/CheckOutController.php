@@ -12,9 +12,19 @@ use Cart;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
 
 class CheckOutController extends Controller
 {
+    /**
+     * Formas de pago que el checkout acepta. Son las mismas tres opciones que
+     * pinta resources/views/frontend/pages/checkout.blade.php
+     * (name="payment_radio") y las únicas que PaymentController sabe cobrar.
+     */
+    public const PAYMENT_METHODS = ['stripe', 'paypal', 'spei'];
+
+
     public function index(){
 
         // Con el carrito vacío (ej. el usuario navegó de vuelta con el
@@ -88,26 +98,58 @@ class CheckOutController extends Controller
         }
 
         $request->validate([
-            'shipping_method_id' => ['required', 'integer'],
-            'shipping_address_id' => ['required', 'integer'],
+            // La dirección se acota al propio usuario dentro de la regla: sin
+            // ese where, mandar el id de la dirección de otro cliente pasaba
+            // la validación (el findOrFail de abajo sí filtraba, pero
+            // respondía un 404 seco en vez de un error de formulario).
+            'shipping_address_id' => [
+                'required',
+                'integer',
+                Rule::exists('user_addresses', 'id')->where('user_id', Auth::id()),
+            ],
+            // status = 1 dentro de la regla: una regla de envío que el admin
+            // desactivó no debe poder usarse aunque su id siga siendo válido.
+            'shipping_method_id' => [
+                'required',
+                'integer',
+                Rule::exists('shipping_rules', 'id')->where('status', 1),
+            ],
+            // Antes esto no se validaba y caía a 'pending' si no llegaba, así
+            // que se podía cerrar el paso de checkout sin elegir cómo pagar.
+            'payment_method' => ['required', Rule::in(self::PAYMENT_METHODS)],
+        ], [
+            'shipping_address_id.required' => 'Selecciona una dirección de envío antes de continuar.',
+            'shipping_address_id.exists' => 'La dirección de envío seleccionada no es válida.',
+            'shipping_method_id.required' => 'Selecciona un método de envío antes de continuar.',
+            'shipping_method_id.exists' => 'El método de envío seleccionado ya no está disponible.',
+            'payment_method.required' => 'Selecciona un método de pago antes de continuar.',
+            'payment_method.in' => 'El método de pago seleccionado no es válido.',
         ]);
 
         $shippingMethod = ShippingRule::findOrFail($request->shipping_method_id);
-        if($shippingMethod){
-            Session::put('shipping_method', [
-                'id' => $shippingMethod->id,
-                'name' => $shippingMethod->name,
-                'type' => $shippingMethod->type,
-                'cost' => $shippingMethod->cost
+
+        // Una regla de tipo "min_cost" (ej. envío gratis a partir de $2,299)
+        // solo aplica si el pedido alcanza ese monto. La pantalla ya solo
+        // muestra las que califican, pero eso es cosmético: sin esta
+        // comprobación bastaba con mandar el id de la regla para llevarse el
+        // envío gratis con un carrito de cualquier importe.
+        if ($shippingMethod->type === 'min_cost' && getCartTotal() < (float) $shippingMethod->min_cost) {
+            throw ValidationException::withMessages([
+                'shipping_method_id' => ['Ese método de envío requiere un pedido mínimo de $' . number_format((float) $shippingMethod->min_cost, 2) . '.'],
             ]);
         }
 
-        $address = UserAddress::where('user_id', Auth::user()->id)->findOrFail($request->shipping_address_id)->toArray();
-        if($address){
-            Session::put('address', $address);
-        }
+        Session::put('shipping_method', [
+            'id' => $shippingMethod->id,
+            'name' => $shippingMethod->name,
+            'type' => $shippingMethod->type,
+            'cost' => $shippingMethod->cost,
+        ]);
 
-        Session::put('payment_method', $request->input('payment_method', 'pending'));
+        $address = UserAddress::where('user_id', Auth::user()->id)->findOrFail($request->shipping_address_id)->toArray();
+        Session::put('address', $address);
+
+        Session::put('payment_method', $request->payment_method);
         Session::put('order_notes',    $request->input('order_notes', ''));
 
         return response(['status' => 'session_saved']);

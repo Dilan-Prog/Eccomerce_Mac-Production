@@ -34,24 +34,54 @@ use Illuminate\Support\Facades\DB;
 
 class PaymentController extends Controller
 {
-    public function index()
+    /**
+     * El pago es el ÚLTIMO paso del checkout: exige que los anteriores estén
+     * realmente completos antes de dejar cobrar.
+     *
+     * El orden de pasos que se ve en pantalla (dirección -> método de envío ->
+     * método de pago) lo controlaba SOLO el navegador: las secciones se
+     * bloquean con CSS (pointer-events + max-height, ver checkout.blade.php) y
+     * el botón valida con jQuery. Eso ayuda al cliente honesto, pero no impide
+     * llegar directo a /payment, /paypal/payment o POST /payment/transfer y
+     * generar una orden sin dirección o sin método de envío — se guardaba con
+     * order_address / shipping_method en null. Aquí es donde de verdad se
+     * cierra el paso.
+     *
+     * También cubre el caso normal de sesión expirada o de la pestaña vieja
+     * que quedó abierta después de completar otra compra (clearSession() borra
+     * address y shipping_method al cerrar la orden).
+     *
+     * Devuelve null si todo está en orden, o el redirect al paso que falta.
+     */
+    private function ensureCheckoutCompleted()
     {
-        // Mismo guard que CheckOutController::index() — sin esto, un carrito
-        // vaciado después de completar el paso de dirección (otra pestaña,
-        // stock agotado, botón "Atrás") deja ver la pantalla de pago con
-        // monto $0 y nada que cobrar.
         if (\Cart::content()->isEmpty()) {
             toastr('Tu carrito está vacío. Agrega productos antes de continuar.', 'error', 'Carrito vacío');
             return redirect()->route('cart-details');
         }
 
+        if (!Session::has('address')) {
+            toastr('Elige una dirección de envío antes de pagar.', 'error', 'Falta la dirección');
+            return redirect()->route('user.checkout');
+        }
+
+        if (!Session::has('shipping_method')) {
+            toastr('Elige un método de envío antes de pagar.', 'error', 'Falta el método de envío');
+            return redirect()->route('user.checkout');
+        }
+
+        return null;
+    }
+
+    public function index()
+    {
+        if ($redirect = $this->ensureCheckoutCompleted()) {
+            return $redirect;
+        }
+
         $paypalInfo = PaypalSetting::first();
         $userInfo = User::first();
         $transferInfo = Transfer::first();
-
-        if (!Session::has('address')) {
-            return redirect()->route('user.checkout');
-        }
 
         $paypalClientId = $paypalInfo->activeClientId();
         return view('frontend.pages.payment', compact('paypalInfo', 'userInfo', 'transferInfo', 'paypalClientId'));
@@ -246,6 +276,10 @@ class PaymentController extends Controller
 
     public function paywithPaypal()
     {
+        if ($redirect = $this->ensureCheckoutCompleted()) {
+            return $redirect;
+        }
+
         $config = $this->paypalConfig();
 
         $provider = new PayPalClient($config);
@@ -285,6 +319,13 @@ class PaymentController extends Controller
 
     public function paypalSuccess(Request $request)
     {
+        // El candado va antes de capturePaymentOrder(): si aqui falta la
+        // direccion o el metodo de envio, es mejor no cobrar que cobrar y
+        // guardar una orden que no se puede surtir.
+        if ($redirect = $this->ensureCheckoutCompleted()) {
+            return $redirect;
+        }
+
         $config = $this->paypalConfig();
         $provider = new PayPalClient($config);
         $provider->getAccessToken();
@@ -324,6 +365,13 @@ class PaymentController extends Controller
     //Nuevos End points para Paypal (Agregacion de botones de pago)
     public function createOrder(Request $request)
     {
+        if ($this->ensureCheckoutCompleted()) {
+            return response()->json([
+                'error' => 'Tu sesión de compra expiró o falta un paso. Vuelve al checkout.',
+                'redirect_url' => route('user.checkout'),
+            ], 422);
+        }
+
         Log::info('Creando orden PayPal con total: ' . getFinalPayableAmount());
         Log::info('Datos de sesión (createOrder): ', session()->all());
 
@@ -364,6 +412,11 @@ class PaymentController extends Controller
 
     public function captureOrder(Request $request)
     {
+        // Antes de capturar, no despues: el JS de PayPal navega a redirect_url,
+        // asi que el cliente termina de vuelta en el checkout sin haber pagado.
+        if ($this->ensureCheckoutCompleted()) {
+            return response()->json(['redirect_url' => route('user.checkout')], 422);
+        }
 
         Log::info('Capturando orden PayPal con ID: ' . $request->orderId);
         Log::info('Datos de sesión (captureOrder): ', session()->all());
@@ -404,6 +457,10 @@ class PaymentController extends Controller
     /**Payment Stripe */
     public function payWithStripe(Request $request)
     {
+        if ($redirect = $this->ensureCheckoutCompleted()) {
+            return $redirect;
+        }
+
 
         // calculate payable amount depending on currency rate
         $stripeSetting = StripeSetting::first();
@@ -471,6 +528,10 @@ class PaymentController extends Controller
 
     public function payWithTransfer(Request $request)
     {
+        if ($redirect = $this->ensureCheckoutCompleted()) {
+            return $redirect;
+        }
+
         $refBank = $request->input('refBank');
 
         $setting = GeneralSetting::first();
