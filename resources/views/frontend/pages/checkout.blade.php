@@ -150,8 +150,26 @@
   .pp-btn-card { background: #2C2E2F; color: #fff; }
   paypal-button { display: block; max-width: 340px; margin: 0 auto; }
   /* El formulario y el boton los dibuja PayPal dentro de sus propios
-     elementos. Sin estilos propios ahi adentro: la maqueta es suya. */
-  paypal-basic-card-container { display: block; }
+     elementos. Sin estilos propios ahi adentro: la maqueta es suya.
+     Lo que si se controla desde aqui es el ancho y la posicion: el elemento
+     se dimensionaba solo al ancho de su boton (~225px) y quedaba pegado a la
+     izquierda de un panel de casi 1000px. */
+  paypal-basic-card-container {
+      display: block;
+      width: 100%;
+      max-width: 360px;
+      margin: 0 auto;
+  }
+  /* Sello "Powered by PayPal" bajo el formulario: el cobro lo procesa PayPal
+     pero la captura ocurre en este sitio, asi que sin esto no queda a la
+     vista quien esta detras del pago. */
+  .pp-powered {
+      display: flex; align-items: center; justify-content: center; gap: 5px;
+      margin: 12px 0 0;
+      font-size: 11px; font-style: italic;
+      color: var(--gris-claro-texto, #718096);
+  }
+  .pp-powered img { display: block; height: 17px; width: auto; }
   .paypal-panel-note {
       font-size: 11.5px; color: var(--gris-claro-texto, #718096);
       margin: 12px auto 0; max-width: 340px; line-height: 1.5;
@@ -650,6 +668,18 @@
                                         <paypal-basic-card-container id="paypal-card-container">
                                             <paypal-basic-card-button id="paypal-btn-card"></paypal-basic-card-button>
                                         </paypal-basic-card-container>
+
+                                        {{-- Sello de PayPal. Va aqui y no dentro del formulario
+                                             porque el boton de pagar vive en el iframe de PayPal
+                                             y no se le puede anadir nada; asi queda justo debajo. --}}
+                                        <div class="pp-powered">
+                                            <span>Powered by</span>
+                                            <img src="https://www.paypalobjects.com/webstatic/mktg/Logo/pp-logo-100px.png"
+                                                 {{-- sin loading="lazy": son 100x26 px y con carga
+                                                      diferida no llegaba a mostrarse --}}
+                                                 alt="PayPal" width="66" height="17">
+                                        </div>
+
                                         <p class="paypal-panel-note" id="paypal-card-note">
                                             Captura tus datos aquí mismo. <strong>No sales del sitio</strong>
                                             y no necesitas cuenta de PayPal.
