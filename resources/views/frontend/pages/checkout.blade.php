@@ -1273,6 +1273,16 @@ $(document).ready(function () {
         $('.shipping-option').removeClass('selected');
         $(this).closest('.shipping-option').addClass('selected');
         updateTotalDisplay();
+
+        // El paso 2 solo cuenta como completado si el 1 lo esta. Es la misma
+        // regla que exige el servidor en CheckOutController::checkOutFormSumit,
+        // asi que la pantalla no puede prometer un avance que el backend
+        // despues rechaza.
+        if (!$('#shipping_address_id').val()) {
+            validateSubmitBtn();
+            return;
+        }
+
         completeSection(2);
         unlockSection(3);
         autoSelectPayment();
@@ -1289,6 +1299,10 @@ $(document).ready(function () {
     // elección.
     function autoSelectPayment() {
         if ($('#payment_method').val()) return;
+        // Ultima red de seguridad: sin direccion o sin envio no hay nada que
+        // cobrar todavia, y abrir el panel dispararia la creacion de la orden
+        // de PayPal contra un checkout incompleto.
+        if (!$('#shipping_address_id').val() || !$('#shipping_method_id').val()) return;
 
         // Orden de preferencia: tarjeta (PayPal) > tarjeta (Stripe) > SPEI.
         var preferidos = ['paypal', 'stripe', 'spei'];
@@ -1414,7 +1428,13 @@ $(document).ready(function () {
     // continuar se actualizan igual — el resto de métodos (incluido Envío
     // Internacional, a cargo del comprador) siguen visibles y elegibles
     // por si el cliente prefiere cambiarlo.
-    if (autoSelectShippingId !== null) {
+    //
+    // Solo si YA hay una direccion elegida. Sin esa condicion se disparaba al
+    // cargar la pagina aunque el cliente no tuviera ninguna direccion guardada,
+    // y como el manejador de 'change' encadena completeSection(2) ->
+    // unlockSection(3) -> autoSelectPayment(), el checkout mostraba los pasos
+    // de envio y pago como COMPLETADOS con el paso 1 todavia en PENDIENTE.
+    if (autoSelectShippingId !== null && $('#shipping_address_id').val()) {
         $('input.shipping_method[value="' + autoSelectShippingId + '"]')
             .prop('checked', true)
             .trigger('change');
