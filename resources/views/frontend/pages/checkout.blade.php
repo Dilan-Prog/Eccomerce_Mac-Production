@@ -1149,15 +1149,53 @@ window.initPayPalButtons = function () {
                 onCancel: function () {}
             });
             var botonTarjeta = document.getElementById('paypal-btn-card');
-            botonTarjeta.addEventListener('click', function () {
+            var notaTarjeta = document.getElementById('paypal-card-note');
+            var formularioAbierto = false;
+
+            function abrirFormularioTarjeta() {
+                // Una sola vez: el boton sigue existiendo despues de abrir el
+                // formulario, y un segundo start() crearia otra orden.
+                if (formularioAbierto) return;
+                formularioAbierto = true;
+
+                if (notaTarjeta) notaTarjeta.textContent = 'Cargando el formulario seguro…';
+
                 // presentationMode 'auto' es lo que hace que el formulario se
                 // despliegue AQUI y no en otra ventana. El targetElement es el
                 // propio boton: PayPal monta el formulario junto a el.
                 Promise.resolve(sesionTarjeta.start(
                     { presentationMode: 'auto', targetElement: botonTarjeta },
                     crearOrden()
-                )).catch(alFallar);
-            });
+                )).then(function () {
+                    if (notaTarjeta) {
+                        notaTarjeta.innerHTML = 'Tus datos los procesa <strong>PayPal</strong>. ' +
+                            'No se guardan en este sitio y no necesitas cuenta.';
+                    }
+                }).catch(function (e) {
+                    // Si no se pudo abrir, el boton vuelve a estar disponible
+                    // para que el cliente lo intente a mano.
+                    formularioAbierto = false;
+                    if (notaTarjeta) {
+                        notaTarjeta.innerHTML = 'Captura tus datos aquí mismo. ' +
+                            '<strong>No sales del sitio</strong> y no necesitas cuenta de PayPal.';
+                    }
+                    alFallar(e);
+                });
+            }
+
+            botonTarjeta.addEventListener('click', abrirFormularioTarjeta);
+
+            // Apertura automatica al llegar al paso de pago: el cliente ve el
+            // formulario sin un clic de mas.
+            //
+            // No hace falta un clic real del usuario. Lo normal es que abrir
+            // algo de PayPal exija activacion transitoria, pero aqui el
+            // formulario de invitado se dibuja DENTRO de la pagina y no hay
+            // ventana emergente que el navegador pueda bloquear. Comprobado:
+            // el contenedor pasa de 45px a ~690px sin gesto del usuario.
+            //
+            // Ojo: tarda unos segundos en montarse, de ahi el texto de carga.
+            abrirFormularioTarjeta();
         }
 
         if (puedePaypal) {
