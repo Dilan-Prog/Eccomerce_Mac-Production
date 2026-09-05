@@ -118,6 +118,16 @@
   }
   #stripe-card-element.StripeElement--focus { border-color: var(--azul-principal, #003E7E); box-shadow: 0 0 0 3px rgba(0,62,126,0.1); }
 
+  /* Boton de editar dentro de la tarjeta de direccion. Va en una esquina
+     para no competir con el nombre ni con la marca de seleccionado. */
+  .btn-edit-addr {
+      position: absolute; right: 12px; bottom: 10px;
+      background: none; border: 0; padding: 2px 4px; cursor: pointer;
+      font-size: 11.5px; font-weight: 700; text-decoration: underline;
+      color: var(--azul-medio, #0057A8);
+  }
+  .btn-edit-addr:hover { color: var(--azul-principal, #003E7E); }
+
   /* PayPal panel */
   #paypal-detail-panel {
       position: relative;
@@ -405,6 +415,22 @@
                                         📞 {{ $address->phone }}
                                         @if($address->email)· ✉️ {{ $address->email }}@endif
                                     </div>
+                                    {{-- Corregir la direccion sin salir del checkout: detectar
+                                         aqui un error obligaba a irse al perfil y volver, con el
+                                         carrito y los pasos ya completados. --}}
+                                    <button type="button" class="btn-edit-addr"
+                                            data-id="{{ $address->id }}"
+                                            data-name="{{ $address->name }}"
+                                            data-email="{{ $address->email }}"
+                                            data-phone="{{ $address->phone }}"
+                                            data-zip="{{ $address->zip }}"
+                                            data-state="{{ $address->state }}"
+                                            data-city="{{ $address->city }}"
+                                            data-col="{{ $address->col }}"
+                                            data-street="{{ $address->street }}"
+                                            data-street_number="{{ $address->street_number }}"
+                                            data-street_1="{{ $address->street_1 }}"
+                                            data-address="{{ $address->address }}">Editar</button>
                                 </label>
                                 @endforeach
                             </div>
@@ -416,9 +442,12 @@
                         </button>
 
                         <div class="new-address-panel" id="new-address-panel">
-                            <div class="panel-title">Nueva dirección de envío</div>
+                            <div class="panel-title" id="address-panel-title">Nueva dirección de envío</div>
                             <form id="checkoutFormAddress" action="{{ route('user.checkout.address.create') }}" method="POST">
                                 @csrf
+                                {{-- Con valor, el formulario edita esa direccion en vez de crear
+                                     una nueva (ver el manejador de #saveAddressButton). --}}
+                                <input type="hidden" name="_addr_id" id="address-edit-id" value="">
                                 <div class="form-row-2" style="margin-bottom:12px;">
                                     <div class="form-group">
                                         <label class="form-label">Nombre completo <span>*</span></label>
@@ -1545,7 +1574,44 @@ $(document).ready(function () {
         });
     });
 
-    // ── Save new address ───────────────────────────────────────────
+    // ── Alta y edición de direcciones ──────────────────────────────
+    // El mismo panel sirve para las dos cosas: si #address-edit-id trae un
+    // id, se edita esa dirección; si viene vacío, se crea una nueva.
+    var CAMPOS_DIRECCION = ['name', 'email', 'phone', 'zip', 'state', 'city',
+                            'col', 'street', 'street_number', 'street_1', 'address'];
+
+    function modoNuevaDireccion() {
+        var $f = $('#checkoutFormAddress');
+        CAMPOS_DIRECCION.forEach(function (campo) {
+            $f.find('[name="' + campo + '"]').val('');
+        });
+        $('#address-edit-id').val('');
+        $('#address-panel-title').text('Nueva dirección de envío');
+        $('#saveAddressButton').text('Guardar dirección');
+    }
+
+    $('#btn-add-address, #btn-cancel-address').on('click', modoNuevaDireccion);
+
+    $(document).on('click', '.btn-edit-addr', function (e) {
+        // La tarjeta es un <label> con el radio dentro: sin esto, pulsar
+        // "Editar" cambiaría además la dirección seleccionada.
+        e.preventDefault();
+        e.stopPropagation();
+
+        var d = this.dataset;
+        var $f = $('#checkoutFormAddress');
+        CAMPOS_DIRECCION.forEach(function (campo) {
+            $f.find('[name="' + campo + '"]').val(d[campo] || '');
+        });
+        $('#address-edit-id').val(d.id);
+        $('#address-panel-title').text('Editar dirección de envío');
+        $('#saveAddressButton').text('Guardar cambios');
+
+        $('#new-address-panel').addClass('active');
+        $('#btn-add-address').hide();
+        $('html, body').animate({ scrollTop: $('#new-address-panel').offset().top - 120 }, 250);
+    });
+
     $('#saveAddressButton').on('click', function (e) {
         e.preventDefault();
         var $btn = $(this);
@@ -1553,8 +1619,40 @@ $(document).ready(function () {
         if (typeof window.validateAddressForm === 'function' && !window.validateAddressForm()) {
             return;
         }
+
+        var id = $('#address-edit-id').val();
+        var textoOriginal = $btn.text();
         $btn.addClass('saving').text('Guardando...');
-        $(this).closest('form').submit();
+
+        // Alta: sigue igual, envío normal del formulario.
+        if (!id) {
+            $btn.closest('form').submit();
+            return;
+        }
+
+        // Edición por AJAX contra PUT /user/address/{id}. No se manda el
+        // formulario de forma normal porque ese endpoint redirige al perfil,
+        // y sacaría al cliente del checkout con los pasos ya completados.
+        $.ajax({
+            url: '{{ route('user.address.update', ':id') }}'.replace(':id', id),
+            method: 'POST',
+            data: $('#checkoutFormAddress').serialize() + '&_method=PUT',
+            headers: { 'Accept': 'application/json' }
+        }).done(function () {
+            // Se recarga para que la tarjeta, el resumen y los pasos queden
+            // con los datos nuevos sin tener que sincronizarlos a mano.
+            location.reload();
+        }).fail(function (xhr) {
+            $btn.removeClass('saving').text(textoOriginal);
+            var msg = 'No se pudo guardar la dirección.';
+            var errores = xhr.responseJSON && xhr.responseJSON.errors;
+            if (errores) {
+                for (var k in errores) { msg = errores[k][0]; break; }
+            } else if (xhr.responseJSON && xhr.responseJSON.message) {
+                msg = xhr.responseJSON.message;
+            }
+            toastr.error(msg);
+        });
     });
 });
 </script>
