@@ -61,8 +61,15 @@ class CheckOutController extends Controller
             $stripeSetting = null;
         }
 
+        // Token para el formulario de tarjeta incrustado de PayPal (Expanded
+        // Checkout). Va como data-client-token en la etiqueta del SDK: sin él
+        // paypal.CardFields().isEligible() da false aunque la cuenta tenga la
+        // capacidad activada. Si no se puede generar, queda null y el
+        // checkout se queda con los botones de siempre.
+        $paypalClientToken = $paypalInfo ? $paypalInfo->generateClientToken() : null;
+
         return view('frontend.pages.checkout', compact(
-            'addresses', 'shippingMethod', 'transferInfo', 'paypalInfo', 'stripeSetting'
+            'addresses', 'shippingMethod', 'transferInfo', 'paypalInfo', 'stripeSetting', 'paypalClientToken'
         ));
     }
 

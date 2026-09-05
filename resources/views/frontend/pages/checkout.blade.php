@@ -35,19 +35,28 @@
   .section-badge.s-done    { background: #D1FAE5; color: #065F46; }
 
   /* ── PAYMENT OPTIONS ────────────────────────────────── */
-  .payment-method-list { display: flex; flex-direction: column; gap: 10px; position: relative; }
+  .payment-method-list { display: flex; flex-direction: column; gap: 12px; position: relative; }
   .payment-option {
       display: flex; align-items: center; gap: 14px;
-      border: 2px solid var(--gris-borde, #DDE3EA); border-radius: 10px;
-      padding: 16px; cursor: pointer; transition: all 0.18s;
+      border: 2px solid var(--gris-borde, #DDE3EA); border-radius: 12px;
+      padding: 18px 16px; cursor: pointer; transition: all 0.18s;
+      background: #fff;
   }
   .payment-option:hover { border-color: var(--azul-medio, #0057A8); background: var(--azul-claro, #E6EFF8); }
   .payment-option.selected {
       border-color: var(--azul-principal, #003E7E); background: var(--azul-claro, #E6EFF8);
+      box-shadow: 0 2px 10px rgba(0, 62, 126, 0.10);
+  }
+  /* Cuando la opcion tiene su panel abierto justo debajo, se unen visualmente:
+     se quitan las esquinas y el borde de en medio para que se lean como una
+     sola pieza en vez de dos cajas sueltas. */
+  .payment-option.has-panel-open {
+      border-bottom-left-radius: 0; border-bottom-right-radius: 0;
+      border-bottom-color: transparent; margin-bottom: -12px;
   }
   .payment-option input[type="radio"] { display: none; }
   .payment-radio {
-      width: 18px; height: 18px; border: 2px solid var(--gris-borde, #DDE3EA);
+      width: 20px; height: 20px; border: 2px solid var(--gris-borde, #DDE3EA);
       border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center;
       transition: all 0.18s;
   }
@@ -55,7 +64,7 @@
       border-color: var(--azul-principal, #003E7E); background: var(--azul-principal, #003E7E);
   }
   .payment-option.selected .payment-radio::after {
-      content: ''; width: 6px; height: 6px; background: #fff; border-radius: 50%;
+      content: ''; width: 7px; height: 7px; background: #fff; border-radius: 50%;
   }
   .payment-icon-box {
       width: 52px; height: 36px; background: #fff;
@@ -63,9 +72,26 @@
       display: flex; align-items: center; justify-content: center; flex-shrink: 0;
   }
   .payment-icon-box img { height: 22px; object-fit: contain; }
-  .payment-option-info { flex: 1; }
-  .payment-option-name { font-size: 14px; font-weight: 700; color: var(--azul-principal, #003E7E); }
-  .payment-option-desc { font-size: 12px; color: var(--gris-claro-texto, #718096); margin-top: 2px; }
+  /* Fila de logos de tarjeta: comunica de un vistazo que se paga con tarjeta,
+     sin depender de leer el texto. */
+  .payment-card-logos { display: flex; gap: 5px; flex-shrink: 0; }
+  .payment-card-logos img {
+      height: 30px; width: 42px; object-fit: contain; background: #fff;
+      border: 1px solid var(--gris-borde, #DDE3EA); border-radius: 5px; padding: 2px;
+  }
+  .payment-option-info { flex: 1; min-width: 0; }
+  .payment-option-name { font-size: 15px; font-weight: 700; color: var(--azul-principal, #003E7E); }
+  .payment-option-desc { font-size: 12.5px; color: var(--gris-claro-texto, #718096); margin-top: 3px; line-height: 1.4; }
+  .payment-option-tag {
+      font-size: 10.5px; font-weight: 800; letter-spacing: 0.04em; text-transform: uppercase;
+      padding: 4px 9px; border-radius: 999px; white-space: nowrap; flex-shrink: 0;
+      background: #D1FAE5; color: #065F46;
+  }
+  @media (max-width: 560px) {
+      .payment-option { flex-wrap: wrap; gap: 10px; padding: 15px 13px; }
+      .payment-card-logos img { height: 26px; width: 36px; }
+      .payment-option-tag { order: 3; }
+  }
   .payment-discount-badge {
       font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 4px;
       background: #D1FAE5; color: #065F46; white-space: nowrap;
@@ -100,13 +126,187 @@
       overflow: hidden;
   }
   .paypal-panel-inner {
-      border: 1.5px solid #E5E7EB; border-radius: 10px;
-      padding: 18px; background: #FAFAFA; text-align: center;
+      /* Se une con la opcion seleccionada de arriba: mismo borde azul, sin
+         esquinas superiores, para que se lea como una sola tarjeta. */
+      border: 2px solid var(--azul-principal, #003E7E); border-top: 0;
+      border-radius: 0 0 12px 12px;
+      padding: 20px 18px; background: #fff; text-align: center;
       position: relative;
       isolation: isolate;
   }
-  .paypal-panel-title { font-size: 13px; font-weight: 700; color: var(--azul-principal, #003E7E); margin-bottom: 14px; }
-  #paypal-button-container { max-width: 340px; margin: 0 auto; position: relative; overflow: hidden; }
+  .paypal-panel-title { font-size: 13.5px; font-weight: 700; color: var(--azul-principal, #003E7E); margin-bottom: 14px; }
+  .paypal-btn-slot { max-width: 340px; margin: 0 auto; position: relative; overflow: hidden; }
+  .paypal-panel-note {
+      font-size: 11.5px; color: var(--gris-claro-texto, #718096);
+      margin: 12px auto 0; max-width: 340px; line-height: 1.5;
+  }
+  /* ── Campos de tarjeta incrustados (Expanded Checkout) ──────────────
+     Cada .pp-cf-input aloja un iframe de PayPal, que llega sin alto propio:
+     hay que dárselo aquí o se ve como una línea de 0px. */
+  /* Tarjeta contenedora: da peso visual al paso donde el cliente entrega los
+     datos de su tarjeta, que es el momento de mayor desconfianza. */
+  .pp-cf-card {
+      max-width: 460px; margin: 0 auto; text-align: left;
+      background: transparent;
+  }
+  
+  
+  
+  
+  .pp-cf-body { padding: 4px 0 0; }
+  .pp-cf-hint {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 14px; height: 14px; margin-left: 4px; border-radius: 50%;
+      background: var(--gris-borde, #DDE3EA); color: var(--gris-claro-texto, #718096);
+      font-size: 10px; font-weight: 700; cursor: help; vertical-align: middle;
+  }
+  .pp-cf-trust {
+      list-style: none; margin: 14px 0 0; padding: 0;
+      font-size: 11.5px; color: var(--gris-claro-texto, #718096); line-height: 1.6;
+  }
+  .pp-cf-trust li { padding-left: 18px; position: relative; }
+  .pp-cf-trust li::before {
+      content: '✓'; position: absolute; left: 0; top: 0;
+      color: #059669; font-weight: 800;
+  }
+  .pp-cf-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
+      text-align: left;
+  }
+  .pp-cf-wide { grid-column: 1 / -1; }
+  .pp-cf-field label {
+      display: block; font-size: 12.5px; font-weight: 700;
+      color: var(--azul-principal, #003E7E); margin-bottom: 7px;
+  }
+  /* Sin padding propio y con overflow oculto: PayPal inyecta aquí un iframe
+     con sus propias medidas, y si la caja tiene padding el iframe se sale y
+     acaba encimado sobre las etiquetas y sobre el campo de al lado. El
+     espaciado interior se define en el objeto `style` que se le pasa al
+     campo (ver initPayPalButtons), que es lo único que viaja dentro del
+     iframe. */
+  /* Sin alto fijo: el iframe se dimensiona solo a partir del alto que se le
+     da al input dentro del `estilo` del SDK. Fijarlo aquí recortaba el borde
+     inferior del campo (el iframe mide algo más que el input). */
+  .pp-cf-input {
+      padding: 0; position: relative;
+      border: 0; background: transparent; box-sizing: border-box;
+  }
+  .pp-cf-input iframe[title^="paypal_card"] {
+      width: 100% !important;
+      display: block !important; border: 0 !important; margin: 0 !important;
+  }
+  /* El iframe auxiliar de PayPal no debe recibir clics: solo sirve para
+     detectar el cierre de ventanas emergentes y, si se le da tamano, se
+     monta encima del campo real y lo bloquea. */
+  .pp-cf-input iframe:not([title^="paypal_card"]) {
+      pointer-events: none !important;
+  }
+  /* Aquí NO va ningún borde ni aro. Todo el recuadro del campo (borde normal,
+     de foco y de error) lo pinta PayPal dentro del iframe con el objeto
+     `estilo` de initPayPalButtons. Cuando la página dibujaba también el suyo
+     se veían dos o tres recuadros encimados al seleccionar un campo. */
+  .pp-cf-submit {
+      display: flex; align-items: center; justify-content: center; gap: 9px;
+      width: 100%; margin: 18px 0 0;
+      padding: 16px 18px; border: 0; border-radius: 10px; cursor: pointer;
+      background: var(--azul-principal, #003E7E); color: #fff;
+      font-size: 16px; font-weight: 700; letter-spacing: 0.2px;
+      box-shadow: 0 2px 8px rgba(0, 62, 126, 0.22);
+      transition: background 0.18s, box-shadow 0.18s, transform 0.12s, opacity 0.18s;
+  }
+  /* Modal de pago rechazado. El motivo del banco es lo unico que le permite
+     al cliente corregir y volver a intentar, asi que se muestra centrado y
+     bloqueando la pantalla en vez de en un toast que se va solo. */
+  .pago-rechazado-fondo {
+      position: fixed; inset: 0; z-index: 10050;
+      display: none; align-items: center; justify-content: center;
+      padding: 20px; background: rgba(11, 22, 40, 0.55);
+      -webkit-backdrop-filter: blur(2px); backdrop-filter: blur(2px);
+  }
+  .pago-rechazado-fondo.abierto { display: flex; }
+  .pago-rechazado-caja {
+      width: 100%; max-width: 440px; background: #fff; border-radius: 14px;
+      padding: 28px 26px 22px; text-align: center;
+      box-shadow: 0 18px 48px rgba(11, 22, 40, 0.28);
+      animation: pagoRechazadoEntra 0.18s ease-out;
+  }
+  @keyframes pagoRechazadoEntra {
+      from { opacity: 0; transform: translateY(10px) scale(0.98); }
+      to   { opacity: 1; transform: none; }
+  }
+  .pago-rechazado-icono {
+      width: 54px; height: 54px; margin: 0 auto 14px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      background: #FEE2E2; color: #DC2626;
+  }
+  .pago-rechazado-caja h4 {
+      margin: 0 0 8px; font-size: 19px; font-weight: 800;
+      color: var(--azul-principal, #003E7E);
+  }
+  .pago-rechazado-msg {
+      margin: 0; font-size: 14px; line-height: 1.55;
+      color: var(--gris-texto, #4A5568);
+  }
+  .pago-rechazado-sug {
+      margin: 18px 0 0; padding: 14px 16px; border-radius: 10px;
+      background: #F4F7FB; text-align: left;
+  }
+  .pago-rechazado-sug strong {
+      display: block; font-size: 12px; font-weight: 800; margin-bottom: 8px;
+      color: var(--azul-principal, #003E7E); text-transform: uppercase;
+      letter-spacing: 0.4px;
+  }
+  .pago-rechazado-sug ul { list-style: none; margin: 0; padding: 0; }
+  .pago-rechazado-sug li {
+      position: relative; padding-left: 18px; margin-bottom: 7px;
+      font-size: 13px; line-height: 1.5; color: var(--gris-texto, #4A5568);
+  }
+  .pago-rechazado-sug li:last-child { margin-bottom: 0; }
+  .pago-rechazado-sug li::before {
+      content: ''; position: absolute; left: 4px; top: 8px;
+      width: 5px; height: 5px; border-radius: 50%;
+      background: var(--azul-principal, #003E7E);
+  }
+  .pago-rechazado-btn {
+      width: 100%; margin: 20px 0 0; padding: 14px 18px;
+      border: 0; border-radius: 10px; cursor: pointer;
+      background: var(--azul-principal, #003E7E); color: #fff;
+      font-size: 15px; font-weight: 700; transition: background 0.18s;
+  }
+  .pago-rechazado-btn:hover { background: var(--azul-medio, #0057A8); }
+  .pago-rechazado-cod {
+      margin: 12px 0 0; font-size: 11px;
+      color: var(--gris-claro-texto, #718096);
+  }
+  .pp-cf-submit:hover {
+      background: var(--azul-medio, #0057A8);
+      box-shadow: 0 4px 14px rgba(0, 62, 126, 0.28);
+  }
+  .pp-cf-submit:active { transform: translateY(1px); }
+  .pp-cf-submit[disabled] {
+      opacity: 0.6; cursor: default; box-shadow: none; transform: none;
+  }
+  /* Sello de PayPal bajo el boton: el formulario va incrustado en el sitio,
+     asi que sin esto no queda a la vista quien procesa realmente el cobro. */
+  .pp-cf-powered {
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+      margin: 12px 0 0; font-size: 11.5px;
+      color: var(--gris-claro-texto, #718096);
+  }
+  .pp-cf-powered img { height: 17px; width: auto; display: block; }
+  @media (max-width: 480px) {
+      .pp-cf-grid { grid-template-columns: 1fr; }
+  }
+
+  /* Separador entre el camino principal (tarjeta) y la alternativa (PayPal). */
+  .paypal-alt-sep {
+      display: flex; align-items: center; gap: 12px;
+      max-width: 340px; margin: 18px auto 14px;
+      color: var(--gris-claro-texto, #718096); font-size: 11.5px;
+  }
+  .paypal-alt-sep::before, .paypal-alt-sep::after {
+      content: ''; flex: 1; height: 1px; background: var(--gris-borde, #DDE3EA);
+  }
 
   /* SPEI panel */
   .spei-panel-inner {
@@ -455,30 +655,133 @@
                             </div>
                             @endif
 
-                            {{-- ─ PayPal ─ --}}
+                            {{-- ─ Tarjeta (se procesa con PayPal) ─
+                                 Se presenta como "Tarjeta de débito / crédito" porque
+                                 es lo que el cliente busca: PayPal es solo la pasarela
+                                 que lo cobra, y permite pagar con tarjeta sin tener
+                                 cuenta de PayPal. El value del radio sigue siendo
+                                 'paypal' — es lo que esperan el JS y el backend. --}}
                             @if($paypalInfo)
                             <label class="payment-option" id="pay-opt-paypal">
                                 <input type="radio" name="payment_radio" value="paypal">
                                 <div class="payment-radio"></div>
-                                <div class="payment-icon-box">
-                                    <img src="{{ asset('frontend/images/iconos-empresas/Paypal-logo_with_bgc.webp') }}" alt="PayPal">
+                                <div class="payment-card-logos">
+                                    <img src="{{ asset('frontend/images/iconos-empresas/Visa_logo_with_bgc.webp') }}" alt="Visa">
+                                    <img src="{{ asset('frontend/images/iconos-empresas/mastercard-logo_with_bgc.webp') }}" alt="Mastercard">
+                                    <img src="{{ asset('frontend/images/iconos-empresas/American-Express-Color_with_bgc.webp') }}" alt="American Express">
                                 </div>
                                 <div class="payment-option-info">
-                                    <div class="payment-option-name">PayPal</div>
+                                    <div class="payment-option-name">Tarjeta de Débito / Crédito</div>
                                     <div class="payment-option-desc">
-                                        Paga con tu cuenta PayPal de forma segura
+                                        Visa, Mastercard y American Express · pago seguro
                                         @if($paypalInfo->mode == 0)
                                             <span style="font-size:10px;color:#B45309;font-weight:700;">[SANDBOX]</span>
                                         @endif
                                     </div>
                                 </div>
+                                <span class="payment-option-tag">Recomendado</span>
                             </label>
 
-                            {{-- PayPal buttons (hidden until selected) --}}
+                            {{-- Modal de pago rechazado. Se llena desde JS con el
+                                 motivo que devuelve PaymentController::motivoRechazo(). --}}
+                            <div class="pago-rechazado-fondo" id="pago-rechazado">
+                                <div class="pago-rechazado-caja" role="alertdialog" aria-modal="true"
+                                     aria-labelledby="pago-rechazado-titulo">
+                                    <div class="pago-rechazado-icono">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                             stroke-width="2.2" width="26" height="26" aria-hidden="true">
+                                            <circle cx="12" cy="12" r="9"/>
+                                            <path d="M15 9l-6 6M9 9l6 6"/>
+                                        </svg>
+                                    </div>
+                                    <h4 id="pago-rechazado-titulo">No pudimos procesar tu pago</h4>
+                                    <p class="pago-rechazado-msg" id="pago-rechazado-msg"></p>
+                                    <div class="pago-rechazado-sug" id="pago-rechazado-sug">
+                                        <strong>Qué puedes hacer</strong>
+                                        <ul id="pago-rechazado-lista"></ul>
+                                    </div>
+                                    <button type="button" class="pago-rechazado-btn" id="pago-rechazado-cerrar">
+                                        Intentar de nuevo
+                                    </button>
+                                    <p class="pago-rechazado-cod" id="pago-rechazado-cod"></p>
+                                </div>
+                            </div>
+
+                            {{-- Botones de PayPal. Se renderizan por separado (ver
+                                 initPayPalButtons): arriba el de TARJETA, que es el
+                                 camino principal, y abajo el de PayPal como
+                                 alternativa. Los dos cobran por la misma pasarela. --}}
                             <div class="payment-detail-panel" id="paypal-detail-panel">
                                 <div class="paypal-panel-inner">
-                                    <div class="paypal-panel-title">Completa tu pago con PayPal</div>
-                                    <div id="paypal-button-container"></div>
+                                    {{-- Formulario de tarjeta INCRUSTADO (Expanded Checkout).
+                                         Arranca oculto y solo se muestra si la cuenta de PayPal
+                                         tiene activada la capacidad "Expanded Credit and Debit
+                                         Card Payments" — lo decide isEligible() en tiempo de
+                                         ejecucion, ver initPayPalButtons. Si no lo es, se
+                                         queda el bloque del boton de abajo. --}}
+                                    <div id="paypal-cardfields-block" style="display:none">
+                                        <div class="pp-cf-card">
+                                            <div class="pp-cf-body">
+                                                <div class="pp-cf-grid">
+                                                    <div class="pp-cf-field pp-cf-wide">
+                                                        <label data-pp-label="pp-cf-name">Nombre en la tarjeta</label>
+                                                        <div id="pp-cf-name" class="pp-cf-input"></div>
+                                                    </div>
+                                                    <div class="pp-cf-field pp-cf-wide">
+                                                        <label data-pp-label="pp-cf-number">Número de tarjeta</label>
+                                                        <div id="pp-cf-number" class="pp-cf-input"></div>
+                                                    </div>
+                                                    <div class="pp-cf-field">
+                                                        <label data-pp-label="pp-cf-expiry">Vencimiento</label>
+                                                        <div id="pp-cf-expiry" class="pp-cf-input"></div>
+                                                    </div>
+                                                    <div class="pp-cf-field">
+                                                        <label data-pp-label="pp-cf-cvv">
+                                                            CVV
+                                                            <span class="pp-cf-hint" title="Los 3 dígitos al reverso de tu tarjeta (4 en American Express)">?</span>
+                                                        </label>
+                                                        <div id="pp-cf-cvv" class="pp-cf-input"></div>
+                                                    </div>
+                                                </div>
+
+                                                <button type="button" id="pp-cf-submit" class="pp-cf-submit">
+                                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" width="16" height="16" aria-hidden="true">
+                                                        <rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/>
+                                                    </svg>
+                                                    <span>Pagar <span id="pp-cf-monto">{{ $settings->currency_icon }}{{ number_format(getFinalPayableAmount(), 2) }}</span></span>
+                                                </button>
+
+                                                <div class="pp-cf-powered">
+                                                    <span>Pago procesado de forma segura por</span>
+                                                    <img src="https://www.paypalobjects.com/webstatic/mktg/Logo/pp-logo-100px.png"
+                                                         alt="PayPal" loading="lazy" width="100" height="26">
+                                                </div>
+
+                                                <ul class="pp-cf-trust">
+                                                    <li>Conexión cifrada SSL de extremo a extremo</li>
+                                                    <li>Los datos de tu tarjeta los procesa PayPal, no se guardan en este sitio</li>
+                                                    <li>No necesitas cuenta de PayPal</li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {{-- Respaldo: el boton de tarjeta de siempre, para cuentas
+                                         sin la capacidad activada. --}}
+                                    <div id="paypal-card-block">
+                                        <div class="paypal-panel-title">Paga con tu tarjeta</div>
+                                        <div id="paypal-btn-card" class="paypal-btn-slot"></div>
+                                        <p class="paypal-panel-note">
+                                            Al continuar se abre la ventana segura de PayPal para capturar
+                                            los datos de tu tarjeta. <strong>No necesitas cuenta de PayPal.</strong>
+                                        </p>
+                                    </div>
+
+                                    <div class="paypal-alt-sep" id="paypal-alt-sep"><span>o si prefieres</span></div>
+
+                                    <div id="paypal-account-block">
+                                        <div id="paypal-btn-paypal" class="paypal-btn-slot"></div>
+                                    </div>
                                 </div>
                             </div>
                             @endif
@@ -655,7 +958,7 @@
 
                         {{-- Aviso PayPal --}}
                         <div class="paypal-btn-notice" id="paypal-btn-notice">
-                            Usa el botón de PayPal en la sección de pago para completar tu compra.
+                            Completa tu compra en el recuadro de <strong>Tarjeta de Débito / Crédito</strong>, en el paso 3.
                         </div>
 
                         <div class="checkout-security">
@@ -699,7 +1002,14 @@
 
 {{-- PayPal SDK: sandbox usa el mismo endpoint, el client_id determina el entorno --}}
 @if($paypalInfo)
-<script src="https://www.paypal.com/sdk/js?client-id={{ $paypalInfo->activeClientId() }}&currency={{ $paypalInfo->currency_name }}&intent=capture{{ $paypalInfo->mode == 0 ? '&buyer-country=MX' : '' }}" defer></script>
+{{-- components=buttons,card-fields habilita el formulario de tarjeta
+     incrustado de Expanded Checkout ademas de los botones. Pedirlo NO obliga
+     a usarlo: si la cuenta no tiene activada la capacidad "Expanded Credit
+     and Debit Card Payments", paypal.CardFields().isEligible() devuelve
+     false y el checkout se queda con los botones de siempre. --}}
+<script src="https://www.paypal.com/sdk/js?client-id={{ $paypalInfo->activeClientId() }}&currency={{ $paypalInfo->currency_name }}&intent=capture&components=buttons,card-fields{{ $paypalInfo->mode == 0 ? '&buyer-country=MX' : '' }}"
+        @if(!empty($paypalClientToken)) data-client-token="{{ $paypalClientToken }}" @endif
+        defer></script>
 @endif
 
 @vite(['resources/js/checkout.js'])
@@ -759,31 +1069,105 @@ try {
 @if($paypalInfo)
 window._paypalRendered = false;
 window.initPayPalButtons = function () {
-    var container = document.getElementById('paypal-button-container');
-    if (!container || window._paypalRendered) return;
+    if (window._paypalRendered) return;
     window._paypalRendered = true;
 
-    paypal.Buttons({
+    // Configuración compartida por los DOS botones (tarjeta y PayPal): ambos
+    // cobran por la misma pasarela y contra los mismos endpoints, lo único
+    // que cambia es el fundingSource con el que se renderizan.
+    // Muestra el motivo del rechazo que devuelve el backend. Se usa un modal
+    // y no un toast porque el cliente necesita leer la recomendacion con calma
+    // para poder corregir; un aviso que se desvanece solo no sirve aqui.
+    function mostrarPagoRechazado(rechazo) {
+        var fondo = document.getElementById('pago-rechazado');
+        if (!fondo) {
+            toastr.error((rechazo && rechazo.mensaje) || 'No pudimos procesar tu pago.');
+            return;
+        }
+
+        var datos = rechazo || {};
+        document.getElementById('pago-rechazado-titulo').textContent =
+            datos.titulo || 'No pudimos procesar tu pago';
+        document.getElementById('pago-rechazado-msg').textContent =
+            datos.mensaje || 'El banco no autorizó el cargo. No se realizó ningún cobro a tu tarjeta.';
+
+        var lista = document.getElementById('pago-rechazado-lista');
+        var caja = document.getElementById('pago-rechazado-sug');
+        lista.innerHTML = '';
+        var sugerencias = datos.sugerencias || [];
+        sugerencias.forEach(function (texto) {
+            var li = document.createElement('li');
+            li.textContent = texto;
+            lista.appendChild(li);
+        });
+        caja.style.display = sugerencias.length ? '' : 'none';
+
+        // El codigo del banco solo sirve si el cliente llama a soporte, por eso
+        // va discreto al pie y no en el mensaje principal.
+        var cod = document.getElementById('pago-rechazado-cod');
+        cod.textContent = datos.codigo ? ('Código de referencia: ' + datos.codigo) : '';
+
+        fondo.classList.add('abierto');
+    }
+
+    (function () {
+        var fondo = document.getElementById('pago-rechazado');
+        if (!fondo) return;
+        function cerrar() { fondo.classList.remove('abierto'); }
+        document.getElementById('pago-rechazado-cerrar').addEventListener('click', cerrar);
+        // Clic fuera de la caja y Escape: salidas esperadas en cualquier modal.
+        fondo.addEventListener('click', function (e) { if (e.target === fondo) cerrar(); });
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape' && fondo.classList.contains('abierto')) cerrar();
+        });
+    })();
+
+    var configPago = {
         createOrder: function (data, actions) {
-            // Primero guardamos sesión, luego creamos la orden PayPal
+            // Primero guardamos sesión, luego creamos la orden PayPal.
             return fetch('{{ route('user.checkout.form-submit') }}', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Accept': 'application/json'
                 },
                 body: new URLSearchParams(new FormData(document.getElementById('checkOutForm')))
             })
-            .then(function (r) { return r.json(); })
+            .then(function (r) {
+                // Antes la respuesta se ignoraba: si el checkout venía
+                // incompleto, el 422 pasaba de largo y el fallo aparecía
+                // después como un error genérico de PayPal, sin decir qué
+                // faltaba. Ahora se corta aquí con el motivo real.
+                return r.json().then(function (body) {
+                    if (!r.ok) {
+                        var msg = 'No se pudo preparar tu pedido.';
+                        if (body && body.errors) {
+                            for (var k in body.errors) { msg = body.errors[k][0]; break; }
+                        } else if (body && body.message) {
+                            msg = body.message;
+                        }
+                        throw new Error(msg);
+                    }
+                    return body;
+                });
+            })
             .then(function () {
                 return fetch('{{ route('user.paypal.createOrder') }}', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Accept': 'application/json'
                     }
-                }).then(function (r) { return r.json(); })
-                  .then(function (d) { return d.id; });
+                }).then(function (r) {
+                    return r.json().then(function (d) {
+                        if (!r.ok || !d.id) {
+                            throw new Error((d && d.error) || 'No se pudo iniciar el pago.');
+                        }
+                        return d.id;
+                    });
+                });
             });
         },
         onApprove: function (data, actions) {
@@ -798,15 +1182,221 @@ window.initPayPalButtons = function () {
               .then(function (details) {
                   if (details.redirect_url) {
                       window.location.href = details.redirect_url;
-                  } else {
-                      toastr.error('Error al procesar el pago. Inténtalo de nuevo.');
+                      return;
                   }
-              });
+                  // El backend responde 402 con el motivo cuando el banco
+                  // rechaza. Antes esto caia en un toast generico ("Error al
+                  // procesar el pago") que no le decia al cliente que revisar.
+                  if (details.rechazo) {
+                      mostrarPagoRechazado(details.rechazo);
+                      return;
+                  }
+                  mostrarPagoRechazado(null);
+              })
+              .catch(function () { mostrarPagoRechazado(null); });
         },
         onError: function (err) {
-            toastr.error('Ocurrió un error con PayPal. Inténtalo de nuevo.');
+            // Si el error trae mensaje propio (ej. "Selecciona una dirección
+            // de envío"), se muestra ese en vez del genérico.
+            toastr.error((err && err.message) || 'Ocurrió un error con PayPal. Inténtalo de nuevo.');
         }
-    }).render('#paypal-button-container');
+    };
+
+    // Renderiza un botón para una forma de pago concreta. Devuelve false si
+    // PayPal dice que esa forma no está disponible para esta cuenta/país, y
+    // en ese caso se esconde su bloque en vez de dejar un hueco vacío.
+    function renderBoton(fundingSource, selector, bloqueId, estilo) {
+        var boton;
+        try {
+            boton = paypal.Buttons(Object.assign({ fundingSource: fundingSource, style: estilo }, configPago));
+        } catch (e) {
+            boton = null;
+        }
+        if (!boton || !boton.isEligible()) {
+            var bloque = document.getElementById(bloqueId);
+            if (bloque) bloque.style.display = 'none';
+            return false;
+        }
+        boton.render(selector);
+        return true;
+    }
+
+    // ── Camino preferido: campos de tarjeta INCRUSTADOS ──────────────
+    // Expanded Checkout (antes "Advanced"). Solo funciona si la cuenta tiene
+    // activada la capacidad "Expanded Credit and Debit Card Payments" en
+    // Apps & Credentials > Features > Accept payments. Si no la tiene,
+    // isEligible() da false y se usa el botón de tarjeta de siempre.
+    //
+    // No hay cambios de servidor: CardFields reutiliza el mismo createOrder y
+    // onApprove que los botones.
+    function renderCamposTarjeta() {
+        if (typeof paypal.CardFields !== 'function') return false;
+
+        var campos;
+        try {
+            campos = paypal.CardFields(configPago);
+        } catch (e) {
+            return false;
+        }
+        if (!campos || !campos.isEligible()) return false;
+
+        var bloque = document.getElementById('paypal-cardfields-block');
+        if (!bloque) return false;
+        bloque.style.display = 'block';
+
+        // Los iframes de PayPal no heredan el foco/validez del contenedor, así
+        // que se refleja a mano para poder pintar el borde azul o rojo.
+        // Este `style` es lo ÚNICO que se aplica dentro del iframe, así que
+        // TODO el aspecto del campo (borde, fondo, padding) se define aquí y
+        // el contenedor de la página va sin borde. Antes se ponía el borde en
+        // el contenedor y quedaba uno dentro de otro: el de la página por
+        // fuera y el que PayPal dibuja por dentro.
+        //
+        // PayPal solo aplica una lista corta de propiedades dentro del iframe
+        // (border, border-radius, background, color, tipografía,
+        // padding, outline, transition...); cualquier otra se ignora
+        // en silencio. Selectores admitidos: `input`, `:focus` y `.invalid`.
+        var estilo = {
+            input: {
+                'font-size': '16px',
+                'font-family': 'Arial, Helvetica, sans-serif',
+                'color': '#16202A',
+                // El alto va aquí porque el campo real vive dentro del
+                // iframe: dárselo solo al contenedor deja el input pequeño
+                // flotando dentro de una caja alta.
+                'height': '56px',
+                'padding': '0 16px',
+                'background': '#FFFFFF',
+                'border': '1px solid #DDE3EA',
+                'border-radius': '10px',
+                'outline': 'none',
+                'transition': 'border-color 0.18s'
+            },
+            ':focus': {
+                'color': '#16202A',
+                'border': '1px solid #003E7E',
+                'outline': 'none'
+            },
+            '.invalid': {
+                'color': '#DC2626',
+                'border': '1px solid #DC2626'
+            }
+        };
+
+        // Textos guía en español: PayPal los pone en inglés por defecto
+        // ("Card number", "Cardholder Name (optional)", ...).
+        var PLACEHOLDERS = {
+            'NameField':   'Como aparece en la tarjeta',
+            'NumberField': '1234 5678 9012 3456',
+            'ExpiryField': 'MM / AA',
+            'CVVField':    'CVV'
+        };
+        [
+            ['NameField',   '#pp-cf-name'],
+            ['NumberField', '#pp-cf-number'],
+            ['ExpiryField', '#pp-cf-expiry'],
+            ['CVVField',    '#pp-cf-cvv']
+        ].forEach(function (par) {
+            var campo = campos[par[0]]({
+                style: estilo,
+                placeholder: PLACEHOLDERS[par[0]]
+                // Sin inputEvents: el estado de foco y de error lo pinta el
+                // propio SDK con los selectores `:focus` y `.invalid` del
+                // objeto `estilo`. Reflejarlo además en el contenedor añadía
+                // un segundo recuadro alrededor del que ya dibuja PayPal.
+            });
+            campo.render(par[1]);
+
+            // El campo real vive dentro de un iframe de PayPal, así que un
+            // <label for> no lo puede enfocar (apuntaría a un <div>, que no
+            // es un control etiquetable). Se conecta el clic de la etiqueta
+            // al .focus() que expone el propio campo.
+            var etiqueta = document.querySelector('[data-pp-label="' + par[1].slice(1) + '"]');
+            if (etiqueta) {
+                etiqueta.style.cursor = 'pointer';
+                etiqueta.addEventListener('click', function () {
+                    if (typeof campo.focus === 'function') campo.focus();
+                });
+            }
+        });
+
+        // PayPal devuelve códigos crudos en inglés (INVALID_NUMBER, ...). Sin
+        // traducirlos el cliente ve "INVALID_NUMBER" en pantalla, que no le
+        // dice nada y da mala espina justo al pagar.
+        var MENSAJES = {
+            INVALID_NUMBER: 'El número de tarjeta no es válido. Revísalo e inténtalo de nuevo.',
+            INVALID_EXPIRY: 'La fecha de vencimiento no es válida.',
+            INVALID_CVV: 'El código de seguridad (CVV) no es válido.',
+            INVALID_SECURITY_CODE: 'El código de seguridad (CVV) no es válido.',
+            INVALID_NAME: 'Revisa el nombre que aparece en la tarjeta.',
+            CARD_DECLINED: 'Tu banco rechazó la tarjeta. Intenta con otra o comunícate con tu banco.',
+            INSTRUMENT_DECLINED: 'Tu banco rechazó la tarjeta. Intenta con otra o comunícate con tu banco.',
+            PAYER_ACTION_REQUIRED: 'Tu banco pide una verificación adicional. Inténtalo de nuevo.'
+        };
+
+        function mensajeError(err) {
+            var crudo = (err && (err.message || err.name)) ? String(err.message || err.name) : '';
+            for (var codigo in MENSAJES) {
+                if (crudo.indexOf(codigo) !== -1) return MENSAJES[codigo];
+            }
+            // Un código desconocido en MAYUSCULAS_CON_GUIONES tampoco se le
+            // enseña al cliente: se cae al mensaje genérico.
+            if (!crudo || /^[A-Z0-9_]+$/.test(crudo)) {
+                return 'No se pudo procesar la tarjeta. Revisa los datos e inténtalo de nuevo.';
+            }
+            return crudo;
+        }
+
+        var btn = document.getElementById('pp-cf-submit');
+        btn.addEventListener('click', function () {
+            btn.disabled = true;
+            var textoOriginal = btn.innerHTML;
+            btn.textContent = 'Procesando tu pago…';
+            campos.submit()
+                .catch(function (err) {
+                    toastr.error(mensajeError(err));
+                })
+                .then(function () {
+                    btn.disabled = false;
+                    btn.innerHTML = textoOriginal;
+                });
+        });
+
+        // Con el formulario a la vista sobra el botón que abre la ventana.
+        var bloqueBoton = document.getElementById('paypal-card-block');
+        if (bloqueBoton) bloqueBoton.style.display = 'none';
+
+        // Y también sobra la alternativa "o si prefieres / PayPal": teniendo
+        // los campos delante, ofrecer además un botón que abre otra ventana
+        // solo reparte la atención en el momento de pagar.
+        //
+        // Solo se esconde en este caso. Si los campos NO son elegibles (la
+        // cuenta aún no tiene la capacidad), el bloque de PayPal sigue a la
+        // vista como segunda opción junto al botón de tarjeta.
+        var bloquePaypal = document.getElementById('paypal-account-block');
+        if (bloquePaypal) bloquePaypal.style.display = 'none';
+        var sep = document.getElementById('paypal-alt-sep');
+        if (sep) sep.style.display = 'none';
+
+        return true;
+    }
+
+    var hayCampos = renderCamposTarjeta();
+
+    // La tarjeta va primero porque es el camino principal del cliente; la
+    // cuenta de PayPal queda abajo como alternativa. El botón de tarjeta solo
+    // se dibuja si NO se pudieron incrustar los campos.
+    var hayTarjeta = hayCampos || renderBoton(paypal.FUNDING.CARD, '#paypal-btn-card', 'paypal-card-block',
+                                              { height: 48, label: 'pay' });
+    // Con los campos incrustados a la vista, el botón de PayPal no se dibuja
+    // en absoluto: no tiene caso pedirle el iframe a PayPal para esconderlo.
+    var hayPaypal = hayCampos ? false : renderBoton(paypal.FUNDING.PAYPAL, '#paypal-btn-paypal', 'paypal-account-block',
+                                                    { height: 44 });
+
+    // El separador "o si prefieres" solo tiene sentido si de verdad quedaron
+    // las dos opciones a la vista.
+    var sep = document.getElementById('paypal-alt-sep');
+    if (sep && !(hayTarjeta && hayPaypal)) sep.style.display = 'none';
 };
 @endif
 
@@ -848,6 +1438,13 @@ $(document).ready(function () {
 
     function updateTotalDisplay() {
         $('#total_amount').text(currIcon + fmt(currentTotal));
+
+        // El botón de "Pagar" del formulario de tarjeta lleva el importe
+        // impreso, y tiene que ser el MISMO que el del resumen. El valor que
+        // pinta Blade se calcula en el servidor ANTES de elegir el envío, así
+        // que sin esto el botón se queda con el subtotal y anuncia un cobro
+        // menor al que de verdad se hace.
+        $('#pp-cf-monto').text(currIcon + fmt(currentTotal));
     }
 
     // ── Shipping selection (escucha el label visible, no el radio oculto) ───
@@ -861,8 +1458,34 @@ $(document).ready(function () {
         updateTotalDisplay();
         completeSection(2);
         unlockSection(3);
+        autoSelectPayment();
         validateSubmitBtn();
     });
+
+    // ── Apertura automática del método de pago ───────────────────────
+    // En cuanto se desbloquea el paso 3 se elige solo el método preferido
+    // (tarjeta, procesada por PayPal) y se abre su panel, así el cliente ya
+    // ve dónde capturar sus datos sin tener que buscar y hacer un clic extra.
+    //
+    // Solo actúa si el cliente TODAVÍA no eligió nada: si ya escogió, por
+    // ejemplo, SPEI y luego cambia el método de envío, no se le pisa su
+    // elección.
+    function autoSelectPayment() {
+        if ($('#payment_method').val()) return;
+
+        // Orden de preferencia: tarjeta (PayPal) > tarjeta (Stripe) > SPEI.
+        var preferidos = ['paypal', 'stripe', 'spei'];
+        for (var i = 0; i < preferidos.length; i++) {
+            var $radio = $('input[name="payment_radio"][value="' + preferidos[i] + '"]');
+            if ($radio.length) {
+                // trigger('change') dispara el mismo manejador que un clic
+                // real, así que abre el panel, monta los botones de PayPal,
+                // actualiza el resumen y desbloquea la sección 4.
+                $radio.prop('checked', true).trigger('change');
+                return;
+            }
+        }
+    }
 
     // ── Address selection ──────────────────────────────────────────
     $(document).on('change', 'input.shipping_address', function () {
@@ -912,10 +1535,16 @@ $(document).ready(function () {
             $('#spei-detail-panel').addClass('active');
         }
 
+        // Une visualmente la opcion elegida con su panel abierto.
+        $('.payment-option').removeClass('has-panel-open');
+        if ($('.payment-detail-panel.active').length) {
+            $opt.addClass('has-panel-open');
+        }
+
         updateTotalDisplay();
 
         // Sidebar payment label
-        var names = { stripe: 'Tarjeta (Stripe)', paypal: 'PayPal', spei: 'SPEI / BBVA' };
+        var names = { stripe: 'Tarjeta (Stripe)', paypal: 'Tarjeta de débito/crédito', spei: 'SPEI / BBVA' };
         $('#sidebar-payment-value').text(names[val] || val);
         $('#sidebar-payment-row').addClass('visible');
 

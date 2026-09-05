@@ -424,8 +424,37 @@ class PaymentController extends Controller
         $provider = new PayPalClient($config);
         $provider->getAccessToken();
 
-        $response = $provider->capturePaymentOrder($request->orderId);
-        if (isset($response['status']) && $response['status'] === 'COMPLETED') {
+        try {
+            $response = $provider->capturePaymentOrder($request->orderId);
+        } catch (\Throwable $e) {
+            \Log::critical('PayPal: excepcion al capturar la orden.', [
+                'orderId' => $request->orderId,
+                'error' => $e->getMessage(),
+            ]);
+            return response()->json(['rechazo' => $this->motivoRechazo('PAYPAL_ERROR', 'PAYPAL_ERROR')], 502);
+        }
+
+        // El estado de la ORDEN no basta. En los pagos con tarjeta avanzada
+        // (Expanded Checkout) PayPal responde con la orden en COMPLETED aunque
+        // el banco haya rechazado el cobro: el rechazo viaja un nivel mas
+        // abajo, en purchase_units[].payments.captures[].status. Mirar solo
+        // $response['status'] hacia que TODO rechazo del emisor se guardara
+        // como una venta pagada.
+        $captura = $response['purchase_units'][0]['payments']['captures'][0] ?? null;
+        $estadoOrden = $response['status'] ?? null;
+        $estadoCaptura = $captura['status'] ?? null;
+
+        // Se registra siempre, no solo al fallar: sin esta linea un rechazo
+        // aceptado por error no dejaba ningun rastro que permitiera notarlo.
+        \Log::info('PayPal: resultado de la captura.', [
+            'orderId' => $request->orderId,
+            'order_status' => $estadoOrden,
+            'capture_status' => $estadoCaptura,
+            'processor_response' => $captura['processor_response'] ?? null,
+            'status_details' => $captura['status_details'] ?? null,
+        ]);
+
+        if ($estadoOrden === 'COMPLETED' && $estadoCaptura === 'COMPLETED') {
             $paypalSetting = PaypalSetting::first();
             $paidAmount = getFinalPayableAmount();
             $order = $this->storeOrder(null, 'paypal', 1, $response['id'], $paidAmount, $paypalSetting->currency_name);
@@ -448,9 +477,115 @@ class PaymentController extends Controller
 
             return response()->json(['redirect_url' => $signedUrl]);
         }
-        \Log::critical('Error al Capturar la Orden de Paypal: ' . json_encode($response));
-        $cancelUrl = route('user.paypal.cancel');
-        return response()->json(['redirect_url' => $cancelUrl]);
+        // Cobro no realizado: NO se crea pedido. Se devuelve el motivo para
+        // que el checkout lo explique en pantalla, en vez de mandar al cliente
+        // a una pagina de cancelacion que no dice nada.
+        \Log::critical('PayPal: la captura no se completo.', [
+            'orderId' => $request->orderId,
+            'order_status' => $estadoOrden,
+            'capture_status' => $estadoCaptura,
+            'respuesta' => $response,
+        ]);
+
+        $codigo = $captura['processor_response']['response_code']
+            ?? $captura['status_details']['reason']
+            ?? $estadoCaptura;
+
+        return response()->json(['rechazo' => $this->motivoRechazo($estadoCaptura, $codigo)], 402);
+    }
+
+    /**
+     * Traduce el rechazo de PayPal/el banco a algo que el cliente pueda
+     * entender y accionar. PayPal devuelve codigos crudos (5100, 5400,
+     * INSTRUMENT_DECLINED...) que no le dicen nada a quien esta pagando.
+     */
+    private function motivoRechazo(?string $estadoCaptura, ?string $codigo): array
+    {
+        $mapa = [
+            // Codigos del procesador (processor_response.response_code).
+            '0500' => ['Tu banco no autorizó el cargo', 'El emisor rechazó la operación sin dar un motivo específico. No se te cobró nada.', [
+                'Llama al número que aparece al reverso de tu tarjeta y pide que autoricen el cargo.',
+                'Intenta con otra tarjeta.',
+            ]],
+            '5100' => ['Tu banco rechazó la tarjeta', 'El banco emisor no autorizó el cargo y no se realizó ningún cobro. Suele pasar cuando el banco tiene bloqueadas las compras por internet.', [
+                'Llama a tu banco y pide que autoricen compras en línea con esta tarjeta.',
+                'Intenta con otra tarjeta, de preferencia de otro banco.',
+            ]],
+            '5110' => ['El código de seguridad no coincide', 'El CVV que capturaste no corresponde a la tarjeta. No se realizó ningún cobro.', [
+                'Vuelve a capturar los 3 dígitos del reverso de tu tarjeta (4 al frente en American Express).',
+            ]],
+            '5120' => ['Fondos insuficientes', 'La tarjeta no tiene saldo o línea de crédito disponible para este monto.', [
+                'Verifica tu saldo o línea disponible.',
+                'Intenta con otra tarjeta.',
+            ]],
+            '5140' => ['La tarjeta está cancelada', 'El banco reporta esta tarjeta como cerrada.', [
+                'Usa una tarjeta vigente.',
+            ]],
+            '5180' => ['Tarjeta restringida', 'El banco tiene una restricción activa sobre esta tarjeta.', [
+                'Comunícate con tu banco para levantar la restricción.',
+                'Intenta con otra tarjeta.',
+            ]],
+            '5400' => ['La tarjeta está vencida', 'La fecha de vencimiento ya pasó o quedó mal capturada.', [
+                'Revisa la fecha de vencimiento.',
+                'Usa una tarjeta vigente.',
+            ]],
+            '5650' => ['Tu banco pide verificación adicional', 'La operación requiere que confirmes tu identidad con el banco.', [
+                'Vuelve a intentarlo y completa la verificación que te pida tu banco.',
+            ]],
+            '5700' => ['Operación no permitida', 'El banco no permite este tipo de compra con esta tarjeta.', [
+                'Usa una tarjeta habilitada para compras en línea.',
+            ]],
+            '5930' => ['La tarjeta no está activada', 'El banco reporta que la tarjeta aún no ha sido activada.', [
+                'Actívala con tu banco y vuelve a intentarlo.',
+            ]],
+            '9500' => ['Operación rechazada por seguridad', 'El banco marcó la operación como sospechosa. No se realizó ningún cobro.', [
+                'Comunícate con tu banco para autorizarla.',
+            ]],
+            '9520' => ['Tarjeta reportada', 'El banco reporta esta tarjeta como extraviada o robada.', [
+                'Comunícate con tu banco.',
+                'Usa otra tarjeta.',
+            ]],
+            '1330' => ['Los datos de la tarjeta no son válidos', 'El número de tarjeta no corresponde a una cuenta activa.', [
+                'Revisa que el número esté completo y sin errores.',
+            ]],
+
+            // Motivos que devuelve PayPal en status_details.reason.
+            'INSTRUMENT_DECLINED' => ['Tu banco rechazó la tarjeta', 'El emisor no autorizó el cargo. No se realizó ningún cobro.', [
+                'Intenta con otra tarjeta.',
+                'Comunícate con tu banco.',
+            ]],
+            'PAYER_ACTION_REQUIRED' => ['Falta confirmar el pago', 'Tu banco pide un paso de verificación que no se completó.', [
+                'Vuelve a intentarlo y completa la verificación.',
+            ]],
+
+            // Fallo de nuestro lado al hablar con PayPal.
+            'PAYPAL_ERROR' => ['No pudimos comunicarnos con PayPal', 'Ocurrió un problema al procesar el pago. No se realizó ningún cobro a tu tarjeta.', [
+                'Espera un momento y vuelve a intentarlo.',
+                'Si el problema sigue, comunícate con nosotros.',
+            ]],
+        ];
+
+        if ($codigo !== null && isset($mapa[$codigo])) {
+            [$titulo, $mensaje, $sugerencias] = $mapa[$codigo];
+
+            return [
+                'titulo' => $titulo,
+                'mensaje' => $mensaje,
+                'sugerencias' => $sugerencias,
+                'codigo' => $codigo,
+            ];
+        }
+
+        return [
+            'titulo' => 'No pudimos procesar tu pago',
+            'mensaje' => 'El banco no autorizó el cargo. No se realizó ningún cobro a tu tarjeta.',
+            'sugerencias' => [
+                'Revisa que el número, la fecha de vencimiento y el CVV estén correctos.',
+                'Intenta con otra tarjeta.',
+                'Comunícate con tu banco para saber por qué se rechazó.',
+            ],
+            'codigo' => $codigo,
+        ];
     }
 
 
