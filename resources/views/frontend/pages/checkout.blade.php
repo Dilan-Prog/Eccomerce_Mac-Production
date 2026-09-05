@@ -1142,55 +1142,88 @@ window.initPayPalButtons = function () {
 
         if (puedeTarjeta) {
             bloqueTarjeta.style.display = '';
-            // createPayPal...Session devuelve la sesion YA construida, no una
-            // promesa: encadenarle .then() rompia todo el arranque.
-            var sesionTarjeta = sdk.createPayPalGuestOneTimePaymentSession({
-                onApprove: alAprobar,
-                // onComplete es OBLIGATORIO en la sesion de invitado; sin el,
-                // el formulario no llega a abrirse. Se dispara al terminar el
-                // flujo, despues de onApprove, que es quien cobra.
-                onComplete: function () {},
-                // Errores RECUPERABLES (tarjeta rechazada, datos mal
-                // formados): el formulario sigue abierto para reintentar, asi
-                // que basta con avisar sin cerrar nada.
-                onWarn: function (aviso) {
-                    toastr.warning((aviso && aviso.message) ||
-                        'Revisa los datos de tu tarjeta e inténtalo de nuevo.');
-                },
-                onError: alFallar,
-                onCancel: function () {}
-            });
             var botonTarjeta = document.getElementById('paypal-btn-card');
             var notaTarjeta = document.getElementById('paypal-card-note');
             var formularioAbierto = false;
 
+            var TEXTO_INVITACION = 'Captura tus datos aquí mismo. ' +
+                '<strong>No sales del sitio</strong> y no necesitas cuenta de PayPal.';
+            var TEXTO_ABIERTO = 'Tus datos los procesa <strong>PayPal</strong>. ' +
+                'No se guardan en este sitio y no necesitas cuenta.';
+
+            function nota(html) {
+                if (notaTarjeta) notaTarjeta.innerHTML = html;
+            }
+
+            // Se crea una sesion NUEVA en cada apertura. Reutilizar la misma
+            // no sirve: una vez que el cliente cierra el formulario con la X,
+            // esa sesion queda consumida y su start() ya no vuelve a dibujar
+            // nada. Ademas cada apertura necesita su propia orden.
+            function nuevaSesion() {
+                // createPayPal...Session devuelve la sesion YA construida, no
+                // una promesa: encadenarle .then() rompia todo el arranque.
+                return sdk.createPayPalGuestOneTimePaymentSession({
+                    onApprove: alAprobar,
+                    // onComplete es OBLIGATORIO en la sesion de invitado; sin
+                    // el, el formulario no llega a abrirse. Se dispara al
+                    // terminar el flujo, despues de onApprove, que es quien
+                    // cobra.
+                    onComplete: function () {},
+                    // Errores RECUPERABLES (tarjeta rechazada, datos mal
+                    // formados): el formulario sigue abierto para reintentar,
+                    // asi que basta con avisar sin cerrar nada.
+                    onWarn: function (aviso) {
+                        toastr.warning((aviso && aviso.message) ||
+                            'Revisa los datos de tu tarjeta e inténtalo de nuevo.');
+                    },
+                    onError: function (e) {
+                        formularioAbierto = false;
+                        nota(TEXTO_INVITACION);
+                        alFallar(e);
+                    },
+                    // El cliente cerro el formulario con la X. Sin liberar la
+                    // bandera, el boton quedaba muerto y ya no habia forma de
+                    // volver a abrirlo.
+                    onCancel: function () {
+                        formularioAbierto = false;
+                        nota(TEXTO_INVITACION);
+                    }
+                });
+            }
+
+            // Segunda comprobacion, mirando el DOM en vez de fiarse de que
+            // PayPal avise. Si el formulario ya no esta a la vista, el boton
+            // tiene que volver a funcionar aunque onCancel no se haya
+            // disparado: de lo contrario el cliente que cierra con la X se
+            // queda sin forma de pagar.
+            function formularioALaVista() {
+                var marco = document.getElementById('paypal-card-container')
+                    .querySelector('paypal-sdk-iframe');
+                return !!marco && marco.getBoundingClientRect().height > 50;
+            }
+
             function abrirFormularioTarjeta() {
-                // Una sola vez: el boton sigue existiendo despues de abrir el
-                // formulario, y un segundo start() crearia otra orden.
-                if (formularioAbierto) return;
+                // Evita abrir dos veces a la vez: el boton sigue visible con
+                // el formulario desplegado, y un segundo start() simultaneo
+                // crearia otra orden.
+                if (formularioAbierto && formularioALaVista()) return;
                 formularioAbierto = true;
 
-                if (notaTarjeta) notaTarjeta.textContent = 'Cargando el formulario seguro…';
+                nota('Cargando el formulario seguro…');
 
                 // presentationMode 'auto' es lo que hace que el formulario se
                 // despliegue AQUI y no en otra ventana. El targetElement es el
                 // propio boton: PayPal monta el formulario junto a el.
-                Promise.resolve(sesionTarjeta.start(
+                Promise.resolve(nuevaSesion().start(
                     { presentationMode: 'auto', targetElement: botonTarjeta },
                     crearOrden()
                 )).then(function () {
-                    if (notaTarjeta) {
-                        notaTarjeta.innerHTML = 'Tus datos los procesa <strong>PayPal</strong>. ' +
-                            'No se guardan en este sitio y no necesitas cuenta.';
-                    }
+                    nota(TEXTO_ABIERTO);
                 }).catch(function (e) {
                     // Si no se pudo abrir, el boton vuelve a estar disponible
                     // para que el cliente lo intente a mano.
                     formularioAbierto = false;
-                    if (notaTarjeta) {
-                        notaTarjeta.innerHTML = 'Captura tus datos aquí mismo. ' +
-                            '<strong>No sales del sitio</strong> y no necesitas cuenta de PayPal.';
-                    }
+                    nota(TEXTO_INVITACION);
                     alFallar(e);
                 });
             }
