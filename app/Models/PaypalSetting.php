@@ -54,6 +54,23 @@ class PaypalSetting extends Model
     }
 
     /**
+     * Origen del SDK Web v6 de PayPal según el modo activo. Es el que usa el
+     * checkout para dibujar el formulario de tarjeta DENTRO de la página en
+     * vez de abrir la ventana emergente — eso solo existe en v6, vía
+     * presentationMode.
+     *
+     * Ojo: a diferencia de la API REST, aquí el host de sandbox es
+     * www.sandbox.paypal.com (no api-m), y usar el que no toca hace que el
+     * SDK cargue pero no reconozca el client-id.
+     */
+    public function webSdkBase(): string
+    {
+        return $this->mode == 1
+            ? 'https://www.paypal.com/web-sdk/v6/core'
+            : 'https://www.sandbox.paypal.com/web-sdk/v6/core';
+    }
+
+    /**
      * Client token de PayPal, necesario para el formulario de tarjeta
      * incrustado (paypal.CardFields de Expanded Checkout). Va como atributo
      * data-client-token en la etiqueta del SDK.

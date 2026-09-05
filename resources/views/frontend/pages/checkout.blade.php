@@ -136,6 +136,22 @@
   }
   .paypal-panel-title { font-size: 13.5px; font-weight: 700; color: var(--azul-principal, #003E7E); margin-bottom: 14px; }
   .paypal-btn-slot { max-width: 340px; margin: 0 auto; position: relative; overflow: hidden; }
+  /* Botones propios (el SDK v6 ya no dibuja los suyos). Se les da el aspecto
+     de los de PayPal para que el cliente los reconozca al instante. */
+  .pp-btn {
+      display: flex; align-items: center; justify-content: center; gap: 9px;
+      width: 100%; max-width: 340px; margin: 0 auto;
+      padding: 13px 18px; border: 0; border-radius: 8px; cursor: pointer;
+      font-size: 15px; font-weight: 600; transition: filter 0.18s;
+  }
+  .pp-btn:hover { filter: brightness(0.93); }
+  .pp-btn:active { transform: translateY(1px); }
+  .pp-btn[disabled] { opacity: 0.6; cursor: default; transform: none; }
+  .pp-btn-card { background: #2C2E2F; color: #fff; }
+  paypal-button { display: block; max-width: 340px; margin: 0 auto; }
+  /* El formulario y el boton los dibuja PayPal dentro de sus propios
+     elementos. Sin estilos propios ahi adentro: la maqueta es suya. */
+  paypal-basic-card-container { display: block; }
   .paypal-panel-note {
       font-size: 11.5px; color: var(--gris-claro-texto, #718096);
       margin: 12px auto 0; max-width: 340px; line-height: 1.5;
@@ -620,27 +636,39 @@
                                  alternativa. Los dos cobran por la misma pasarela. --}}
                             <div class="payment-detail-panel" id="paypal-detail-panel">
                                 <div class="paypal-panel-inner">
-                                    {{-- Formulario de tarjeta INCRUSTADO (Expanded Checkout).
-                                         Arranca oculto y solo se muestra si la cuenta de PayPal
-                                         tiene activada la capacidad "Expanded Credit and Debit
-                                         Card Payments" — lo decide isEligible() en tiempo de
-                                         ejecucion, ver initPayPalButtons. Si no lo es, se
-                                         queda el bloque del boton de abajo. --}}
-                                    {{-- Respaldo: el boton de tarjeta de siempre, para cuentas
-                                         sin la capacidad activada. --}}
-                                    <div id="paypal-card-block">
-                                        <div class="paypal-panel-title">Paga con tu tarjeta</div>
-                                        <div id="paypal-btn-card" class="paypal-btn-slot"></div>
-                                        <p class="paypal-panel-note">
-                                            Al continuar se abre la ventana segura de PayPal para capturar
-                                            los datos de tu tarjeta. <strong>No necesitas cuenta de PayPal.</strong>
+                                    {{-- Los botones son NUESTROS: el SDK v6 ya no los dibuja,
+                                         solo expone las sesiones de pago. El rotulo deja de vivir
+                                         dentro de un iframe de PayPal, asi que por fin se puede
+                                         escribir en espanol. Ambos arrancan ocultos y se muestran
+                                         segun findEligibleMethods(). --}}
+                                    {{-- Elementos propios del SDK v6: el boton TIENE que ser
+                                         hijo directo del contenedor o el SDK se niega a arrancar
+                                         ("<paypal-basic-card-button> must be a direct child of
+                                         <paypal-basic-card-container>"). PayPal dibuja el boton
+                                         dentro y, al pulsarlo, despliega ahi mismo el formulario. --}}
+                                    <div id="paypal-card-block" style="display:none">
+                                        <paypal-basic-card-container id="paypal-card-container">
+                                            <paypal-basic-card-button id="paypal-btn-card"></paypal-basic-card-button>
+                                        </paypal-basic-card-container>
+                                        <p class="paypal-panel-note" id="paypal-card-note">
+                                            Captura tus datos aquí mismo. <strong>No sales del sitio</strong>
+                                            y no necesitas cuenta de PayPal.
                                         </p>
                                     </div>
 
-                                    <div class="paypal-alt-sep" id="paypal-alt-sep"><span>o si prefieres</span></div>
+                                    <div class="paypal-alt-sep" id="paypal-alt-sep" style="display:none">
+                                        <span>o si prefieres</span>
+                                    </div>
 
-                                    <div id="paypal-account-block">
-                                        <div id="paypal-btn-paypal" class="paypal-btn-slot"></div>
+                                    <div id="paypal-account-block" style="display:none">
+                                        {{-- Elemento del SDK: PayPal exige sus propios botones de
+                                             marca. `type="pay"` rotula "Pagar con PayPal". --}}
+                                        <paypal-button id="paypal-btn-paypal" type="pay"
+                                                       class="paypal-gold"></paypal-button>
+                                        <p class="paypal-panel-note">
+                                            Se abre la ventana segura de PayPal para que inicies sesión
+                                            en tu cuenta.
+                                        </p>
                                     </div>
                                 </div>
                             </div>
@@ -862,14 +890,19 @@
 
 {{-- PayPal SDK: sandbox usa el mismo endpoint, el client_id determina el entorno --}}
 @if($paypalInfo)
-{{-- components=buttons,card-fields habilita el formulario de tarjeta
-     incrustado de Expanded Checkout ademas de los botones. Pedirlo NO obliga
-     a usarlo: si la cuenta no tiene activada la capacidad "Expanded Credit
-     and Debit Card Payments", paypal.CardFields().isEligible() devuelve
-     false y el checkout se queda con los botones de siempre. --}}
-<script src="https://www.paypal.com/sdk/js?client-id={{ $paypalInfo->activeClientId() }}&currency={{ $paypalInfo->currency_name }}&intent=capture&locale=es_MX&components=buttons,card-fields{{ $paypalInfo->mode == 0 ? '&buyer-country=MX' : '' }}"
-        @if(!empty($paypalClientToken)) data-client-token="{{ $paypalClientToken }}" @endif
-        defer></script>
+{{-- SDK Web v6. Es el unico que sabe dibujar el formulario de tarjeta
+     DENTRO de la pagina (presentationMode); el v5 solo abria una ventana
+     emergente. Autentica con el client-id, que es seguro en el front, asi que
+     ya no hace falta el client token del servidor.
+
+     La promesa se declara ANTES de la etiqueta para no perder el onload: el
+     script es async y puede terminar de cargar antes de que corra el resto
+     del JS de esta pagina. --}}
+<script>
+    window.__paypalV6 = new Promise(function (resolver) { window.__paypalV6Listo = resolver; });
+</script>
+<script async src="{{ $paypalInfo->webSdkBase() }}"
+        onload="window.__paypalV6Listo()"></script>
 @endif
 
 @vite(['resources/js/checkout.js'])
@@ -982,123 +1015,174 @@ window.initPayPalButtons = function () {
         });
     })();
 
-    var configPago = {
-        createOrder: function (data, actions) {
-            // Primero guardamos sesión, luego creamos la orden PayPal.
-            return fetch('{{ route('user.checkout.form-submit') }}', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                    'Accept': 'application/json'
-                },
-                body: new URLSearchParams(new FormData(document.getElementById('checkOutForm')))
-            })
-            .then(function (r) {
-                // Antes la respuesta se ignoraba: si el checkout venía
-                // incompleto, el 422 pasaba de largo y el fallo aparecía
-                // después como un error genérico de PayPal, sin decir qué
-                // faltaba. Ahora se corta aquí con el motivo real.
-                return r.json().then(function (body) {
-                    if (!r.ok) {
-                        var msg = 'No se pudo preparar tu pedido.';
-                        if (body && body.errors) {
-                            for (var k in body.errors) { msg = body.errors[k][0]; break; }
-                        } else if (body && body.message) {
-                            msg = body.message;
-                        }
-                        throw new Error(msg);
+    // ── Crear la orden ───────────────────────────────────────────────
+    // Primero guarda la sesion del checkout, luego pide la orden a PayPal.
+    // Devuelve una promesa que resuelve al id de la orden, que es lo que
+    // espera session.start(). Es la misma cadena de endpoints que usaba el
+    // SDK v5: el backend no distingue por donde entro el pago.
+    function crearOrden() {
+        return fetch('{{ route('user.checkout.form-submit') }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'Accept': 'application/json'
+            },
+            body: new URLSearchParams(new FormData(document.getElementById('checkOutForm')))
+        })
+        .then(function (r) {
+            // Si el checkout viene incompleto se corta aqui con el motivo
+            // real (ej. "Selecciona una direccion de envio") en vez de dejar
+            // que aparezca despues como un error generico de PayPal.
+            return r.json().then(function (body) {
+                if (!r.ok) {
+                    var msg = 'No se pudo preparar tu pedido.';
+                    if (body && body.errors) {
+                        for (var k in body.errors) { msg = body.errors[k][0]; break; }
+                    } else if (body && body.message) {
+                        msg = body.message;
                     }
-                    return body;
-                });
-            })
-            .then(function () {
-                return fetch('{{ route('user.paypal.createOrder') }}', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                        'Accept': 'application/json'
-                    }
-                }).then(function (r) {
-                    return r.json().then(function (d) {
-                        if (!r.ok || !d.id) {
-                            throw new Error((d && d.error) || 'No se pudo iniciar el pago.');
-                        }
-                        return d.id;
-                    });
-                });
+                    throw new Error(msg);
+                }
+                return body;
             });
-        },
-        onApprove: function (data, actions) {
-            return fetch('{{ route('user.paypal.captureOrder') }}', {
+        })
+        .then(function () {
+            return fetch('{{ route('user.paypal.createOrder') }}', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                },
-                body: JSON.stringify({ orderId: data.orderID })
-            }).then(function (r) { return r.json(); })
-              .then(function (details) {
-                  if (details.redirect_url) {
-                      window.location.href = details.redirect_url;
-                      return;
-                  }
-                  // El backend responde 402 con el motivo cuando el banco
-                  // rechaza. Antes esto caia en un toast generico ("Error al
-                  // procesar el pago") que no le decia al cliente que revisar.
-                  if (details.rechazo) {
-                      mostrarPagoRechazado(details.rechazo);
-                      return;
-                  }
-                  mostrarPagoRechazado(null);
-              })
-              .catch(function () { mostrarPagoRechazado(null); });
-        },
-        onError: function (err) {
-            // Si el error trae mensaje propio (ej. "Selecciona una dirección
-            // de envío"), se muestra ese en vez del genérico.
-            toastr.error((err && err.message) || 'Ocurrió un error con PayPal. Inténtalo de nuevo.');
-        }
-    };
-
-    // Renderiza un botón para una forma de pago concreta. Devuelve false si
-    // PayPal dice que esa forma no está disponible para esta cuenta/país, y
-    // en ese caso se esconde su bloque en vez de dejar un hueco vacío.
-    function renderBoton(fundingSource, selector, bloqueId, estilo) {
-        var boton;
-        try {
-            boton = paypal.Buttons(Object.assign({ fundingSource: fundingSource, style: estilo }, configPago));
-        } catch (e) {
-            boton = null;
-        }
-        if (!boton || !boton.isEligible()) {
-            var bloque = document.getElementById(bloqueId);
-            if (bloque) bloque.style.display = 'none';
-            return false;
-        }
-        boton.render(selector);
-        return true;
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Accept': 'application/json'
+                }
+            }).then(function (r) {
+                return r.json().then(function (d) {
+                    if (!r.ok || !d.id) {
+                        throw new Error((d && d.error) || 'No se pudo iniciar el pago.');
+                    }
+                    return { orderId: d.id };
+                });
+            });
+        });
     }
 
+    // ── Cobrar la orden aprobada ─────────────────────────────────────
+    // v6 entrega el id en data.orderId (el v5 lo llamaba orderID).
+    function alAprobar(data) {
+        var id = data && (data.orderId || data.orderID);
+        return fetch('{{ route('user.paypal.captureOrder') }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            },
+            body: JSON.stringify({ orderId: id })
+        }).then(function (r) { return r.json(); })
+          .then(function (details) {
+              if (details.redirect_url) {
+                  window.location.href = details.redirect_url;
+                  return;
+              }
+              // El backend responde 402 con el motivo cuando el banco rechaza.
+              if (details.rechazo) {
+                  mostrarPagoRechazado(details.rechazo);
+                  return;
+              }
+              mostrarPagoRechazado(null);
+          })
+          .catch(function () { mostrarPagoRechazado(null); });
+    }
 
-    // La tarjeta va primero porque es el camino principal del cliente; la
-    // cuenta de PayPal queda abajo como alternativa.
-    //
-    // color 'white' + shape 'rect': el negro por defecto de PayPal peleaba con
-    // el azul de la marca. El rótulo lo pone PayPal dentro del iframe y no se
-    // puede reescribir; se traduce con locale=es_MX en la etiqueta del SDK.
-    var hayTarjeta = renderBoton(paypal.FUNDING.CARD, '#paypal-btn-card', 'paypal-card-block',
-                                 { height: 48, shape: 'rect', color: 'white', label: 'pay' });
-    // El botón de PayPal queda debajo como alternativa para quien prefiera
-    // pagar con su cuenta.
-    var hayPaypal = renderBoton(paypal.FUNDING.PAYPAL, '#paypal-btn-paypal', 'paypal-account-block',
-                                { height: 44 });
+    function alFallar(err) {
+        // Si el error trae mensaje propio (ej. el de una validacion del
+        // checkout), se muestra ese en vez del generico.
+        toastr.error((err && err.message) || 'Ocurrió un error con PayPal. Inténtalo de nuevo.');
+    }
 
-    // El separador "o si prefieres" solo tiene sentido si de verdad quedaron
-    // las dos opciones a la vista.
-    var sep = document.getElementById('paypal-alt-sep');
-    if (sep && !(hayTarjeta && hayPaypal)) sep.style.display = 'none';
+    // ── Arranque del SDK v6 ──────────────────────────────────────────
+    // A diferencia del v5, aqui NO se renderizan botones: el SDK solo expone
+    // sesiones de pago y los botones son nuestros. Lo que se gana con eso es
+    // presentationMode, que dibuja el formulario de tarjeta dentro de la
+    // pagina en vez de abrir una ventana emergente.
+    window.__paypalV6.then(function () {
+        return window.paypal.createInstance({
+            clientId: '{{ $paypalInfo->activeClientId() }}',
+            components: ['paypal-payments', 'paypal-guest-payments'],
+            pageType: 'checkout',
+            // BCP-47, con GUION. Con 'es_MX' el SDK lanza
+            // ERR_DEV_UNSUPPORTED_LOCALE y no arranca.
+            locale: 'es-MX'
+        });
+    }).then(function (sdk) {
+        return sdk.findEligibleMethods({ currencyCode: '{{ $paypalInfo->currency_name }}' })
+            .then(function (elegibles) { return { sdk: sdk, elegibles: elegibles }; });
+    }).then(function (ctx) {
+        var sdk = ctx.sdk;
+        var puedeTarjeta = ctx.elegibles.isEligible('card');
+        var puedePaypal  = ctx.elegibles.isEligible('paypal');
+
+        // Cada bloque se muestra solo si PayPal dice que esa forma de pago
+        // esta disponible para esta cuenta y moneda. Sustituye a la
+        // comprobacion implicita que hacia paypal.Buttons() en el v5.
+        var bloqueTarjeta = document.getElementById('paypal-card-block');
+        var bloquePaypal  = document.getElementById('paypal-account-block');
+        var separador     = document.getElementById('paypal-alt-sep');
+
+        if (puedeTarjeta) {
+            bloqueTarjeta.style.display = '';
+            // createPayPal...Session devuelve la sesion YA construida, no una
+            // promesa: encadenarle .then() rompia todo el arranque.
+            var sesionTarjeta = sdk.createPayPalGuestOneTimePaymentSession({
+                onApprove: alAprobar,
+                // onComplete es OBLIGATORIO en la sesion de invitado; sin el,
+                // el formulario no llega a abrirse. Se dispara al terminar el
+                // flujo, despues de onApprove, que es quien cobra.
+                onComplete: function () {},
+                // Errores RECUPERABLES (tarjeta rechazada, datos mal
+                // formados): el formulario sigue abierto para reintentar, asi
+                // que basta con avisar sin cerrar nada.
+                onWarn: function (aviso) {
+                    toastr.warning((aviso && aviso.message) ||
+                        'Revisa los datos de tu tarjeta e inténtalo de nuevo.');
+                },
+                onError: alFallar,
+                onCancel: function () {}
+            });
+            var botonTarjeta = document.getElementById('paypal-btn-card');
+            botonTarjeta.addEventListener('click', function () {
+                // presentationMode 'auto' es lo que hace que el formulario se
+                // despliegue AQUI y no en otra ventana. El targetElement es el
+                // propio boton: PayPal monta el formulario junto a el.
+                Promise.resolve(sesionTarjeta.start(
+                    { presentationMode: 'auto', targetElement: botonTarjeta },
+                    crearOrden()
+                )).catch(alFallar);
+            });
+        }
+
+        if (puedePaypal) {
+            bloquePaypal.style.display = '';
+            var sesionPaypal = sdk.createPayPalOneTimePaymentSession({
+                onApprove: alAprobar,
+                onError: alFallar,
+                onCancel: function () {}
+            });
+            document.getElementById('paypal-btn-paypal').addEventListener('click', function () {
+                // 'auto' es el recomendado: intenta ventana emergente y cae a
+                // modal si el navegador la bloquea. El inicio de sesion de
+                // PayPal ocurre en su dominio, de ahi la ventana.
+                Promise.resolve(
+                    sesionPaypal.start({ presentationMode: 'auto' }, crearOrden())
+                ).catch(alFallar);
+            });
+        }
+
+        // El separador solo tiene sentido con las dos opciones a la vista.
+        // Arranca oculto en el markup, asi que hay que mostrarlo a proposito.
+        if (separador && puedeTarjeta && puedePaypal) separador.style.display = '';
+    }).catch(function (e) {
+        console.error('PayPal v6 no pudo iniciarse:', e);
+    });
 };
 @endif
 
