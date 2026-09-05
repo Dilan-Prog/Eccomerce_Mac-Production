@@ -19,6 +19,41 @@
   .checkout-page.transitions-ready .checkout-section--unlocked .checkout-section-body {
       transition: max-height 0.5s ease, padding 0.32s ease;
   }
+  /* Paso PLEGADO: ya se completo y el cliente pulso Continuar. Se ve solo
+     el encabezado con el resumen de lo que eligio. A diferencia de --locked,
+     el encabezado sigue activo para poder pulsar "Cambiar". */
+  .checkout-section--plegada .checkout-section-body {
+      max-height: 0 !important; overflow: hidden;
+      padding-top: 0 !important; padding-bottom: 0 !important;
+  }
+  .paso-resumen {
+      font-size: 12.5px; color: var(--gris-texto, #4A5568);
+      margin-left: 10px; overflow: hidden; text-overflow: ellipsis;
+      white-space: nowrap; max-width: 46%;
+  }
+  /* El boton de volver NO es el encabezado entero: pulsar la cabecera sin
+     querer reabriria el paso a cada rato. Es una accion explicita y pequena. */
+  .btn-cambiar-paso {
+      margin-left: 10px; background: none; border: 0; cursor: pointer;
+      padding: 4px 8px; border-radius: 6px;
+      font-size: 12px; font-weight: 700; text-decoration: underline;
+      color: var(--azul-medio, #0057A8);
+  }
+  .btn-cambiar-paso:hover { background: rgba(0,87,168,0.08); }
+  /* Fila de acciones del paso 1: Continuar a la izquierda. */
+  .paso-acciones {
+      display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+      margin-top: 14px;
+  }
+  .btn-continuar-paso {
+      display: inline-flex; align-items: center; gap: 7px;
+      padding: 11px 22px; border: 0; border-radius: 8px; cursor: pointer;
+      background: var(--azul-principal, #003E7E); color: #fff;
+      font-size: 14px; font-weight: 700; transition: background 0.18s;
+  }
+  .btn-continuar-paso:hover { background: var(--azul-medio, #0057A8); }
+  .btn-continuar-paso[disabled] { opacity: 0.5; cursor: default; }
+
   .checkout-section--locked   { pointer-events: none; }
   .checkout-section--unlocked { pointer-events: auto; }
   .checkout-section--locked .checkout-section-header   { opacity: 0.5; }
@@ -389,7 +424,10 @@
                     <div class="checkout-section-header">
                         <div class="checkout-section-num">1</div>
                         <h2 class="checkout-section-title">Dirección de envío</h2>
+                        <span class="paso-resumen" id="resumen-1"></span>
                         <span class="section-badge s-pending" id="badge-1">Pendiente</span>
+                        <button type="button" class="btn-cambiar-paso" id="cambiar-1"
+                                style="display:none">Cambiar</button>
                     </div>
                     <div class="checkout-section-body">
 
@@ -436,10 +474,16 @@
                             </div>
                         @endif
 
-                        <button type="button" class="btn-add-address" id="btn-add-address">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-                            Agregar nueva dirección
-                        </button>
+                        <div class="paso-acciones">
+                            <button type="button" class="btn-continuar-paso" id="continuar-1">
+                                Continuar
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" width="14" height="14" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
+                            </button>
+                            <button type="button" class="btn-add-address" id="btn-add-address">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                                Agregar nueva dirección
+                            </button>
+                        </div>
 
                         <div class="new-address-panel" id="new-address-panel">
                             <div class="panel-title" id="address-panel-title">Nueva dirección de envío</div>
@@ -535,7 +579,10 @@
                     <div class="checkout-section-header">
                         <div class="checkout-section-num">2</div>
                         <h2 class="checkout-section-title">Método de envío</h2>
+                        <span class="paso-resumen" id="resumen-2"></span>
                         <span class="section-badge s-pending" id="badge-2">Pendiente</span>
+                        <button type="button" class="btn-cambiar-paso" id="cambiar-2"
+                                style="display:none">Cambiar</button>
                     </div>
                     <div class="checkout-section-body">
 
@@ -575,6 +622,13 @@
                             @endif
                         </div>
 
+                        <div class="paso-acciones">
+                            <button type="button" class="btn-continuar-paso" id="continuar-2">
+                                Continuar
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" width="14" height="14" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
+                            </button>
+                        </div>
+
                     </div>
                 </div>
 
@@ -583,7 +637,10 @@
                     <div class="checkout-section-header">
                         <div class="checkout-section-num">3</div>
                         <h2 class="checkout-section-title">Método de pago</h2>
+                        <span class="paso-resumen" id="resumen-3"></span>
                         <span class="section-badge s-pending" id="badge-3">Pendiente</span>
+                        <button type="button" class="btn-cambiar-paso" id="cambiar-3"
+                                style="display:none">Cambiar</button>
                     </div>
                     <div class="checkout-section-body">
 
@@ -969,7 +1026,9 @@
     }
 
     @if($addresses->isNotEmpty())
-        unlockSection(2);
+        // Solo se marca el paso 1 como completado. El 2 se abre cuando el
+        // cliente pulsa Continuar, no antes: es un acordeon, y tener los tres
+        // pasos abiertos a la vez le quitaba sentido.
         completeSection(1);
     @endif
 
@@ -1338,8 +1397,6 @@ $(document).ready(function () {
         }
 
         completeSection(2);
-        unlockSection(3);
-        autoSelectPayment();
         validateSubmitBtn();
     });
 
@@ -1378,7 +1435,6 @@ $(document).ready(function () {
         $('.address-card').removeClass('selected');
         $(this).closest('.address-card').addClass('selected');
         completeSection(1);
-        unlockSection(2);
         validateSubmitBtn();
     });
 
@@ -1488,11 +1544,83 @@ $(document).ready(function () {
     // y como el manejador de 'change' encadena completeSection(2) ->
     // unlockSection(3) -> autoSelectPayment(), el checkout mostraba los pasos
     // de envio y pago como COMPLETADOS con el paso 1 todavia en PENDIENTE.
-    if (autoSelectShippingId !== null && $('#shipping_address_id').val()) {
+    function preseleccionarEnvio() {
+        if (autoSelectShippingId === null) return;
+        if ($('#shipping_method_id').val()) return;   // el cliente ya eligio
         $('input.shipping_method[value="' + autoSelectShippingId + '"]')
             .prop('checked', true)
             .trigger('change');
     }
+
+    // ── Acordeon de pasos ──────────────────────────────────────────
+    // Cada paso se pliega al pulsar Continuar y deja a la vista solo su
+    // encabezado con un resumen de lo elegido. Para volver atras hay un boton
+    // "Cambiar" en ese encabezado: se descarto reabrir pulsando la cabecera
+    // entera porque se activaba sin querer.
+    function plegarPaso(n, resumen) {
+        $('#section-' + n).addClass('checkout-section--plegada');
+        $('#resumen-' + n).text(resumen || '');
+        $('#cambiar-' + n).show();
+    }
+
+    function abrirPaso(n) {
+        $('#section-' + n)
+            .removeClass('checkout-section--plegada checkout-section--locked')
+            .addClass('checkout-section--unlocked');
+        $('#resumen-' + n).text('');
+        $('#cambiar-' + n).hide();
+    }
+
+    function irAPaso(n) {
+        var $sec = $('#section-' + n);
+        if (!$sec.length) return;
+        $('html, body').animate({ scrollTop: $sec.offset().top - 90 }, 300);
+    }
+
+    function resumenDireccion() {
+        var $card = $('input.shipping_address:checked').closest('.address-card');
+        if (!$card.length) return '';
+        var nombre = $card.find('.address-card-name').text().trim();
+        var linea  = $card.find('.address-card-line').text().replace(/\s+/g, ' ').trim();
+        return nombre + ' · ' + linea;
+    }
+
+    function resumenEnvio() {
+        var $op = $('input.shipping_method:checked').closest('.shipping-option');
+        if (!$op.length) return '';
+        return $op.find('.shipping-name').text().trim() + ' · ' +
+               $op.find('.shipping-cost').text().trim();
+    }
+
+    $('#continuar-1').on('click', function () {
+        if (!$('#shipping_address_id').val()) {
+            toastr.error('Selecciona una dirección de envío para continuar.');
+            return;
+        }
+        completeSection(1);
+        plegarPaso(1, resumenDireccion());
+        unlockSection(2);
+        preseleccionarEnvio();
+        irAPaso(2);
+    });
+
+    $('#continuar-2').on('click', function () {
+        if (!$('#shipping_method_id').val()) {
+            toastr.error('Selecciona un método de envío para continuar.');
+            return;
+        }
+        completeSection(2);
+        plegarPaso(2, resumenEnvio());
+        unlockSection(3);
+        autoSelectPayment();
+        irAPaso(3);
+    });
+
+    $('#cambiar-1, #cambiar-2, #cambiar-3').on('click', function () {
+        var n = this.id.split('-')[1];
+        abrirPaso(n);
+        irAPaso(n);
+    });
 
     // ── Save session via AJAX (helper) ─────────────────────────────
     function saveSession(callback) {
