@@ -140,80 +140,6 @@
       font-size: 11.5px; color: var(--gris-claro-texto, #718096);
       margin: 12px auto 0; max-width: 340px; line-height: 1.5;
   }
-  /* ── Campos de tarjeta incrustados (Expanded Checkout) ──────────────
-     Cada .pp-cf-input aloja un iframe de PayPal, que llega sin alto propio:
-     hay que dárselo aquí o se ve como una línea de 0px. */
-  /* Tarjeta contenedora: da peso visual al paso donde el cliente entrega los
-     datos de su tarjeta, que es el momento de mayor desconfianza. */
-  .pp-cf-card {
-      max-width: 460px; margin: 0 auto; text-align: left;
-      background: transparent;
-  }
-  
-  
-  
-  
-  .pp-cf-body { padding: 4px 0 0; }
-  .pp-cf-hint {
-      display: inline-flex; align-items: center; justify-content: center;
-      width: 14px; height: 14px; margin-left: 4px; border-radius: 50%;
-      background: var(--gris-borde, #DDE3EA); color: var(--gris-claro-texto, #718096);
-      font-size: 10px; font-weight: 700; cursor: help; vertical-align: middle;
-  }
-  .pp-cf-trust {
-      list-style: none; margin: 14px 0 0; padding: 0;
-      font-size: 11.5px; color: var(--gris-claro-texto, #718096); line-height: 1.6;
-  }
-  .pp-cf-trust li { padding-left: 18px; position: relative; }
-  .pp-cf-trust li::before {
-      content: '✓'; position: absolute; left: 0; top: 0;
-      color: #059669; font-weight: 800;
-  }
-  .pp-cf-grid {
-      display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
-      text-align: left;
-  }
-  .pp-cf-wide { grid-column: 1 / -1; }
-  .pp-cf-field label {
-      display: block; font-size: 12.5px; font-weight: 700;
-      color: var(--azul-principal, #003E7E); margin-bottom: 7px;
-  }
-  /* Sin padding propio y con overflow oculto: PayPal inyecta aquí un iframe
-     con sus propias medidas, y si la caja tiene padding el iframe se sale y
-     acaba encimado sobre las etiquetas y sobre el campo de al lado. El
-     espaciado interior se define en el objeto `style` que se le pasa al
-     campo (ver initPayPalButtons), que es lo único que viaja dentro del
-     iframe. */
-  /* Sin alto fijo: el iframe se dimensiona solo a partir del alto que se le
-     da al input dentro del `estilo` del SDK. Fijarlo aquí recortaba el borde
-     inferior del campo (el iframe mide algo más que el input). */
-  .pp-cf-input {
-      padding: 0; position: relative;
-      border: 0; background: transparent; box-sizing: border-box;
-  }
-  .pp-cf-input iframe[title^="paypal_card"] {
-      width: 100% !important;
-      display: block !important; border: 0 !important; margin: 0 !important;
-  }
-  /* El iframe auxiliar de PayPal no debe recibir clics: solo sirve para
-     detectar el cierre de ventanas emergentes y, si se le da tamano, se
-     monta encima del campo real y lo bloquea. */
-  .pp-cf-input iframe:not([title^="paypal_card"]) {
-      pointer-events: none !important;
-  }
-  /* Aquí NO va ningún borde ni aro. Todo el recuadro del campo (borde normal,
-     de foco y de error) lo pinta PayPal dentro del iframe con el objeto
-     `estilo` de initPayPalButtons. Cuando la página dibujaba también el suyo
-     se veían dos o tres recuadros encimados al seleccionar un campo. */
-  .pp-cf-submit {
-      display: flex; align-items: center; justify-content: center; gap: 9px;
-      width: 100%; margin: 18px 0 0;
-      padding: 16px 18px; border: 0; border-radius: 10px; cursor: pointer;
-      background: var(--azul-principal, #003E7E); color: #fff;
-      font-size: 16px; font-weight: 700; letter-spacing: 0.2px;
-      box-shadow: 0 2px 8px rgba(0, 62, 126, 0.22);
-      transition: background 0.18s, box-shadow 0.18s, transform 0.12s, opacity 0.18s;
-  }
   /* Modal de pago rechazado. El motivo del banco es lo unico que le permite
      al cliente corregir y volver a intentar, asi que se muestra centrado y
      bloqueando la pantalla en vez de en un toast que se va solo. */
@@ -277,25 +203,6 @@
   .pago-rechazado-cod {
       margin: 12px 0 0; font-size: 11px;
       color: var(--gris-claro-texto, #718096);
-  }
-  .pp-cf-submit:hover {
-      background: var(--azul-medio, #0057A8);
-      box-shadow: 0 4px 14px rgba(0, 62, 126, 0.28);
-  }
-  .pp-cf-submit:active { transform: translateY(1px); }
-  .pp-cf-submit[disabled] {
-      opacity: 0.6; cursor: default; box-shadow: none; transform: none;
-  }
-  /* Sello de PayPal bajo el boton: el formulario va incrustado en el sitio,
-     asi que sin esto no queda a la vista quien procesa realmente el cobro. */
-  .pp-cf-powered {
-      display: flex; align-items: center; justify-content: center; gap: 6px;
-      margin: 12px 0 0; font-size: 11.5px;
-      color: var(--gris-claro-texto, #718096);
-  }
-  .pp-cf-powered img { height: 17px; width: auto; display: block; }
-  @media (max-width: 480px) {
-      .pp-cf-grid { grid-template-columns: 1fr; }
   }
 
   /* Separador entre el camino principal (tarjeta) y la alternativa (PayPal). */
@@ -719,53 +626,6 @@
                                          Card Payments" — lo decide isEligible() en tiempo de
                                          ejecucion, ver initPayPalButtons. Si no lo es, se
                                          queda el bloque del boton de abajo. --}}
-                                    <div id="paypal-cardfields-block" style="display:none">
-                                        <div class="pp-cf-card">
-                                            <div class="pp-cf-body">
-                                                <div class="pp-cf-grid">
-                                                    <div class="pp-cf-field pp-cf-wide">
-                                                        <label data-pp-label="pp-cf-name">Nombre en la tarjeta</label>
-                                                        <div id="pp-cf-name" class="pp-cf-input"></div>
-                                                    </div>
-                                                    <div class="pp-cf-field pp-cf-wide">
-                                                        <label data-pp-label="pp-cf-number">Número de tarjeta</label>
-                                                        <div id="pp-cf-number" class="pp-cf-input"></div>
-                                                    </div>
-                                                    <div class="pp-cf-field">
-                                                        <label data-pp-label="pp-cf-expiry">Vencimiento</label>
-                                                        <div id="pp-cf-expiry" class="pp-cf-input"></div>
-                                                    </div>
-                                                    <div class="pp-cf-field">
-                                                        <label data-pp-label="pp-cf-cvv">
-                                                            CVV
-                                                            <span class="pp-cf-hint" title="Los 3 dígitos al reverso de tu tarjeta (4 en American Express)">?</span>
-                                                        </label>
-                                                        <div id="pp-cf-cvv" class="pp-cf-input"></div>
-                                                    </div>
-                                                </div>
-
-                                                <button type="button" id="pp-cf-submit" class="pp-cf-submit">
-                                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" width="16" height="16" aria-hidden="true">
-                                                        <rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/>
-                                                    </svg>
-                                                    <span>Pagar <span id="pp-cf-monto">{{ $settings->currency_icon }}{{ number_format(getFinalPayableAmount(), 2) }}</span></span>
-                                                </button>
-
-                                                <div class="pp-cf-powered">
-                                                    <span>Pago procesado de forma segura por</span>
-                                                    <img src="https://www.paypalobjects.com/webstatic/mktg/Logo/pp-logo-100px.png"
-                                                         alt="PayPal" loading="lazy" width="100" height="26">
-                                                </div>
-
-                                                <ul class="pp-cf-trust">
-                                                    <li>Conexión cifrada SSL de extremo a extremo</li>
-                                                    <li>Los datos de tu tarjeta los procesa PayPal, no se guardan en este sitio</li>
-                                                    <li>No necesitas cuenta de PayPal</li>
-                                                </ul>
-                                            </div>
-                                        </div>
-                                    </div>
-
                                     {{-- Respaldo: el boton de tarjeta de siempre, para cuentas
                                          sin la capacidad activada. --}}
                                     <div id="paypal-card-block">
@@ -1007,7 +867,7 @@
      a usarlo: si la cuenta no tiene activada la capacidad "Expanded Credit
      and Debit Card Payments", paypal.CardFields().isEligible() devuelve
      false y el checkout se queda con los botones de siempre. --}}
-<script src="https://www.paypal.com/sdk/js?client-id={{ $paypalInfo->activeClientId() }}&currency={{ $paypalInfo->currency_name }}&intent=capture&components=buttons,card-fields{{ $paypalInfo->mode == 0 ? '&buyer-country=MX' : '' }}"
+<script src="https://www.paypal.com/sdk/js?client-id={{ $paypalInfo->activeClientId() }}&currency={{ $paypalInfo->currency_name }}&intent=capture&locale=es_MX&components=buttons,card-fields{{ $paypalInfo->mode == 0 ? '&buyer-country=MX' : '' }}"
         @if(!empty($paypalClientToken)) data-client-token="{{ $paypalClientToken }}" @endif
         defer></script>
 @endif
@@ -1221,177 +1081,19 @@ window.initPayPalButtons = function () {
         return true;
     }
 
-    // ── Camino preferido: campos de tarjeta INCRUSTADOS ──────────────
-    // Expanded Checkout (antes "Advanced"). Solo funciona si la cuenta tiene
-    // activada la capacidad "Expanded Credit and Debit Card Payments" en
-    // Apps & Credentials > Features > Accept payments. Si no la tiene,
-    // isEligible() da false y se usa el botón de tarjeta de siempre.
-    //
-    // No hay cambios de servidor: CardFields reutiliza el mismo createOrder y
-    // onApprove que los botones.
-    function renderCamposTarjeta() {
-        if (typeof paypal.CardFields !== 'function') return false;
-
-        var campos;
-        try {
-            campos = paypal.CardFields(configPago);
-        } catch (e) {
-            return false;
-        }
-        if (!campos || !campos.isEligible()) return false;
-
-        var bloque = document.getElementById('paypal-cardfields-block');
-        if (!bloque) return false;
-        bloque.style.display = 'block';
-
-        // Los iframes de PayPal no heredan el foco/validez del contenedor, así
-        // que se refleja a mano para poder pintar el borde azul o rojo.
-        // Este `style` es lo ÚNICO que se aplica dentro del iframe, así que
-        // TODO el aspecto del campo (borde, fondo, padding) se define aquí y
-        // el contenedor de la página va sin borde. Antes se ponía el borde en
-        // el contenedor y quedaba uno dentro de otro: el de la página por
-        // fuera y el que PayPal dibuja por dentro.
-        //
-        // PayPal solo aplica una lista corta de propiedades dentro del iframe
-        // (border, border-radius, background, color, tipografía,
-        // padding, outline, transition...); cualquier otra se ignora
-        // en silencio. Selectores admitidos: `input`, `:focus` y `.invalid`.
-        var estilo = {
-            input: {
-                'font-size': '16px',
-                'font-family': 'Arial, Helvetica, sans-serif',
-                'color': '#16202A',
-                // El alto va aquí porque el campo real vive dentro del
-                // iframe: dárselo solo al contenedor deja el input pequeño
-                // flotando dentro de una caja alta.
-                'height': '56px',
-                'padding': '0 16px',
-                'background': '#FFFFFF',
-                'border': '1px solid #DDE3EA',
-                'border-radius': '10px',
-                'outline': 'none',
-                'transition': 'border-color 0.18s'
-            },
-            ':focus': {
-                'color': '#16202A',
-                'border': '1px solid #003E7E',
-                'outline': 'none'
-            },
-            '.invalid': {
-                'color': '#DC2626',
-                'border': '1px solid #DC2626'
-            }
-        };
-
-        // Textos guía en español: PayPal los pone en inglés por defecto
-        // ("Card number", "Cardholder Name (optional)", ...).
-        var PLACEHOLDERS = {
-            'NameField':   'Como aparece en la tarjeta',
-            'NumberField': '1234 5678 9012 3456',
-            'ExpiryField': 'MM / AA',
-            'CVVField':    'CVV'
-        };
-        [
-            ['NameField',   '#pp-cf-name'],
-            ['NumberField', '#pp-cf-number'],
-            ['ExpiryField', '#pp-cf-expiry'],
-            ['CVVField',    '#pp-cf-cvv']
-        ].forEach(function (par) {
-            var campo = campos[par[0]]({
-                style: estilo,
-                placeholder: PLACEHOLDERS[par[0]]
-                // Sin inputEvents: el estado de foco y de error lo pinta el
-                // propio SDK con los selectores `:focus` y `.invalid` del
-                // objeto `estilo`. Reflejarlo además en el contenedor añadía
-                // un segundo recuadro alrededor del que ya dibuja PayPal.
-            });
-            campo.render(par[1]);
-
-            // El campo real vive dentro de un iframe de PayPal, así que un
-            // <label for> no lo puede enfocar (apuntaría a un <div>, que no
-            // es un control etiquetable). Se conecta el clic de la etiqueta
-            // al .focus() que expone el propio campo.
-            var etiqueta = document.querySelector('[data-pp-label="' + par[1].slice(1) + '"]');
-            if (etiqueta) {
-                etiqueta.style.cursor = 'pointer';
-                etiqueta.addEventListener('click', function () {
-                    if (typeof campo.focus === 'function') campo.focus();
-                });
-            }
-        });
-
-        // PayPal devuelve códigos crudos en inglés (INVALID_NUMBER, ...). Sin
-        // traducirlos el cliente ve "INVALID_NUMBER" en pantalla, que no le
-        // dice nada y da mala espina justo al pagar.
-        var MENSAJES = {
-            INVALID_NUMBER: 'El número de tarjeta no es válido. Revísalo e inténtalo de nuevo.',
-            INVALID_EXPIRY: 'La fecha de vencimiento no es válida.',
-            INVALID_CVV: 'El código de seguridad (CVV) no es válido.',
-            INVALID_SECURITY_CODE: 'El código de seguridad (CVV) no es válido.',
-            INVALID_NAME: 'Revisa el nombre que aparece en la tarjeta.',
-            CARD_DECLINED: 'Tu banco rechazó la tarjeta. Intenta con otra o comunícate con tu banco.',
-            INSTRUMENT_DECLINED: 'Tu banco rechazó la tarjeta. Intenta con otra o comunícate con tu banco.',
-            PAYER_ACTION_REQUIRED: 'Tu banco pide una verificación adicional. Inténtalo de nuevo.'
-        };
-
-        function mensajeError(err) {
-            var crudo = (err && (err.message || err.name)) ? String(err.message || err.name) : '';
-            for (var codigo in MENSAJES) {
-                if (crudo.indexOf(codigo) !== -1) return MENSAJES[codigo];
-            }
-            // Un código desconocido en MAYUSCULAS_CON_GUIONES tampoco se le
-            // enseña al cliente: se cae al mensaje genérico.
-            if (!crudo || /^[A-Z0-9_]+$/.test(crudo)) {
-                return 'No se pudo procesar la tarjeta. Revisa los datos e inténtalo de nuevo.';
-            }
-            return crudo;
-        }
-
-        var btn = document.getElementById('pp-cf-submit');
-        btn.addEventListener('click', function () {
-            btn.disabled = true;
-            var textoOriginal = btn.innerHTML;
-            btn.textContent = 'Procesando tu pago…';
-            campos.submit()
-                .catch(function (err) {
-                    toastr.error(mensajeError(err));
-                })
-                .then(function () {
-                    btn.disabled = false;
-                    btn.innerHTML = textoOriginal;
-                });
-        });
-
-        // Con el formulario a la vista sobra el botón que abre la ventana.
-        var bloqueBoton = document.getElementById('paypal-card-block');
-        if (bloqueBoton) bloqueBoton.style.display = 'none';
-
-        // Y también sobra la alternativa "o si prefieres / PayPal": teniendo
-        // los campos delante, ofrecer además un botón que abre otra ventana
-        // solo reparte la atención en el momento de pagar.
-        //
-        // Solo se esconde en este caso. Si los campos NO son elegibles (la
-        // cuenta aún no tiene la capacidad), el bloque de PayPal sigue a la
-        // vista como segunda opción junto al botón de tarjeta.
-        var bloquePaypal = document.getElementById('paypal-account-block');
-        if (bloquePaypal) bloquePaypal.style.display = 'none';
-        var sep = document.getElementById('paypal-alt-sep');
-        if (sep) sep.style.display = 'none';
-
-        return true;
-    }
-
-    var hayCampos = renderCamposTarjeta();
 
     // La tarjeta va primero porque es el camino principal del cliente; la
-    // cuenta de PayPal queda abajo como alternativa. El botón de tarjeta solo
-    // se dibuja si NO se pudieron incrustar los campos.
-    var hayTarjeta = hayCampos || renderBoton(paypal.FUNDING.CARD, '#paypal-btn-card', 'paypal-card-block',
-                                              { height: 48, label: 'pay' });
-    // Con los campos incrustados a la vista, el botón de PayPal no se dibuja
-    // en absoluto: no tiene caso pedirle el iframe a PayPal para esconderlo.
-    var hayPaypal = hayCampos ? false : renderBoton(paypal.FUNDING.PAYPAL, '#paypal-btn-paypal', 'paypal-account-block',
-                                                    { height: 44 });
+    // cuenta de PayPal queda abajo como alternativa.
+    //
+    // color 'white' + shape 'rect': el negro por defecto de PayPal peleaba con
+    // el azul de la marca. El rótulo lo pone PayPal dentro del iframe y no se
+    // puede reescribir; se traduce con locale=es_MX en la etiqueta del SDK.
+    var hayTarjeta = renderBoton(paypal.FUNDING.CARD, '#paypal-btn-card', 'paypal-card-block',
+                                 { height: 48, shape: 'rect', color: 'white', label: 'pay' });
+    // El botón de PayPal queda debajo como alternativa para quien prefiera
+    // pagar con su cuenta.
+    var hayPaypal = renderBoton(paypal.FUNDING.PAYPAL, '#paypal-btn-paypal', 'paypal-account-block',
+                                { height: 44 });
 
     // El separador "o si prefieres" solo tiene sentido si de verdad quedaron
     // las dos opciones a la vista.
@@ -1438,13 +1140,6 @@ $(document).ready(function () {
 
     function updateTotalDisplay() {
         $('#total_amount').text(currIcon + fmt(currentTotal));
-
-        // El botón de "Pagar" del formulario de tarjeta lleva el importe
-        // impreso, y tiene que ser el MISMO que el del resumen. El valor que
-        // pinta Blade se calcula en el servidor ANTES de elegir el envío, así
-        // que sin esto el botón se queda con el subtotal y anuncia un cobro
-        // menor al que de verdad se hace.
-        $('#pp-cf-monto').text(currIcon + fmt(currentTotal));
     }
 
     // ── Shipping selection (escucha el label visible, no el radio oculto) ───
