@@ -655,21 +655,6 @@
                                             y no necesitas cuenta de PayPal.
                                         </p>
                                     </div>
-
-                                    <div class="paypal-alt-sep" id="paypal-alt-sep" style="display:none">
-                                        <span>o si prefieres</span>
-                                    </div>
-
-                                    <div id="paypal-account-block" style="display:none">
-                                        {{-- Elemento del SDK: PayPal exige sus propios botones de
-                                             marca. `type="pay"` rotula "Pagar con PayPal". --}}
-                                        <paypal-button id="paypal-btn-paypal" type="pay"
-                                                       class="paypal-gold"></paypal-button>
-                                        <p class="paypal-panel-note">
-                                            Se abre la ventana segura de PayPal para que inicies sesión
-                                            en tu cuenta.
-                                        </p>
-                                    </div>
                                 </div>
                             </div>
                             @endif
@@ -1119,14 +1104,11 @@ window.initPayPalButtons = function () {
     }).then(function (ctx) {
         var sdk = ctx.sdk;
         var puedeTarjeta = ctx.elegibles.isEligible('card');
-        var puedePaypal  = ctx.elegibles.isEligible('paypal');
 
-        // Cada bloque se muestra solo si PayPal dice que esa forma de pago
-        // esta disponible para esta cuenta y moneda. Sustituye a la
-        // comprobacion implicita que hacia paypal.Buttons() en el v5.
+        // El bloque se muestra solo si PayPal dice que la tarjeta esta
+        // disponible para esta cuenta y moneda. Sustituye a la comprobacion
+        // implicita que hacia paypal.Buttons() en el v5.
         var bloqueTarjeta = document.getElementById('paypal-card-block');
-        var bloquePaypal  = document.getElementById('paypal-account-block');
-        var separador     = document.getElementById('paypal-alt-sep');
 
         if (puedeTarjeta) {
             bloqueTarjeta.style.display = '';
@@ -1198,26 +1180,6 @@ window.initPayPalButtons = function () {
             abrirFormularioTarjeta();
         }
 
-        if (puedePaypal) {
-            bloquePaypal.style.display = '';
-            var sesionPaypal = sdk.createPayPalOneTimePaymentSession({
-                onApprove: alAprobar,
-                onError: alFallar,
-                onCancel: function () {}
-            });
-            document.getElementById('paypal-btn-paypal').addEventListener('click', function () {
-                // 'auto' es el recomendado: intenta ventana emergente y cae a
-                // modal si el navegador la bloquea. El inicio de sesion de
-                // PayPal ocurre en su dominio, de ahi la ventana.
-                Promise.resolve(
-                    sesionPaypal.start({ presentationMode: 'auto' }, crearOrden())
-                ).catch(alFallar);
-            });
-        }
-
-        // El separador solo tiene sentido con las dos opciones a la vista.
-        // Arranca oculto en el markup, asi que hay que mostrarlo a proposito.
-        if (separador && puedeTarjeta && puedePaypal) separador.style.display = '';
     }).catch(function (e) {
         console.error('PayPal v6 no pudo iniciarse:', e);
     });
