@@ -242,6 +242,10 @@ class PaymentController extends Controller
         Session::forget('address');
         Session::forget('shipping_method');
         Session::forget('coupon');
+        // Sin esto, el importe de la orden ya cobrada quedaria en sesion y la
+        // comprobacion de captureOrder() lo compararia contra la compra
+        // siguiente.
+        Session::forget('paypal_order');
     }
 
     public function paypalConfig()
@@ -403,6 +407,16 @@ class PaymentController extends Controller
 
 
         if (isset($response['id'])) {
+            // Se guarda el importe con el que se creo la orden. El cliente
+            // puede volver atras y cambiar el metodo de envio despues de que
+            // el formulario de pago ya esta abierto: la orden de PayPal
+            // seguiria siendo la vieja y cobraria el total anterior.
+            // captureOrder() lo compara antes de cobrar.
+            Session::put('paypal_order', [
+                'id' => $response['id'],
+                'amount' => $payableAmount,
+            ]);
+
             return response()->json(['id' => $response['id']]);
         }
 
@@ -420,6 +434,37 @@ class PaymentController extends Controller
 
         Log::info('Capturando orden PayPal con ID: ' . $request->orderId);
         Log::info('Datos de sesión (captureOrder): ', session()->all());
+
+        // El total pudo cambiar entre que se creo la orden y este momento (el
+        // cliente volvio atras y eligio otro envio). Cobrar la orden vieja
+        // significaria cobrarle de menos y registrar el pedido por el importe
+        // nuevo, perdiendo la diferencia en silencio.
+        //
+        // Se comprueba ANTES de capturar: una vez capturado, el dinero ya se
+        // movio y arreglarlo exigiria un reembolso.
+        $ordenGuardada = Session::get('paypal_order');
+        $totalActual = number_format(getFinalPayableAmount(), 2, '.', '');
+
+        if (is_array($ordenGuardada)
+            && ($ordenGuardada['id'] ?? null) === $request->orderId
+            && ($ordenGuardada['amount'] ?? null) !== $totalActual) {
+
+            Log::critical('PayPal: la orden se creó con un total distinto al actual.', [
+                'orderId' => $request->orderId,
+                'total_al_crear' => $ordenGuardada['amount'] ?? null,
+                'total_actual' => $totalActual,
+            ]);
+
+            return response()->json(['rechazo' => [
+                'titulo' => 'El total de tu pedido cambió',
+                'mensaje' => 'Cambiaste el método de envío después de abrir el formulario de pago, '
+                    . 'así que el importe ya no coincide. No se realizó ningún cobro.',
+                'sugerencias' => [
+                    'Vuelve a abrir el formulario de tarjeta para pagar el total correcto.',
+                ],
+                'codigo' => 'TOTAL_DESACTUALIZADO',
+            ]], 409);
+        }
         $config = $this->paypalConfig();
         $provider = new PayPalClient($config);
         $provider->getAccessToken();

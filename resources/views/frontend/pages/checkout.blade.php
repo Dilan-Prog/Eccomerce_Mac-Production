@@ -1247,10 +1247,12 @@ window.initPayPalButtons = function () {
             // no sirve: una vez que el cliente cierra el formulario con la X,
             // esa sesion queda consumida y su start() ya no vuelve a dibujar
             // nada. Ademas cada apertura necesita su propia orden.
+            var sesionActual = null;
+
             function nuevaSesion() {
                 // createPayPal...Session devuelve la sesion YA construida, no
                 // una promesa: encadenarle .then() rompia todo el arranque.
-                return sdk.createPayPalGuestOneTimePaymentSession({
+                sesionActual = sdk.createPayPalGuestOneTimePaymentSession({
                     onApprove: alAprobar,
                     // onComplete es OBLIGATORIO en la sesion de invitado; sin
                     // el, el formulario no llega a abrirse. Se dispara al
@@ -1277,6 +1279,27 @@ window.initPayPalButtons = function () {
                         nota(TEXTO_INVITACION);
                     }
                 });
+                return sesionActual;
+            }
+
+            // Tira el formulario y su sesion. Es OBLIGATORIO al cambiar la
+            // direccion o el metodo de envio: la orden de PayPal se crea con
+            // el total del momento en que se abre el formulario, asi que si
+            // despues sube el costo de envio, PayPal seguiria cobrando el
+            // importe viejo. Al reiniciar, la siguiente apertura crea una
+            // orden nueva con el total correcto.
+            function reiniciarFormularioTarjeta() {
+                if (sesionActual && typeof sesionActual.destroy === 'function') {
+                    try { sesionActual.destroy(); } catch (e) {}
+                }
+                sesionActual = null;
+                formularioAbierto = false;
+
+                var marco = document.getElementById('paypal-card-container')
+                    .querySelector('paypal-sdk-iframe');
+                if (marco) marco.remove();
+
+                nota(TEXTO_INVITACION);
             }
 
             // Segunda comprobacion, mirando el DOM en vez de fiarse de que
@@ -1317,6 +1340,14 @@ window.initPayPalButtons = function () {
             }
 
             botonTarjeta.addEventListener('click', abrirFormularioTarjeta);
+
+            // El resto del checkout (los botones Continuar y Cambiar) necesita
+            // poder reiniciar y reabrir el formulario, y vive fuera de este
+            // ambito.
+            window.__tarjetaPayPal = {
+                abrir: abrirFormularioTarjeta,
+                reiniciar: reiniciarFormularioTarjeta
+            };
 
             // Apertura automatica al llegar al paso de pago: el cliente ve el
             // formulario sin un clic de mas.
@@ -1379,6 +1410,9 @@ $(document).ready(function () {
 
     // ── Shipping selection (escucha el label visible, no el radio oculto) ───
     $(document).on('change', 'input.shipping_method', function () {
+        // El envio cambia el total, asi que la orden de PayPal ya creada deja
+        // de ser valida.
+        invalidarPagoEnCurso();
         var fee = parseFloat($(this).data('id')) || 0;
         currentTotal = baseTotal + fee;
         $('#shipping_method_id').val($(this).val());
@@ -1409,7 +1443,11 @@ $(document).ready(function () {
     // ejemplo, SPEI y luego cambia el método de envío, no se le pisa su
     // elección.
     function autoSelectPayment() {
-        if ($('#payment_method').val()) return;
+        // Solo se respeta la eleccion previa si de verdad hay un radio
+        // marcado. Con el campo oculto lleno pero ningun radio seleccionado
+        // —un desajuste de estado— salir aqui dejaba al cliente sin poder
+        // abrir el metodo de pago.
+        if ($('#payment_method').val() && $('input[name="payment_radio"]:checked').length) return;
         // Ultima red de seguridad: sin direccion o sin envio no hay nada que
         // cobrar todavia, y abrir el panel dispararia la creacion de la orden
         // de PayPal contra un checkout incompleto.
@@ -1430,7 +1468,13 @@ $(document).ready(function () {
     }
 
     // ── Address selection ──────────────────────────────────────────
+    // Cualquier cambio aguas arriba invalida la orden ya creada en PayPal.
+    function invalidarPagoEnCurso() {
+        if (window.__tarjetaPayPal) window.__tarjetaPayPal.reiniciar();
+    }
+
     $(document).on('change', 'input.shipping_address', function () {
+        invalidarPagoEnCurso();
         $('#shipping_address_id').val($(this).data('id'));
         $('.address-card').removeClass('selected');
         $(this).closest('.address-card').addClass('selected');
@@ -1613,6 +1657,19 @@ $(document).ready(function () {
         plegarPaso(2, resumenEnvio());
         unlockSection(3);
         autoSelectPayment();
+
+        // Red de seguridad: si por lo que sea no quedo ningun metodo marcado,
+        // se marca el primero disponible. Llegar al paso de pago sin nada
+        // seleccionado deja al cliente sin forma de pagar.
+        if (!$('input[name="payment_radio"]:checked').length) {
+            $('input[name="payment_radio"]').first().prop('checked', true).trigger('change');
+        }
+
+        // Se reabre a proposito: si el cliente venia de corregir el envio, el
+        // formulario anterior quedo invalidado y hay que crear la orden otra
+        // vez, ya con el total correcto.
+        if (window.__tarjetaPayPal) window.__tarjetaPayPal.abrir();
+
         irAPaso(3);
     });
 
