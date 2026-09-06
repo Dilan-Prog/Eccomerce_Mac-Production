@@ -1515,6 +1515,15 @@ $(document).ready(function () {
                     document.querySelector('script[src*="paypal.com"]').addEventListener('load', window.initPayPalButtons);
                 }
             }
+
+            // Abrir el formulario de tarjeta va ATADO a elegir este metodo de
+            // pago, no a un boton concreto del recorrido. initPayPalButtons()
+            // solo corre una vez (guard _paypalRendered), asi que en las veces
+            // siguientes —tras cambiar la direccion o el envio, que reinician
+            // el formulario— nadie volvia a pedir la apertura salvo el
+            // Continuar del paso 2. Si esa cadena se rompia, el cliente se
+            // quedaba con el boton gris y sin forma de pagar.
+            if (window.__tarjetaPayPal) window.__tarjetaPayPal.abrir();
             @endif
         } else if (val === 'spei') {
             $('#spei-detail-panel').addClass('active');
