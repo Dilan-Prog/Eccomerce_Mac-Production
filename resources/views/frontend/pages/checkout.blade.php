@@ -1374,6 +1374,22 @@ window.initPayPalButtons = function () {
 @endif
 
 // ── MAIN JQUERY LOGIC ───────────────────────────────────────────────
+// jQuery esta cargado VARIAS veces en el sitio (el bundle de Vite lo importa,
+// y el layout lo vuelve a incluir como <script>). Cada carga reemplaza
+// window.jQuery, y el bundle es un modulo, asi que se ejecuta DESPUES de los
+// scripts normales: los manejadores de esta pagina quedaban registrados en una
+// copia y, al terminar de cargar el bundle, el global apuntaba ya a otra.
+//
+// Consecuencia: un clic real seguia funcionando (evento nativo, burbujea y lo
+// atrapa el manejador viva donde viva), pero .trigger('change') —que es un
+// evento sintetico de jQuery— no llegaba a nadie. Por eso la preseleccion
+// automatica del envio marcaba el radio pero no completaba el paso: el
+// manejador nunca corria.
+//
+// Se fija AQUI la instancia, de modo que registrar y disparar ocurran siempre
+// sobre la misma. Arreglo acotado a esta pagina; las copias duplicadas del
+// layout siguen ahi y merecen su propia revision.
+(function ($) {
 $(document).ready(function () {
     $.ajaxSetup({ headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') } });
 
@@ -1859,5 +1875,6 @@ $(document).ready(function () {
         });
     });
 });
+})(window.jQuery);
 </script>
 @endpush
