@@ -94,7 +94,12 @@ class CheckOutController extends Controller
         $address->save();
 
         toastr('Creado Con Exito', 'success', 'Success');
-        return redirect()->back();
+
+        // Se avisa cual es la direccion recien creada. Al volver, el checkout
+        // dejaba seleccionada SIEMPRE la primera de la lista, asi que el
+        // cliente que acababa de capturar una direccion nueva podia continuar
+        // sin notarlo y enviar el pedido a la vieja.
+        return redirect()->back()->with('direccion_nueva', $address->id);
 
     }
 

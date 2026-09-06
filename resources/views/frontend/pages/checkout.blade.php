@@ -436,12 +436,17 @@
                                 No tienes direcciones guardadas. Agrega una nueva a continuación.
                             </p>
                         @else
+                            @php
+                                // Si el cliente acaba de dar de alta una direccion, esa es la
+                                // que queda marcada; si no, la primera de la lista.
+                                $direccionSeleccionada = session('direccion_nueva') ?? $addresses->first()?->id;
+                            @endphp
                             <div class="address-grid">
                                 @foreach ($addresses as $address)
-                                <label class="address-card {{ $loop->first ? 'selected' : '' }}">
+                                <label class="address-card {{ $address->id == $direccionSeleccionada ? 'selected' : '' }}">
                                     <input class="shipping_address" type="radio" name="address_radio"
                                            value="{{ $address->id }}" data-id="{{ $address->id }}"
-                                           {{ $loop->first ? 'checked' : '' }}>
+                                           {{ $address->id == $direccionSeleccionada ? 'checked' : '' }}>
                                     <div class="address-card-check">✓</div>
                                     <div class="address-card-name">{{ $address->name }}</div>
                                     <div class="address-card-line">
@@ -880,7 +885,7 @@
                 <form action="" id="checkOutForm">
                     <input type="hidden" name="shipping_method_id"  value="" id="shipping_method_id">
                     <input type="hidden" name="shipping_address_id"
-                           value="{{ $addresses->first()?->id ?? '' }}"
+                           value="{{ session('direccion_nueva') ?? $addresses->first()?->id ?? '' }}"
                            id="shipping_address_id">
                     <input type="hidden" name="payment_method" value="" id="payment_method">
                     <input type="hidden" name="order_notes"    value="" id="order_notes">
@@ -1377,7 +1382,7 @@ $(document).ready(function () {
     $('#shipping_method_id').val('');
 
     @if($addresses->isNotEmpty())
-    $('#shipping_address_id').val('{{ $addresses->first()->id }}');
+    $('#shipping_address_id').val('{{ session('direccion_nueva') ?? $addresses->first()->id }}');
     @endif
 
     var baseTotal    = parseFloat($('#total_amount').attr('data-id')) || 0;
