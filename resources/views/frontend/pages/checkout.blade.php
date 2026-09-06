@@ -1643,7 +1643,12 @@ $(document).ready(function () {
         }
         completeSection(1);
         plegarPaso(1, resumenDireccion());
-        unlockSection(2);
+        // abrirPaso y no solo unlockSection: si el cliente ya habia pasado por
+        // aqui, el paso 2 esta PLEGADO, y unlockSection quita el bloqueo pero
+        // no el plegado. Quedaba cerrado, el cliente no llegaba a su boton
+        // Continuar y el formulario de tarjeta —que se reinicia al cambiar la
+        // direccion— no se volvia a abrir nunca.
+        abrirPaso(2);
         preseleccionarEnvio();
         irAPaso(2);
     });
@@ -1655,7 +1660,7 @@ $(document).ready(function () {
         }
         completeSection(2);
         plegarPaso(2, resumenEnvio());
-        unlockSection(3);
+        abrirPaso(3);
         autoSelectPayment();
 
         // Red de seguridad: si por lo que sea no quedo ningun metodo marcado,
