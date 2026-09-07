@@ -28,7 +28,7 @@
                     <input type="text" class="form-control" name="accountTarjet" value="{{ $transferSetting->accountTarjet }}">
                 </div>
                 <div class="form-group">
-                    <label>Clabe Interbancaria</label>
+                    <label>Numero de Cuenta Clabe</label>
                     <input type="text" class="form-control" name="accountClabe" value="{{ $transferSetting->accountClabe }}">
                 </div>
                 <div class="form-group">

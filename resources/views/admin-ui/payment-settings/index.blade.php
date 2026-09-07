@@ -246,7 +246,7 @@
                 </div>
 
                 <div class="au-field">
-                    <label class="au-label">Clabe Interbancaria<span class="au-required-mark">*</span></label>
+                    <label class="au-label">Numero de Cuenta Clabe<span class="au-required-mark">*</span></label>
                     <input type="text" class="au-input" name="accountClabe" value="{{ old('accountClabe', $transferSetting->accountClabe ?? '') }}" required>
                 </div>
 
