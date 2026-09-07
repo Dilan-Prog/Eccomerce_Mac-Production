@@ -922,6 +922,26 @@
                                         <span class="lbl">Beneficiario</span>
                                         <span class="val">{{ $transferInfo->nameTitular ?? 'MAC DEL NORTE SA DE CV' }}</span>
                                     </div>
+                                    {{-- Estos tres son opcionales en el panel: si el negocio los deja
+                                         vacios no se pinta el renglon, en vez de dejar un hueco. --}}
+                                    @if(!empty($transferInfo->accountNumber))
+                                    <div class="spei-data-row">
+                                        <span class="lbl">No. de cuenta</span>
+                                        <span class="val">{{ $transferInfo->accountNumber }}</span>
+                                    </div>
+                                    @endif
+                                    @if(!empty($transferInfo->rfc))
+                                    <div class="spei-data-row">
+                                        <span class="lbl">RFC</span>
+                                        <span class="val">{{ $transferInfo->rfc }}</span>
+                                    </div>
+                                    @endif
+                                    @if(!empty($transferInfo->currency))
+                                    <div class="spei-data-row">
+                                        <span class="lbl">Moneda</span>
+                                        <span class="val">{{ $transferInfo->currency }}</span>
+                                    </div>
+                                    @endif
 
                                     {{-- CLABE con botón copiar --}}
                                     <div class="spei-clabe-row">
@@ -936,7 +956,9 @@
                                     </div>
 
                                     <div class="spei-note">
-                                        Envía el comprobante a <strong>ventas@macdelnorte.com</strong> indicando el número de referencia.
+                                        Envía el comprobante a
+                                        <strong>{{ $transferInfo->receiptEmail ?? 'ventas@macdelnorte.com' }}</strong>
+                                        indicando el número de referencia.
                                     </div>
 
                                     {{-- Formulario oculto que se submiteará con JS --}}

@@ -17,5 +17,8 @@ class Transfer extends Model
         'accountNumber',
         'accountTarjet',
         'accountClabe',
+        'rfc',
+        'receiptEmail',
+        'currency',
     ];
 }

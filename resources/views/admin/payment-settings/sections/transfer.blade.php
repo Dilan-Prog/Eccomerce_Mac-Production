@@ -31,6 +31,24 @@
                     <label>Clabe Interbancaria</label>
                     <input type="text" class="form-control" name="accountClabe" value="{{ $transferSetting->accountClabe }}">
                 </div>
+                <div class="form-group">
+                    <label>RFC</label>
+                    <input type="text" class="form-control" name="rfc" value="{{ $transferSetting->rfc }}">
+                    <small class="form-text text-muted">Opcional. Se muestra al cliente junto a los datos bancarios.</small>
+                </div>
+                <div class="form-group">
+                    <label>Moneda</label>
+                    <input type="text" class="form-control" name="currency" value="{{ $transferSetting->currency }}" placeholder="MXN">
+                    <small class="form-text text-muted">Opcional. Ej. MXN para moneda nacional.</small>
+                </div>
+                <div class="form-group">
+                    <label>Correo para recibir comprobantes</label>
+                    <input type="email" class="form-control" name="receiptEmail" value="{{ $transferSetting->receiptEmail }}" placeholder="ventas@macdelnorte.com">
+                    <small class="form-text text-muted">
+                        Es el correo que se le pide al cliente en el checkout para que envie su comprobante de transferencia.
+                        No es el mismo al que llega el aviso automatico del pedido.
+                    </small>
+                </div>
 
                 <button type="submit" class="btn btn-primary" >Guardar</button>
             </form>
