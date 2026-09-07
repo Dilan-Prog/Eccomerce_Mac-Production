@@ -197,18 +197,70 @@
      (~225px), ignorando max-width: hay que darle width para que llene su
      contenedor. Quien manda el ancho es el bloque de abajo. */
   paypal-button { display: block; width: 100%; }
-  /* Mismo ancho que el formulario de tarjeta de arriba (360px), para que las
-     dos formas de pago se lean como piezas de la misma familia. A lo ancho de
-     la fila completa (1069px) el boton amarillo pesaba demasiado. */
+  /* Va dentro de una tarjeta con el mismo borde y radio que las opciones de
+     pago. Suelto se veia flotando, con dos huecos a los lados, porque las
+     filas vecinas SI ocupan el ancho completo. La tarjeta ocupa la fila y el
+     boton se centra dentro.
+     PayPal topa su boton en 425px por su cuenta: no se puede estirar mas,
+     ni siquiera con estilos dentro de su shadow DOM. */
   #paypal-wallet-block {
-      max-width: 360px;
-      margin: 6px auto 16px;
+      border: 2px solid var(--gris-borde, #DDE3EA);
+      border-radius: 12px;
+      background: #fff;
+      padding: 18px 16px;
   }
-  #paypal-wallet-block .paypal-panel-note {
-      max-width: none;
-      margin: 9px 0 0;
-      text-align: center;
+  /* No es seleccionable, pero al pasar por encima responde igual que las
+     opciones vecinas: todo el recuadro es pulsable a traves del boton. */
+  #paypal-wallet-block:hover { border-color: var(--azul-medio, #0057A8); }
+  #paypal-wallet-block paypal-button {
+      max-width: 425px;
+      margin: 0 auto;
   }
+  /* Sin loading="lazy" a proposito: son 100x26 px y con carga diferida no
+     llegaba a mostrarse. */
+  /* Misma disposicion que .payment-option, para que la fila de PayPal se lea
+     igual que la de SPEI aunque no sea seleccionable. */
+  .pp-wallet-head {
+      display: flex; align-items: center; gap: 14px;
+      margin-bottom: 16px;
+  }
+  .pp-wallet-espacio { width: 20px; flex-shrink: 0; }
+  /* La caja de icono esta pensada para marcas cuadradas (BBVA). El logotipo de
+     PayPal es alargado y a 22px de alto medía ~85px de ancho: se salia de la
+     caja y se montaba sobre el titulo. Aqui manda el ancho, no el alto. */
+  #paypal-wallet-block .payment-icon-box img {
+      height: auto;
+      max-width: 44px;
+  }
+  /* PayPal admite estas variables para su boton; el resto de su interior no se
+     puede tocar. Sin el radio, el boton era un rectangulo de esquina viva que
+     desentonaba con el resto de botones del checkout. */
+  #paypal-wallet-block paypal-button {
+      --paypal-button-border-radius: 9px;
+      --paypal-mark-border-radius: 9px;
+      border-radius: 9px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.10);
+      transition: box-shadow 0.18s, transform 0.12s;
+  }
+  #paypal-wallet-block paypal-button:hover {
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.16);
+  }
+  #paypal-wallet-block paypal-button:active { transform: translateY(1px); }
+  .pp-wallet-trust {
+      list-style: none;
+      max-width: 425px;
+      margin: 14px auto 0;
+      padding: 0;
+      font-size: 11.5px; line-height: 1.65;
+      color: var(--gris-texto, #4A5568);
+      text-align: left;
+  }
+  .pp-wallet-trust li { position: relative; padding-left: 19px; }
+  .pp-wallet-trust li::before {
+      content: '✓'; position: absolute; left: 3px; top: 0;
+      color: #059669; font-weight: 800;
+  }
+  #paypal-wallet-block .pp-powered { margin-top: 12px; }
   /* El formulario y el boton los dibuja PayPal dentro de sus propios
      elementos. Sin estilos propios ahi adentro: la maqueta es suya.
      Lo que si se controla desde aqui es el ancho y la posicion: el elemento
@@ -804,12 +856,43 @@
                                  cuenta directamente. Arranca oculto y solo se muestra si
                                  findEligibleMethods() dice que PayPal esta disponible. --}}
                             <div id="paypal-wallet-block" style="display:none">
+                                {{-- Mismo encabezado que las filas de metodo de pago (icono a
+                                     la izquierda, nombre y descripcion), para que se lea como una
+                                     opcion mas. Sin radio: no hay nada que elegir, el contenido
+                                     va siempre desplegado. --}}
+                                <div class="pp-wallet-head">
+                                    {{-- Hueco del ancho del radio de las filas vecinas: sin el,
+                                         el logo arrancaba 34px a la izquierda del de SPEI y las
+                                         dos filas no alineaban. --}}
+                                    <div class="pp-wallet-espacio" aria-hidden="true"></div>
+                                    <div class="payment-icon-box">
+                                        <img src="https://www.paypalobjects.com/webstatic/mktg/Logo/pp-logo-100px.png"
+                                             alt="PayPal">
+                                    </div>
+                                    <div class="payment-option-info">
+                                        <div class="payment-option-name">PayPal</div>
+                                        <div class="payment-option-desc">Paga con tu cuenta de PayPal</div>
+                                    </div>
+                                </div>
+
                                 <paypal-button id="paypal-btn-paypal" type="pay"
                                                class="paypal-gold"></paypal-button>
-                                <p class="paypal-panel-note">
-                                    Se abre la ventana segura de PayPal para que inicies sesión
-                                    en tu cuenta.
-                                </p>
+
+                                {{-- Señales de confianza. Es el momento de mayor desconfianza del
+                                     checkout y el boton solo, sin contexto, se leia tosco. --}}
+                                <ul class="pp-wallet-trust">
+                                    <li>Protección al comprador de PayPal</li>
+                                    <li>No compartes tus datos bancarios con la tienda</li>
+                                    <li>Se abre la ventana segura de PayPal para iniciar sesión</li>
+                                </ul>
+
+                                {{-- Mismo sello que lleva el formulario de tarjeta, para que las
+                                     dos formas de pago cierren igual. --}}
+                                <div class="pp-powered">
+                                    <span>Powered by</span>
+                                    <img src="https://www.paypalobjects.com/webstatic/mktg/Logo/pp-logo-100px.png"
+                                         alt="PayPal" width="66" height="17">
+                                </div>
                             </div>
                             @endif
 
