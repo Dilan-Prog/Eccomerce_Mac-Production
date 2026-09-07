@@ -373,9 +373,14 @@
   .spei-data-row:last-of-type { border-bottom: none; }
   .spei-data-row .lbl { color: var(--gris-texto, #4A5568); }
   .spei-data-row .val { font-weight: 700; color: #1E40AF; }
+  .spei-clabe-box { margin: 10px 0; }
+  .spei-clabe-label {
+      font-size: 11px; font-weight: 700; color: #6B7280;
+      text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 4px;
+  }
   .spei-clabe-row {
       background: #fff; border: 1.5px solid #BFDBFE; border-radius: 7px;
-      padding: 10px 14px; display: flex; align-items: center; gap: 10px; margin: 10px 0;
+      padding: 10px 14px; display: flex; align-items: center; gap: 10px;
   }
   .spei-clabe-num {
       flex: 1; font-size: 15px; font-weight: 800; color: #1E40AF;
@@ -944,9 +949,12 @@
                                     @endif
 
                                     {{-- CLABE con botón copiar --}}
+                                    <div class="spei-clabe-box">
+                                    <div class="spei-clabe-label">Número de cuenta CLABE</div>
                                     <div class="spei-clabe-row">
                                         <span class="spei-clabe-num" id="spei-clabe">{{ $transferInfo->accountClabe ?? '000000000000000000' }}</span>
                                         <button type="button" class="btn-copy-clabe" id="btn-copy-clabe">Copiar</button>
+                                    </div>
                                     </div>
 
                                     {{-- Número de referencia / pedido --}}
