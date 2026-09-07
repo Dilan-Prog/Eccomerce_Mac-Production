@@ -250,6 +250,29 @@
                     <input type="text" class="au-input" name="accountClabe" value="{{ old('accountClabe', $transferSetting->accountClabe ?? '') }}" required>
                 </div>
 
+                {{-- Opcionales: si se dejan vacios, el checkout no pinta ese renglon. --}}
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+                    <div class="au-field">
+                        <label class="au-label">RFC</label>
+                        <input type="text" class="au-input" name="rfc" value="{{ old('rfc', $transferSetting->rfc ?? '') }}">
+                        <span class="au-help-text">Se muestra al cliente junto a los datos bancarios.</span>
+                    </div>
+                    <div class="au-field">
+                        <label class="au-label">Moneda</label>
+                        <input type="text" class="au-input" name="currency" value="{{ old('currency', $transferSetting->currency ?? '') }}" placeholder="MXN">
+                        <span class="au-help-text">Ej. MXN para moneda nacional.</span>
+                    </div>
+                </div>
+
+                <div class="au-field">
+                    <label class="au-label">Correo para recibir comprobantes</label>
+                    <input type="email" class="au-input" name="receiptEmail" value="{{ old('receiptEmail', $transferSetting->receiptEmail ?? '') }}" placeholder="ventas@macdelnorte.com">
+                    <span class="au-help-text">
+                        Es el correo que se le pide al cliente en el checkout para que envie su comprobante.
+                        No es el mismo al que llega el aviso automatico del pedido.
+                    </span>
+                </div>
+
                 <button type="submit" class="au-btn au-btn-primary">Guardar</button>
             </form>
         </div>
