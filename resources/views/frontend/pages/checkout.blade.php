@@ -1486,16 +1486,60 @@ window.initPayPalButtons = function () {
 
         if (puedePaypal) {
             var bloqueWallet = document.getElementById('paypal-wallet-block');
-            if (bloqueWallet) {
+            var botonWallet = document.getElementById('paypal-btn-paypal');
+            if (bloqueWallet && botonWallet) {
                 bloqueWallet.style.display = '';
 
-                var sesionPaypal = sdk.createPayPalOneTimePaymentSession({
-                    onApprove: alAprobar,
-                    onError: alFallar,
-                    onCancel: function () {}
-                });
+                var sesionWallet = null;
+                var pagoWalletEnCurso = false;
+                var walletAprobado = false;
 
-                document.getElementById('paypal-btn-paypal').addEventListener('click', function () {
+                // Una sesion consumida no vuelve a arrancar: su start() se
+                // queda sin hacer nada y el boton se queda girando para
+                // siempre. Es el mismo motivo por el que el formulario de
+                // tarjeta crea una sesion por apertura. Aqui se crea una por
+                // clic, y ademas cada intento necesita su propia orden con el
+                // total del momento.
+                function nuevaSesionWallet() {
+                    if (sesionWallet && typeof sesionWallet.destroy === 'function') {
+                        try { sesionWallet.destroy(); } catch (e) {}
+                    }
+                    sesionWallet = sdk.createPayPalOneTimePaymentSession({
+                        // Se devuelve la promesa a proposito: PayPal mantiene
+                        // el boton ocupado mientras cobramos. Al terminar hay
+                        // que soltarlo pase lo que pase, porque un rechazo del
+                        // banco resuelve igual de bien que un cobro correcto.
+                        onApprove: function (datos) {
+                            walletAprobado = true;
+                            return alAprobar(datos).then(liberarWallet, function (e) {
+                                liberarWallet();
+                                throw e;
+                            });
+                        },
+                        onError: function (e) { liberarWallet(); alFallar(e); },
+                        // El cliente cerro la ventana de PayPal. Sin soltar el
+                        // boton se quedaba muerto y no habia forma de
+                        // reintentar sin recargar la pagina.
+                        onCancel: function () { liberarWallet(); }
+                    });
+                    return sesionWallet;
+                }
+
+                // Solo levanta la bandera. La sesion NO se destruye aqui: esto
+                // corre desde dentro de sus propios callbacks y tirarla en ese
+                // momento aborta el flujo que la esta llamando. Se destruye al
+                // empezar el siguiente intento.
+                function liberarWallet() {
+                    pagoWalletEnCurso = false;
+                }
+
+                botonWallet.addEventListener('click', function () {
+                    // Doble clic sobre el boton mientras la ventana de PayPal
+                    // esta abierta: crearia una segunda orden por el mismo
+                    // pedido.
+                    if (pagoWalletEnCurso) return;
+                    pagoWalletEnCurso = true;
+
                     // Este boton no tiene radio detras, asi que nada fija el
                     // metodo de pago. Sin esto, un cliente que venia con SPEI
                     // seleccionado veria su pago rechazado por validacion:
@@ -1503,13 +1547,41 @@ window.initPayPalButtons = function () {
                     // servidor exige stripe|paypal|spei coherente con el cobro.
                     if (window.__fijarMetodoPago) window.__fijarMetodoPago('paypal');
 
-                    // 'auto' intenta ventana emergente y cae a modal si el
-                    // navegador la bloquea. El inicio de sesion de PayPal
-                    // ocurre en su dominio, de ahi la ventana.
+                    // 'modal', no 'auto'. Con 'auto' el SDK abria una VENTANA
+                    // aparte y el canal con ella se rompia a mitad del pago:
+                    // la ventana se quedaba en "Gracias por utilizar PayPal"
+                    // y el SDK escupia "No ack for postMessage: pong", asi
+                    // que onApprove no llegaba a dispararse y nunca cobrabamos.
+                    // 'modal' dibuja lo mismo en un iframe dentro de la
+                    // pagina, sin ventana que se pueda desconectar. De paso es
+                    // lo que se pidio desde el principio: no sacar al cliente
+                    // del sitio.
+                    walletAprobado = false;
+
                     Promise.resolve(
-                        sesionPaypal.start({ presentationMode: 'auto' }, crearOrden())
-                    ).catch(alFallar);
+                        nuevaSesionWallet().start({ presentationMode: 'modal' }, crearOrden())
+                    ).then(function () {
+                        // start() resuelve cuando el flujo termina o se
+                        // cancela. Si llegamos aqui sin haber pasado por
+                        // onApprove, el pago no se completo y PayPal no nos
+                        // dijo por que: la ventana se cerro o se perdio el
+                        // canal con ella. Antes eso dejaba el boton girando
+                        // sin fin y sin una sola palabra al cliente.
+                        if (!walletAprobado) {
+                            liberarWallet();
+                            toastr.info('No se completó el pago con PayPal. ' +
+                                'Puedes intentarlo de nuevo.');
+                        }
+                    }, function (e) {
+                        liberarWallet();
+                        alFallar(e);
+                    });
                 });
+
+                // El resto del checkout invalida el pago en curso cuando
+                // cambia la direccion o el envio: la orden se creo con el
+                // total viejo.
+                window.__walletPayPal = { reiniciar: liberarWallet };
             }
         }
     }).catch(function (e) {
@@ -1637,6 +1709,7 @@ $(document).ready(function () {
     // Cualquier cambio aguas arriba invalida la orden ya creada en PayPal.
     function invalidarPagoEnCurso() {
         if (window.__tarjetaPayPal) window.__tarjetaPayPal.reiniciar();
+        if (window.__walletPayPal) window.__walletPayPal.reiniciar();
     }
 
     $(document).on('change', 'input.shipping_address', function () {
