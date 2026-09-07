@@ -20,6 +20,27 @@
             <input type="number" step="any" class="au-input" name="cost" value="{{ $shippingRule->cost ?? '' }}" required>
         </div>
     </div>
+    {{-- Tiempo de entrega: se guarda como rango de dias y el texto que ve el
+         cliente lo redacta ShippingRule::deliveryLabel(). 0 = "Mismo dia",
+         1 = "Siguiente dia". Vacio = ese metodo no muestra tiempo. --}}
+    <div class="au-form-grid-2">
+        <div class="au-field">
+            <label class="au-label">Entrega: dias mínimo</label>
+            <input type="number" min="0" class="au-input" name="delivery_days_min"
+                   value="{{ $shippingRule->delivery_days_min ?? '' }}" placeholder="0 = mismo día">
+        </div>
+        <div class="au-field">
+            <label class="au-label">Entrega: dias máximo</label>
+            <input type="number" min="0" class="au-input" name="delivery_days_max"
+                   value="{{ $shippingRule->delivery_days_max ?? '' }}" placeholder="1 = siguiente día">
+        </div>
+    </div>
+    <div class="au-field">
+        <label class="au-label">Nota de entrega</label>
+        <input type="text" maxlength="120" class="au-input" name="delivery_note"
+               value="{{ $shippingRule->delivery_note ?? '' }}"
+               placeholder="Ej. Material sujeto a disponibilidad">
+    </div>
     <div class="au-field" id="au-min-cost-field" style="{{ isset($shippingRule) && $shippingRule->type == 'min_cost' ? '' : 'display:none' }}">
         <label class="au-label">Cantidad Mínima</label>
         <input type="number" step="any" class="au-input" name="min_cost" value="{{ $shippingRule->min_cost ?? '' }}">

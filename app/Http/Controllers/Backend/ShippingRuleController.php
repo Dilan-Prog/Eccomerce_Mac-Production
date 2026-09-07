@@ -106,6 +106,9 @@ class ShippingRuleController extends Controller
             'type' => ['required'],
             'min_cost' => ['nullable', 'integer'],
             'cost' => ['required', 'integer'],
+            'delivery_days_min' => ['nullable', 'integer', 'min:0', 'max:365'],
+            'delivery_days_max' => ['nullable', 'integer', 'min:0', 'max:365'],
+            'delivery_note' => ['nullable', 'string', 'max:120'],
             'status' => ['required'],
 
 
@@ -116,6 +119,11 @@ class ShippingRuleController extends Controller
         $shipping->type = $request->type;
         $shipping->min_cost = $request->min_cost;
         $shipping->cost = $request->cost;
+        // Vacio se guarda como NULL y no como 0: 0 significa "mismo dia", que
+        // es un tiempo de entrega real, no la ausencia de uno.
+        $shipping->delivery_days_min = $request->filled('delivery_days_min') ? (int) $request->delivery_days_min : null;
+        $shipping->delivery_days_max = $request->filled('delivery_days_max') ? (int) $request->delivery_days_max : null;
+        $shipping->delivery_note = $request->filled('delivery_note') ? trim($request->delivery_note) : null;
         $shipping->status = $request->status;
         $shipping->save();
 
@@ -154,6 +162,9 @@ class ShippingRuleController extends Controller
             'type' => ['required'],
             'min_cost' => ['nullable', 'integer'],
             'cost' => ['required', 'integer'],
+            'delivery_days_min' => ['nullable', 'integer', 'min:0', 'max:365'],
+            'delivery_days_max' => ['nullable', 'integer', 'min:0', 'max:365'],
+            'delivery_note' => ['nullable', 'string', 'max:120'],
             'status' => ['required'],
             
 
@@ -164,6 +175,11 @@ class ShippingRuleController extends Controller
         $shipping->type = $request->type;
         $shipping->min_cost = $request->min_cost;
         $shipping->cost = $request->cost;
+        // Vacio se guarda como NULL y no como 0: 0 significa "mismo dia", que
+        // es un tiempo de entrega real, no la ausencia de uno.
+        $shipping->delivery_days_min = $request->filled('delivery_days_min') ? (int) $request->delivery_days_min : null;
+        $shipping->delivery_days_max = $request->filled('delivery_days_max') ? (int) $request->delivery_days_max : null;
+        $shipping->delivery_note = $request->filled('delivery_note') ? trim($request->delivery_note) : null;
         $shipping->status = $request->status;
         $shipping->save();
 

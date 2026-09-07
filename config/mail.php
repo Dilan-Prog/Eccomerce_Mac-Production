@@ -114,6 +114,19 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Admin Order Notification Address
+    |--------------------------------------------------------------------------
+    |
+    | Dirección a la que se avisa de cada pedido pagado. Se lee del entorno
+    | para que el negocio pueda cambiar el buzón que atiende las ventas sin
+    | tocar el código ni desplegar.
+    |
+    */
+
+    'admin_order_address' => env('MAIL_ADMIN_ORDER_ADDRESS', 'administracion@macdelnorte.com'),
+
+    /*
+    |--------------------------------------------------------------------------
     | Markdown Mail Settings
     |--------------------------------------------------------------------------
     |

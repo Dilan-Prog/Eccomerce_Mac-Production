@@ -193,7 +193,22 @@
   .pp-btn:active { transform: translateY(1px); }
   .pp-btn[disabled] { opacity: 0.6; cursor: default; transform: none; }
   .pp-btn-card { background: #2C2E2F; color: #fff; }
-  paypal-button { display: block; max-width: 340px; margin: 0 auto; }
+  /* El <paypal-button> es un elemento del SDK y se dimensiona a su contenido
+     (~225px), ignorando max-width: hay que darle width para que llene su
+     contenedor. Quien manda el ancho es el bloque de abajo. */
+  paypal-button { display: block; width: 100%; }
+  /* Mismo ancho que el formulario de tarjeta de arriba (360px), para que las
+     dos formas de pago se lean como piezas de la misma familia. A lo ancho de
+     la fila completa (1069px) el boton amarillo pesaba demasiado. */
+  #paypal-wallet-block {
+      max-width: 360px;
+      margin: 6px auto 16px;
+  }
+  #paypal-wallet-block .paypal-panel-note {
+      max-width: none;
+      margin: 9px 0 0;
+      text-align: center;
+  }
   /* El formulario y el boton los dibuja PayPal dentro de sus propios
      elementos. Sin estilos propios ahi adentro: la maqueta es suya.
      Lo que si se controla desde aqui es el ancho y la posicion: el elemento
@@ -614,7 +629,10 @@
                                     <div class="shipping-icon"><i class="fas fa-shipping-fast"></i></div>
                                     <div class="shipping-info">
                                         <div class="shipping-name">{{ $method->name }}</div>
-                                        <div class="shipping-desc">Entrega estimada 1–5 días hábiles</div>
+                                    @php $entrega = $method->deliveryLabel(); @endphp
+                                    @if($entrega !== '')
+                                        <div class="shipping-desc">{{ $entrega }}</div>
+                                    @endif
                                     </div>
                                     <div class="shipping-cost {{ $method->cost == 0 ? 'free' : '' }}">
                                         {{ $method->cost == 0 ? '🎉 Gratis' : $settings->currency_icon . number_format($method->cost, 2) }}
@@ -777,6 +795,21 @@
                                         </p>
                                     </div>
                                 </div>
+                            </div>
+                            @endif
+
+                            @if($paypalInfo)
+                            {{-- Boton suelto de PayPal: NO es una .payment-option, no lleva
+                                 radio ni panel. El cliente lo pulsa y arranca el pago con su
+                                 cuenta directamente. Arranca oculto y solo se muestra si
+                                 findEligibleMethods() dice que PayPal esta disponible. --}}
+                            <div id="paypal-wallet-block" style="display:none">
+                                <paypal-button id="paypal-btn-paypal" type="pay"
+                                               class="paypal-gold"></paypal-button>
+                                <p class="paypal-panel-note">
+                                    Se abre la ventana segura de PayPal para que inicies sesión
+                                    en tu cuenta.
+                                </p>
                             </div>
                             @endif
 
@@ -1227,6 +1260,7 @@ window.initPayPalButtons = function () {
     }).then(function (ctx) {
         var sdk = ctx.sdk;
         var puedeTarjeta = ctx.elegibles.isEligible('card');
+        var puedePaypal  = ctx.elegibles.isEligible('paypal');
 
         // El bloque se muestra solo si PayPal dice que la tarjeta esta
         // disponible para esta cuenta y moneda. Sustituye a la comprobacion
@@ -1367,6 +1401,34 @@ window.initPayPalButtons = function () {
             abrirFormularioTarjeta();
         }
 
+        if (puedePaypal) {
+            var bloqueWallet = document.getElementById('paypal-wallet-block');
+            if (bloqueWallet) {
+                bloqueWallet.style.display = '';
+
+                var sesionPaypal = sdk.createPayPalOneTimePaymentSession({
+                    onApprove: alAprobar,
+                    onError: alFallar,
+                    onCancel: function () {}
+                });
+
+                document.getElementById('paypal-btn-paypal').addEventListener('click', function () {
+                    // Este boton no tiene radio detras, asi que nada fija el
+                    // metodo de pago. Sin esto, un cliente que venia con SPEI
+                    // seleccionado veria su pago rechazado por validacion:
+                    // crearOrden() envia el formulario del checkout y el
+                    // servidor exige stripe|paypal|spei coherente con el cobro.
+                    if (window.__fijarMetodoPago) window.__fijarMetodoPago('paypal');
+
+                    // 'auto' intenta ventana emergente y cae a modal si el
+                    // navegador la bloquea. El inicio de sesion de PayPal
+                    // ocurre en su dominio, de ahi la ventana.
+                    Promise.resolve(
+                        sesionPaypal.start({ presentationMode: 'auto' }, crearOrden())
+                    ).catch(alFallar);
+                });
+            }
+        }
     }).catch(function (e) {
         console.error('PayPal v6 no pudo iniciarse:', e);
     });
@@ -1576,6 +1638,20 @@ $(document).ready(function () {
         unlockSection(4);
         validateSubmitBtn();
     });
+
+    // Deja el checkout coherente cuando el pago NO viene de un radio, que es
+    // el caso del boton suelto de PayPal: sin esto el campo oculto podria
+    // llevar el metodo anterior (ej. SPEI) y el resumen lateral mostraria uno
+    // distinto del que se esta cobrando.
+    window.__fijarMetodoPago = function (metodo) {
+        $('#payment_method').val(metodo);
+        var nombres = { stripe: 'Tarjeta (Stripe)', paypal: 'PayPal', spei: 'SPEI / BBVA' };
+        $('#sidebar-payment-value').text(nombres[metodo] || metodo);
+        $('#sidebar-payment-row').addClass('visible');
+        completeSection(3);
+        unlockSection(4);
+        validateSubmitBtn();
+    };
 
     // ── Copy CLABE ─────────────────────────────────────────────────
     $('#btn-copy-clabe').on('click', function () {

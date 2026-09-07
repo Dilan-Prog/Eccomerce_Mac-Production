@@ -754,7 +754,9 @@ class PaymentController extends Controller
 
         // Enviar la notificación
         Notification::send($user, new BuytoPay($order));
-        Notification::route('mail', 'dilanp270105@gmail.com') //cambiar a ventas1@macdelnorte.com
+        // El buzón que atiende los pedidos sale de config: cambia con el tiempo
+        // (personal, area) y el negocio debe poder reapuntarlo por .env.
+        Notification::route('mail', config('mail.admin_order_address'))
             ->notify(new buytopayAdmin($order));
     }
 }
