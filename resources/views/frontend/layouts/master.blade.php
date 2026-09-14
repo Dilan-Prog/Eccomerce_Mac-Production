@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es-MX">
+<html lang="@yield('html_lang', 'es-MX')">
 <head>
     {{-- etiquetas preconnect para seguimiento de Google y analytics --}}
     <link rel="preconnect" href="https://www.google-analytics.com" crossorigin>
@@ -16,19 +16,22 @@
     <link rel="icon" type="image/png" href="{{asset("frontend/images/logo/AVIAzul-Celeste.png")}}" sizes="16x16">
     <link rel="icon" type="image/png" href="{{asset("frontend/images/logo/AVIAzul-Celeste.png")}}" sizes="32x32">
 
-    <meta name="twitter:card" content="{{asset("frontend/images/logo/AVIAzul-Celeste.png")}}">
     <meta name="twitter:site" content="@MacdelNorte">
+    <meta property="og:site_name" content="Mac Del Norte">
+    @hasSection('social_meta')
+        {{-- La pagina trae su propio bloque completo (og:*, twitter:*). --}}
+        @yield('social_meta')
+    @else
+    <meta name="twitter:card" content="{{asset("frontend/images/logo/AVIAzul-Celeste.png")}}">
     <meta name="twitter:title" content="Mac Del Norte:Distribuidora y Comercializadora de Productos Industriales y Especialistas en Instrumentación">
     <meta name="twitter:description" content="Soluciones innovadoras en instrumentación, automatización, medición y control con el mejor precio de la industria">
     <meta name="twitter:image" content="{{asset("frontend/images/logo/AVIAzul-Celeste.png")}}">
-
-
     <meta property="og:title" content="Mac Del Norte: Comercializadora de Productos Industriales de Clase Mundial">
     <meta property="og:description" content="Soluciones innovadoras en instrumentación, automatización, medición y control con el mejor precio de la industria">
     <meta property="og:image" content="{{asset('frontend/images/logo/AVIAzul-Marino.png')}}">
     <meta property="og:url" content="https://www.macdelnorte.com/">
-    <meta property="og:site_name" content="Mac Del Norte">
     <meta property="og:type" content="website">
+    @endif
     <meta property="article:author" content="https://www.facebook.com/macdelnorteofficial">
     <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" fetchpriority="high" onload="this.onload=null;this.rel='stylesheet'">
     <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap"></noscript>
@@ -104,10 +107,16 @@
     @yield('meta_tags')
 
     <meta name="author" content="{{$settings->site_name}}">
+    @hasSection('meta_description')
+    <meta name="description" content="@yield('meta_description')">
+    @else
     <meta name="description" content="Distribuidora y Comercializadora de productos Industriales, Expertos en Instrumentación y Automatización Industrial, Distribuidor Autorizado de productos Industriales.Servicios de Instrumentación de Campo con 8 años de experiencia.">
+    @endif
+    @if(!View::hasSection('meta_description'))
     <meta name="keywords" content="Distribuidor autorizado Honeywell, especialistas en instrumentación, automatización industrial, proveedor Honeywell México, equipos de control industrial, Dominion Electrónica, Electrónica Universal, soluciones industriales, refacciones industriales, sensores industriales">
-    <meta name="robots" content="all">
     <meta name="currency" content="MXN">
+    @endif
+    <meta name="robots" content="@yield('meta_robots', 'all')">
 
 
     @yield('canonical_URL')
@@ -520,13 +529,8 @@
             background-color: #002856;
             position: relative;
             min-height: 520px;
-<<<<<<< HEAD
-            height: 85vh;
-            max-height: 700px;
-=======
             height: auto;
             max-height: 850px;
->>>>>>> c482de177cb634e21d9752987046d39872468d40
             color: #fff;
         }
         /* Container ocupa toda la altura del section */
@@ -974,6 +978,7 @@
     <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-PX9LXWGR"
     height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <!-- End Google Tag Manager (noscript) -->
+        @section('chrome_top')
         <!--header sticky wrapper-->
         <div class="sticky-wrapper">
             @include('frontend.layouts.top-bar')
@@ -1012,6 +1017,7 @@
 
         @include('frontend.layouts.whastapp-chat')
         {{-- @include('frontend.layouts.chat-personal') --}}
+        @show
 
         <!--content-->
 
@@ -1019,7 +1025,9 @@
 
 
         <!--footer-->
+        @section('chrome_bottom')
         @include( 'frontend.layouts.footer' )
+        @show
 
     <!--============================
         SCROLL BUTTON START
