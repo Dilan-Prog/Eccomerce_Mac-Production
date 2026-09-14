@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Sitemap ESTATICO de las paginas fijas del sitio.
+  robots.txt ya lo anunciaba en https://www.macdelnorte.com/sitemap.xml pero
+  el archivo no existia (404 en produccion).
+
+  No incluye productos ni categorias: eso requiere generarlo desde la base de
+  datos. Si se agrega una pagina fija nueva, hay que anotarla aqui a mano.
+-->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
+
+  <url>
+    <loc>https://www.macdelnorte.com/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://www.macdelnorte.com/about</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://www.macdelnorte.com/contact</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://www.macdelnorte.com/associate</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://www.macdelnorte.com/catalogo-productos</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.macdelnorte.com/categorias</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.macdelnorte.com/distribuidor-oficial-honeywell</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <!-- Servicios -->
+  <url>
+    <loc>https://www.macdelnorte.com/servicio-controladores-temperatura</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://www.macdelnorte.com/servicio-instalacion-videoregistradores</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://www.macdelnorte.com/servicio-instalacion-medidoresdeflujo</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://www.macdelnorte.com/servicio-instalacion-plc</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://www.macdelnorte.com/servicio-reparacion-videoregistradores</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://www.macdelnorte.com/servicio-calibracion-ema</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <!-- Landings Brasil (pt-BR) -->
+  <url>
+    <loc>https://www.macdelnorte.com/br/honeywell-dc1010</loc>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://www.macdelnorte.com/br/honeywell-dc1010"/>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.macdelnorte.com/br/honeywell-dc1040</loc>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://www.macdelnorte.com/br/honeywell-dc1040"/>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.macdelnorte.com/br/honeywell-dc1200</loc>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://www.macdelnorte.com/br/honeywell-dc1200"/>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.macdelnorte.com/br/honeywell-dc2800</loc>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://www.macdelnorte.com/br/honeywell-dc2800"/>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.macdelnorte.com/br/mcdonnell-miller</loc>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://www.macdelnorte.com/br/mcdonnell-miller"/>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- Landings Brasil: produtos McDonnell & Miller -->
+  <url>
+    <loc>https://www.macdelnorte.com/br/mcdonnell-miller/150s-hd</loc>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://www.macdelnorte.com/br/mcdonnell-miller/150s-hd"/>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.macdelnorte.com/br/mcdonnell-miller/157s</loc>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://www.macdelnorte.com/br/mcdonnell-miller/157s"/>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.macdelnorte.com/br/mcdonnell-miller/150s-alta-pressao</loc>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://www.macdelnorte.com/br/mcdonnell-miller/150s-alta-pressao"/>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.macdelnorte.com/br/mcdonnell-miller/swa150s</loc>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://www.macdelnorte.com/br/mcdonnell-miller/swa150s"/>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.macdelnorte.com/br/mcdonnell-miller/sa150-11</loc>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://www.macdelnorte.com/br/mcdonnell-miller/sa150-11"/>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.macdelnorte.com/br/mcdonnell-miller/sa150-106r</loc>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://www.macdelnorte.com/br/mcdonnell-miller/sa150-106r"/>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.macdelnorte.com/br/mcdonnell-miller/flanges-2-polegadas</loc>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://www.macdelnorte.com/br/mcdonnell-miller/flanges-2-polegadas"/>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.macdelnorte.com/br/mcdonnell-miller/21u</loc>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://www.macdelnorte.com/br/mcdonnell-miller/21u"/>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.macdelnorte.com/br/mcdonnell-miller/boia-21-30u</loc>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://www.macdelnorte.com/br/mcdonnell-miller/boia-21-30u"/>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.macdelnorte.com/br/mcdonnell-miller/64</loc>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://www.macdelnorte.com/br/mcdonnell-miller/64"/>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.macdelnorte.com/br/mcdonnell-miller/fs8-w</loc>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://www.macdelnorte.com/br/mcdonnell-miller/fs8-w"/>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.macdelnorte.com/br/mcdonnell-miller/fs4-3j</loc>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://www.macdelnorte.com/br/mcdonnell-miller/fs4-3j"/>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.macdelnorte.com/br/mcdonnell-miller/fs1-u</loc>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://www.macdelnorte.com/br/mcdonnell-miller/fs1-u"/>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.macdelnorte.com/br/mcdonnell-miller/sa91-60</loc>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://www.macdelnorte.com/br/mcdonnell-miller/sa91-60"/>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <!-- Legales -->
+  <url>
+    <loc>https://www.macdelnorte.com/Terminos-Condiciones</loc>
+    <changefreq>yearly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  <url>
+    <loc>https://www.macdelnorte.com/Aviso-Legal</loc>
+    <changefreq>yearly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  <url>
+    <loc>https://www.macdelnorte.com/Aviso-Privacidad</loc>
+    <changefreq>yearly</changefreq>
+    <priority>0.2</priority>
+  </url>
+
+</urlset>

@@ -158,6 +158,103 @@ class HomeController extends Controller
     public function  distribuidorHoneywell(){
         return view('frontend.pages.honeywell-oficial');
     }
+    /**
+     * Imagenes y codigos de pedido de un modelo, a partir de sus productos.
+     *
+     * Solo se usa UN producto como fuente de fotos: su portada como imagen
+     * principal y su galeria (productImageGalleries) como miniaturas. Antes
+     * se juntaban las portadas de todos los codigos de pedido y salia la misma
+     * foto repetida hasta 13 veces. Si ningun producto tiene galeria, queda la
+     * portada sola y la vista no pinta la tira de miniaturas.
+     *
+     * $principal permite forzar que producto manda (p. ej. el 150S en la
+     * landing de McDonnell & Miller); si no, el primero que tenga galeria.
+     * thumb_image guarda URL absoluta; la galeria guarda ruta relativa.
+     */
+    private function catalogoBr($productos, $principal = null): array
+    {
+        $productos->load('productImageGalleries');
+
+        $fuente = $principal
+            ?? $productos->first(fn ($p) => $p->productImageGalleries->isNotEmpty())
+            ?? $productos->first();
+
+        $imagenes = collect();
+        if ($fuente) {
+            $imagenes->push($fuente->thumb_image);
+            foreach ($fuente->productImageGalleries as $galeria) {
+                $imagenes->push($galeria->image);
+            }
+        }
+
+        return [
+            'imagenes' => $imagenes
+                ->filter()
+                ->map(fn ($ruta) => str_starts_with($ruta, 'http') ? $ruta : url($ruta))
+                ->unique(fn ($url) => preg_replace('/^media_[0-9a-f]+\./i', '', basename($url)))
+                ->values(),
+            'codigos' => $productos->pluck('name', 'slug'),
+        ];
+    }
+
+    public function  brHoneywellDc1040(){
+        return view('frontend.pages.br.honeywell-dc1040',
+            $this->catalogoBr(\App\Models\Product::where('slug', 'like', '%dc1040%')->get()));
+    }
+    public function  brHoneywellDc1010(){
+        return view('frontend.pages.br.honeywell-dc1010',
+            $this->catalogoBr(\App\Models\Product::where('slug', 'like', '%dc1010%')->get()));
+    }
+    public function  brHoneywellDc1200(){
+        // La serie DC1200 son los modelos DC1202, DC1203 y DC120L.
+        return view('frontend.pages.br.honeywell-dc1200',
+            $this->catalogoBr(\App\Models\Product::where('slug', 'like', '%dc120%')->get()));
+    }
+    public function  brHoneywellDc2800(){
+        return view('frontend.pages.br.honeywell-dc2800',
+            $this->catalogoBr(\App\Models\Product::where('slug', 'like', '%dc2800%')->get()));
+    }
+    public function  brMcdonnellMiller(){
+        // Toda la categoria, menos los registros de prueba sin nombre real.
+        $productos = \App\Models\Product::whereHas('category', fn ($q) => $q->where('slug', 'mcdonnell-miller'))
+            ->where('name', '!=', 'asd')
+            ->orderBy('name')
+            ->get();
+        // El 150S es el producto estrella de la landing: sus fotos mandan.
+        $estrella = $productos->first(fn ($p) => str_starts_with($p->slug, '150s-hd'));
+        return view('frontend.pages.br.mcdonnell-miller', $this->catalogoBr($productos, $estrella));
+    }
+
+    /**
+     * Landing individual de un producto McDonnell & Miller.
+     *
+     * Una sola vista para los 14: lo que cambia (textos pt-BR, ficha, FAQ,
+     * relacionados) vive en resources/data/br/mcdonnell/{slug}.php. El slug
+     * de la URL es el nombre de ese archivo; si no existe, 404.
+     */
+    public function  brMcdonnellProduto(string $slug){
+        // Solo letras, numeros y guiones: el slug termina en un require.
+        abort_unless(preg_match('/^[a-z0-9-]+$/', $slug), 404);
+
+        $archivo = resource_path("data/br/mcdonnell/{$slug}.php");
+        abort_unless(is_file($archivo), 404);
+        $datos = require $archivo;
+
+        // get() y no first(): catalogoBr() espera una coleccion Eloquent (usa load()).
+        $productos = \App\Models\Product::where('slug', $datos['catalogo_slug'])->get();
+        $imagenes = $this->catalogoBr($productos, $productos->first())['imagenes'];
+
+        // Catalogo completo de landings de la marca, para "Outros produtos".
+        $todos = collect(glob(resource_path('data/br/mcdonnell/*.php')))
+            ->mapWithKeys(fn ($f) => [basename($f, '.php') => require $f]);
+
+        return view('frontend.pages.br.mcdonnell-produto', [
+            'slug' => $slug,
+            'p' => $datos,
+            'imagenes' => $imagenes,
+            'todos' => $todos,
+        ]);
+    }
     public function  catalogo(){
         return view('frontend.pages.catalogo');
     }

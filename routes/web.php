@@ -54,6 +54,15 @@ Route::get('Terminos-Condiciones', [HomeController::class, 'terminosCondiciones'
 Route::get('Aviso-Legal', [HomeController::class, 'avisoLegal'])->name('Aviso-Legal');
 Route::get('Aviso-Privacidad', [HomeController::class, 'avisoPrivacidad'])->name('Aviso-Privacidad');
 Route::get('distribuidor-oficial-honeywell', [HomeController::class, 'distribuidorHoneywell'])->name('distribuidor-oficial-honeywell');
+// Landings para Brasil (pt-BR). Prefijo /br/ para que queden aisladas del catalogo posicionado.
+Route::get('br/honeywell-dc1040', [HomeController::class, 'brHoneywellDc1040'])->name('br.honeywell-dc1040');
+Route::get('br/honeywell-dc1010', [HomeController::class, 'brHoneywellDc1010'])->name('br.honeywell-dc1010');
+Route::get('br/honeywell-dc1200', [HomeController::class, 'brHoneywellDc1200'])->name('br.honeywell-dc1200');
+Route::get('br/honeywell-dc2800', [HomeController::class, 'brHoneywellDc2800'])->name('br.honeywell-dc2800');
+Route::get('br/mcdonnell-miller', [HomeController::class, 'brMcdonnellMiller'])->name('br.mcdonnell-miller');
+// Una landing por producto McDonnell & Miller. El contenido vive en
+// resources/data/br/mcdonnell/{slug}.php; el slug de la URL es el de ese archivo.
+Route::get('br/mcdonnell-miller/{slug}', [HomeController::class, 'brMcdonnellProduto'])->name('br.mcdonnell-miller.produto');
 Route::get('/googgle-feed_macdelnorte$product-merchant-center',[ProductController::class, 'generateFeedProduct']);
 Route::get('/googgle-feed_macdelnorte-facebook',[ProductController::class, 'generateFeedProductFacebook']);
 
