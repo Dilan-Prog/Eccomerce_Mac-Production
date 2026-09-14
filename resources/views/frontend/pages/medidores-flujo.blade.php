@@ -1,358 +1,74 @@
 @extends('frontend.layouts.master')
 
 @section('title')
-    Instalación de Medidores de Flujo
+  Instalación de Medidores de Flujo
 @endsection
 @section('content')
-    <main>
-        <section class="services_content_start">
-            <div class="container-fluid">
-                <div class="row">
-                    <div class="col-12 col-md-6 col-lg-6 col-xl-6">
-                        <div class="services_content_start_img">
-                            <img src="{{ asset('uploads/servicios/instalacion_medidorFlujo-1.png') }}" alt="image">
-                        </div>
-                    </div>
-                    <div class="col-12 col-md-6 col-lg-6 col-xl-6">
-                        <div class="services_content_start_text">
-                            <article>
-                                <span class="services_content_subtitle">Servicio Profesional</span>
-                                <h1 class="services_content_title_start">Instalacion, Configuración y Puesta en Marcha de Medidores de Flujo</h1>
-                                <p class="services_content_description">
-                                    Especialistas en sistemas de medición de caudal. Ofrecemos instalación profesional de medidores de flujo industriales para garantizar precisión, eficiencia y trazabilidad en tus procesos productivos.
-                                </p>
-                                <a href="tel:8124738768" class="services_start_button track-conversion" data-type="telefono_servicios"><i class="fa fa-phone-alt"></i> Atención
-                                    Inmediata</a>
-                                <a href="https://wa.link/f28njw" target="_blank" class="services_start_button track-conversion" data-type="whatsapp_servicios"><i class="fa fa-whatsapp"></i> Escribenos</a>
-                            </article>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-        <section class="services_content_info">
-            <article>
-                <div class="container-fluid">
-                    <div class="row">
-                        <div class="col-12 col-md-4 col-lg-4 col-xl-4">
-                            <div class="wsus_content_info">
-                                <span class="wsus_content_info_subtitle">Control de flujo preciso y confiable</span>
-                                <h4 class="wsus_content_info_title">Soluciones para medidores de flujo industriales</h4>
-                                <p class="wsus_content_info_description">
-                                    En entornos industriales, una instalación incorrecta de medidores de flujo puede afectar directamente la eficiencia, calidad y seguridad del proceso. Evaluamos cuidadosamente cada variable operativa (tipo de fluido, presión, temperatura, caudal esperado, compatibilidad con PLCs y SCADA) para asegurar un sistema de medición confiable, preciso y alineado a los estándares normativos.
-                                </p>
-                                <a href="tel:8124738768" class="services_content_info_button track-conversion" data-type="telefono_servicios"><i class="fa fa-phone-alt"></i> Contactanos</a>
-                            </div>
-                        </div>
-                        <div class="col-12 col-md-4 col-lg-4 col-xl-4">
-                            <div class="wsus_content_info">
-                                <span class="wsus_content_info_subtitle">Instalación y puesta en marcha profesional</span>
-                                <h4 class="wsus_content_info_title">Adaptación a tu infraestructura de proceso</h4>
-                                <p class="wsus_content_info_description">
-                                    Instalamos medidores de flujo industriales de última generación, desde tecnologías electromagnéticas y ultrasónicas hasta vortex y Coriolis, con opciones de salida analógica, digital o por protocolo industrial. Nos aseguramos de que el sistema quede calibrado, probado y listo para su operación, integrándolo sin conflictos a tu sistema SCADA, HMI o control local.
-                                </p>
-                                <a href="tel:8124738768" class="services_content_info_button track-conversion" data-type="telefono_servicios"><i class="fa fa-phone-alt"></i> Contactanos</a>
-                            </div>
-
-                        </div>
-                        <div class="col-12 col-md-4 col-lg-4 col-xl-4 content_img_service_personalizate">
-                            <div class="wsus_content_info_img">
-                                <img src="{{ asset('uploads/servicios/instalacion_medidorFlujo-2.png') }}" alt="image">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </article>
-        </section>
-        <section class="services_content_ours_process">
-            <div class="container">
-                <div class="row">
-                    <div class="col-12 col-md-6 col-lg-6 col-xl-6">
-                        <div class="services_content_ours_process_img-video">
-                            {{-- <lite-youtube videoid="3w3xq8VJQSc"></lite-youtube> --}}
-                            <img src="{{ asset('uploads/servicios/instalacion_medidorFlujo-3.png') }}" alt="image">
-                        </div>
-                    </div>
-                    <div class="col-12 col-md-6 col-lg-6 col-xl-6">
-                        <div class="services_content_ours_process_text">
-                            <article>
-                                <span class="services_content_ours_process_text_subtitle_one">Nuestro Proceso para</span>
-                                <h2 class="services_content_ours_process_text_title">Instalación de Medidores de Flujo Industriales</h2>
-
-                                <div class="accordion_item">
-                                    <div class="accordion_header" onclick="toggleAccordion(this)">
-                                        <h3 class="services_content_ours_process_text_subtitle">
-                                            <span class="number_our_process">01</span> Evaluación técnica del sistema
-                                            <span class="accordion_icon_ours_service"><i class="fas fa-caret-down"></i></span>
-                                        </h3>
-                                    </div>
-                                    <p class="our_process_text_description" style="display: none;">
-                                        Analizamos el tipo de fluido, presión, temperatura, caudal promedio y condiciones de instalación para seleccionar la tecnología de medición más adecuada (ultrasónica, electromagnética, Coriolis, etc.).
-                                    </p>
-                                </div>
-
-                                <div class="accordion_item">
-                                    <div class="accordion_header" onclick="toggleAccordion(this)">
-                                        <h3 class="services_content_ours_process_text_subtitle">
-                                            <span class="number_our_process">02</span> Selección del medidor de flujo
-                                            <span class="accordion_icon_ours_service"><i class="fas fa-caret-down"></i></span>
-                                        </h3>
-                                    </div>
-                                    <p class="our_process_text_description" style="display: none;">
-                                        Recomendamos el equipo óptimo según la aplicación, compatibilidad con señales industriales (4-20 mA, Modbus, HART) y precisión requerida para el proceso.
-                                    </p>
-                                </div>
-
-                                <div class="accordion_item">
-                                    <div class="accordion_header" onclick="toggleAccordion(this)">
-                                        <h3 class="services_content_ours_process_text_subtitle">
-                                            <span class="number_our_process">03</span> Instalación eléctrica y mecánica
-                                            <span class="accordion_icon_ours_service"><i class="fas fa-caret-down"></i></span>
-                                        </h3>
-                                    </div>
-                                    <p class="our_process_text_description" style="display: none;">
-                                        Instalamos el medidor en línea o por bypass según lo requerido, garantizando correcta orientación, sellado, aislamiento y conexión eléctrica para la alimentación y comunicación.
-                                    </p>
-                                </div>
-
-                                <div class="accordion_item">
-                                    <div class="accordion_header" onclick="toggleAccordion(this)">
-                                        <h3 class="services_content_ours_process_text_subtitle">
-                                            <span class="number_our_process">04</span> Configuración y calibración inicial
-                                            <span class="accordion_icon_ours_service"><i class="fas fa-caret-down"></i></span>
-                                        </h3>
-                                    </div>
-                                    <p class="our_process_text_description" style="display: none;">
-                                        Parametrizamos el medidor según la aplicación (tipo de fluido, unidad de medida, rangos, factor K, alarmas) y realizamos calibraciones de fábrica o en campo si es necesario.
-                                    </p>
-                                </div>
-
-                                <div class="accordion_item">
-                                    <div class="accordion_header" onclick="toggleAccordion(this)">
-                                        <h3 class="services_content_ours_process_text_subtitle">
-                                            <span class="number_our_process">05</span> Integración con sistemas de control
-                                            <span class="accordion_icon_ours_service"><i class="fas fa-caret-down"></i></span>
-                                        </h3>
-                                    </div>
-                                    <p class="our_process_text_description" style="display: none;">
-                                        Integramos el medidor con PLCs, SCADA o sistemas de adquisición de datos existentes, garantizando que las lecturas de flujo estén disponibles en tiempo real.
-                                    </p>
-                                </div>
-
-                                <div class="accordion_item">
-                                    <div class="accordion_header" onclick="toggleAccordion(this)">
-                                        <h3 class="services_content_ours_process_text_subtitle">
-                                            <span class="number_our_process">06</span> Pruebas funcionales y puesta en marcha
-                                            <span class="accordion_icon_ours_service"><i class="fas fa-caret-down"></i></span>
-                                        </h3>
-                                    </div>
-                                    <p class="our_process_text_description" style="display: none;">
-                                        Verificamos la precisión de las mediciones, respuesta a cambios de flujo, funcionamiento de salidas, alarmas, y dejamos el sistema completamente operativo y documentado.
-                                    </p>
-                                </div>
-
-                                <a href="tel:8124738768" class="services_content_info_button track-conversion" data-type="telefono_servicios"><i class="fa fa-phone-alt"></i> Quiero Contactarlos</a>
-                                <a href="https://wa.link/f28njw" target="_blank" class="services_content_info_button track-conversion" data-type="whatsapp_servicios"><i class="fa fa-whatsapp" aria-hidden="true"></i> Escríbenos</a>
-                            </article>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section class="services_content_benefits">
-            <div class="container">
-                <div class="row">
-                    <div class="col-12 col-md-7 col-lg-7 col-xl-7  benefits_text">
-                        <div class="content_benefits_text">
-                            <h3 class="benefits_text_title">Beneficios de Nuestros Servicios</h3>
-                            <p class="benefits_text_title_description">Beneficios de Nuestros Servicios</p>
-                            <div class="benefist_skills">
-                                <p class="benefits_text_description"><i class="fas fa-check-circle"></i> Instalación garantizada bajo estándares NOM, ISO e ISA.</p>
-                                <p class="benefits_text_description"><i class="fas fa-check-circle"></i> Reducción de errores de medición y pérdidas en procesos críticos.</p>
-                                <p class="benefits_text_description"><i class="fas fa-check-circle"></i> Aumento de la eficiencia operativa y trazabilidad de caudales.</p>
-                                <p class="benefits_text_description"><i class="fas fa-check-circle"></i> Asesoría técnica desde la selección hasta la puesta en marcha del medidor.</p>
-                                <p class="benefits_text_description"><i class="fas fa-check-circle"></i> Adaptación a líneas de proceso existentes y condiciones industriales exigentes.</p>
-                                <p class="benefits_text_description"><i class="fas fa-check-circle"></i> Soporte técnico post-instalación y ajustes finos en sitio.</p>
-                                <p class="benefits_text_description"><i class="fas fa-check-circle"></i> Instalaciones rápidas sin afectar la producción ni el flujo del sistema.</p>
-                                <p class="benefits_text_description"><i class="fas fa-check-circle"></i> Compatibilidad con sistemas de automatización, PLCs y SCADA.</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-12 col-md-5 col-lg-5 col-xl-5">
-                        <div class="form-service-content">
-                            <form class="row form-service" action="https://formsubmit.co/dilanp270105@gmail.com"
-                                method="POST" style="font-family: 'Montserrat', sans-serif;">
-                                <h2 class="form-service_title">Formulario de Contacto</h2>
-                                <div class="row ">
-                                    <div class="col-12 col-md-6 col-lg-6 col-xl-6">
-                                        <label for="inputNombre" class="form-label-service">Nombre</label>
-                                        <input type="text" class="form-control-service" id="inputNombre"
-                                            placeholder="Nombre" aria-label="First name" name="Nombre" required
-                                            pattern="[A-Za-z]+" maxlength="30">
-                                        <div class="invalid-feedback">
-                                            El nombre no puede estar en blanco.
-                                        </div>
-                                    </div>
-                                    <div class="col-12 col-md-6 col-lg-6 col-xl-6">
-                                        <label for="inputAddress2" class="form-label-service">Apellidos</label>
-                                        <input type="text" class="form-control-service" placeholder="Apellidos"
-                                            aria-label="Last name" name="Apellido" pattern="[A-Za-z]+" required>
-                                    </div>
-
-                                </div>
-                                <div class="col-12 col-md-6 col-lg-6 col-xl-6">
-                                    <label for="inputEmail4" class="form-label-service">Email</label>
-                                    <input type="email" class="form-control-service" id="inputEmail4"
-                                        placeholder="example@gmail.com" name="email" required>
-                                </div>
-                                <div class="col-12 col-md-6 col-lg-6 col-xl-6">
-                                    <label for="telefono" class="form-label-service">N&uacute;mero de telefono</label>
-                                    <input type="tel" class="form-control-service" id="inputAddress"
-                                        placeholder="Telefono" name="Telefono" required pattern="[0-9]{10}"
-                                        title="Ingrese un número de teléfono válido">
-                                </div>
-                                <div class="col-md-4">
-                                    <label for="inputCity" class="form-label-service">Empresa</label>
-                                    <input type="text" class="form-control-service" id="inputCity"
-                                        placeholder="Nombre Empresa" required name="Ciudad" required>
-                                </div>
-
-                                <div class="col-md-4">
-                                    <label for="inputCity" class="form-label-service">Ciudad</label>
-                                    <input type="text" class="form-control-service" id="inputCity"
-                                        placeholder="Ciudad Juarez" name="Ciudad" required>
-                                </div>
-                                <div class="col-md-4">
-                                    <label for="inputState" class="form-label-service">Estado</label>
-                                    <select id="inputState" class="form-select-service" name="Estado" required>
-                                        <option selected disabled value="">Seleccionar..</option>
-                                        <option>Aguascalientes</option>
-                                        <option>Baja California</option>
-                                        <option>Baja California Sur</option>
-                                        <option>Campeche</option>
-                                        <option>Chiapas</option>
-                                        <option>Chihuahua</option>
-                                        <option>Coahuila</option>
-                                        <option>Colima</option>
-                                        <option>Durango</option>
-                                        <option>Estado de M&eacute;xico</option>
-                                        <option>Guanajuato</option>
-                                        <option>Guerrero</option>
-                                        <option>Hidalgo</option>
-                                        <option>Jalisco</option>
-                                        <option>Michoac&aacute;n</option>
-                                        <option>Morelos</option>
-                                        <option>Nayarit</option>
-                                        <option>Nuevo Le&oacute;n</option>
-                                        <option>Oaxaca</option>
-                                        <option>Puebla</option>
-                                        <option>Quer&eacute;taro</option>
-                                        <option>Quintana Roo</option>
-                                        <option>San Luis Potos&iacute;</option>
-                                        <option>Sinaloa</option>
-                                        <option>Sonora</option>
-                                        <option>Tabasco</option>
-                                        <option>Tamaulipas</option>
-                                        <option>Tlaxcala</option>
-                                        <option>Veracruz</option>
-                                        <option>Yucat&aacute;n</option>
-                                        <option>Zacatecas</option>
-                                    </select>
-                                </div>
-                                <div class="col-md-12">
-                                    <label for="inputOperation" class="form-label-service">Operaci&oacute;n</label>
-                                    <select id="inputOperation" class="form-select" name="Operacion" required>
-                                        <option selected>Servicio De Calibraci&oacute;n Y Puesta En Marcha</option>
-                                    </select>
-                                </div>
-
-                                <div class="col-12 form-floating">
-                                    <label for="floatingTextarea2" style="color: #ffffff">Mensaje</label>
-                                    <textarea class="form-control-service" id="floatingTextarea2" style="height: 100px" name="Mensaje"></textarea>
-                                </div>
-                                <div class="col-12 form-button-submit">
-                                    <button type="submit" class="btn btn-form-service">Enviar solicitud</button>
-                                    <input type="hidden" name="_next"
-                                        value="http://127.0.0.1:8000/cotizar"><!--Cambiar url-->
-                                    <input type="hidden" name="_captcha" value="false">
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-        {{-- FUTURO --}}
-        {{-- <section class="services_content_slider_services">
-    <div class="container-fluid">
-      <h2 class="text-center">Mas Servicios</h2>
-      <div class="row">
-      <div class="col-4">
-        <a href="">
-        <div class="services_content_slider_services_img">
-          <img src="{{asset('frontend/images/imagen ejemplo.png')}}" alt="image">
-          <h3 class="services_content_slider_services_title">Calibracion de Controladores</h3>
-          <p class="services_content_slider_services_description">Lorem ipsum dolor sit amet consectetur adipisicing
-          elit. Quisquam, voluptatibus.</p>
-          <button class="services_content_slider_services_button">Ver Servicio</button>
-        </div>
-        </a>
-      </div>
-      <div class="col-4">
-        <a href="">
-        <div class="services_content_slider_services_img">
-          <img src="{{asset('frontend/images/imagen ejemplo.png')}}" alt="image">
-          <h3 class="services_content_slider_services_title">Calibracion de Controladores</h3>
-          <p class="services_content_slider_services_description">Lorem ipsum dolor sit amet consectetur adipisicing
-          elit. Quisquam, voluptatibus.</p>
-          <button class="services_content_slider_services_button">Ver Servicio</button>
-        </div>
-        </a>
-      </div>
-      <div class="col-4">
-        <a href="">
-        <div class="services_content_slider_services_img">
-          <img src="{{asset('frontend/images/imagen ejemplo.png')}}" alt="image">
-          <h3 class="services_content_slider_services_title">Calibracion de Controladores</h3>
-          <p class="services_content_slider_services_description">Lorem ipsum dolor sit amet consectetur adipisicing
-          elit. Quisquam, voluptatibus.</p>
-          <button class="services_content_slider_services_button">Ver Servicio</button>
-        </div>
-        </a>
-      </div>
-      </div>
-    </div>
-    </section> --}}
-    </main>
+  <main>
+    @include('frontend.pages.partials.service-layout', [
+      'badgeText' => 'Servicio industrial · Monterrey, N.L.',
+      'heroTitle' => 'Instalación, Configuración y Puesta en Marcha de Medidores de Flujo',
+      'heroDescription' => 'Especialistas en sistemas de medición de caudal. Ofrecemos instalación profesional de medidores de flujo industriales para garantizar precisión, eficiencia y trazabilidad en tus procesos productivos.',
+      'heroImage' => 'uploads/servicios/instalacion_medidorFlujo-1.png',
+      'heroImageAlt' => 'Técnico instalando medidor de flujo industrial en línea de proceso',
+      'statValue1' => '+30', 'statLabel1' => 'años en el sector industrial',
+      'statValue2' => '24 h', 'statLabel2' => 'respuesta en área metropolitana',
+      'badgeCardTitle' => 'Instalación certificada',
+      'badgeCardSubtitle' => 'Bajo estándares NOM, ISO e ISA',
+      'infoCards' => [
+        [
+          'icon' => '<svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="#003E7E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 2.6a2 2 0 0 1 3.4 0l8 13.9A2 2 0 0 1 20 19.5H4a2 2 0 0 1-1.7-3L10.3 2.6z"></path><path d="M12 9v4"></path><path d="M12 16.5h.01"></path></svg>',
+          'title' => 'Control de flujo preciso y confiable',
+          'body' => 'En entornos industriales, una instalación incorrecta de medidores de flujo puede afectar directamente la eficiencia, calidad y seguridad del proceso. Evaluamos cuidadosamente cada variable operativa (tipo de fluido, presión, temperatura, caudal esperado, compatibilidad con PLCs y SCADA) para asegurar un sistema de medición confiable, preciso y alineado a los estándares normativos.',
+          'extra' => '<ul style="margin:6px 0 0;padding:0;list-style:none;display:flex;flex-direction:column;gap:10px">
+            <li style="display:flex;gap:10px;font-size:14.5px;font-weight:600;color:#16202B;line-height:1.45"><span style="color:#003E7E;font-weight:800">—</span>Selección de tecnología según fluido y proceso</li>
+            <li style="display:flex;gap:10px;font-size:14.5px;font-weight:600;color:#16202B;line-height:1.45"><span style="color:#003E7E;font-weight:800">—</span>Compatibilidad con PLC, SCADA y HMI</li>
+            <li style="display:flex;gap:10px;font-size:14.5px;font-weight:600;color:#16202B;line-height:1.45"><span style="color:#003E7E;font-weight:800">—</span>Cumplimiento normativo NOM, ISO e ISA</li>
+          </ul>',
+        ],
+        [
+          'icon' => '<svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="#003E7E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"></rect><rect x="9" y="9" width="6" height="6"></rect><path d="M9 2v2M15 2v2M9 20v2M15 20v2M2 9h2M2 15h2M20 9h2M20 15h2"></path></svg>',
+          'title' => 'Adaptación a tu infraestructura de proceso',
+          'body' => 'Instalamos medidores de flujo industriales de última generación, desde tecnologías electromagnéticas y ultrasónicas hasta vortex y Coriolis, con opciones de salida analógica, digital o por protocolo industrial. Nos aseguramos de que el sistema quede calibrado, probado y listo para su operación, integrándolo sin conflictos a tu sistema SCADA, HMI o control local.',
+          'extra' => '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px;margin-top:6px">
+            <div style="border:1px solid #DDE3EA;border-radius:4px;padding:11px 12px;font-size:13.5px;font-weight:700;color:#003E7E;background:#F7F9FC">Electromagnéticos</div>
+            <div style="border:1px solid #DDE3EA;border-radius:4px;padding:11px 12px;font-size:13.5px;font-weight:700;color:#3C4C5D;background:#F7F9FC">Ultrasónicos</div>
+            <div style="border:1px solid #DDE3EA;border-radius:4px;padding:11px 12px;font-size:13.5px;font-weight:700;color:#3C4C5D;background:#F7F9FC">Vortex</div>
+            <div style="border:1px solid #DDE3EA;border-radius:4px;padding:11px 12px;font-size:13.5px;font-weight:700;color:#3C4C5D;background:#F7F9FC">Coriolis</div>
+            <div style="border:1px solid #DDE3EA;border-radius:4px;padding:11px 12px;font-size:13.5px;font-weight:700;color:#3C4C5D;background:#F7F9FC">4-20 mA / HART</div>
+            <div style="border:1px solid #DDE3EA;border-radius:4px;padding:11px 12px;font-size:13.5px;font-weight:700;color:#3C4C5D;background:#F7F9FC">Modbus</div>
+          </div>',
+        ],
+      ],
+      'processTitle' => 'Seis etapas, de la evaluación a la puesta en marcha',
+      'processSubtitle' => 'Cada etapa se documenta y se valida con el responsable de proceso antes de avanzar a la siguiente.',
+      'processSteps' => [
+        ['title' => 'Evaluación técnica del sistema', 'body' => 'Analizamos el tipo de fluido, presión, temperatura, caudal promedio y condiciones de instalación para seleccionar la tecnología de medición más adecuada (ultrasónica, electromagnética, Coriolis, etc.).', 'deliverable' => 'Levantamiento técnico en sitio'],
+        ['title' => 'Selección del medidor de flujo', 'body' => 'Recomendamos el equipo óptimo según la aplicación, compatibilidad con señales industriales (4-20 mA, Modbus, HART) y precisión requerida para el proceso.', 'deliverable' => 'Propuesta de equipo y accesorios'],
+        ['title' => 'Instalación eléctrica y mecánica', 'body' => 'Instalamos el medidor en línea o por bypass según lo requerido, garantizando correcta orientación, sellado, aislamiento y conexión eléctrica para la alimentación y comunicación.', 'deliverable' => 'Instalación alambrada y protegida'],
+        ['title' => 'Configuración y calibración inicial', 'body' => 'Parametrizamos el medidor según la aplicación (tipo de fluido, unidad de medida, rangos, factor K, alarmas) y realizamos calibraciones de fábrica o en campo si es necesario.', 'deliverable' => 'Respaldo de parámetros de calibración'],
+        ['title' => 'Integración con sistemas de control', 'body' => 'Integramos el medidor con PLCs, SCADA o sistemas de adquisición de datos existentes, garantizando que las lecturas de flujo estén disponibles en tiempo real.', 'deliverable' => 'Variables mapeadas y verificadas'],
+        ['title' => 'Pruebas funcionales y puesta en marcha', 'body' => 'Verificamos la precisión de las mediciones, respuesta a cambios de flujo, funcionamiento de salidas, alarmas, y dejamos el sistema completamente operativo y documentado.', 'deliverable' => 'Reporte de puesta en marcha'],
+      ],
+      'benefitsTitle' => 'Beneficios de Nuestros Servicios',
+      'benefitsSubtitle' => 'Resultados medibles en precisión de medición, cumplimiento normativo y continuidad operativa.',
+      'benefits' => [
+        ['title' => 'Instalación bajo norma', 'body' => 'Instalación garantizada bajo estándares NOM, ISO e ISA.'],
+        ['title' => 'Menor pérdida en el proceso', 'body' => 'Reducción de errores de medición y pérdidas en procesos críticos.'],
+        ['title' => 'Mayor eficiencia operativa', 'body' => 'Aumento de la eficiencia operativa y trazabilidad de caudales.'],
+        ['title' => 'Asesoría técnica integral', 'body' => 'Asesoría técnica desde la selección hasta la puesta en marcha del medidor.'],
+        ['title' => 'Adaptación a tu planta', 'body' => 'Adaptación a líneas de proceso existentes y condiciones industriales exigentes.'],
+        ['title' => 'Soporte post-instalación', 'body' => 'Soporte técnico post-instalación y ajustes finos en sitio.'],
+        ['title' => 'Instalación rápida', 'body' => 'Instalaciones rápidas sin afectar la producción ni el flujo del sistema.'],
+        ['title' => 'Compatibilidad total', 'body' => 'Compatibilidad con sistemas de automatización, PLCs y SCADA.'],
+      ],
+      'ctaTitle' => 'Cuéntanos de tu proceso y te cotizamos la instalación',
+      'ctaDescription' => 'Un especialista revisa tu caso y te contacta con la propuesta técnica. Si lo necesitas antes, llámanos o escríbenos por WhatsApp.',
+      'ctaBullets' => [
+        'Respuesta el mismo día hábil',
+        'Cotización sin compromiso',
+        'Atención en Monterrey y todo el noreste',
+      ],
+    ])
+  </main>
 @endsection
-
-@push('scripts')
-    <script>
-        function toggleAccordion(header) {
-            const description = header.nextElementSibling;
-            const icon = header.querySelector('.accordion_icon_ours_service');
-
-            if (description.style.display === "none" || description.style.display === "") {
-                description.style.display = "block";
-                icon.innerHTML = '<i class="fas fa-caret-up"></i>';
-            } else {
-                description.style.display = "none";
-                icon.innerHTML = '<i class="fas fa-caret-down"></i>';
-            }
-        }
-    </script>
-    <script>
-        $(document).ready(function() {
-            $('#inputState').select2({
-                width: '100%',
-                placeholder: 'Seleccionar..',
-                allowClear: true
-            });
-            $('#inputOperation').select2({
-                width: '100%',
-                allowClear: true
-            });
-        });
-    </script>
-@endpush

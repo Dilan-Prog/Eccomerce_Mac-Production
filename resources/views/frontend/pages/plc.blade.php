@@ -1,368 +1,73 @@
 @extends('frontend.layouts.master')
 
 @section('title')
-    PLC — Configuración, Instalación y Llave en Mano
+  PLC — Configuración, Instalación y Llave en Mano
 @endsection
 @section('content')
-    <main>
-        <section class="services_content_start">
-            <div class="container-fluid">
-                <div class="row">
-                    <div class="col-12 col-md-6 col-lg-6 col-xl-6">
-                        <div class="services_content_start_img">
-                            <img src="{{ asset('uploads/servicios/instalacion_plc-1.png') }}" alt="image">
-                        </div>
-                    </div>
-                    <div class="col-12 col-md-6 col-lg-6 col-xl-6">
-                        <div class="services_content_start_text">
-                            <article>
-                                <span class="services_content_subtitle">Servicio Profesional</span>
-                                <h1 class="services_content_title_start">Instalacion, Configuración y proyecto llave en mano
-                                    de PLC</h1>
-                                <p class="services_content_description">
-                                    Especialistas en sistemas de automatización con PLC. Ofrecemos servicio integral —desde
-                                    el diseño del proyecto hasta la puesta en marcha— para garantizar un control fiable y
-                                    eficiente de tus procesos industriales.
-                                </p>
-                                <a href="tel:8124738768" class="services_start_button track-conversion" data-type="telefono_servicios"><i class="fa fa-phone-alt"></i> Atención
-                                    Inmediata</a>
-                                <a href="https://wa.link/f28njw" target="_blank" class="services_start_button track-conversion" data-type="whatsapp_servicios"><i class="fa fa-whatsapp"></i> Escribenos</a>
-                            </article>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-        <section class="services_content_info">
-            <article>
-                <div class="container-fluid">
-                    <div class="row">
-                        <div class="col-12 col-md-4 col-lg-4 col-xl-4">
-                            <div class="wsus_content_info">
-                                <span class="wsus_content_info_subtitle">Control de procesos automatizado</span>
-                                <h4 class="wsus_content_info_title">Soluciones de PLC llave en mano</h4>
-                                <p class="wsus_content_info_description">
-                                    En entornos industriales, un PLC mal dimensionado o configurado puede causar paros,
-                                    defectos o ineficiencias. Diseñamos y entregamos proyectos llave en mano de PLC,
-                                    evaluando protocolos, E/S digitales y analógicas, comunicaciones (Modbus, Profinet,
-                                    EtherNet/IP) y redundancia para asegurar un sistema robusto y escalable.
-                                </p>
-                                <a href="tel:8124738768" class="services_content_info_button track-conversion" data-type="telefono_servicios"><i class="fa fa-phone-alt"></i>
-                                    Contáctanos</a>
-                            </div>
-                        </div>
-                        <div class="col-12 col-md-4 col-lg-4 col-xl-4">
-                            <div class="wsus_content_info">
-                                <span class="wsus_content_info_subtitle">Implementación y puesta en marcha</span>
-                                <h4 class="wsus_content_info_title">Adaptación a tu infraestructura de control</h4>
-                                <p class="wsus_content_info_description">
-                                    Instalamos y configuramos PLC de las principales marcas (Honeywell,Siemens, Allen‑Bradley, Schneider, Mitsubishi), creando lógicas de control, pantallas HMI y comunicaciones con SCADA. Nos aseguramos de que tu sistema funcione sin conflictos y cumpla con normas IEC, UL y NOM.
-                                </p>
-                                <a href="tel:8124738768" class="services_content_info_button track-conversion" data-type="telefono_servicios"><i class="fa fa-phone-alt"></i> Contáctanos</a>
-                            </div>
-
-
-                        </div>
-                        <div class="col-12 col-md-4 col-lg-4 col-xl-4 content_img_service_personalizate">
-                            <div class="wsus_content_info_img">
-                                <img src="{{ asset('uploads/servicios/instalacion_plc-2.png') }}" alt="image">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </article>
-        </section>
-        <section class="services_content_ours_process">
-            <div class="container">
-                <div class="row">
-                    <!-- Imagen o video ilustrativo -->
-                    <div class="col-12 col-md-6 col-lg-6 col-xl-6">
-                        <div class="services_content_ours_process_img-video">
-                            <img src="{{ asset('uploads/servicios/instalacion_plc-3.png') }}" alt="Instalación de PLC">
-                        </div>
-                    </div>
-                    <!-- Texto del proceso -->
-                    <div class="col-12 col-md-6 col-lg-6 col-xl-6">
-                        <div class="services_content_ours_process_text">
-                            <article>
-                                <span class="services_content_ours_process_text_subtitle_one">Nuestro Proceso para</span>
-                                <h2 class="services_content_ours_process_text_title">Proyecto Llave en Mano de PLC</h2>
-
-                                <div class="accordion_item">
-                                    <div class="accordion_header" onclick="toggleAccordion(this)">
-                                        <h3 class="services_content_ours_process_text_subtitle">
-                                            <span class="number_our_process">01</span> Ingeniería y diseño del sistema
-                                            <span class="accordion_icon_ours_service"><i class="fas fa-caret-down"></i></span>
-                                        </h3>
-                                    </div>
-                                    <p class="our_process_text_description" style="display: none;">
-                                        Definimos especificaciones del PLC, E/S, HMI y comunicaciones según requisitos de proceso, normativas y entorno operativo.
-                                    </p>
-                                </div>
-
-                                <div class="accordion_item">
-                                    <div class="accordion_header" onclick="toggleAccordion(this)">
-                                        <h3 class="services_content_ours_process_text_subtitle">
-                                            <span class="number_our_process">02</span> Suministro de equipos y materiales
-                                            <span class="accordion_icon_ours_service"><i class="fas fa-caret-down"></i></span>
-                                        </h3>
-                                    </div>
-                                    <p class="our_process_text_description" style="display: none;">
-                                        Proveemos PLC, módulos de E/S, fuentes, cables, gabinetes y HMI de acuerdo al diseño aprobado.
-                                    </p>
-                                </div>
-
-                                <div class="accordion_item">
-                                    <div class="accordion_header" onclick="toggleAccordion(this)">
-                                        <h3 class="services_content_ours_process_text_subtitle">
-                                            <span class="number_our_process">03</span> Instalación eléctrica y montaje
-                                            <span class="accordion_icon_ours_service"><i class="fas fa-caret-down"></i></span>
-                                        </h3>
-                                    </div>
-                                    <p class="our_process_text_description" style="display: none;">
-                                        Montamos gabinetes, tendido de cables y conexionado de PLC, E/S y HMI, cumpliendo normas de seguridad eléctrica.
-                                    </p>
-                                </div>
-
-                                <div class="accordion_item">
-                                    <div class="accordion_header" onclick="toggleAccordion(this)">
-                                        <h3 class="services_content_ours_process_text_subtitle">
-                                            <span class="number_our_process">04</span> Programación y configuración
-                                            <span class="accordion_icon_ours_service"><i class="fas fa-caret-down"></i></span>
-                                        </h3>
-                                    </div>
-                                    <p class="our_process_text_description" style="display: none;">
-                                        Desarrollamos la lógica ladder o estructurada, configuramos HMI y establecemos comunicaciones con SCADA o ERP.
-                                    </p>
-                                </div>
-
-                                <div class="accordion_item">
-                                    <div class="accordion_header" onclick="toggleAccordion(this)">
-                                        <h3 class="services_content_ours_process_text_subtitle">
-                                            <span class="number_our_process">05</span> Integración y pruebas en planta
-                                            <span class="accordion_icon_ours_service"><i class="fas fa-caret-down"></i></span>
-                                        </h3>
-                                    </div>
-                                    <p class="our_process_text_description" style="display: none;">
-                                        Ejecutamos pruebas de I/O, simulaciones de proceso y validación de secuencias antes de la puesta en marcha.
-                                    </p>
-                                </div>
-
-                                <div class="accordion_item">
-                                    <div class="accordion_header" onclick="toggleAccordion(this)">
-                                        <h3 class="services_content_ours_process_text_subtitle">
-                                            <span class="number_our_process">06</span> Puesta en marcha y capacitación
-                                            <span class="accordion_icon_ours_service"><i class="fas fa-caret-down"></i></span>
-                                        </h3>
-                                    </div>
-                                    <p class="our_process_text_description" style="display: none;">
-                                        Activamos el sistema en condiciones reales, entrenamos a tu equipo de operación y entregamos documentación técnica completa.
-                                    </p>
-                                </div>
-
-                                <a href="tel:8124738768" class="services_content_info_button track-conversion" data-type="telefono_servicios"><i class="fa fa-phone-alt"></i> Quiero Contactarlos</a>
-                                <a href="https://wa.link/f28njw" target="_blank" class="services_content_info_button track-conversion" data-type="whatsapp_servicios"><i class="fa fa-whatsapp" aria-hidden="true"></i> Escríbenos</a>
-                            </article>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-
-        <section class="services_content_benefits">
-            <div class="container">
-                <div class="row">
-                    <div class="col-12 col-md-7 col-lg-7 col-xl-7  benefits_text">
-                        <div class="content_benefits_text">
-                            <h3 class="benefits_text_title">Beneficios de Nuestros Servicios</h3>
-                            <p class="benefits_text_title_description">Beneficios de Nuestros Servicios</p>
-                            <div class="benefist_skills">
-                                <p class="benefits_text_description"><i class="fas fa-check-circle"></i> Proyecto llave en mano: diseño, suministro, instalación y puesta en marcha.</p>
-                                <p class="benefits_text_description"><i class="fas fa-check-circle"></i> Cumplimiento de estándares internacionales IEC, UL, NOM e ISA.</p>
-                                <p class="benefits_text_description"><i class="fas fa-check-circle"></i> Reducción de tiempos de paro y optimización de ciclos de producción.</p>
-                                <p class="benefits_text_description"><i class="fas fa-check-circle"></i> Desarrollo de lógicas de control a medida y pantallas HMI intuitivas.</p>
-                                <p class="benefits_text_description"><i class="fas fa-check-circle"></i> Integración con sistemas SCADA, ERP y redes industriales.</p>
-                                <p class="benefits_text_description"><i class="fas fa-check-circle"></i> Soporte técnico y capacitación para tu equipo de mantenimiento.</p>
-                                <p class="benefits_text_description"><i class="fas fa-check-circle"></i> Documentación completa: manuales eléctricos, diagramas ladder y esquemas de cableado.</p>
-                                <p class="benefits_text_description"><i class="fas fa-check-circle"></i> Escalabilidad para futuras ampliaciones o migraciones de sistema.</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-12 col-md-5 col-lg-5 col-xl-5">
-                        <div class="form-service-content">
-                            <form class="row form-service" action="https://formsubmit.co/dilanp270105@gmail.com"
-                                method="POST" style="font-family: 'Montserrat', sans-serif;">
-                                <h2 class="form-service_title">Formulario de Contacto</h2>
-                                <div class="row ">
-                                    <div class="col-12 col-md-6 col-lg-6 col-xl-6">
-                                        <label for="inputNombre" class="form-label-service">Nombre</label>
-                                        <input type="text" class="form-control-service" id="inputNombre"
-                                            placeholder="Nombre" aria-label="First name" name="Nombre" required
-                                            pattern="[A-Za-z]+" maxlength="30">
-                                        <div class="invalid-feedback">
-                                            El nombre no puede estar en blanco.
-                                        </div>
-                                    </div>
-                                    <div class="col-12 col-md-6 col-lg-6 col-xl-6">
-                                        <label for="inputAddress2" class="form-label-service">Apellidos</label>
-                                        <input type="text" class="form-control-service" placeholder="Apellidos"
-                                            aria-label="Last name" name="Apellido" pattern="[A-Za-z]+" required>
-                                    </div>
-
-                                </div>
-                                <div class="col-12 col-md-6 col-lg-6 col-xl-6">
-                                    <label for="inputEmail4" class="form-label-service">Email</label>
-                                    <input type="email" class="form-control-service" id="inputEmail4"
-                                        placeholder="example@gmail.com" name="email" required>
-                                </div>
-                                <div class="col-12 col-md-6 col-lg-6 col-xl-6">
-                                    <label for="telefono" class="form-label-service">N&uacute;mero de telefono</label>
-                                    <input type="tel" class="form-control-service" id="inputAddress"
-                                        placeholder="Telefono" name="Telefono" required pattern="[0-9]{10}"
-                                        title="Ingrese un número de teléfono válido">
-                                </div>
-                                <div class="col-md-4">
-                                    <label for="inputCity" class="form-label-service">Empresa</label>
-                                    <input type="text" class="form-control-service" id="inputCity"
-                                        placeholder="Nombre Empresa" required name="Ciudad" required>
-                                </div>
-
-                                <div class="col-md-4">
-                                    <label for="inputCity" class="form-label-service">Ciudad</label>
-                                    <input type="text" class="form-control-service" id="inputCity"
-                                        placeholder="Ciudad Juarez" name="Ciudad" required>
-                                </div>
-                                <div class="col-md-4">
-                                    <label for="inputState" class="form-label-service">Estado</label>
-                                    <select id="inputState" class="form-select-service" name="Estado" required>
-                                        <option selected disabled value="">Seleccionar..</option>
-                                        <option>Aguascalientes</option>
-                                        <option>Baja California</option>
-                                        <option>Baja California Sur</option>
-                                        <option>Campeche</option>
-                                        <option>Chiapas</option>
-                                        <option>Chihuahua</option>
-                                        <option>Coahuila</option>
-                                        <option>Colima</option>
-                                        <option>Durango</option>
-                                        <option>Estado de M&eacute;xico</option>
-                                        <option>Guanajuato</option>
-                                        <option>Guerrero</option>
-                                        <option>Hidalgo</option>
-                                        <option>Jalisco</option>
-                                        <option>Michoac&aacute;n</option>
-                                        <option>Morelos</option>
-                                        <option>Nayarit</option>
-                                        <option>Nuevo Le&oacute;n</option>
-                                        <option>Oaxaca</option>
-                                        <option>Puebla</option>
-                                        <option>Quer&eacute;taro</option>
-                                        <option>Quintana Roo</option>
-                                        <option>San Luis Potos&iacute;</option>
-                                        <option>Sinaloa</option>
-                                        <option>Sonora</option>
-                                        <option>Tabasco</option>
-                                        <option>Tamaulipas</option>
-                                        <option>Tlaxcala</option>
-                                        <option>Veracruz</option>
-                                        <option>Yucat&aacute;n</option>
-                                        <option>Zacatecas</option>
-                                    </select>
-                                </div>
-                                <div class="col-md-12">
-                                    <label for="inputOperation" class="form-label-service">Operaci&oacute;n</label>
-                                    <select id="inputOperation" class="form-select" name="Operacion" required>
-                                        <option selected>Servicio De Calibraci&oacute;n Y Puesta En Marcha</option>
-                                    </select>
-                                </div>
-
-                                <div class="col-12 form-floating">
-                                    <label for="floatingTextarea2" style="color: #ffffff">Mensaje</label>
-                                    <textarea class="form-control-service" id="floatingTextarea2" style="height: 100px" name="Mensaje"></textarea>
-                                </div>
-                                <div class="col-12 form-button-submit">
-                                    <button type="submit" class="btn btn-form-service">Enviar solicitud</button>
-                                    <input type="hidden" name="_next"
-                                        value="http://127.0.0.1:8000/cotizar"><!--Cambiar url-->
-                                    <input type="hidden" name="_captcha" value="false">
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-        {{-- FUTURO --}}
-        {{-- <section class="services_content_slider_services">
-    <div class="container-fluid">
-      <h2 class="text-center">Mas Servicios</h2>
-      <div class="row">
-      <div class="col-4">
-        <a href="">
-        <div class="services_content_slider_services_img">
-          <img src="{{asset('frontend/images/imagen ejemplo.png')}}" alt="image">
-          <h3 class="services_content_slider_services_title">Calibracion de Controladores</h3>
-          <p class="services_content_slider_services_description">Lorem ipsum dolor sit amet consectetur adipisicing
-          elit. Quisquam, voluptatibus.</p>
-          <button class="services_content_slider_services_button">Ver Servicio</button>
-        </div>
-        </a>
-      </div>
-      <div class="col-4">
-        <a href="">
-        <div class="services_content_slider_services_img">
-          <img src="{{asset('frontend/images/imagen ejemplo.png')}}" alt="image">
-          <h3 class="services_content_slider_services_title">Calibracion de Controladores</h3>
-          <p class="services_content_slider_services_description">Lorem ipsum dolor sit amet consectetur adipisicing
-          elit. Quisquam, voluptatibus.</p>
-          <button class="services_content_slider_services_button">Ver Servicio</button>
-        </div>
-        </a>
-      </div>
-      <div class="col-4">
-        <a href="">
-        <div class="services_content_slider_services_img">
-          <img src="{{asset('frontend/images/imagen ejemplo.png')}}" alt="image">
-          <h3 class="services_content_slider_services_title">Calibracion de Controladores</h3>
-          <p class="services_content_slider_services_description">Lorem ipsum dolor sit amet consectetur adipisicing
-          elit. Quisquam, voluptatibus.</p>
-          <button class="services_content_slider_services_button">Ver Servicio</button>
-        </div>
-        </a>
-      </div>
-      </div>
-    </div>
-    </section> --}}
-    </main>
+  <main>
+    @include('frontend.pages.partials.service-layout', [
+      'badgeText' => 'Servicio industrial · Monterrey, N.L.',
+      'heroTitle' => 'Instalación, Configuración y Proyecto Llave en Mano de PLC',
+      'heroDescription' => 'Especialistas en sistemas de automatización con PLC. Ofrecemos servicio integral —desde el diseño del proyecto hasta la puesta en marcha— para garantizar un control fiable y eficiente de tus procesos industriales.',
+      'heroImage' => 'uploads/servicios/instalacion_plc-1.png',
+      'heroImageAlt' => 'Técnico instalando y configurando un PLC en tablero de control industrial',
+      'statValue1' => '+30', 'statLabel1' => 'años en el sector industrial',
+      'statValue2' => '24 h', 'statLabel2' => 'respuesta en área metropolitana',
+      'badgeCardTitle' => 'Proyecto llave en mano',
+      'badgeCardSubtitle' => 'Bajo normativa IEC, UL y NOM',
+      'infoCards' => [
+        [
+          'icon' => '<svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="#003E7E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 2.6a2 2 0 0 1 3.4 0l8 13.9A2 2 0 0 1 20 19.5H4a2 2 0 0 1-1.7-3L10.3 2.6z"></path><path d="M12 9v4"></path><path d="M12 16.5h.01"></path></svg>',
+          'title' => 'Soluciones de PLC llave en mano',
+          'body' => 'En entornos industriales, un PLC mal dimensionado o configurado puede causar paros, defectos o ineficiencias. Diseñamos y entregamos proyectos llave en mano de PLC, evaluando protocolos, E/S digitales y analógicas, comunicaciones y redundancia para asegurar un sistema robusto y escalable.',
+          'extra' => '<ul style="margin:6px 0 0;padding:0;list-style:none;display:flex;flex-direction:column;gap:10px">
+            <li style="display:flex;gap:10px;font-size:14.5px;font-weight:600;color:#16202B;line-height:1.45"><span style="color:#003E7E;font-weight:800">—</span>Comunicaciones Modbus, Profinet y EtherNet/IP</li>
+            <li style="display:flex;gap:10px;font-size:14.5px;font-weight:600;color:#16202B;line-height:1.45"><span style="color:#003E7E;font-weight:800">—</span>E/S digitales y analógicas dimensionadas al proceso</li>
+            <li style="display:flex;gap:10px;font-size:14.5px;font-weight:600;color:#16202B;line-height:1.45"><span style="color:#003E7E;font-weight:800">—</span>Redundancia y escalabilidad del sistema</li>
+          </ul>',
+        ],
+        [
+          'icon' => '<svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="#003E7E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"></rect><rect x="9" y="9" width="6" height="6"></rect><path d="M9 2v2M15 2v2M9 20v2M15 20v2M2 9h2M2 15h2M20 9h2M20 15h2"></path></svg>',
+          'title' => 'Adaptación a tu infraestructura de control',
+          'body' => 'Instalamos y configuramos PLC de las principales marcas, desarrollando lógicas de control, pantallas HMI y comunicación con SCADA. Nos aseguramos de que tu sistema funcione sin conflictos y cumpla con las normas IEC, UL y NOM.',
+          'extra' => '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px;margin-top:6px">
+            <div style="border:1px solid #DDE3EA;border-radius:4px;padding:11px 12px;font-size:13.5px;font-weight:700;color:#003E7E;background:#F7F9FC">Honeywell</div>
+            <div style="border:1px solid #DDE3EA;border-radius:4px;padding:11px 12px;font-size:13.5px;font-weight:700;color:#3C4C5D;background:#F7F9FC">Siemens</div>
+            <div style="border:1px solid #DDE3EA;border-radius:4px;padding:11px 12px;font-size:13.5px;font-weight:700;color:#3C4C5D;background:#F7F9FC">Allen-Bradley</div>
+            <div style="border:1px solid #DDE3EA;border-radius:4px;padding:11px 12px;font-size:13.5px;font-weight:700;color:#3C4C5D;background:#F7F9FC">Schneider</div>
+            <div style="border:1px solid #DDE3EA;border-radius:4px;padding:11px 12px;font-size:13.5px;font-weight:700;color:#3C4C5D;background:#F7F9FC">Mitsubishi</div>
+          </div>',
+        ],
+      ],
+      'processTitle' => 'Seis etapas, del diseño a la puesta en marcha',
+      'processSubtitle' => 'Cada etapa se documenta y se valida contigo antes de avanzar a la siguiente.',
+      'processSteps' => [
+        ['title' => 'Ingeniería y diseño del sistema', 'body' => 'Definimos especificaciones del PLC, E/S, HMI y comunicaciones según requisitos de proceso, normativas y entorno operativo.', 'deliverable' => 'Ingeniería de detalle documentada'],
+        ['title' => 'Suministro de equipos y materiales', 'body' => 'Proveemos PLC, módulos de E/S, fuentes, cables, gabinetes y HMI de acuerdo al diseño aprobado.', 'deliverable' => 'Lista de equipo y materiales'],
+        ['title' => 'Instalación eléctrica y montaje', 'body' => 'Montamos gabinetes, tendido de cables y conexionado de PLC, E/S y HMI, cumpliendo normas de seguridad eléctrica.', 'deliverable' => 'Tablero instalado y cableado'],
+        ['title' => 'Programación y configuración', 'body' => 'Desarrollamos la lógica ladder o estructurada, configuramos HMI y establecemos comunicaciones con SCADA o ERP.', 'deliverable' => 'Programa y respaldo de configuración'],
+        ['title' => 'Integración y pruebas en planta', 'body' => 'Ejecutamos pruebas de I/O, simulaciones de proceso y validación de secuencias antes de la puesta en marcha.', 'deliverable' => 'Reporte de pruebas de I/O'],
+        ['title' => 'Puesta en marcha y capacitación', 'body' => 'Activamos el sistema en condiciones reales, entrenamos a tu equipo de operación y entregamos documentación técnica completa.', 'deliverable' => 'Reporte de puesta en marcha y manuales'],
+      ],
+      'benefitsTitle' => 'Beneficios de tu proyecto llave en mano',
+      'benefitsSubtitle' => 'Resultados medibles en continuidad operativa, cumplimiento normativo y control de tu proceso.',
+      'benefits' => [
+        ['title' => 'Proyecto llave en mano', 'body' => 'Diseño, suministro, instalación y puesta en marcha en un solo servicio integral.'],
+        ['title' => 'Cumplimiento normativo', 'body' => 'Instalación alineada a los estándares internacionales IEC, UL, NOM e ISA.'],
+        ['title' => 'Menos tiempos de paro', 'body' => 'Optimizamos los ciclos de producción y reducimos paros no programados.'],
+        ['title' => 'Lógicas y HMI a medida', 'body' => 'Desarrollo de lógicas de control a medida y pantallas HMI intuitivas para tu operación.'],
+        ['title' => 'Integración con tus sistemas', 'body' => 'Comunicación con SCADA, ERP y redes industriales existentes en tu planta.'],
+        ['title' => 'Soporte y capacitación', 'body' => 'Acompañamiento técnico y capacitación para tu equipo de mantenimiento.'],
+        ['title' => 'Documentación completa', 'body' => 'Manuales eléctricos, diagramas ladder y esquemas de cableado para tu expediente.'],
+        ['title' => 'Escalabilidad', 'body' => 'Sistemas preparados para futuras ampliaciones o migraciones sin rediseñar desde cero.'],
+      ],
+      'ctaTitle' => 'Cuéntanos de tu proyecto y te cotizamos la solución',
+      'ctaDescription' => 'Un especialista revisa tu caso y te contacta con la propuesta técnica. Si lo necesitas antes, llámanos o escríbenos por WhatsApp.',
+      'ctaBullets' => [
+        'Respuesta el mismo día hábil',
+        'Cotización sin compromiso',
+        'Atención en Monterrey y todo el noreste',
+      ],
+    ])
+  </main>
 @endsection
-
-@push('scripts')
-    <script>
-        function toggleAccordion(header) {
-            const description = header.nextElementSibling;
-            const icon = header.querySelector('.accordion_icon_ours_service');
-
-            if (description.style.display === "none" || description.style.display === "") {
-                description.style.display = "block";
-                icon.innerHTML = '<i class="fas fa-caret-up"></i>';
-            } else {
-                description.style.display = "none";
-                icon.innerHTML = '<i class="fas fa-caret-down"></i>';
-            }
-        }
-    </script>
-    <script>
-        $(document).ready(function() {
-            $('#inputState').select2({
-                width: '100%',
-                placeholder: 'Seleccionar..',
-                allowClear: true
-            });
-            $('#inputOperation').select2({
-                width: '100%',
-                allowClear: true
-            });
-        });
-    </script>
-@endpush
