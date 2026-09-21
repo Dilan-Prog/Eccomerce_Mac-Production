@@ -51,6 +51,7 @@ Route::middleware(['throttle:api', 'aspel.token'])->group(function () {
 // llamadas.
 Route::middleware(['throttle:marketing-api', 'marketing.token'])->group(function () {
     Route::get('/marketing/customers', [MarketingDataController::class, 'customers']);
+    Route::get('/marketing/customers-all', [MarketingDataController::class, 'allCustomers']);
     Route::get('/marketing/email/{userId}', [MarketingDataController::class, 'email']);
 
     // Universo SEPARADO del de arriba: clientes fuente Aspel (facturación
@@ -58,6 +59,11 @@ Route::middleware(['throttle:marketing-api', 'marketing.token'])->group(function
     // Ver MarketingDataController::aspelCustomers()/aspelEmail().
     Route::get('/marketing/aspel-customers', [MarketingDataController::class, 'aspelCustomers']);
     Route::get('/marketing/aspel-email/{clave}', [MarketingDataController::class, 'aspelEmail']);
+
+    // Rastreo de envios de campana (reemplaza $getWorkflowStaticData() de
+    // n8n, que no persiste de forma confiable entre ejecuciones manuales).
+    // Usado junto con ?exclude_sent_this_month=1 en aspel-customers.
+    Route::post('/marketing/mark-sent', [MarketingDataController::class, 'markSent']);
 
     // Contenido crudo de una plantilla (marcadores {{...}} sin sustituir) —
     // para cuando n8n prefiere decidir el relleno de variables por su

@@ -51,6 +51,55 @@ class MarketingDataController extends Controller
             ->orderBy('id')
             ->paginate(50);
 
+        return $this->paginatedCustomersResponse($users);
+    }
+
+    /**
+     * GET /api/marketing/customers-all[?role=user|admin|associate|technician]
+     *
+     * Todos los usuarios del rol pedido — a diferencia de customers() de
+     * arriba, que solo trae a quien ya tiene al menos una orden válida. Aquí
+     * se trae el universo completo de ese rol, tenga o no compras (mismo
+     * criterio que aspelCustomers() aplica del lado de Aspel: no se oculta a
+     * nadie por no cumplir un filtro de actividad). Por defecto ?role=user
+     * (clientes del ecommerce, no personal/admin) — se puede pedir otro rol
+     * explícitamente si n8n lo necesita, pero solo de la lista blanca de
+     * roles reales del sistema (ver User::ROLES), para no exponer un query
+     * arbitrario sobre esta columna. purchase_summary se arma con el mismo
+     * criterio de "orden válida" que customers() cuando sí existen órdenes
+     * (order_status != 'canceled' y payment_status = 1); quien no tiene
+     * ninguna recibe un purchase_summary vacío en vez de quedar fuera.
+     * Paginado (50 por defecto, ?per_page=N hasta 1000).
+     */
+    public function allCustomers(Request $request)
+    {
+        $perPage = (int) $request->query('per_page', 50);
+        $perPage = $perPage > 0 ? min($perPage, 1000) : 50;
+
+        $role = $request->query('role', 'user');
+        if (!in_array($role, User::ROLES, true)) {
+            return response()->json([
+                'status' => 'error',
+                'message' => "Rol invalido: '{$role}'. Roles validos: " . implode(', ', User::ROLES),
+            ], 422);
+        }
+
+        $users = User::query()
+            ->where('role', $role)
+            ->with(['orders' => function ($query) {
+                $query->where('order_status', '!=', 'canceled')
+                    ->where('payment_status', 1)
+                    ->with(['orderProducts.product.category:id,name'])
+                    ->orderByDesc('created_at');
+            }])
+            ->orderBy('id')
+            ->paginate($perPage);
+
+        return $this->paginatedCustomersResponse($users);
+    }
+
+    private function paginatedCustomersResponse($users)
+    {
         $data = $users->getCollection()->map(function (User $user) {
             $totalSpent = 0.0;
             $lastPurchaseAt = null;
@@ -197,6 +246,12 @@ class MarketingDataController extends Controller
      * ?per_page=N (tope 1000, para no armar una respuesta enorme por
      * accidente) si se prefiere traer todo de una sola llamada en vez de
      * iterar página por página desde n8n.
+     *
+     * ?exclude_sent_this_month=1 (opcional) excluye clientes cuyo
+     * last_marketing_send_at cae dentro del mes calendario actual —
+     * reemplaza la memoria de n8n ($getWorkflowStaticData(), no persiste de
+     * forma confiable entre ejecuciones manuales) para el envío en lotes
+     * diarios sin repetirle el correo al mismo cliente. Ver markSent().
      */
     public function aspelCustomers(Request $request)
     {
@@ -209,6 +264,12 @@ class MarketingDataController extends Controller
                     ->from('aspel_sales')
                     ->whereColumn('aspel_sales.cve_clpv', 'aspel_clients.clave')
                     ->whereNull('aspel_sales.fecha_cancela');
+            })
+            ->when($request->boolean('exclude_sent_this_month'), function ($query) {
+                $query->where(function ($q) {
+                    $q->whereNull('last_marketing_send_at')
+                        ->orWhere('last_marketing_send_at', '<', now()->startOfMonth());
+                });
             })
             ->orderBy('id')
             ->paginate($perPage);
@@ -286,6 +347,30 @@ class MarketingDataController extends Controller
                 'total' => $clients->total(),
                 'last_page' => $clients->lastPage(),
             ],
+        ]);
+    }
+
+    /**
+     * POST /api/marketing/mark-sent { "claves": ["1", "4", "5"] }
+     *
+     * Registra que estos clientes (aspel_clients.clave) ya recibieron el
+     * correo de la campaña de este mes. Junto con
+     * ?exclude_sent_this_month=1 en aspelCustomers(), reemplaza la memoria
+     * de n8n para el envío en lotes diarios.
+     */
+    public function markSent(Request $request)
+    {
+        $request->validate([
+            'claves' => ['required', 'array'],
+            'claves.*' => ['string'],
+        ]);
+
+        AspelClient::whereIn('clave', $request->claves)
+            ->update(['last_marketing_send_at' => now()]);
+
+        return response()->json([
+            'status' => 'success',
+            'updated' => count($request->claves),
         ]);
     }
 

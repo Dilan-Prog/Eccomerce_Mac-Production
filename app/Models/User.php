@@ -15,6 +15,15 @@ class User extends Authenticatable
     use HasApiTokens, HasFactory, Notifiable;
 
     /**
+     * Valores reales de la columna `role` en todo el sistema — 'user' es el
+     * default de BD para clientes del ecommerce; el resto son roles de
+     * personal (ver StaffUserController::STAFF_ROLES). Lista blanca usada
+     * para validar filtros dinámicos por rol (ej.
+     * MarketingDataController::allCustomers()).
+     */
+    public const ROLES = ['user', 'admin', 'associate', 'technician'];
+
+    /**
      * The attributes that are mass assignable.
      *
      * @var array<int, string>
