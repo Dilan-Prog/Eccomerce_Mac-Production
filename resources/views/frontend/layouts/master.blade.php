@@ -1129,7 +1129,14 @@
                 return;
             }
 
-            // WhatsApp / Teléfono: valida reCAPTCHA antes de abrir el enlace
+            // Teléfono: sin reCAPTCHA, se registra en segundo plano y se abre el marcador de inmediato
+            if (type.startsWith('telefono')) {
+                registrarConversion(type);
+                window.location.href = href;
+                return;
+            }
+
+            // WhatsApp: valida reCAPTCHA antes de abrir el enlace
             ejecutarRecaptchaYValidar(type, function (token) {
                 dataLayer.push({
                     event: 'conversion_click',
