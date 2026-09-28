@@ -99,7 +99,7 @@
                     <div class="col-3 shop-info-item shop-info-item--highlight">
                         <span class="shop-info-badge">¡Meses sin intereses!</span>
                         <img src="{{ asset('frontend/images/iconos/how-to-pay-home.webp') }}" alt="Formas de Pago">
-                        <h4>Compra a 3 MESES SIN INTERESES</h4>
+                        <h4>Compra con nosotros y APROVECHA</h4>
                         <p>3 Meses sin intereses en tus compras.</p>
                     </div>
 
