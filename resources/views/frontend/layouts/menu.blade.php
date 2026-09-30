@@ -39,12 +39,9 @@
                     <svg class="nav-sec-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
                 </a>
                 <div class="nav-sec-dropdown">
-                    <a href="{{ route('servicio-controladores-temperatura') }}">Instalación de Controladores</a>
-                    <a href="{{ route('servicio-instalacion-videoregistradores') }}">Instalación de Videoregistradores</a>
-                    <a href="{{ route('servicio-instalacion-medidoresdeflujo') }}">Instalación de Medidores de Flujo</a>
-                    <a href="{{ route('servicio-instalacion-plc') }}">PLC — Configuración, Instalación y Llave en mano</a>
-                    <a href="{{ route('servicio-reparacion-videoregistradores') }}">Reparación de Videoregistradores</a>
-                    <a href="{{ route('servicio-calibracion-ema') }}">Calibraciones EMA</a>
+                    <a href="{{ route('servicio-instalacion-configuracion') }}">Instalación y Configuración</a>
+                    <a href="javascript:void(0)">Reparación de Equipos</a>
+                    <a href="javascript:void(0)">Calibraciones</a>
                 </div>
             </div>
             <div class="nav-secondary-divider"></div>

@@ -38,6 +38,7 @@ Route::get('about', [HomeController::class, 'about'])->name('about');
 Route::get('associate',[HomeController::class, 'associatePage'])->name('associate');
 Route::get('calibracion-puesta', [HomeController::class, 'servicesCalibration'])->name('calibracion-puesta');
 Route::get('sistemas', [HomeController::class, 'servicesSistemas'])->name('sistemas');
+Route::get('servicio-instalacion-configuracion', [HomeController::class, 'servicesInstalacionConfiguracion'])->name('servicio-instalacion-configuracion');
 Route::get('servicio-controladores-temperatura', [HomeController::class, 'servicesControllerTemperature'])->name('servicio-controladores-temperatura');
 Route::get('servicio-instalacion-videoregistradores', [HomeController::class, 'servicesVideorecorders'])->name('servicio-instalacion-videoregistradores');
 Route::get('servicio-instalacion-medidoresdeflujo', [HomeController::class, 'servicesMedidor'])->name('servicio-instalacion-medidoresdeflujo');

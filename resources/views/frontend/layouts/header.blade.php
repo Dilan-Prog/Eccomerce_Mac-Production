@@ -95,12 +95,9 @@
                     <details>
                         <summary>Servicios</summary>
                         <ul class="mob-panel__submenu">
-                            <li><a href="{{ route('servicio-controladores-temperatura') }}">Instalación de Controladores</a></li>
-                            <li><a href="{{ route('servicio-instalacion-videoregistradores') }}">Instalación de Videoregistradores</a></li>
-                            <li><a href="{{ route('servicio-instalacion-medidoresdeflujo') }}">Instalación de Medidores de Flujo</a></li>
-                            <li><a href="{{ route('servicio-instalacion-plc') }}">PLC — Configuración, Instalación y Llave en mano</a></li>
-                            <li><a href="{{ route('servicio-reparacion-videoregistradores') }}">Reparación de Videoregistradores</a></li>
-                            <li><a href="{{ route('servicio-calibracion-ema') }}">Calibraciones EMA</a></li>
+                            <li><a href="{{ route('servicio-instalacion-configuracion') }}">Instalación y Configuración</a></li>
+                            <li><a href="javascript:void(0)">Reparación de Equipos</a></li>
+                            <li><a href="javascript:void(0)">Calibraciones</a></li>
                         </ul>
                     </details>
                 </li>

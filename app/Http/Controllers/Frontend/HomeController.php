@@ -125,6 +125,9 @@ class HomeController extends Controller
     public function  associatePage(){
         return view('frontend.pages.associate_page');
     }
+    public function  servicesInstalacionConfiguracion(){
+        return view('frontend.pages.instalacion-configuracion');
+    }
     public function  servicesControllerTemperature(){
         return view('frontend.pages.controles');
     }

@@ -28,6 +28,15 @@
 @push('styles')
 <style>
     @keyframes mdnPulse { 0%,100% { opacity: .35; transform: scale(1); } 50% { opacity: 1; transform: scale(1.35); } }
+    .mdn-svc-hero-row {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        gap: clamp(32px, 5vw, 64px);
+        align-items: center;
+    }
+    @media (min-width: 900px) {
+        .mdn-svc-hero-row { grid-template-columns: 1fr 1.35fr; }
+    }
 </style>
 @endpush
 
@@ -36,7 +45,7 @@
   <section style="position:relative;background:#003E7E;color:#fff;overflow:hidden">
     <div style="position:absolute;inset:0;background-image:linear-gradient(#FFFFFF10 1px,transparent 1px),linear-gradient(90deg,#FFFFFF10 1px,transparent 1px);background-size:56px 56px;pointer-events:none"></div>
     <div style="position:absolute;top:-140px;right:-120px;width:520px;height:520px;border-radius:50%;background:radial-gradient(circle,#0A5AAF66,transparent 68%);pointer-events:none"></div>
-    <div style="position:relative;max-width:1200px;margin:0 auto;padding:clamp(40px,6vw,80px) clamp(16px,4vw,32px) clamp(48px,6vw,88px);display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:clamp(32px,5vw,64px);align-items:center">
+    <div class="mdn-svc-hero-row" style="position:relative;max-width:1200px;margin:0 auto;padding:clamp(40px,6vw,80px) clamp(16px,4vw,32px) clamp(48px,6vw,88px)">
       <div style="min-width:0">
         <div style="display:inline-flex;align-items:center;gap:9px;padding:7px 14px;border:1px solid #FFFFFF33;border-radius:100px;font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#BFD6F0;margin-bottom:26px">
           <span style="width:6px;height:6px;border-radius:50%;background:#F2A900;animation:mdnPulse 2.4s ease-in-out infinite"></span>
