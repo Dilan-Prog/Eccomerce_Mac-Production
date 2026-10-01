@@ -78,7 +78,7 @@
         </div>
       </div>
       <div style="min-width:0;position:relative">
-        <div style="position:relative;border-radius:8px;overflow:hidden;border:1px solid #FFFFFF2E;box-shadow:0 30px 70px -30px #00152C;aspect-ratio:4/3">
+        <div style="position:relative;border-radius:8px;overflow:hidden;border:1px solid #FFFFFF2E;box-shadow:0 30px 70px -30px #00152C;aspect-ratio:4/3;min-height:0">
           <img src="{{ asset($heroImage) }}" alt="{{ $heroImageAlt }}" style="width:100%;height:100%;object-fit:cover;display:block">
         </div>
         <div style="position:absolute;bottom:-18px;left:-18px;background:#fff;border:1px solid #DDE3EA;border-radius:6px;padding:14px 18px;box-shadow:0 18px 40px -18px #00152C99;display:flex;align-items:center;gap:12px">
@@ -98,7 +98,7 @@
     <section style="background:#F7F9FC;border-bottom:1px solid #DDE3EA">
       <div style="max-width:1200px;margin:0 auto;padding:clamp(32px,4vw,48px) clamp(16px,4vw,32px);display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px">
         @foreach ($extraGallery as $photo)
-          <div style="border-radius:8px;overflow:hidden;border:1px solid #DDE3EA;box-shadow:0 16px 40px -20px #00152C33;aspect-ratio:4/3">
+          <div style="border-radius:8px;overflow:hidden;border:1px solid #DDE3EA;box-shadow:0 16px 40px -20px #00152C33;aspect-ratio:4/3;min-height:0">
             <img src="{{ asset($photo['image']) }}" alt="{{ $photo['alt'] }}" style="width:100%;height:100%;object-fit:cover;display:block">
           </div>
         @endforeach

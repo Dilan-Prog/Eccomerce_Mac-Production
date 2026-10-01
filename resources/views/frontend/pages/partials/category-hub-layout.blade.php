@@ -92,7 +92,7 @@
       <div class="mdn-hub-cards">
         @foreach ($services as $s)
           <div style="background:#fff;border-radius:8px;overflow:hidden;display:flex;flex-direction:column;border:1px solid #DDE3EA">
-            <div style="position:relative;aspect-ratio:16/10">
+            <div style="position:relative;aspect-ratio:16/10;min-height:0;overflow:hidden">
               <img src="{{ asset($s['image']) }}" alt="{{ $s['imageAlt'] }}" style="width:100%;height:100%;object-fit:cover;display:block">
             </div>
             <div style="padding:24px;display:flex;flex-direction:column;gap:12px;flex:1">
