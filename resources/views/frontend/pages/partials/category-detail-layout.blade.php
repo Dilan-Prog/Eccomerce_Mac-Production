@@ -51,8 +51,8 @@
 <div style="width:100%;overflow-x:hidden">
 
   {{-- HERO --}}
-  <section style="position:relative;background:#003E7E;color:#fff;overflow:hidden">
-    <div style="position:absolute;inset:0;background-image:linear-gradient(#FFFFFF0B 1px,transparent 1px),linear-gradient(90deg,#FFFFFF0B 1px,transparent 1px);background-size:56px 56px;pointer-events:none"></div>
+  <section style="position:relative;background:#003E7E;color:#fff">
+    <div style="position:absolute;inset:0;background-image:linear-gradient(#FFFFFF0B 1px,transparent 1px),linear-gradient(90deg,#FFFFFF0B 1px,transparent 1px);background-size:56px 56px;pointer-events:none;overflow:hidden"></div>
     <div style="position:relative;max-width:1160px;margin:0 auto;padding:clamp(56px,7vw,88px) clamp(16px,4vw,32px) 0;display:flex;flex-direction:column;align-items:center;text-align:center;gap:20px">
       <div style="border:1px solid #FFFFFF4D;border-radius:999px;padding:8px 18px;font-size:11px;font-weight:700;letter-spacing:.14em;color:#DCE8FA;text-transform:uppercase">{{ $heroBadge }}</div>
       <h1 style="margin:0;font-size:clamp(34px,5vw,54px);line-height:1.08;font-weight:800;letter-spacing:-1px;color:#fff;text-wrap:balance">{{ $heroTitle }}</h1>
