@@ -1059,30 +1059,7 @@
 
     {{-- Tracking unificado de conversiones (WhatsApp / Teléfono / Correo) --}}
     <script>
-        const siteKey = '6LfT84IrAAAAAKVhNXXrFPDAgMFAiCGdj1-tYz2B';
         const googleSheetsWebhook = 'https://script.google.com/macros/s/AKfycbwp8PQWscSciD7gc5c1DMiFntOr0HuAPraK9pfzwtzqCP_4DF9azi8Fy16HfEeqxK3T/exec';
-
-        // Función general para ejecutar y validar reCAPTCHA
-        function ejecutarRecaptchaYValidar(action, callbackOK) {
-            grecaptcha.ready(() => {
-                grecaptcha.execute(siteKey, { action: action }).then(token => {
-                    fetch('/recaptcha-validar', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                        },
-                        body: JSON.stringify({ token, action })
-                    }).then(res => {
-                        if (res.ok) {
-                            callbackOK(token);
-                        } else {
-                            alert('No se pudo validar reCAPTCHA.');
-                        }
-                    }).catch(() => alert('Error al validar reCAPTCHA'));
-                });
-            });
-        }
 
         // Envía la conversión a Google Sheets y al backend (en paralelo, sin bloquear la navegación)
         function registrarConversion(type) {
@@ -1136,22 +1113,19 @@
                 return;
             }
 
-            // WhatsApp: valida reCAPTCHA antes de abrir el enlace
-            ejecutarRecaptchaYValidar(type, function (token) {
-                dataLayer.push({
-                    event: 'conversion_click',
-                    action: 'click',
-                    label: type,
-                    recaptcha_token: token
-                });
-                registrarConversion(type);
-
-                if (type.startsWith('whatsapp')) {
-                    window.open(href, '_blank');
-                } else {
-                    window.location.href = href;
-                }
+            // WhatsApp: sin reCAPTCHA, se registra en segundo plano y se abre de inmediato
+            dataLayer.push({
+                event: 'conversion_click',
+                action: 'click',
+                label: type
             });
+            registrarConversion(type);
+
+            if (type.startsWith('whatsapp')) {
+                window.open(href, '_blank');
+            } else {
+                window.location.href = href;
+            }
         });
     </script>
 
@@ -1467,7 +1441,13 @@ ew    <script>
 
 
 
-    {{-- Corregir --}}
+    {{--
+    Deshabilitado: este bloque enganchaba un SEGUNDO listener de click sobre
+    los mismos a.track-conversion (duplicando al de arriba, ~linea 1117) y
+    forzaba reCAPTCHA en todos los tipos via ejecutarRecaptchaYValidar(). Al
+    usar mode:'no-cors' en el fetch de validacion, res.ok siempre da false
+    sin importar si RECAPTCHA_SECRET esta bien configurado, asi que el alert
+    "No se pudo validar reCAPTCHA." salia siempre. Ver listener activo arriba.
     <script src="https://www.google.com/recaptcha/api.js?render=6LfT84IrAAAAAKVhNXXrFPDAgMFAiCGdj1-tYz2B"></script>
 
 <script>
@@ -1561,3 +1541,4 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 })();
 </script>
+--}}
