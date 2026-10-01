@@ -9,12 +9,16 @@
       'badgeText' => 'Servicio industrial · Monterrey, N.L.',
       'heroTitle' => 'Instalación, Configuración y Puesta en Marcha de Medidores de Flujo',
       'heroDescription' => 'Especialistas en sistemas de medición de caudal. Ofrecemos instalación profesional de medidores de flujo industriales para garantizar precisión, eficiencia y trazabilidad en tus procesos productivos.',
-      'heroImage' => 'uploads/servicios/instalacion_medidorFlujo-1.png',
-      'heroImageAlt' => 'Técnico instalando medidor de flujo industrial en línea de proceso',
+      'heroImage' => 'frontend/images/servicios/medidores-flujo-transmisor-presion.jpg',
+      'heroImageAlt' => 'Transmisor de presión Honeywell instalado en línea de proceso industrial',
       'statValue1' => '+30', 'statLabel1' => 'años en el sector industrial',
       'statValue2' => '24 h', 'statLabel2' => 'respuesta en área metropolitana',
       'badgeCardTitle' => 'Instalación certificada',
       'badgeCardSubtitle' => 'Bajo estándares NOM, ISO e ISA',
+      'extraGallery' => [
+        ['image' => 'frontend/images/servicios/medidores-flujo-estacion-regulacion.jpg', 'alt' => 'Estación de regulación y medición de gas instalada en planta'],
+        ['image' => 'frontend/images/servicios/medidores-flujo-configuracion-tecnico.jpg', 'alt' => 'Técnico configurando sistema de medición de flujo en campo'],
+      ],
       'infoCards' => [
         [
           'icon' => '<svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="#003E7E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 2.6a2 2 0 0 1 3.4 0l8 13.9A2 2 0 0 1 20 19.5H4a2 2 0 0 1-1.7-3L10.3 2.6z"></path><path d="M12 9v4"></path><path d="M12 16.5h.01"></path></svg>',

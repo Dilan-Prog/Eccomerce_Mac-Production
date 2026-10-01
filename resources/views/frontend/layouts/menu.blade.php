@@ -40,8 +40,8 @@
                 </a>
                 <div class="nav-sec-dropdown">
                     <a href="{{ route('servicio-instalacion-configuracion') }}">Instalación y Configuración</a>
-                    <a href="javascript:void(0)">Reparación de Equipos</a>
-                    <a href="javascript:void(0)">Calibraciones</a>
+                    <a href="{{ route('servicio-reparacion-equipos') }}">Reparación de Equipos</a>
+                    <a href="{{ route('servicio-calibraciones') }}">Calibraciones</a>
                 </div>
             </div>
             <div class="nav-secondary-divider"></div>

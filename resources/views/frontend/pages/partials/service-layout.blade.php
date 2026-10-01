@@ -11,6 +11,8 @@
       heroImageAlt     (string)
       statValue1/Label1, statValue2/Label2 (string)
       badgeCardTitle, badgeCardSubtitle (string) — tarjeta flotante sobre la imagen del hero
+      extraGallery     (array, opcional) items: ['image' => 'ruta de asset()', 'alt' => ..] —
+                       franja de fotos adicionales justo debajo del hero, antes de infoCards
       infoCards        (array) 2 items: ['icon' => <svg raw>, 'title' => .., 'body' => .., 'extra' => <html opcional>]
       processTitle, processSubtitle (string)
       processSteps     (array) items: ['title' => .., 'body' => .., 'deliverable' => ..]
@@ -91,6 +93,18 @@
       </div>
     </div>
   </section>
+
+  @if (!empty($extraGallery))
+    <section style="background:#F7F9FC;border-bottom:1px solid #DDE3EA">
+      <div style="max-width:1200px;margin:0 auto;padding:clamp(32px,4vw,48px) clamp(16px,4vw,32px);display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px">
+        @foreach ($extraGallery as $photo)
+          <div style="border-radius:8px;overflow:hidden;border:1px solid #DDE3EA;box-shadow:0 16px 40px -20px #00152C33;aspect-ratio:4/3">
+            <img src="{{ asset($photo['image']) }}" alt="{{ $photo['alt'] }}" style="width:100%;height:100%;object-fit:cover;display:block">
+          </div>
+        @endforeach
+      </div>
+    </section>
+  @endif
 
   <section style="background:#fff">
     <div style="max-width:1200px;margin:0 auto;padding:clamp(48px,7vw,96px) clamp(16px,4vw,32px);display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:clamp(28px,4vw,48px);align-items:stretch">

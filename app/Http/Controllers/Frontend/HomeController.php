@@ -128,6 +128,12 @@ class HomeController extends Controller
     public function  servicesInstalacionConfiguracion(){
         return view('frontend.pages.instalacion-configuracion');
     }
+    public function  servicesReparacionEquipos(){
+        return view('frontend.pages.reparacion-equipos');
+    }
+    public function  servicesCalibraciones(){
+        return view('frontend.pages.calibraciones');
+    }
     public function  servicesControllerTemperature(){
         return view('frontend.pages.controles');
     }

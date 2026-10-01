@@ -96,8 +96,8 @@
                         <summary>Servicios</summary>
                         <ul class="mob-panel__submenu">
                             <li><a href="{{ route('servicio-instalacion-configuracion') }}">Instalación y Configuración</a></li>
-                            <li><a href="javascript:void(0)">Reparación de Equipos</a></li>
-                            <li><a href="javascript:void(0)">Calibraciones</a></li>
+                            <li><a href="{{ route('servicio-reparacion-equipos') }}">Reparación de Equipos</a></li>
+                            <li><a href="{{ route('servicio-calibraciones') }}">Calibraciones</a></li>
                         </ul>
                     </details>
                 </li>
