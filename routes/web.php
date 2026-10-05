@@ -48,6 +48,7 @@ Route::get('servicio-instalacion-plc', [HomeController::class, 'servicesPlc'])->
 Route::get('servicio-reparacion-videoregistradores', [HomeController::class, 'servicesReparacionvideorecorders'])->name('servicio-reparacion-videoregistradores');
 Route::get('paypal-msi-info', [HomeController::class, 'paypalInfo'])->name('paypal-msi-info');
 Route::get('servicio-calibracion-ema', [HomeController::class, 'servicesCalibrationEMA'])->name('servicio-calibracion-ema');
+Route::get('servicio-calibracion-quemadores', [HomeController::class, 'servicesCalibrationQuemadores'])->name('servicio-calibracion-quemadores');
 Route::get('medicion', [HomeController::class, 'servicesMedicion'])->name('medicion');
 Route::get('catalogo-productos', [HomeController::class, 'catalogo'])->name('catalogo');
 Route::get('categorias', [HomeController::class, 'categorias'])->name('categorias');

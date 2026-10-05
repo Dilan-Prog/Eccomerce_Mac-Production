@@ -117,6 +117,7 @@
                                         <li><a href="{{ route('servicio-instalacion-plc') }}">Configuracion, Instalacion y Proyecto llave en mano de PLC</a></li>
                                         <li><a href="{{ route('servicio-reparacion-videoregistradores') }}">Reparacion de Videoregistradores</a></li>
                                         <li><a href="{{ route('servicio-calibracion-ema') }}">Calibraciones EMA</a></li>
+                                        <li><a href="{{ route('servicio-calibracion-quemadores') }}">Calibracion de Quemadores y Trenes de Gas</a></li>
                                     </ul>
                                 </div>
                             </div>
