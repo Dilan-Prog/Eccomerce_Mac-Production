@@ -57,3 +57,76 @@
     .cps-carousel { padding: 0 34px; }
     .cps-slide { flex-basis: 100%; max-width: 100%; }
 }
+
+/* ============================================================================
+   VARIANTE SERVICIOS — .cps-carousel--svc
+   Misma mecánica que el carrusel de productos (scroll-snap + flechas), pero
+   una sola imagen por vista, dentro de un recuadro de proporción fija para que
+   la fila no cambie de alto al pasar de una foto a otra.
+   Usa resources/views/frontend/pages/partials/service-carousel.blade.php.
+   ========================================================================== */
+.cps-carousel--svc {
+    padding: 0;
+    border-radius: 8px;
+}
+.cps-carousel--svc .cps-track {
+    gap: 0;
+    border-radius: 8px;
+    overflow: hidden;
+    overflow-x: auto;
+}
+.cps-carousel--svc .cps-slide {
+    flex: 0 0 100%;
+    max-width: 100%;
+    aspect-ratio: var(--svc-ratio, 4 / 3);
+    min-height: 0;
+    border-radius: 8px;
+    overflow: hidden;
+    border: var(--svc-borde, 1px solid #DDE3EA);
+    background: #EAF2FB;
+}
+.cps-carousel--svc .cps-slide img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+/* Las flechas van dentro de la imagen, no fuera como en el de productos. */
+.cps-carousel--svc .cps-arrow {
+    width: 34px;
+    height: 34px;
+    opacity: 0;
+    transition: opacity .18s, background .2s, color .2s;
+}
+.cps-carousel--svc:hover .cps-arrow,
+.cps-carousel--svc:focus-within .cps-arrow { opacity: 1; }
+.cps-carousel--svc .cps-arrow--prev { left: 12px; }
+.cps-carousel--svc .cps-arrow--next { right: 12px; }
+/* En táctil no hay hover: se dejan siempre visibles. */
+@media (hover: none) {
+    .cps-carousel--svc .cps-arrow { opacity: 1; }
+}
+
+.cps-dots {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 10px;
+    display: flex;
+    justify-content: center;
+    gap: 7px;
+    pointer-events: none;
+}
+.cps-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #FFFFFF8C;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, .35);
+    transition: background .2s, width .2s;
+}
+.cps-dot.is-active {
+    width: 18px;
+    border-radius: 999px;
+    background: #fff;
+}

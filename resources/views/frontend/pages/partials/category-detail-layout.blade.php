@@ -4,7 +4,7 @@
     Basado en mockup de Claude Design, adaptado a la paleta/tipografía ya
     usada en el resto del sitio (#003E7E / #F2A900 / IBM Plex Mono).
 
-    Hero con índice de anclas + N secciones en zigzag enriquecido (azul/
+    Hero + N secciones en zigzag enriquecido (azul/
     blanco alternado, checklist + chips de equipo) + metodología + "por
     qué Mac del Norte" + FAQ + CTA final.
 
@@ -13,8 +13,10 @@
       stats          (array) 3 items: ['value'=>..,'label'=>..]
       services       (array) items: ['id'=>'ancla','n'=>'01','short'=>..,
         'title'=>..,'description'=>..,'bullets'=>[..],'chipsLabel'=>..,
-        'chips'=>[..],'badge'=>..,'norm'=>..,'image'=>..,'imageAlt'=>..,
+        'chips'=>[..],'badge'/'norm' (ya no se pintan),'image'=>..,'imageAlt'=>..,
         'detailsRoute'=>..]
+        Opcional 'images' => [['image'=>..,'alt'=>..], ..] — con 2 o mas fotos
+        la tarjeta muestra un carrusel en vez de la imagen fija.
       processBadge, processTitle, processDescription (string)
       processSteps   (array) items: ['n'=>'01','title'=>..,'description'=>..]
       whyBadge, whyTitle, whyDescription (string)
@@ -32,7 +34,6 @@
 
 @push('styles')
 <style>
-    .mdn-cd-index { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:2px; transform:translateY(40px); }
     .mdn-cd-row { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr)); gap:48px; align-items:center; }
     .mdn-cd-bullets { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:10px 20px; }
     .mdn-cd-steps { display:grid; grid-template-columns:repeat(auto-fit,minmax(170px,1fr)); gap:2px; }
@@ -45,7 +46,17 @@
     .mdn-cd-faq-item.is-open .mdn-cd-faq-sign { transform:rotate(45deg); }
     .mdn-cd-img-wrap { position:relative; min-height:0; }
     .mdn-cd-img-wrap img { aspect-ratio:1/1; min-height:0; }
+    .mdn-cd-img-wrap .cps-carousel--svc,
+    .mdn-cd-img-wrap .cps-carousel--svc .cps-track,
+    .mdn-cd-img-wrap .cps-carousel--svc .cps-slide { border-radius:10px; }
 </style>
+@endpush
+
+@push('scripts')
+  {{-- Solo si alguna tarjeta trae galeria; si no, no se carga el script. --}}
+  @if (collect($services)->contains(fn ($svc) => count($svc['images'] ?? []) > 1))
+    @include('frontend.pages.partials.service-carousel-script')
+  @endif
 @endpush
 
 <div style="width:100%;overflow-x:hidden">
@@ -70,18 +81,7 @@
         @endforeach
       </div>
     </div>
-    <div class="mdn-cd-index" style="max-width:1160px;margin:48px auto 0;padding:0 clamp(16px,4vw,32px)">
-      @foreach ($services as $s)
-        <a href="#{{ $s['id'] }}" style="background:#fff;padding:20px 22px;display:flex;flex-direction:column;gap:6px;box-shadow:0 14px 34px rgba(6,44,102,.14);color:#16202B;text-decoration:none">
-          <div style="font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:700;color:#003E7E">{{ $s['n'] }}</div>
-          <div style="font-size:15.5px;font-weight:700;line-height:1.3">{{ $s['short'] }}</div>
-          <div style="font-size:13px;color:#F2A900;font-weight:700">Ir al servicio ↓</div>
-        </a>
-      @endforeach
-    </div>
   </section>
-
-  <div style="height:min(10vw,72px)"></div>
 
   {{-- SERVICIOS EN ZIGZAG --}}
   @foreach ($services as $i => $s)
@@ -115,14 +115,22 @@
           <a href="{{ route($s['detailsRoute']) }}" style="font-size:14px;font-weight:700;text-decoration:underline;color:{{ $isBlue ? '#fff' : '#003E7E' }}">Ver detalles del servicio →</a>
         </div>
         <div class="mdn-cd-img-wrap" style="order:{{ $isBlue ? 1 : 0 }}">
-          <img src="{{ asset($s['image']) }}" alt="{{ $s['imageAlt'] }}" style="width:100%;object-fit:cover;border-radius:10px;display:block;background:#EAF2FB">
-          <div style="position:absolute;left:-16px;bottom:-22px;background:#fff;border-radius:8px;padding:14px 18px;box-shadow:0 12px 30px rgba(6,44,102,.22);display:flex;gap:12px;align-items:center">
-            <div style="width:34px;height:34px;border-radius:50%;background:#EAF2FB;color:#003E7E;display:flex;align-items:center;justify-content:center;font-weight:800;flex:none">✓</div>
-            <div style="display:flex;flex-direction:column">
-              <div style="font-weight:800;font-size:13.5px;color:#16202B">{{ $s['badge'] }}</div>
-              <div style="font-size:12px;color:#6B7A89">{{ $s['norm'] }}</div>
-            </div>
-          </div>
+          @php
+            // 'images' es opcional: si el servicio solo trae 'image' se pinta la
+            // foto de siempre. El cuadro es 1/1 para que la fila no cambie de
+            // alto al pasar de una imagen a otra.
+            $fotosServicio = $s['images'] ?? [['image' => $s['image'], 'alt' => $s['imageAlt']]];
+          @endphp
+          @if (count($fotosServicio) > 1)
+            @include('frontend.pages.partials.service-carousel', [
+                'imagenes' => $fotosServicio,
+                'id' => 'svc-card-' . $s['id'],
+                'ratio' => '1/1',
+                'borde' => 'none',
+            ])
+          @else
+            <img src="{{ asset($s['image']) }}" alt="{{ $s['imageAlt'] }}" style="width:100%;object-fit:cover;border-radius:10px;display:block;background:#EAF2FB">
+          @endif
         </div>
       </div>
     </section>

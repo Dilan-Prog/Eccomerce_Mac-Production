@@ -10,9 +10,13 @@
       heroImage        (string)  ruta de asset(), ej. 'uploads/servicios/foo-1.png'
       heroImageAlt     (string)
       statValue1/Label1, statValue2/Label2 (string)
-      badgeCardTitle, badgeCardSubtitle (string) — tarjeta flotante sobre la imagen del hero
+      badgeCardTitle, badgeCardSubtitle (string) — YA NO SE PINTAN: el negocio
+                       pidió quitar la tarjeta flotante. Se siguen aceptando para no
+                       tocar las 8 páginas; borrarlas de allí es opcional.
       extraGallery     (array, opcional) items: ['image' => 'ruta de asset()', 'alt' => ..] —
-                       franja de fotos adicionales justo debajo del hero, antes de infoCards
+                       fotos adicionales del servicio. Con 2 o mas imagenes en
+                       total (hero + estas) el hero se vuelve un carrusel y se
+                       omite la franja de abajo, para no enseñarlas dos veces.
       infoCards        (array) 2 items: ['icon' => <svg raw>, 'title' => .., 'body' => .., 'extra' => <html opcional>]
       processTitle, processSubtitle (string)
       processSteps     (array) items: ['title' => .., 'body' => .., 'deliverable' => ..]
@@ -22,6 +26,14 @@
       ctaBullets       (array) de strings
 --}}
 @php
+    // Hero y galeria son la misma coleccion: con una sola foto se pinta la
+    // imagen de siempre, con dos o mas se pinta el carrusel.
+    $galeriaServicio = array_merge(
+        [['image' => $heroImage, 'alt' => $heroImageAlt]],
+        $extraGallery ?? []
+    );
+    $carruselServicio = count($galeriaServicio) > 1;
+
     $phone = '8124738768';
     $phoneDisplay = '81 2473 8768';
     $whatsapp = 'https://wa.link/f28njw';
@@ -78,23 +90,25 @@
         </div>
       </div>
       <div style="min-width:0;position:relative">
-        <div style="position:relative;border-radius:8px;overflow:hidden;border:1px solid #FFFFFF2E;box-shadow:0 30px 70px -30px #00152C;aspect-ratio:4/3;min-height:0">
-          <img src="{{ asset($heroImage) }}" alt="{{ $heroImageAlt }}" style="width:100%;height:100%;object-fit:cover;display:block">
-        </div>
-        <div style="position:absolute;bottom:-18px;left:-18px;background:#fff;border:1px solid #DDE3EA;border-radius:6px;padding:14px 18px;box-shadow:0 18px 40px -18px #00152C99;display:flex;align-items:center;gap:12px">
-          <div style="width:34px;height:34px;border-radius:50%;background:#EAF2FB;display:grid;place-items:center">
-            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#003E7E" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 3 7v6c0 5 3.8 8.6 9 9 5.2-.4 9-4 9-9V7l-9-5z"></path><path d="m9 12 2 2 4-4"></path></svg>
+        @if ($carruselServicio)
+          <div style="border-radius:8px;box-shadow:0 30px 70px -30px #00152C">
+            @include('frontend.pages.partials.service-carousel', [
+                'imagenes' => $galeriaServicio,
+                'id' => 'svc-hero-carousel',
+                'ratio' => '4/3',
+                'borde' => '1px solid #FFFFFF2E',
+            ])
           </div>
-          <div style="line-height:1.25">
-            <div style="font-size:13.5px;font-weight:800;color:#16202B">{{ $badgeCardTitle }}</div>
-            <div style="font-size:12px;font-weight:600;color:#6B7A89">{{ $badgeCardSubtitle }}</div>
+        @else
+          <div style="position:relative;border-radius:8px;overflow:hidden;border:1px solid #FFFFFF2E;box-shadow:0 30px 70px -30px #00152C;aspect-ratio:4/3;min-height:0">
+            <img src="{{ asset($heroImage) }}" alt="{{ $heroImageAlt }}" style="width:100%;height:100%;object-fit:cover;display:block">
           </div>
-        </div>
+        @endif
       </div>
     </div>
   </section>
 
-  @if (!empty($extraGallery))
+  @if (!empty($extraGallery) && !$carruselServicio)
     <section style="background:#F7F9FC;border-bottom:1px solid #DDE3EA">
       <div style="max-width:1200px;margin:0 auto;padding:clamp(32px,4vw,48px) clamp(16px,4vw,32px);display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px">
         @foreach ($extraGallery as $photo)
@@ -228,6 +242,12 @@
   </section>
 
 </div>
+
+@push('scripts')
+  @if ($carruselServicio)
+    @include('frontend.pages.partials.service-carousel-script')
+  @endif
+@endpush
 
 @push('scripts')
 <script>

@@ -58,6 +58,13 @@
           'norm' => 'Bajo estándares NOM, ISO e ISA',
           'image' => 'frontend/images/servicios/medidores-flujo-transmisor-presion.jpg',
           'imageAlt' => 'Transmisor de presión Honeywell instalado en línea de proceso',
+          // Con 2 o más fotos la tarjeta se vuelve carrusel. 'image' sigue
+          // siendo la portada: se usa si algún día se quita esta lista.
+          'images' => [
+            ['image' => 'frontend/images/servicios/medidores-flujo-transmisor-presion.jpg', 'alt' => 'Transmisor de presión Honeywell instalado en línea de proceso'],
+            ['image' => 'frontend/images/servicios/medidores-flujo-estacion-regulacion.jpg', 'alt' => 'Estación de regulación y medición de gas instalada en planta'],
+            ['image' => 'frontend/images/servicios/medidores-flujo-configuracion-tecnico.jpg', 'alt' => 'Técnico configurando sistema de medición de flujo en campo'],
+          ],
           'detailsRoute' => 'servicio-instalacion-medidoresdeflujo',
         ],
         [
