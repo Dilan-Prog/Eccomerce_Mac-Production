@@ -148,6 +148,10 @@
     .br-rel-card h3 { font-size: 16px; line-height: 1.3; }
     .br-rel-card p { margin: 0; font-size: 13.5px; line-height: 1.5; color: #405063; }
     .br-rel-link { margin-top: 6px; font-size: 13.5px; font-weight: 700; color: var(--azul-medio, #0057A8); }
+    /* Tarjetas de servicio: sin foto de catalogo, icono sobre fondo azul. */
+    .br-rel-img--ico { background: var(--azul-claro, #E6EFF8); font-size: 44px; line-height: 1; }
+    .br-rel-card--serv .br-rel-marca { color: var(--azul-medio, #0057A8); }
+
     @media (max-width: 991px) { .br-rel-card { flex-basis: calc((100% - 16px) / 2); } .br-rel { padding-top: 34px; } }
     @media (max-width: 575px) { .br-rel-card { flex-basis: 84%; } }
 </style>

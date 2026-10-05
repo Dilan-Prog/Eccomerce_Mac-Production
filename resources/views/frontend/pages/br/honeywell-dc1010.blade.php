@@ -309,6 +309,7 @@
 
         @include('frontend.layouts.br.relacionados', ['actual' => 'honeywell-dc1010'])
         @include('frontend.layouts.br.relacionados-mcdonnell')
+        @include('frontend.layouts.br.relacionados-calibracoes')
 
     </div>
 

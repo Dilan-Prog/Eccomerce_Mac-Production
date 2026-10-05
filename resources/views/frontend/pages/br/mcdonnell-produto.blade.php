@@ -244,6 +244,7 @@
 
         @include('frontend.layouts.br.relacionados', ['actual' => 'mcdonnell-miller'])
         @include('frontend.layouts.br.relacionados-mcdonnell', ['actual' => $slug])
+        @include('frontend.layouts.br.relacionados-calibracoes')
 
     </div>
 
