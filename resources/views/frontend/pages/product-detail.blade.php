@@ -845,10 +845,12 @@
                 <img src="{{ asset('animations-icons/payment-protected-detail.gif') }}" alt="Compra Protegida">
                 <p><span>Compra Protegida</span>Seguridad SSL en todas las transacciones</p>
             </div>
+            {{-- Sello "Garantía de Fábrica" desactivado. Para reactivarlo, quita este comentario.
             <div class="assurance-item">
                 <img src="{{ asset('frontend/images/iconos/guarantee.webp') }}" alt="Garantía">
                 <p><span>Garantía de Fábrica</span>Producto 100% original</p>
             </div>
+            --}}
             <div class="assurance-item">
                 <img src="{{ asset('frontend/images/iconos/how-to-pay.webp') }}" alt="Formas de Pago">
                 <p><span>Múltiples Formas de Pago</span>Tarjeta, transferencia, PayPal y más</p>
