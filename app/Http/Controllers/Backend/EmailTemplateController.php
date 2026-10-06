@@ -11,6 +11,7 @@ use App\Support\BlockEmailRenderer;
 use App\Support\EmailTemplateRenderer;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\ValidationException;
 
 /**
@@ -33,7 +34,7 @@ class EmailTemplateController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('can-access-module:marketing-integracion,view')->only(['index', 'tableData', 'previewBlocks']);
+        $this->middleware('can-access-module:marketing-integracion,view')->only(['index', 'tableData', 'previewBlocks', 'sendTest']);
         $this->middleware('can-access-module:marketing-integracion,create')->only(['create', 'createFragment', 'store']);
         $this->middleware('can-access-module:marketing-integracion,edit')->only(['edit', 'editFragment', 'update']);
         $this->middleware('can-access-module:marketing-integracion,delete')->only(['destroy']);
@@ -177,6 +178,67 @@ class EmailTemplateController extends Controller
      */
     public function previewBlocks(Request $request)
     {
+        return response()->json(['html' => $this->renderPreview($request)['html']]);
+    }
+
+    /**
+     * POST /admin/email-templates/send-test
+     *
+     * Manda la plantilla (tal como está en el editor, aunque no esté
+     * guardada) a un correo cualquiera para verla en un cliente de correo
+     * real. Usa el mismo render que la vista previa, o sea datos ficticios,
+     * nunca los de un cliente real; el asunto va marcado con [PRUEBA].
+     */
+    public function sendTest(Request $request)
+    {
+        $request->validate([
+            'email' => ['required', 'email', 'max:254'],
+            'subject' => ['nullable', 'string', 'max:255'],
+        ], [
+            'email.required' => 'Escribe el correo al que se enviará la prueba.',
+            'email.email' => 'Escribe un correo válido.',
+        ]);
+
+        $rendered = $this->renderPreview($request);
+
+        if (trim(strip_tags($rendered['html'])) === '') {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'La plantilla está vacía: agrega contenido antes de enviar una prueba.',
+            ], 422);
+        }
+
+        $email = $request->input('email');
+        $subject = trim($rendered['subject']) !== '' ? $rendered['subject'] : '(sin asunto)';
+
+        try {
+            Mail::html($rendered['html'], function ($message) use ($email, $subject) {
+                $message->to($email)->subject('[PRUEBA] ' . $subject);
+            });
+        } catch (\Throwable $e) {
+            report($e);
+
+            return response()->json([
+                'status' => 'error',
+                'message' => 'No se pudo enviar el correo de prueba. Revisa la configuración de correo del servidor.',
+            ], 500);
+        }
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Prueba enviada a ' . $email,
+        ]);
+    }
+
+    /**
+     * Arma el HTML y el asunto de la plantilla en edición (bloques o HTML
+     * crudo, con marcadores sustituidos por datos ficticios). Compartido por
+     * la vista previa y el envío de prueba para que ambos muestren lo mismo.
+     *
+     * @return array{subject: string, html: string}
+     */
+    private function renderPreview(Request $request): array
+    {
         $rawHtml = $request->input('html');
         $rawBlocks = $request->input('blocks_json');
 
@@ -200,10 +262,13 @@ class EmailTemplateController extends Controller
         // EmailTemplateRenderer para no duplicar esa lógica — usamos un
         // EmailTemplate efímero (no se guarda) solo para pasar por ese
         // renderer.
-        $previewTemplate = new EmailTemplate(['subject' => '', 'body' => $html]);
+        $previewTemplate = new EmailTemplate([
+            'subject' => (string) $request->input('subject', ''),
+            'body' => $html,
+        ]);
         $rendered = app(EmailTemplateRenderer::class)->render($previewTemplate, BlockEmailRenderer::dummyPlaceholderData());
 
-        return response()->json(['html' => $rendered['html']]);
+        return ['subject' => (string) $rendered['subject'], 'html' => (string) $rendered['html']];
     }
 
     private function validateData(Request $request): array

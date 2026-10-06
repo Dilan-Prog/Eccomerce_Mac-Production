@@ -828,6 +828,99 @@ window.AU = window.AU || {};
                     });
             }
 
+            // ---- Envío de prueba -----------------------------------------------
+            // Manda el contenido tal como está en el editor (sin necesidad de
+            // guardar) a un correo cualquiera. Mismo payload que la vista previa
+            // + el asunto y el destinatario.
+            var testToggle = root.querySelector('[data-eb-test-toggle]');
+            var testPanel = root.querySelector('[data-eb-test-panel]');
+            var testEmail = root.querySelector('[data-eb-test-email]');
+            var testSendBtn = root.querySelector('[data-eb-test-send]');
+            var testCloseBtn = root.querySelector('[data-eb-test-close]');
+            var TEST_EMAIL_KEY = 'au_email_template_test_to';
+
+            function setTestPanel(open) {
+                if (!testPanel) return;
+                testPanel.hidden = !open;
+                if (testToggle) testToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+                if (open && testEmail) {
+                    try {
+                        if (!testEmail.value) testEmail.value = localStorage.getItem(TEST_EMAIL_KEY) || '';
+                    } catch (e) { /* localStorage no disponible */ }
+                    testEmail.focus();
+                }
+            }
+
+            function sendTestEmail() {
+                var email = (testEmail && testEmail.value.trim()) || '';
+                if (!email) {
+                    AU.toast.error('Escribe el correo al que se enviará la prueba.');
+                    if (testEmail) testEmail.focus();
+                    return;
+                }
+
+                var isAdvanced = advancedModeValue.value === '1';
+                var payload = isAdvanced
+                    ? { html: bodyHiddenField.value }
+                    : { blocks_json: jsonField.value };
+                payload.email = email;
+                payload.subject = (subjectInput && subjectInput.value) || '';
+
+                testSendBtn.disabled = true;
+                var originalLabel = testSendBtn.textContent;
+                testSendBtn.textContent = 'Enviando…';
+
+                fetch(config.sendTestUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': AU.csrfToken()
+                    },
+                    body: JSON.stringify(payload)
+                })
+                    .then(function (res) {
+                        return res.json().catch(function () { return {}; }).then(function (data) {
+                            return { ok: res.ok, data: data };
+                        });
+                    })
+                    .then(function (result) {
+                        if (result.ok) {
+                            try { localStorage.setItem(TEST_EMAIL_KEY, email); } catch (e) { /* ignorar */ }
+                            AU.toast.success(result.data.message || 'Prueba enviada');
+                            setTestPanel(false);
+                            return;
+                        }
+                        var errors = result.data && result.data.errors;
+                        var firstError = errors && Object.keys(errors).length ? errors[Object.keys(errors)[0]][0] : null;
+                        AU.toast.error(firstError || (result.data && result.data.message) || 'No se pudo enviar la prueba');
+                    })
+                    .catch(function () {
+                        AU.toast.error('No se pudo enviar la prueba. Revisa tu conexión.');
+                    })
+                    .then(function () {
+                        testSendBtn.disabled = false;
+                        testSendBtn.textContent = originalLabel;
+                    });
+            }
+
+            if (testToggle && testPanel && testSendBtn) {
+                testToggle.addEventListener('click', function () { setTestPanel(testPanel.hidden); });
+                if (testCloseBtn) testCloseBtn.addEventListener('click', function () { setTestPanel(false); });
+                testSendBtn.addEventListener('click', sendTestEmail);
+                if (testEmail) {
+                    testEmail.addEventListener('keydown', function (e) {
+                        // Está dentro del <form>: sin esto, Enter guardaría la plantilla.
+                        if (e.key === 'Enter') {
+                            e.preventDefault();
+                            sendTestEmail();
+                        } else if (e.key === 'Escape') {
+                            setTestPanel(false);
+                        }
+                    });
+                }
+            }
+
             // ---- Render inicial ----
             // Plantilla existente sin bloques guardados (el caso que antes solo
             // mostraba un aviso pasivo): se activa el modo avanzado de una vez, con

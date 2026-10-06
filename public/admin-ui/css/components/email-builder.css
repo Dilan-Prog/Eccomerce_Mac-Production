@@ -59,6 +59,39 @@
     font-weight: 600;
 }
 
+/* ---- Envío de prueba (popover bajo el botón de la barra) ---- */
+.eb-test-wrap {
+    position: relative;
+}
+
+.eb-test-panel {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    z-index: 30;
+    width: 320px;
+    max-width: calc(100vw - 32px);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 16px;
+    background: var(--eb-surface, #fff);
+    border: 1px solid var(--eb-line, #e3e3e3);
+    border-radius: 10px;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.14);
+}
+
+.eb-test-panel[hidden] {
+    display: none;
+}
+
+.eb-test-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 4px;
+}
+
 /* ---- Barra superior ---- */
 .eb-topbar {
     display: flex;

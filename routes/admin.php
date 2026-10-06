@@ -205,6 +205,7 @@ Route::resource('marketing-tokens', MarketingApiTokenController::class)->except(
 /** Marketing — Plantillas de correo (grupo "Marketing" en el sidebar, junto a Integración) */
 Route::get('email-templates/table-data', [EmailTemplateController::class, 'tableData'])->name('email-templates.table-data');
 Route::post('email-templates/preview-blocks', [EmailTemplateController::class, 'previewBlocks'])->name('email-templates.preview-blocks');
+Route::post('email-templates/send-test', [EmailTemplateController::class, 'sendTest'])->middleware('throttle:10,1')->name('email-templates.send-test');
 // Fragmentos del editor (sin layout) para el panel de la pantalla de pestañas
 // de Email Marketing. Van antes del resource para que "create-fragment" no lo
 // capture la ruta de parámetro {email_template}.

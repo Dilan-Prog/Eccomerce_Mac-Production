@@ -86,6 +86,25 @@
                 <button type="button" class="eb-mode-btn" data-mode="code">Vista avanzada</button>
             </div>
 
+            {{-- Envío de prueba: el panel vive dentro del <form>, así que su
+                 input NO lleva name (no se guarda) y Enter se intercepta en
+                 el JS para que no dispare "Guardar plantilla". --}}
+            <div class="eb-test-wrap">
+                <button type="button" class="au-btn" data-eb-test-toggle aria-expanded="false">
+                    <i class="fas fa-paper-plane"></i> Enviar prueba
+                </button>
+                <div class="eb-test-panel" data-eb-test-panel hidden>
+                    <label class="au-label" for="eb-test-email">Enviar prueba a</label>
+                    <input type="email" class="au-input" id="eb-test-email" data-eb-test-email
+                           placeholder="correo@ejemplo.com" autocomplete="email">
+                    <div class="au-help-text">Se envía como está en el editor (aunque no esté guardada), con datos de ejemplo.</div>
+                    <div class="eb-test-actions">
+                        <button type="button" class="au-btn" data-eb-test-close>Cerrar</button>
+                        <button type="button" class="au-btn au-btn-primary" data-eb-test-send>Enviar</button>
+                    </div>
+                </div>
+            </div>
+
             <button type="button" class="au-btn" data-eb-cancel>Cancelar</button>
             <button type="submit" class="au-btn au-btn-primary">Guardar plantilla</button>
         </div>
@@ -239,6 +258,7 @@
         'isEdit' => $isEdit,
         'logoUrl' => $ebLogoUrl,
         'previewUrl' => route('admin.email-templates.preview-blocks'),
+        'sendTestUrl' => route('admin.email-templates.send-test'),
     ];
 @endphp
 <script type="application/json" id="eb-config">@json($ebConfig)</script>
