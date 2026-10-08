@@ -261,6 +261,8 @@ Route::delete('email-sequences/{id}', [EmailSequenceController::class, 'destroy'
 Route::get('track-conversion', [TrackConversionController::class, 'index'])->name('track-conversion.index');
 Route::get('track-conversion/table-data', [TrackConversionController::class, 'tableData'])->name('track-conversion.table-data');
 Route::get('track-conversion/export', [TrackConversionController::class, 'export'])->name('track-conversion.export');
+Route::get('track-conversion/summary', [TrackConversionController::class, 'summary'])->name('track-conversion.summary');
+Route::get('track-conversion/{id}/details-fragment', [TrackConversionController::class, 'detailsFragment'])->whereNumber('id')->name('track-conversion.details-fragment');
 
 
 /**ProductImageGallery route */

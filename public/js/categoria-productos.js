@@ -119,6 +119,13 @@ document.addEventListener('DOMContentLoaded', function () {
     // Cada elemento es un grupo { nombre: <subcategoría o null>, productos: [...] }.
     var gruposProductos = data.productos || [];
 
+    // La URL de WhatsApp viene de config('contact.whatsapp.url') vía el Blade.
+    function abrirWhatsApp() {
+        if (data.whatsappUrl) {
+            window.open(data.whatsappUrl, '_blank', 'noopener');
+        }
+    }
+
     document.getElementById('catProdHeaderTitle').textContent = categoria.nombre || '';
     document.getElementById('catProdBreadcrumbCurrent').textContent = categoria.nombre || '';
     document.getElementById('catProdBannerTitle').textContent = categoria.nombre || '';
@@ -166,14 +173,12 @@ document.addEventListener('DOMContentLoaded', function () {
             return;
         }
         e.preventDefault();
-        console.log('Solicitar cotización del producto:', btn.dataset.modelo);
+        abrirWhatsApp();
     });
 
     var mobileQuoteBtn = document.querySelector('.cat-prod__mobile-cta [data-action="solicitar-cotizacion"]');
     if (mobileQuoteBtn) {
-        mobileQuoteBtn.addEventListener('click', function () {
-            console.log('Solicitar cotización general: pendiente de conectar.');
-        });
+        mobileQuoteBtn.addEventListener('click', abrirWhatsApp);
     }
 
     var shareBtn = document.getElementById('catProdShareBtn');

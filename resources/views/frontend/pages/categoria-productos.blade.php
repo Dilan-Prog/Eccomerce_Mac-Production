@@ -9,6 +9,8 @@
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&family=Inter:wght@400;500;600;700&family=Roboto+Mono:wght@400&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <link rel="stylesheet" href="{{ asset('css/categoria-productos.css') }}?v={{ filemtime(public_path('css/categoria-productos.css')) }}">
+  @include('frontend.partials.attribution-capture')
+  @include('frontend.partials.mdn-events')
 </head>
 <body>
   <div class="cat-prod">
@@ -26,8 +28,8 @@
           <a href="{{ route('catalogo') }}" class="cat-prod__nav-link">Catálogo</a>
           <a href="{{ route('contact') }}" class="cat-prod__nav-link">Contacto</a>
           <div class="cat-prod__nav-contact">
-            <span class="cat-prod__nav-contact-line">+52 (81) 0000-0000</span>
-            <span class="cat-prod__nav-contact-line">ventas@macdelnorte.com</span>
+            <span class="cat-prod__nav-contact-line"><a href="tel:{{ config('contact.phone.main.number') }}" style="color:inherit;text-decoration:none">{{ config('contact.phone.main.display') }}</a></span>
+            <span class="cat-prod__nav-contact-line">{{ config('contact.email.sales') }}</span>
           </div>
         </nav>
 
@@ -95,7 +97,8 @@
     window.CATALOGO_DATA = {
         categoria: @json($categoriaData),
         sidebarCategorias: @json($sidebarCategoriasData),
-        productos: @json($productosData)
+        productos: @json($productosData),
+        whatsappUrl: @json(config('contact.whatsapp.url'))
     };
   </script>
   <script src="{{ asset('js/categoria-productos.js') }}?v={{ filemtime(public_path('js/categoria-productos.js')) }}" defer></script>

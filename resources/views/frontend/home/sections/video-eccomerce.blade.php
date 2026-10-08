@@ -15,9 +15,9 @@
                         <button class="common_btn mr-2"><a href="{{ route('contact') }}" target="_black"
                                 style="text-decoration: none; color:white"><i class="fa fa-envelope"></i> Correo Electronico</a></button>
                         <p style="margin-left: 10px; margin-right: 10px;"> o </p>
-                        <button class="common_btn"><a href="https://wa.link/f28njw" target="_black"
+                        <button class="common_btn"><a href="{{ config('contact.whatsapp.url') }}" target="_black"
                                 style="text-decoration: none; color:white"><i class="fa fa-whatsapp"></i>
-                                81-35825559 </a></button>
+                                WhatsApp {{ config('contact.whatsapp.display') }} </a></button>
                     </div>
 
 

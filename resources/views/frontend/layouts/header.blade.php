@@ -103,7 +103,7 @@
                 </li>
                 <li><a href="{{ route('contact') }}" class="{{ request()->routeIs('contact') ? 'active' : '' }}">Contacto</a></li>
                 <li><a href="{{ route('associate') }}" class="{{ request()->routeIs('associate') ? 'active' : '' }}">Asociados y Revendedores</a></li>
-                <li><a href="https://wa.link/f28njw" target="_blank" class="track-conversion" data-type="whatsapp_menu_cotizacion">Solicitar cotización</a></li>
+                <li><a href="{{ config('contact.whatsapp.url') }}" target="_blank" class="track-conversion" data-type="whatsapp_menu_cotizacion">Solicitar cotización</a></li>
 
                 @auth
                     @php $role = auth()->user()->role; @endphp

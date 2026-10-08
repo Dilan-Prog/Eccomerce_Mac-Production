@@ -40,6 +40,11 @@ class RouteServiceProvider extends ServiceProvider
             return Limit::perMinute(600)->by($request->ip());
         });
 
+        // Limite para el endpoint publico POST /track-conversion (web.php).
+        RateLimiter::for('tracking', function (Request $request) {
+            return Limit::perMinute(60)->by($request->ip());
+        });
+
         $this->routes(function () {
             Route::middleware('api')
                 ->prefix('api')

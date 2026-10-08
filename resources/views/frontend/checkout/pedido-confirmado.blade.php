@@ -158,7 +158,7 @@
                             @endif
                         </div>
                         <p style="font-size:12px;color:#1E40AF;margin-top:10px;background:rgba(30,64,175,0.08);border-radius:6px;padding:8px 12px;line-height:1.5;">
-                            Envía el comprobante a <strong>ventas@macdelnorte.com</strong> con tu número de pedido. Tu pedido se procesará al confirmar el pago.
+                            Envía el comprobante a <strong>{{ config('contact.email.sales') }}</strong> con tu número de pedido. Tu pedido se procesará al confirmar el pago.
                         </p>
                     </div>
                 </div>

@@ -942,7 +942,7 @@
           </div>
           <div class="location-item-content">
             <h4>Teléfonos</h4>
-            <p>81-3582-5559<br>81-2473-8768</p>
+            <p>Tel. {{ config('contact.phone.main.display') }}<br>WhatsApp {{ config('contact.whatsapp.display') }}</p>
           </div>
         </div>
 
@@ -952,7 +952,7 @@
           </div>
           <div class="location-item-content">
             <h4>Correo</h4>
-            <p><a href="mailto:contacto@macdelnorte.com">contacto@macdelnorte.com</a></p>
+            <p><a href="mailto:{{ config('contact.email.general') }}">{{ config('contact.email.general') }}</a></p>
           </div>
         </div>
 

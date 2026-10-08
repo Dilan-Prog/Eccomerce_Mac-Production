@@ -33,7 +33,7 @@
                 <a href="{{ route('products.index') }}" class="btn btn-primary">
                     Ver catálogo de productos &nbsp;→
                 </a>
-                <a href="https://wa.link/f28njw" class="btn btn-secondary" target="_blank" rel="noopener noreferrer">
+                <a href="{{ config('contact.whatsapp.url') }}" class="btn btn-secondary" target="_blank" rel="noopener noreferrer">
                     Cotización con ingeniero
                 </a>
             </div>

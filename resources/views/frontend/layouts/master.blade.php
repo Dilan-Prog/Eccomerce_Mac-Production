@@ -141,41 +141,10 @@
     <script src="https://www.google.com/recaptcha/api.js?render=6LfT84IrAAAAAKVhNXXrFPDAgMFAiCGdj1-tYz2B"></script>
     <script defer type="module" src="https://cdn.jsdelivr.net/npm/@justinribeiro/lite-youtube@1/lite-youtube.min.js"></script>
 
-            <!-- Captura GCLID + UTM y envía a Google Sheets si hay parámetros de campaña -->
-            <script>
-            (function() {
-                const params = new URLSearchParams(window.location.search);
-                const googleSheetsWebhook = 'https://script.google.com/macros/s/AKfycbwU_alwJ8RczaMMaRWUCcBD2Pc9exMGsG5vWGX-J7-h5BQajHC43VR3Ufk3QiGeQtZF/exec';
-
-                if (params.has('gclid')) localStorage.setItem('gclid', params.get('gclid'));
-                if (params.has('utm_source')) localStorage.setItem('utm_source', params.get('utm_source'));
-                if (params.has('utm_medium')) localStorage.setItem('utm_medium', params.get('utm_medium'));
-                if (params.has('utm_campaign')) localStorage.setItem('utm_campaign', params.get('utm_campaign'));
-
-                if (!localStorage.getItem('landing_page')) {
-                    localStorage.setItem('landing_page', window.location.pathname);
-                }
-
-                if (params.has('gclid') || params.has('utm_source')) {
-                    fetch(googleSheetsWebhook, {
-                        method: 'POST',
-                        mode: 'no-cors',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            gclid: params.get('gclid') || '',
-                            utm_source: params.get('utm_source') || '',
-                            utm_medium: params.get('utm_medium') || '',
-                            utm_campaign: params.get('utm_campaign') || '',
-                            landing_page: window.location.pathname,
-                            type: 'page_visit',
-                            fecha: new Date().toLocaleString('sv-SE', { timeZone: 'America/Mexico_City' })
-                        })
-                    }).catch(function(err) {
-                        console.warn('No se pudo registrar la visita:', err);
-                    });
-                }
-            })();
-            </script>
+    {{-- Captura de atribución (gclid/UTM/referrer/sesión): ver partials/attribution-capture --}}
+    @include('frontend.partials.attribution-capture')
+    {{-- Medición de WhatsApp/llamadas/carrito/cotización en track_conversions: ver partials/mdn-events --}}
+    @include('frontend.partials.mdn-events')
 
   <!-- Otros CSS o scripts que carguen después -->
     <style>
@@ -1081,13 +1050,34 @@
                 body: JSON.stringify(payload)
             }).catch(err => console.warn('No se pudo guardar la conversión en Sheets:', err));
 
+            // Payload al backend: atribución completa (MDNAttribution) con fallback a localStorage
+            const attr = (window.MDNAttribution && typeof window.MDNAttribution.get === 'function')
+                ? window.MDNAttribution.get()
+                : null;
+            const backendPayload = attr
+                ? Object.assign({}, attr)
+                : {
+                    gclid: payload.gclid,
+                    utm_source: payload.utm_source,
+                    utm_medium: payload.utm_medium,
+                    utm_campaign: payload.utm_campaign,
+                    landing_page: payload.landing_page
+                };
+            backendPayload.type = type;
+            backendPayload.page_url = window.location.href;
+            backendPayload.fecha = payload.fecha;
+            if (window.MDNAttribution && typeof window.MDNAttribution.newEventId === 'function') {
+                backendPayload.event_id = window.MDNAttribution.newEventId();
+            }
+
             fetch('{{ route('track.conversion') }}', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'X-CSRF-TOKEN': '{{ csrf_token() }}'
                 },
-                body: JSON.stringify(payload)
+                body: JSON.stringify(backendPayload),
+                keepalive: true
             }).catch(err => console.warn('No se pudo guardar la conversión:', err));
         }
 

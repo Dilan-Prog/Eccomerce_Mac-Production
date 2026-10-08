@@ -965,7 +965,7 @@
 
                                     <div class="spei-note">
                                         Envía el comprobante a
-                                        <strong>{{ $transferInfo->receiptEmail ?? 'ventas@macdelnorte.com' }}</strong>
+                                        <strong>{{ $transferInfo->receiptEmail ?? config('contact.email.sales') }}</strong>
                                         indicando el número de referencia.
                                     </div>
 

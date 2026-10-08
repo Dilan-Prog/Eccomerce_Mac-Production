@@ -126,7 +126,11 @@ document.addEventListener('DOMContentLoaded', function () {
     var quoteBtn = document.querySelector('[data-action="solicitar-cotizacion"]');
     if (quoteBtn) {
         quoteBtn.addEventListener('click', function () {
-            console.log('Solicitar cotización: pendiente de conectar.');
+            // La URL de WhatsApp viene de config('contact.whatsapp.url') vía el Blade.
+            var whatsappUrl = window.CATALOGO_DATA && window.CATALOGO_DATA.whatsappUrl;
+            if (whatsappUrl) {
+                window.open(whatsappUrl, '_blank', 'noopener');
+            }
         });
     }
 });

@@ -34,9 +34,9 @@
     );
     $carruselServicio = count($galeriaServicio) > 1;
 
-    $phone = '8124738768';
-    $phoneDisplay = '81 2473 8768';
-    $whatsapp = 'https://wa.link/f28njw';
+    $phone = config('contact.phone.main.number');
+    $phoneDisplay = config('contact.phone.main.display');
+    $whatsapp = config('contact.whatsapp.url');
 @endphp
 
 @push('styles')

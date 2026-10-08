@@ -8,6 +8,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{{ asset('css/categorias.css') }}?v={{ filemtime(public_path('css/categorias.css')) }}">
+  @include('frontend.partials.attribution-capture')
+  @include('frontend.partials.mdn-events')
 </head>
 <body>
   <div class="categorias">
@@ -25,8 +27,8 @@
           <a href="{{ route('catalogo') }}" class="categorias__nav-link categorias__nav-link--active">Catálogo</a>
           <a href="{{ route('contact') }}" class="categorias__nav-link">Contacto</a>
           <div class="categorias__nav-contact">
-            <span class="categorias__nav-contact-line">+52 (81) 0000-0000</span>
-            <span class="categorias__nav-contact-line">ventas@macdelnorte.com</span>
+            <span class="categorias__nav-contact-line"><a href="tel:{{ config('contact.phone.main.number') }}" style="color:inherit;text-decoration:none">{{ config('contact.phone.main.display') }}</a></span>
+            <span class="categorias__nav-contact-line">{{ config('contact.email.sales') }}</span>
           </div>
         </nav>
 
@@ -68,7 +70,8 @@
 
   <script>
     window.CATALOGO_DATA = {
-        categorias: @json($categoriasData)
+        categorias: @json($categoriasData),
+        whatsappUrl: @json(config('contact.whatsapp.url'))
     };
   </script>
   <script src="{{ asset('js/categorias.js') }}?v={{ filemtime(public_path('js/categorias.js')) }}" defer></script>

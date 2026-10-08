@@ -8,6 +8,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{{ asset('css/catalogo.css') }}?v={{ filemtime(public_path('css/catalogo.css')) }}">
+  @include('frontend.partials.attribution-capture')
+  @include('frontend.partials.mdn-events')
 </head>
 <body>
   <main>
@@ -45,7 +47,7 @@
               Ver Catálogo
               <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
             </a>
-            <a href="https://wa.link/f28njw" target="_blank" class="catalogo-hero__btn catalogo-hero__btn--secondary" data-action="contactar-asesor">
+            <a href="{{ config('contact.whatsapp.url') }}" target="_blank" class="catalogo-hero__btn catalogo-hero__btn--secondary" data-action="contactar-asesor">
               Contactar Asesor
             </a>
           </div>

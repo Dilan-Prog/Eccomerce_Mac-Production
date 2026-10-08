@@ -27,9 +27,9 @@
       ctaTitle (string)
 --}}
 @php
-    $phone = '8124738768';
-    $phoneDisplay = '81 2473 8768';
-    $whatsapp = 'https://wa.link/f28njw';
+    $phone = config('contact.phone.main.number');
+    $phoneDisplay = config('contact.phone.main.display');
+    $whatsapp = config('contact.whatsapp.url');
 @endphp
 
 @push('styles')
@@ -205,7 +205,7 @@
     <div style="max-width:1160px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;gap:28px;flex-wrap:wrap">
       <div style="display:flex;flex-direction:column;gap:6px">
         <div style="font-size:clamp(22px,2.8vw,30px);font-weight:800;color:#16202B">{{ $ctaTitle }}</div>
-        <div style="font-size:14.5px;color:#16202B">{{ $phoneDisplay }} · 81 3582 5559 · contacto@macdelnorte.com · Lun–Vie 8:30am a 6:00pm</div>
+        <div style="font-size:14.5px;color:#16202B">Tel. {{ $phoneDisplay }} · WhatsApp {{ config('contact.whatsapp.display') }} · {{ config('contact.email.general') }} · {{ config('contact.hours.es') }}</div>
       </div>
       <div style="display:flex;gap:12px;flex-wrap:wrap">
         <a href="{{ $whatsapp }}" target="_blank" class="track-conversion" data-type="whatsapp_servicios" style="background:#16202B;color:#fff;font-weight:800;padding:16px 26px;border-radius:5px;text-decoration:none">Escribir por WhatsApp</a>

@@ -110,7 +110,7 @@
                     <td class="lbl">Domicilio fiscal:</td>
                     <td>
                         Calle: CASTAÑO No. 718, Col. EBANOS NORTE, CP: 66612, APODACA, NUEVO LEON, MEXICO
-                        &nbsp;&nbsp;TEL: 8124738768 o 8124738744&nbsp;&nbsp;www.macdelnorte.com
+                        &nbsp;&nbsp;TEL: {{ config('contact.phone.main.number') }} o {{ config('contact.phone.advisory.number') }}&nbsp;&nbsp;www.macdelnorte.com
                     </td>
                 </tr>
             </table>

@@ -71,7 +71,7 @@ Route::get('/googgle-feed_macdelnorte$product-merchant-center',[ProductControlle
 Route::get('/googgle-feed_macdelnorte-facebook',[ProductController::class, 'generateFeedProductFacebook']);
 
 Route::post('/recaptcha-validar', [ReCaptchaController::class, 'verify']);
-Route::post('/track-conversion', [TrackConversionController::class, 'store'])->name('track.conversion');
+Route::post('/track-conversion', [TrackConversionController::class, 'store'])->middleware('throttle:tracking')->name('track.conversion');
 
 // Sirve /uploads/{path} desde UploadPath::base() cuando el archivo ya no
 // existe físicamente en public/uploads (ver app/Support/UploadPath.php).
@@ -82,11 +82,26 @@ Route::get('/uploads/{path}', [UploadsServeController::class, 'show'])
     ->name('uploads.show');
 
 
+// Rutas deshabilitadas por seguridad el 2026-10-08; ver DIAGNOSTICO_INTEGRACION.md
+
+// DESHABILITADA el 2026-10-08 por seguridad: era pública, sin autenticación ni throttle y
+// ejecutaba el comando desde el navegador.
+// Equivalente por terminal: php artisan products:discount-dc1200 [--dry-run]
+// (a pesar del nombre, copia aspel_products.exist a products.qty_aspel; no aplica ningún descuento).
+// Para reactivar: quita el comentario.
+/*
 Route::get('/aplicar-descuento-dc1200', function () {
     Artisan::call('products:discount-dc1200');
     return 'Descuento aplicado!';
 });
+*/
 
+// DESHABILITADA el 2026-10-08 por seguridad: era pública, sin autenticación ni throttle y
+// ejecutaba el comando desde el navegador.
+// Equivalente por terminal: php artisan images:convert-png
+// (reescribe las rutas de imágenes del slider en la BD; probablemente un one-off obsoleto).
+// Para reactivar: quita el comentario.
+/*
 Route::get('/run-slider-conversion', function () {
     Artisan::call('images:convert-png');
 
@@ -96,11 +111,19 @@ Route::get('/run-slider-conversion', function () {
         'output' => Artisan::output()
     ]);
 });
+*/
 
+// DESHABILITADA el 2026-10-08 por seguridad: era pública, sin autenticación ni throttle y
+// ejecutaba el comando desde el navegador.
+// Equivalente por terminal: php artisan images:convert-png
+// (reescribe las rutas de imágenes del slider en la BD; probablemente un one-off obsoleto).
+// Para reactivar: quita el comentario.
+/*
 Route::get('/ejecutar-convert', function () {
     Artisan::call('images:convert-png');
     return response()->json(['status' => 'ok', 'message' => 'Comando ejecutado correctamente.']);
 });
+*/
 
 
 
@@ -215,6 +238,11 @@ Route::group(['middleware' => ['auth','verified','role:user'], 'prefix' => 'user
 // Route::get('brands-mark', [BrandsMarkController::class , 'index'])->name('brands-mark');
 
 // ⚠️ RUTA TEMPORAL — eliminar después de ejecutar en producción
+// DESHABILITADA el 2026-10-08 por seguridad: era pública, sin autenticación ni throttle y
+// ejecutaba el comando desde el navegador. El deploy ya lo corre (.cpanel.yml).
+// Equivalente por terminal: php artisan storage:link
+// Para reactivar: quita el comentario.
+/*
 Route::get('/run-storage-link', function () {
     try {
         Artisan::call('storage:link');
@@ -223,10 +251,16 @@ Route::get('/run-storage-link', function () {
         return response('<h2 style="color:red">❌ Error: ' . $e->getMessage() . '</h2>');
     }
 });
+*/
 
 // ⚠️ RUTA TEMPORAL, SIN AUTENTICACIÓN — sobrescribe imágenes reales del catálogo. Eliminar después de usarla.
 // Solo procesa los SKUs listados en skus-sin-marca.txt (raíz del proyecto), no todo el catálogo.
 // Agrega ?dry=1 a la URL para probar sin escribir nada primero.
+// DESHABILITADA el 2026-10-08 por seguridad: era pública, sin autenticación ni throttle y
+// ejecutaba el comando desde el navegador (sobrescribe imágenes del catálogo en sitio).
+// Equivalente por terminal: php artisan product-images:watermark --sku-file=skus-sin-marca.txt [--dry-run]
+// Para reactivar: quita el comentario.
+/*
 Route::get('/waterimage', function () {
     try {
         $options = ['--sku-file' => base_path('skus-sin-marca.txt')];
@@ -240,3 +274,4 @@ Route::get('/waterimage', function () {
         return response('<h2 style="color:red">❌ Error: ' . $e->getMessage() . '</h2>');
     }
 });
+*/
