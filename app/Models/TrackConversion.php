@@ -23,12 +23,16 @@ class TrackConversion extends Model
         'quote_start',
         'quote_dismiss',
         'quote_abandon',
+        // Postulación a una vacante por WhatsApp (página /empleos): no es una venta.
+        'job_apply',
+        'job_question',
     ];
 
     /** Claves permitidas dentro de `meta` (lo demás se descarta al guardar). */
     public const META_KEYS = [
         'product_id', 'sku', 'product_name', 'brand', 'qty', 'value', 'currency',
         'placement', 'link_text', 'href', 'folio', 'intent', 'form_variant', 'cart_error',
+        'ref', 'puesto', 'area',
     ];
 
     protected $fillable = [

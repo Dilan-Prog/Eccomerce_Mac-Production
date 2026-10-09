@@ -69,6 +69,7 @@
                 <a href="{{ route('about') }}">Nosotros</a>
                 <a href="#">Servicios</a>
                 <a href="{{ route('contact') }}">Contacto</a>
+                <a href="{{ route('empleos') }}">Empleos</a>
                 <a href="{{ route('catalogo') }}">Catálogo</a>
                 <a href="{{ route('Aviso-Privacidad') }}">Aviso de Privacidad</a>
                 <a href="{{ route('Aviso-Legal') }}">Aviso Legal</a>

@@ -145,6 +145,17 @@
       var href = a.getAttribute('href') || '';
       var meta = { placement: placementOf(a), href: href.slice(0, 200), link_text: (a.textContent || '').trim().replace(/\s+/g, ' ').slice(0, 80) };
 
+      // Enlaces con evento propio (p. ej. data-mdn-event="job_apply" en /empleos): se registran con ese
+      // tipo y NO como whatsapp_click, para que no cuenten como conversion de ventas.
+      var customEvent = a.getAttribute('data-mdn-event');
+      if (customEvent) {
+        if (a.getAttribute('data-mdn-ref')) meta.ref = a.getAttribute('data-mdn-ref');
+        if (a.getAttribute('data-mdn-puesto')) meta.puesto = a.getAttribute('data-mdn-puesto');
+        if (a.getAttribute('data-mdn-area')) meta.area = a.getAttribute('data-mdn-area');
+        send(customEvent, meta);
+        return;
+      }
+
       if (isWhatsAppHref(href)) { send('whatsapp_click', meta); return; }
       if (isPhoneHref(href)) { send('phone_click', meta); return; }
       if (isQuoteFormHref(href)) { meta.intent = 'formal'; send('quote_start', meta); return; }

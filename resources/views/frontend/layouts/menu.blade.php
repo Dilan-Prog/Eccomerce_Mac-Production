@@ -54,6 +54,11 @@
                 <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.01 15.38c-1.23 0-2.42-.2-3.53-.56-.35-.12-.74-.03-1.01.24l-1.57 1.97c-2.83-1.35-5.48-3.9-6.89-6.83l1.95-1.66c.27-.28.35-.67.24-1.02-.37-1.11-.56-2.3-.56-3.53 0-.54-.45-.99-.99-.99H4.19C3.65 3 3 3.24 3 3.99 3 13.28 10.73 21 20.01 21c.71 0 .99-.63.99-1.18v-3.45c0-.54-.45-.99-.99-.99z"/></svg>
                 Asociados y Revendedores
             </a>
+            <div class="nav-secondary-divider"></div>
+            <a href="{{ route('empleos') }}" class="nav-secondary-link {{ request()->routeIs('empleos') ? 'active' : '' }}">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 6h-4V4c0-1.11-.89-2-2-2h-4c-1.11 0-2 .89-2 2v2H4c-1.11 0-1.99.89-1.99 2L2 19c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2zm-6 0h-4V4h4v2z"/></svg>
+                Empleos
+            </a>
         </div>
         <div class="nav-secondary-right">
             <a href="{{ config('contact.whatsapp.url') }}" target="_blank" class="nav-secondary-quote track-conversion" data-type="whatsapp_menu_cotizacion">

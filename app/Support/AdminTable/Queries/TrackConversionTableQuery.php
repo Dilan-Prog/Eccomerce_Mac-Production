@@ -142,6 +142,7 @@ class TrackConversionTableQuery extends AdminTableQuery
             ['key' => 'visitas', 'label' => 'Visitas', 'apply' => fn (Builder $q) => $q->where('type', TrackConversion::VISIT_TYPE)],
             ['key' => 'conversiones', 'label' => 'Conversiones', 'apply' => fn (Builder $q) => $q->whereNotIn('type', TrackConversion::nonConversionTypes())],
             ['key' => 'interacciones', 'label' => 'Carrito y cotización', 'apply' => fn (Builder $q) => $q->whereIn('type', TrackConversion::ENGAGEMENT_TYPES)],
+            ['key' => 'empleos', 'label' => 'Empleos', 'apply' => fn (Builder $q) => $q->where('type', 'like', 'job\\_%')],
             ['key' => 'whatsapp', 'label' => 'WhatsApp', 'apply' => fn (Builder $q) => $q->where('type', 'like', 'whatsapp%')],
             ['key' => 'llamadas', 'label' => 'Llamadas', 'apply' => fn (Builder $q) => $q->where(fn (Builder $w) => $w->where('type', 'like', 'telefono%')->orWhere('type', 'phone_click'))],
             ['key' => 'cotizaciones', 'label' => 'Cotizaciones', 'apply' => fn (Builder $q) => $q->where('type', 'like', 'quote\\_%')],

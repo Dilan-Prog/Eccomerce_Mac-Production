@@ -35,6 +35,7 @@ Route::get('/', [HomeController::class, 'index'])->name('index');
 Route::get('price', [HomeController::class, 'price'])->name('price');
 Route::get('contact', [HomeController::class, 'contact'])->name('contact');
 Route::get('about', [HomeController::class, 'about'])->name('about');
+Route::get('empleos', [HomeController::class, 'empleos'])->name('empleos');
 Route::get('associate',[HomeController::class, 'associatePage'])->name('associate');
 Route::get('calibracion-puesta', [HomeController::class, 'servicesCalibration'])->name('calibracion-puesta');
 Route::get('sistemas', [HomeController::class, 'servicesSistemas'])->name('sistemas');

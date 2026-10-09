@@ -11,6 +11,7 @@
         'qty' => 'Cantidad', 'value' => 'Valor', 'currency' => 'Moneda', 'placement' => 'Ubicación del botón',
         'link_text' => 'Texto del botón', 'href' => 'Destino', 'folio' => 'Folio de cotización',
         'intent' => 'Intención', 'form_variant' => 'Variante de formulario', 'cart_error' => 'Motivo (carrito)',
+        'ref' => 'Referencia de vacante', 'puesto' => 'Puesto', 'area' => 'Área',
     ];
     $meta = (array) $record->meta;
     $fmt = fn ($d) => $d ? $d->timezone('America/Mexico_City')->format('d/m/Y H:i:s') : '—';

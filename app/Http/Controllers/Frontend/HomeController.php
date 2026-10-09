@@ -13,6 +13,7 @@ use App\Models\ShippingRule;
 use App\Models\Subcategory;
 use Illuminate\Http\Request;
 use App\Models\Slider;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Cache;
 
 class HomeController extends Controller
@@ -110,6 +111,44 @@ class HomeController extends Controller
 
     public function about(){
         return view('frontend.pages.about');
+    }
+
+    /**
+     * Bolsa de trabajo. Las vacantes y los textos viven en config/empleos.php (se editan a mano);
+     * la postulación es solo por WhatsApp con el número de config/contact.php (sin formularios).
+     */
+    public function empleos(){
+        $cfg = config('empleos');
+        $numero = (string) config('contact.whatsapp.number');
+        $wa = fn (string $plantilla, array $vars = []) => 'https://wa.me/' . $numero . '?text='
+            . rawurlencode(strtr($plantilla, $vars));
+
+        $vacantes = collect($cfg['vacantes'] ?? [])
+            ->filter(fn ($v) => !empty($v['activa']))
+            ->map(function ($v, $slug) use ($cfg, $wa) {
+                $vars = [':puesto' => $v['titulo'], ':ref' => $v['ref']];
+                $v['slug'] = $slug;
+                $v['fecha'] = !empty($v['publicada'])
+                    ? Carbon::parse($v['publicada'])->locale('es')->translatedFormat('j \d\e F \d\e Y')
+                    : null;
+                $v['wa_postular'] = $wa($cfg['mensajes']['postular'], $vars);
+                $v['wa_duda'] = $wa($cfg['mensajes']['duda'], $vars);
+                return $v;
+            })
+            ->values();
+
+        $areas = collect($cfg['areas'] ?? [])->map(function ($a) use ($vacantes) {
+            $a['cantidad'] = $vacantes->where('area', $a['nombre'])->count();
+            return $a;
+        });
+
+        return view('frontend.pages.empleos', [
+            'cfg' => $cfg,
+            'vacantes' => $vacantes,
+            'areas' => $areas,
+            'modalidades' => $vacantes->pluck('modalidad')->unique()->values(),
+            'waGeneral' => $wa($cfg['mensajes']['general']),
+        ]);
     }
 
     public function servicesCalibration(){
