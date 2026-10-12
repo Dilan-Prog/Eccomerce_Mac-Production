@@ -8,7 +8,11 @@
 @php
     $urlCanonica = route('empleos');
     $nVacantes = $vacantes->count();
-    $nAreas = $areas->filter(fn ($a) => $a['cantidad'] > 0)->count();
+    // Solo se listan las áreas que tienen al menos una vacante activa.
+    $areasActivas = $areas->filter(fn ($a) => $a['cantidad'] > 0)->values();
+    $nAreas = $areasActivas->count();
+    // Con pocas vacantes el buscador, los filtros y las áreas estorban: se muestran solo desde 4 vacantes.
+    $conFiltros = $vacantes->count() > 3;
     $waNum = config('contact.whatsapp.display');
     $horario = config('contact.hours.es');
     $descripcion = 'Vacantes en Mac del Norte, Monterrey: técnicos en instrumentación, ingeniería de automatización, ventas industriales y prácticas. Postúlate por WhatsApp.';
@@ -78,7 +82,7 @@
 
   /* Cifras */
   .mdn-job-stats { background:#fff; border-bottom:1px solid var(--j-line); }
-  .mdn-job-stats .mdn-job-wrap { padding-top:28px; padding-bottom:28px; display:grid; grid-template-columns:repeat(2,1fr); gap:20px; }
+  .mdn-job-stats .mdn-job-wrap { padding-top:28px; padding-bottom:28px; display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:20px; }
   .mdn-job-stat b { display:block; font-size:clamp(24px,3vw,32px); font-weight:800; color:var(--j-blue); line-height:1.1; }
   .mdn-job-stat span { font-size:13px; color:var(--j-muted); }
 
@@ -186,7 +190,6 @@
 
   @media (min-width:640px) {
     .mdn-job-search { grid-template-columns:1.6fr 1fr 1fr auto; align-items:end; }
-    .mdn-job-stats .mdn-job-wrap { grid-template-columns:repeat(4,1fr); }
     .mdn-job-areas { grid-template-columns:repeat(2,1fr); }
     .mdn-job-steps { grid-template-columns:repeat(2,1fr); }
     .mdn-job-cols { grid-template-columns:1fr 1fr; }
@@ -224,6 +227,7 @@
         </a>
       </div>
 
+      @if ($conFiltros)
       <div class="mdn-job-search" role="search">
         <label>Puesto o palabra clave
           <input type="search" id="mdn-job-q" placeholder="Ej. técnico, PLC, ventas" autocomplete="off">
@@ -231,7 +235,7 @@
         <label>Área
           <select id="mdn-job-area">
             <option value="Todas">Todas</option>
-            @foreach ($areas as $a)
+            @foreach ($areasActivas as $a)
               <option value="{{ $a['nombre'] }}">{{ $a['nombre'] }}</option>
             @endforeach
           </select>
@@ -246,6 +250,7 @@
         </label>
         <a href="#vacantes" class="mdn-job-btn"><span>Buscar · <span data-job-count>{{ $nVacantes }}</span> resultados</span></a>
       </div>
+      @endif
     </div>
   </section>
 
@@ -254,12 +259,15 @@
     <div class="mdn-job-wrap">
       <div class="mdn-job-stat"><b>+30</b><span>años en la industria</span></div>
       <div class="mdn-job-stat"><b>{{ $nVacantes }}</b><span>vacantes abiertas</span></div>
+      @if ($nAreas > 1)
       <div class="mdn-job-stat"><b>{{ $nAreas }}</b><span>áreas de trabajo</span></div>
+      @endif
       <div class="mdn-job-stat"><b>5 días</b><span>tiempo máximo de respuesta</span></div>
     </div>
   </section>
 
-  {{-- ÁREAS --}}
+  {{-- ÁREAS (solo si hay filtros y más de un área con vacantes) --}}
+  @if ($conFiltros && $nAreas > 1)
   <section class="mdn-job-sec--bg">
     <div class="mdn-job-wrap">
       <div class="mdn-job-head">
@@ -267,7 +275,7 @@
         <p class="mdn-job-lead">Equipos que trabajan juntos para que cada instalación llegue a tiempo y funcionando.</p>
       </div>
       <div class="mdn-job-areas">
-        @foreach ($areas as $a)
+        @foreach ($areasActivas as $a)
           <button type="button" class="mdn-job-area" data-area-card="{{ $a['nombre'] }}">
             <span class="mdn-job-area-top"><b>{{ $a['nombre'] }}</b><span class="mdn-job-area-count">{{ $a['cantidad'] }} {{ $a['cantidad'] === 1 ? 'vacante' : 'vacantes' }}</span></span>
             <p>{{ $a['descripcion'] }}</p>
@@ -277,18 +285,21 @@
       </div>
     </div>
   </section>
+  @endif
 
   {{-- VACANTES --}}
   <section id="vacantes">
     <div class="mdn-job-wrap">
       <div class="mdn-job-head">
         <div><div class="mdn-job-kicker">Vacantes abiertas</div><h2 class="mdn-job-h2"><span data-job-count>{{ $nVacantes }}</span> posiciones disponibles</h2></div>
+        @if ($conFiltros)
         <div class="mdn-job-chips" role="group" aria-label="Filtrar por área">
           <button type="button" class="mdn-job-chip" data-chip="Todas" aria-pressed="true">Todas</button>
-          @foreach ($areas as $a)
+          @foreach ($areasActivas as $a)
             <button type="button" class="mdn-job-chip" data-chip="{{ $a['nombre'] }}" aria-pressed="false">{{ $a['nombre'] }}</button>
           @endforeach
         </div>
+        @endif
       </div>
 
       @if ($vacantes->isEmpty())

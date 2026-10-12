@@ -64,7 +64,7 @@ return [
             ],
             'deseable' => ['Experiencia con equipos Honeywell UDC', 'Curso DC-3 trabajo en alturas'],
             'ofrecemos' => ['Prestaciones superiores a la ley', 'Capacitación Honeywell', 'Uniforme y EPP', 'Vehículo para servicio'],
-            'activa' => true,
+            'activa' => false,
         ],
 
         'tecnico-jr-taller' => [
@@ -91,7 +91,7 @@ return [
             ],
             'deseable' => ['Prácticas en área industrial'],
             'ofrecemos' => ['Prestaciones superiores a la ley', 'Capacitación Honeywell', 'Uniforme y EPP', 'Plan de carrera a Técnico'],
-            'activa' => true,
+            'activa' => false,
         ],
 
         'ingeniero-automatizacion' => [
@@ -118,7 +118,7 @@ return [
             ],
             'deseable' => ['Experiencia en SCADA', 'Normas IEC / UL'],
             'ofrecemos' => ['Prestaciones superiores a la ley', 'Capacitación Honeywell', 'Uniforme y EPP', 'Laptop y licencias'],
-            'activa' => true,
+            'activa' => false,
         ],
 
         'ejecutivo-ventas-industriales' => [
@@ -128,6 +128,34 @@ return [
             'modalidad'   => 'Campo',
             'horario'     => 'Lun–Vie 8:30–18:00',
             'publicada'   => '2026-10-04',
+            'experiencia' => '2+ años',
+            'escolaridad' => 'Licenciatura / Ingeniería',
+            'descripcion' => 'Desarrollarás cuentas industriales ofreciendo equipo Honeywell y McDonnell & Miller junto con nuestros servicios de instalación.',
+            'responsabilidades' => [
+                'Prospección y visita a plantas industriales',
+                'Elaboración de cotizaciones técnicas',
+                'Seguimiento de cartera de clientes',
+                'Coordinación con el área técnica',
+            ],
+            'requisitos' => [
+                'Ing. industrial, mecánico o afín',
+                '2+ años en ventas B2B industriales',
+                'Manejo de CRM',
+                'Auto propio',
+            ],
+            'deseable' => ['Conocimiento de instrumentación', 'Cartera en Nuevo León'],
+            'ofrecemos' => ['Prestaciones superiores a la ley', 'Capacitación Honeywell', 'Uniforme y EPP', 'Comisiones sin tope', 'Apoyo de gasolina'],
+            'activa' => true,
+        ],
+
+        // Segunda plaza de ventas (mismo perfil que VT-01). Edita título, requisitos o modalidad si cambia el perfil.
+        'ejecutivo-ventas-industriales-2' => [
+            'ref'         => 'VT-02',
+            'titulo'      => 'Ejecutivo de Ventas Industriales',
+            'area'        => 'Ventas',
+            'modalidad'   => 'Campo',
+            'horario'     => 'Lun–Vie 8:30–18:00',
+            'publicada'   => '2026-10-12',
             'experiencia' => '2+ años',
             'escolaridad' => 'Licenciatura / Ingeniería',
             'descripcion' => 'Desarrollarás cuentas industriales ofreciendo equipo Honeywell y McDonnell & Miller junto con nuestros servicios de instalación.',
@@ -172,7 +200,7 @@ return [
             ],
             'deseable' => ['Manejo de montacargas'],
             'ofrecemos' => ['Prestaciones superiores a la ley', 'Capacitación Honeywell', 'Uniforme y EPP'],
-            'activa' => true,
+            'activa' => false,
         ],
 
         'practicante-ingenieria' => [
@@ -199,7 +227,7 @@ return [
             ],
             'deseable' => ['Proyecto de residencia profesional'],
             'ofrecemos' => ['Constancia de prácticas', 'Capacitación Honeywell', 'Posibilidad de contratación'],
-            'activa' => true,
+            'activa' => false,
         ],
 
     ],
