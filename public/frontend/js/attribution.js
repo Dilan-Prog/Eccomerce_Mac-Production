@@ -4,7 +4,7 @@
  * referrer externo, landing page y session id. Persiste en cookie propia
  * (primera parte) + localStorage. Sin dependencias.
  *
- * API publica: window.MDNAttribution = { capture, get, newEventId }
+ * API publica: window.MDNAttribution = { capture, get, getMeta, eventAt, newEventId }
  */
 (function (root) {
   'use strict';
@@ -23,6 +23,10 @@
   var PARAM_KEYS = CLICK_IDS.concat(UTM_KEYS);
   // Claves planas de localStorage del sistema anterior (se usan para sembrar el estado la primera vez).
   var LEGACY_KEYS = ['gclid', 'utm_source', 'utm_medium', 'utm_campaign'];
+
+  // Estado en memoria: session_id generado cuando aun no hay estado guardado
+  // (page_visit y el primer clic comparten sesion en vez de uno nuevo por llamada).
+  var memoSessionId = '';
 
   var FLAT_KEYS = [
     'gclid', 'gbraid', 'wbraid', 'fbclid',
@@ -54,6 +58,30 @@
     return s.length > MAX_VALUE_LEN ? s.slice(0, MAX_VALUE_LEN) : s;
   }
 
+  /**
+   * Valida el formato de un identificador de clic.
+   *  - gclid: [A-Za-z0-9_-]{20,255}, sin prefijo "gtm" (cualquier caso) y no solo digitos.
+   *  - gbraid / wbraid / fbclid: [A-Za-z0-9_-]{10,255}.
+   * No recorta espacios: un valor con espacios es invalido.
+   */
+  function isValidClickId(value, kind) {
+    if (typeof value !== 'string') return false;
+    if (kind === 'gclid') {
+      if (!/^[A-Za-z0-9_-]{20,255}$/.test(value)) return false;
+      if (/^gtm/i.test(value)) return false;
+      if (/^[0-9]+$/.test(value)) return false;
+      return true;
+    }
+    if (kind === 'gbraid' || kind === 'wbraid' || kind === 'fbclid') {
+      return /^[A-Za-z0-9_-]{10,255}$/.test(value);
+    }
+    return false;
+  }
+
+  function isClickIdKey(key) {
+    return CLICK_IDS.indexOf(key) !== -1;
+  }
+
   // Devuelve solo los parametros presentes y no vacios.
   function parseParams(search) {
     var out = {};
@@ -73,7 +101,9 @@
       if (Object.prototype.hasOwnProperty.call(out, key)) continue; // primera aparicion gana
       try { val = decodeURIComponent(rawVal.replace(/\+/g, ' ')); } catch (e) { val = rawVal; }
       val = cleanValue(val);
-      if (val) out[key] = val;
+      if (!val) continue;
+      if (isClickIdKey(key) && !isValidClickId(val, key)) continue; // click id invalido: se descarta
+      out[key] = val;
     }
     return out;
   }
@@ -104,6 +134,9 @@
     var o = { gclid: '', gbraid: '', wbraid: '', fbclid: '' };
     for (var i = 0; i < UTM_KEYS.length; i++) o[UTM_KEYS[i]] = '';
     o.ts = 0;
+    // Aditivo: marca de tiempo por click id y de la ultima llegada de utm_source.
+    o.cts = { gclid: 0, gbraid: 0, wbraid: 0, fbclid: 0 };
+    o.utm_ts = 0;
     return o;
   }
 
@@ -160,7 +193,12 @@
         var seeded = false;
         for (var lk = 0; lk < LEGACY_KEYS.length; lk++) {
           var lv = cleanValue(legacy[LEGACY_KEYS[lk]] || '');
-          if (lv) { s.last[LEGACY_KEYS[lk]] = lv; seeded = true; }
+          if (!lv) continue;
+          if (isClickIdKey(LEGACY_KEYS[lk]) && !isValidClickId(lv, LEGACY_KEYS[lk])) continue;
+          s.last[LEGACY_KEYS[lk]] = lv;
+          seeded = true;
+          if (isClickIdKey(LEGACY_KEYS[lk])) s.last.cts[LEGACY_KEYS[lk]] = now;
+          if (LEGACY_KEYS[lk] === 'utm_source') s.last.utm_ts = now;
         }
         if (seeded) s.last.ts = now;
       }
@@ -169,18 +207,30 @@
     // Completar campos faltantes por si el estado viene incompleto.
     var base = emptyLast();
     for (var k in base) { if (s.last[k] === undefined) s.last[k] = base[k]; }
+    if (!s.last.cts || typeof s.last.cts !== 'object') s.last.cts = base.cts;
+    for (var ci = 0; ci < CLICK_IDS.length; ci++) {
+      if (typeof s.last.cts[CLICK_IDS[ci]] !== 'number') s.last.cts[CLICK_IDS[ci]] = 0;
+    }
+    if (typeof s.last.utm_ts !== 'number') s.last.utm_ts = 0;
 
     // Last touch.
     var hasNew = hasAny(params, PARAM_KEYS);
     if (hasNew) {
       // Los ids de Google son mutuamente excluyentes: uno nuevo reemplaza a los demas.
       if (hasAny(params, GOOGLE_IDS)) {
-        for (var g = 0; g < GOOGLE_IDS.length; g++) s.last[GOOGLE_IDS[g]] = '';
+        for (var g = 0; g < GOOGLE_IDS.length; g++) {
+          s.last[GOOGLE_IDS[g]] = '';
+          s.last.cts[GOOGLE_IDS[g]] = 0;
+        }
       }
       for (var p = 0; p < PARAM_KEYS.length; p++) {
         var key = PARAM_KEYS[p];
-        if (params[key]) s.last[key] = params[key];
+        if (params[key]) {
+          s.last[key] = params[key];
+          if (isClickIdKey(key)) s.last.cts[key] = now;
+        }
       }
+      if (params.utm_source) s.last.utm_ts = now;
       s.last.ts = now;
       s.expires = now + LIFETIME_MS; // refrescar vigencia
     }
@@ -215,6 +265,62 @@
     var ts = last.ts || first.ts;
     if (ts) {
       try { out.captured_at = new Date(ts).toISOString(); } catch (e) { out.captured_at = ''; }
+    }
+    return out;
+  }
+
+  function isExpired(state, now) {
+    return !!state && typeof state.expires === 'number' &&
+      (typeof now === 'number' ? now : Date.now()) > state.expires;
+  }
+
+  // utm_source "no-google": valor no vacio que no contiene 'google' (sin distinguir mayusculas).
+  function isNonGoogleSource(v) {
+    var s = (v === null || v === undefined) ? '' : String(v).trim();
+    return s !== '' && s.toLowerCase().indexOf('google') === -1;
+  }
+
+  function isoOrEmpty(ts) {
+    if (!ts || typeof ts !== 'number') return '';
+    try { return new Date(ts).toISOString(); } catch (e) { return ''; }
+  }
+
+  /**
+   * Metadatos de atribucion derivados del estado (todo strings):
+   *  click_id_at     ISO UTC del click id mas reciente ('' si no hay / sin marca de tiempo)
+   *  click_channel   'google' | 'meta' | 'none'
+   *  touch_conflict  '1' si hay click id de Google y un toque posterior de otro canal
+   *  attribution_at  captured_at actual (ISO)
+   * Los click ids con formato invalido se ignoran. Un estado vencido o ausente no tiene click ids.
+   */
+  function computeMeta(state, now) {
+    var out = { click_id_at: '', click_channel: 'none', touch_conflict: '0', attribution_at: '' };
+    if (!isValidState(state) || isExpired(state, now)) return out;
+    out.attribution_at = flatten(state).captured_at;
+
+    var last = state.last || {};
+    var cts = (last.cts && typeof last.cts === 'object') ? last.cts : {};
+    var tsOf = function (k) { return typeof cts[k] === 'number' ? cts[k] : 0; };
+
+    var best = null, bestTs = -1;
+    var googleTs = -1;
+    for (var i = 0; i < CLICK_IDS.length; i++) {
+      var k = CLICK_IDS[i];
+      if (!isValidClickId(last[k], k)) continue;
+      var t = tsOf(k);
+      if (t > bestTs) { best = k; bestTs = t; } // empate: gana el primero (Google antes que Meta)
+      if (GOOGLE_IDS.indexOf(k) !== -1 && t > googleTs) googleTs = t;
+    }
+    if (!best) return out;
+
+    out.click_id_at = bestTs > 0 ? isoOrEmpty(bestTs) : '';
+    out.click_channel = GOOGLE_IDS.indexOf(best) !== -1 ? 'google' : 'meta';
+
+    if (googleTs >= 0) {
+      var fbOk = isValidClickId(last.fbclid, 'fbclid') && tsOf('fbclid') > googleTs;
+      var utmTs = typeof last.utm_ts === 'number' ? last.utm_ts : 0;
+      var utmOk = isNonGoogleSource(last.utm_source) && utmTs > googleTs;
+      if (fbOk || utmOk) out.touch_conflict = '1';
     }
     return out;
   }
@@ -289,24 +395,48 @@
       var ls = root.localStorage;
       var legacy = ['gclid', 'utm_source', 'utm_medium', 'utm_campaign'];
       for (var i = 0; i < legacy.length; i++) {
-        if (params[legacy[i]]) ls.setItem(legacy[i], params[legacy[i]]);
+        var v = params[legacy[i]];
+        if (!v) continue;
+        if (isClickIdKey(legacy[i]) && !isValidClickId(v, legacy[i])) continue;
+        ls.setItem(legacy[i], v);
       }
       if (!ls.getItem('landing_page')) ls.setItem('landing_page', pathname);
     } catch (e) { /* ignore */ }
   }
 
+  function sessionFallback() {
+    if (!memoSessionId) {
+      try { memoSessionId = newUuid(); } catch (e) { memoSessionId = ''; }
+    }
+    return memoSessionId;
+  }
+
+  function emptyWithSession() {
+    var out = flatten(null);
+    out.session_id = sessionFallback();
+    return out;
+  }
+
   function get() {
     try {
       var s = readState();
-      if (!s) {
-        var out = flatten(null);
-        out.session_id = newUuid();
-        return out;
-      }
+      if (!s || isExpired(s)) return emptyWithSession();
       return flatten(s);
     } catch (e) {
-      return flatten(null);
+      try { return emptyWithSession(); } catch (e2) { return flatten(null); }
     }
+  }
+
+  function getMeta() {
+    try {
+      return computeMeta(readState());
+    } catch (e) {
+      return { click_id_at: '', click_channel: 'none', touch_conflict: '0', attribution_at: '' };
+    }
+  }
+
+  function eventAt() {
+    return new Date().toISOString();
   }
 
   function capture() {
@@ -327,8 +457,10 @@
         pathname: loc.pathname,
         referrer: document.referrer || '',
         hostname: loc.hostname,
-        legacy: legacy
+        legacy: legacy,
+        uuid: (!existing && memoSessionId) ? memoSessionId : undefined
       });
+      memoSessionId = next.sid || memoSessionId;
       writeState(next);
       writeLegacy(params, loc.pathname);
       return flatten(next);
@@ -342,7 +474,9 @@
   }
 
   if (root && typeof root === 'object' && root.document) {
-    root.MDNAttribution = { capture: capture, get: get, newEventId: newEventId };
+    root.MDNAttribution = {
+      capture: capture, get: get, getMeta: getMeta, eventAt: eventAt, newEventId: newEventId
+    };
   }
 
   if (typeof module !== 'undefined' && module.exports) {
@@ -356,7 +490,12 @@
       serializeForCookie: serializeForCookie,
       capture: capture,
       get: get,
+      getMeta: getMeta,
+      eventAt: eventAt,
       newEventId: newEventId,
+      isValidClickId: isValidClickId,
+      isNonGoogleSource: isNonGoogleSource,
+      computeMeta: computeMeta,
       STORAGE_KEY: STORAGE_KEY,
       FLAT_KEYS: FLAT_KEYS,
       LIFETIME_MS: LIFETIME_MS,

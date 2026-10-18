@@ -5,6 +5,7 @@ use App\Http\Controllers\AspelSync\AspelSalesSyncController;
 use App\Http\Controllers\AspelSync\AspelSyncController;
 use App\Http\Controllers\AspelSync\CotizacionMonedaSyncController;
 use App\Http\Controllers\AspelSync\PrecioXProductoController;
+use App\Http\Controllers\Api\AttributionLookupController;
 use App\Http\Controllers\Api\MarketingCampaignController;
 use App\Http\Controllers\Api\MarketingDataController;
 use App\Http\Controllers\Api\MarketingSequenceController;
@@ -93,4 +94,13 @@ Route::middleware(['throttle:marketing-api', 'marketing.token'])->group(function
     Route::post('/marketing/sequences/due/{id}/claim', [MarketingSequenceController::class, 'claim']);
     Route::get('/marketing/sequences/due/{id}/render', [MarketingSequenceController::class, 'render']);
     Route::post('/marketing/sequences/due/{id}/report', [MarketingSequenceController::class, 'report']);
+});
+
+// Atribucion de contactos (WhatsApp / correo / llamadas) para el flujo de n8n -> Google Ads.
+// Solo lectura. throttle:attribution-api (120/min por IP, ver RouteServiceProvider::boot()) va
+// ANTES del token para que tambien frene a quien pruebe tokens a ciegas. attribution.token:
+// Authorization: Bearer con config('attribution.api_token'); sin token configurado responde 503.
+// Ver config/attribution.php y App\Support\Attribution\AttributionLookupService.
+Route::middleware(['throttle:attribution-api', 'attribution.token'])->group(function () {
+    Route::get('/attribution/lookup', [AttributionLookupController::class, 'lookup'])->name('attribution.lookup');
 });

@@ -72,7 +72,18 @@ Route::get('/googgle-feed_macdelnorte$product-merchant-center',[ProductControlle
 Route::get('/googgle-feed_macdelnorte-facebook',[ProductController::class, 'generateFeedProductFacebook']);
 
 Route::post('/recaptcha-validar', [ReCaptchaController::class, 'verify']);
-Route::post('/track-conversion', [TrackConversionController::class, 'store'])->middleware('throttle:tracking')->name('track.conversion');
+// Endpoint publico de analitica: sin sesion, sin CSRF y sin errores de sesion compartidos (asi las
+// paginas en cache siguen registrando y no se crea una sesion por evento). Limites: ver
+// RouteServiceProvider (tracking-ip 300/min por IP, tracking-session 60/min por session_id).
+// tracking.origin: solo guarda eventos con Origin/Referer del propio sitio (204 si no); ver VerifyTrackingOrigin.
+Route::post('/track-conversion', [TrackConversionController::class, 'store'])
+    ->withoutMiddleware([
+        \App\Http\Middleware\VerifyCsrfToken::class,
+        \Illuminate\Session\Middleware\StartSession::class,
+        \Illuminate\View\Middleware\ShareErrorsFromSession::class,
+    ])
+    ->middleware(['tracking.origin', 'throttle:tracking-ip', 'throttle:tracking-session'])
+    ->name('track.conversion');
 
 // Sirve /uploads/{path} desde UploadPath::base() cuando el archivo ya no
 // existe físicamente en public/uploads (ver app/Support/UploadPath.php).

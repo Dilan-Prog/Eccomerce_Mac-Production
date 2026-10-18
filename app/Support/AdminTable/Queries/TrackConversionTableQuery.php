@@ -104,6 +104,12 @@ class TrackConversionTableQuery extends AdminTableQuery
                 'searchable' => true,
             ],
             [
+                'key' => 'contact_folio',
+                'label' => 'Folio de contacto',
+                'type' => 'mono',
+                'searchable' => true,
+            ],
+            [
                 'key' => 'meta',
                 'label' => 'Datos extra',
                 'render' => function ($row) {
@@ -116,6 +122,12 @@ class TrackConversionTableQuery extends AdminTableQuery
             [
                 'key' => 'captured_at',
                 'label' => 'Capturado en navegador',
+                'type' => 'date',
+                'sortable' => true,
+            ],
+            [
+                'key' => 'event_at',
+                'label' => 'Hora del evento (navegador)',
                 'type' => 'date',
                 'sortable' => true,
             ],
@@ -145,6 +157,7 @@ class TrackConversionTableQuery extends AdminTableQuery
             ['key' => 'empleos', 'label' => 'Empleos', 'apply' => fn (Builder $q) => $q->where('type', 'like', 'job\\_%')],
             ['key' => 'whatsapp', 'label' => 'WhatsApp', 'apply' => fn (Builder $q) => $q->where('type', 'like', 'whatsapp%')],
             ['key' => 'llamadas', 'label' => 'Llamadas', 'apply' => fn (Builder $q) => $q->where(fn (Builder $w) => $w->where('type', 'like', 'telefono%')->orWhere('type', 'phone_click'))],
+            ['key' => 'correos', 'label' => 'Correos', 'apply' => fn (Builder $q) => $q->where(fn (Builder $w) => $w->where('type', 'like', 'correo%')->orWhere('type', 'email_click'))],
             ['key' => 'cotizaciones', 'label' => 'Cotizaciones', 'apply' => fn (Builder $q) => $q->where('type', 'like', 'quote\\_%')],
             ['key' => 'google', 'label' => 'Google Ads (gclid/gbraid/wbraid)', 'apply' => $hasGoogle],
             ['key' => 'meta', 'label' => 'Meta (fbclid)', 'apply' => fn (Builder $q) => $q->whereNotNull('fbclid')->where('fbclid', '!=', '')],

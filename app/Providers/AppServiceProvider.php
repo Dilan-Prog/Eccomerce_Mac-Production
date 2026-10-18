@@ -4,12 +4,14 @@ namespace App\Providers;
 
 use App\Models\Category;
 use App\Models\GeneralSetting;
+use Illuminate\Database\QueryException;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\View;
+use PDOException;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -44,13 +46,29 @@ class AppServiceProvider extends ServiceProvider
             return "<?php endif; ?>";
         });
 
-        /** Set Timezone */
-        $generalSettings = GeneralSetting::first();
-        Config::set('app.timezone', $generalSettings->time_zone);
+        /**
+         * Set Timezone.
+         * En consola (artisan migrate sobre una BD vacia, php artisan test con SQLite en memoria) o
+         * en el entorno `testing`, si la tabla general_settings aun no existe o la BD no responde, la
+         * app arranca igual con UTC y un $settings vacio. En una peticion web real se reporta y se
+         * relanza (comportamiento previo: 500 ante un fallo de BD), nunca se sirve el sitio a medias.
+         * Se evita Schema::hasTable() a proposito: consultaria information_schema en cada request.
+         */
+        try {
+            $generalSettings = GeneralSetting::first();
+        } catch (QueryException|PDOException $e) {
+            if (!($this->app->runningInConsole() || $this->app->environment('testing'))) {
+                report($e);
+                throw $e;
+            }
+            $generalSettings = null;
+        }
+        Config::set('app.timezone', $generalSettings?->time_zone ?: 'UTC');
 
-        /** Share $settings con todas las vistas */
-        View::composer('*', function ($view) use ($generalSettings) {
-            $view->with('settings', $generalSettings);
+        /** Share $settings con todas las vistas (nunca null: un modelo vacio si no hay fila) */
+        $sharedSettings = $generalSettings ?? new GeneralSetting();
+        View::composer('*', function ($view) use ($sharedSettings) {
+            $view->with('settings', $sharedSettings);
         });
 
         /**

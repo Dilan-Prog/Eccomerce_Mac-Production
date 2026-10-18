@@ -10,6 +10,10 @@
         'product_id' => 'Producto (id)', 'sku' => 'SKU', 'product_name' => 'Producto', 'brand' => 'Marca',
         'qty' => 'Cantidad', 'value' => 'Valor', 'currency' => 'Moneda', 'placement' => 'Ubicación del botón',
         'link_text' => 'Texto del botón', 'href' => 'Destino', 'folio' => 'Folio de cotización',
+        'legacy_type' => 'Tipo original del botón', 'click_id_rejected' => 'Click id descartado (formato inválido)',
+        'click_id_rejected_val' => 'Valor descartado (primeros 40)', 'click_id_at' => 'Fecha del click id',
+        'click_channel' => 'Canal del click id', 'touch_conflict' => 'Conflicto de toques',
+        'attribution_at' => 'Fecha de la atribución',
         'intent' => 'Intención', 'form_variant' => 'Variante de formulario', 'cart_error' => 'Motivo (carrito)',
         'ref' => 'Referencia de vacante', 'puesto' => 'Puesto', 'area' => 'Área',
     ];
@@ -19,6 +23,8 @@
         'Tipo' => $record->type,
         'ID de evento' => $record->event_id,
         'ID de sesión' => $record->session_id,
+        'Folio de contacto' => $record->contact_folio,
+        'Hora del evento (navegador)' => $fmt($record->event_at),
         'Capturado en el navegador' => $fmt($record->captured_at),
         'Registrado en el servidor' => $fmt($record->created_at),
         'gclid' => $record->gclid,
@@ -34,7 +40,7 @@
         'URL completa del evento' => $record->page_url,
         'Referrer' => $record->referrer,
     ];
-    $monoKeys = ['ID de evento', 'ID de sesión', 'gclid', 'gbraid', 'wbraid', 'fbclid'];
+    $monoKeys = ['ID de evento', 'ID de sesión', 'Folio de contacto', 'gclid', 'gbraid', 'wbraid', 'fbclid'];
 @endphp
 <div style="display:flex;flex-direction:column;gap:16px;min-width:0">
 

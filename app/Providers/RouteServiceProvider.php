@@ -41,8 +41,36 @@ class RouteServiceProvider extends ServiceProvider
         });
 
         // Limite para el endpoint publico POST /track-conversion (web.php).
+        // Se conserva el nombre 'tracking' (60/min por IP) por compatibilidad, pero la ruta ya
+        // no lo usa: ahora aplica 'tracking-ip' y 'tracking-session' (abajo).
         RateLimiter::for('tracking', function (Request $request) {
             return Limit::perMinute(60)->by($request->ip());
+        });
+
+        // POST /track-conversion: 300/min por IP (oficinas y redes moviles comparten IP por NAT).
+        RateLimiter::for('tracking-ip', function (Request $request) {
+            return Limit::perMinute(300)->by('tracking-ip:' . $request->ip());
+        });
+
+        // POST /track-conversion: 60/min por session_id (si no viene, por IP). Frena un navegador en
+        // bucle sin castigar a los demas visitantes de la misma IP. La clave esta ACOTADA (IP + uno de
+        // 64 cubos segun el hash del session_id) para que un atacante que invente session_id no pueda
+        // crear claves ilimitadas en la cache. El session_id se lee igual que en store().
+        RateLimiter::for('tracking-session', function (Request $request) {
+            $sessionId = \App\Http\Controllers\Backend\TrackConversionController::payload($request)['session_id'] ?? null;
+            $sessionId = is_string($sessionId) ? trim($sessionId) : '';
+
+            return Limit::perMinute(60)->by(
+                $sessionId !== ''
+                    ? 'tracking-session:' . $request->ip() . ':' . (crc32($sessionId) % 64)
+                    : 'tracking-session-ip:' . $request->ip()
+            );
+        });
+
+        // GET /api/attribution/lookup (n8n): 120/min por IP. Va ANTES del token en la ruta,
+        // asi tambien frena a quien pruebe tokens a ciegas.
+        RateLimiter::for('attribution-api', function (Request $request) {
+            return Limit::perMinute(120)->by('attribution-api:' . $request->ip());
         });
 
         $this->routes(function () {

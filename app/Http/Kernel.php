@@ -66,6 +66,8 @@ class Kernel extends HttpKernel
         'can-access-module' => \App\Http\Middleware\ModuleAccessMiddleware::class,
         'aspel.token' => \App\Http\Middleware\AspelApiTokenMiddleware::class,
         'marketing.token' => \App\Http\Middleware\MarketingApiTokenMiddleware::class,
+        'tracking.origin' => \App\Http\Middleware\VerifyTrackingOrigin::class,
+        'attribution.token' => \App\Http\Middleware\AttributionApiTokenMiddleware::class,
         'auth.basic' => \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth::class,
         'auth.session' => \Illuminate\Session\Middleware\AuthenticateSession::class,
         'cache.headers' => \Illuminate\Http\Middleware\SetCacheHeaders::class,
@@ -77,6 +79,29 @@ class Kernel extends HttpKernel
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'verified'  => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
         'auth.cart' => \App\Http\Middleware\RequireAuthForCart::class,
+    ];
+
+    /**
+     * Prioridad de middleware (copia de la de Laravel + VerifyTrackingOrigin). Laravel reordena los
+     * middleware de ruta segun esta lista, y ThrottleRequests esta en ella: sin listar tracking.origin
+     * antes, los throttles de POST /track-conversion correrian primero y el trafico ajeno (204)
+     * gastaria el limite de los visitantes reales.
+     *
+     * @var array<int, class-string|string>
+     */
+    protected $middlewarePriority = [
+        \Illuminate\Foundation\Http\Middleware\HandlePrecognitiveRequests::class,
+        \Illuminate\Cookie\Middleware\EncryptCookies::class,
+        \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
+        \Illuminate\Session\Middleware\StartSession::class,
+        \Illuminate\View\Middleware\ShareErrorsFromSession::class,
+        \Illuminate\Contracts\Auth\Middleware\AuthenticatesRequests::class,
+        \App\Http\Middleware\VerifyTrackingOrigin::class,
+        \Illuminate\Routing\Middleware\ThrottleRequests::class,
+        \Illuminate\Routing\Middleware\ThrottleRequestsWithRedis::class,
+        \Illuminate\Contracts\Session\Middleware\AuthenticatesSessions::class,
+        \Illuminate\Routing\Middleware\SubstituteBindings::class,
+        \Illuminate\Auth\Middleware\Authorize::class,
     ];
 
     protected $commands = [

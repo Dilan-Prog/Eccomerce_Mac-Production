@@ -1031,7 +1031,9 @@
         const googleSheetsWebhook = 'https://script.google.com/macros/s/AKfycbwp8PQWscSciD7gc5c1DMiFntOr0HuAPraK9pfzwtzqCP_4DF9azi8Fy16HfEeqxK3T/exec';
 
         // Envía la conversión a Google Sheets y al backend (en paralelo, sin bloquear la navegación)
-        function registrarConversion(type) {
+        // `link` (opcional) es el <a> pulsado: de él salen el folio de contacto y el tipo canónico para el
+        // backend (mdn-contact.js). `type` (el data-type de siempre) sigue yendo a Sheets y a dataLayer.
+        function registrarConversion(type, link) {
             const payload = {
                 gclid: localStorage.getItem('gclid') || '',
                 utm_source: localStorage.getItem('utm_source') || '',
@@ -1063,9 +1065,42 @@
                     utm_campaign: payload.utm_campaign,
                     landing_page: payload.landing_page
                 };
-            backendPayload.type = type;
+            // Datos extra para el backend: tipo canónico + ubicación + folio (solo con el folio activo; con
+            // ATTRIBUTION_FOLIO_ENABLED=false el backend recibe el mismo type de siempre) y datos de la captura.
+            let backendType = type;
+            const meta = {};
+            try {
+                if (window.MDNAttribution && typeof window.MDNAttribution.getMeta === 'function') {
+                    Object.assign(meta, window.MDNAttribution.getMeta());
+                }
+                const C = window.MDNContact;
+                if (C && link && typeof C.classify === 'function') {
+                    const cls = C.classify(link);
+                    const on = !!(C.getConfig && C.getConfig().enabled);
+                    if (cls) {
+                        if (cls.placement) meta.placement = cls.placement;
+                        if (on) {
+                            backendType = cls.canonicalType || type;
+                            if (cls.legacyType && cls.legacyType !== backendType) meta.legacy_type = cls.legacyType;
+                            const folio = link.dataset ? link.dataset.mdnFolio : '';
+                            if (folio) backendPayload.contact_folio = folio;
+                        }
+                    }
+                    // Producto solo en el detalle de producto (en home/listados el JSON-LD trae otros productos).
+                    const pc = (typeof C.productContext === 'function' && /^\/product-detail\//.test(window.location.pathname))
+                        ? C.productContext(document) : null;
+                    if (pc && pc.name) meta.product_name = pc.name;
+                    if (pc && pc.sku) meta.sku = pc.sku;
+                }
+            } catch (err) { /* medir nunca debe romper la navegación */ }
+
+            backendPayload.type = backendType;
             backendPayload.page_url = window.location.href;
             backendPayload.fecha = payload.fecha;
+            backendPayload.event_at = (window.MDNAttribution && typeof window.MDNAttribution.eventAt === 'function')
+                ? window.MDNAttribution.eventAt()
+                : new Date().toISOString();
+            backendPayload.meta = meta;
             if (window.MDNAttribution && typeof window.MDNAttribution.newEventId === 'function') {
                 backendPayload.event_id = window.MDNAttribution.newEventId();
             }
@@ -1087,29 +1122,42 @@
 
             e.preventDefault();
             const type = link.dataset.type || 'desconocido';
+            // mdn-events.js ya reescribió el href con el folio (en fase de captura, antes de este listener).
             const href = link.getAttribute('href');
+
+            // Antidoble clic compartido con mdn-events.js: solo con el folio activo (sin él, igual que siempre).
+            let duplicado = false;
+            try {
+                const C = window.MDNContact;
+                if (C && C.getConfig && C.getConfig().enabled && typeof C.classify === 'function') {
+                    const cls = C.classify(link);
+                    if (cls && C.shouldDedupe(C.dedupeKey(cls))) duplicado = true;
+                }
+            } catch (err) { /* ignore */ }
 
             // Correo: sin reCAPTCHA, se registra en segundo plano y se abre el cliente de correo de inmediato
             if (type.startsWith('correo')) {
-                registrarConversion(type);
+                if (!duplicado) registrarConversion(type, link);
                 window.location.href = href;
                 return;
             }
 
             // Teléfono: sin reCAPTCHA, se registra en segundo plano y se abre el marcador de inmediato
             if (type.startsWith('telefono')) {
-                registrarConversion(type);
+                if (!duplicado) registrarConversion(type, link);
                 window.location.href = href;
                 return;
             }
 
             // WhatsApp: sin reCAPTCHA, se registra en segundo plano y se abre de inmediato
-            dataLayer.push({
-                event: 'conversion_click',
-                action: 'click',
-                label: type
-            });
-            registrarConversion(type);
+            if (!duplicado) {
+                dataLayer.push({
+                    event: 'conversion_click',
+                    action: 'click',
+                    label: type
+                });
+                registrarConversion(type, link);
+            }
 
             if (type.startsWith('whatsapp')) {
                 window.open(href, '_blank');
