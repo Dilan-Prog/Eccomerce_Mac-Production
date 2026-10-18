@@ -3,6 +3,9 @@
 namespace Tests\Feature;
 
 use App\Models\TrackConversion;
+use App\Support\Attribution\AttributionLookupService;
+use Carbon\Carbon;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\Support\CreatesTrackConversionsTable;
 use Tests\TestCase;
 
@@ -15,7 +18,7 @@ class AttributionLookupTest extends TestCase
 
     /** Claves exactas de la respuesta por folio (el orden no importa, el conjunto si). */
     private const FOLIO_KEYS = [
-        'folio', 'event_id', 'session_id', 'type', 'placement', 'event_at', 'captured_at', 'received_at',
+        'folio', 'event_id', 'is_test', 'session_id', 'type', 'placement', 'event_at', 'captured_at', 'received_at',
         'gclid', 'gbraid', 'wbraid', 'fbclid', 'utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content',
         'landing_page', 'page_url', 'referrer_host', 'product', 'attribution_source', 'has_google_click_id',
         'google_click_id_type', 'click_id_at', 'click_age_days', 'click_channel', 'touch_conflict',
@@ -169,6 +172,7 @@ class AttributionLookupTest extends TestCase
         $this->assertSame(['sku', 'product_name', 'placement', 'legacy_type', 'folio'], array_keys($json['meta']));
 
         $this->assertSame('MN7K4Q2', $json['folio']);
+        $this->assertFalse($json['is_test'], 'Una fila real responde is_test=false');
         $this->assertSame('whatsapp_click', $json['type']);
         $this->assertSame('flotante', $json['placement']);
         $this->assertSame('2026-10-18T11:59:50Z', $json['event_at']);
@@ -292,6 +296,7 @@ class AttributionLookupTest extends TestCase
         $json = $this->lookup('folio=MN7K4Q2')->assertOk()->json();
 
         $this->assertSame('none', $json['attribution_source']);
+        $this->assertFalse($json['is_test']);
         $this->assertNull($json['gclid']);
         $this->assertNull($json['utm_source']);
         $this->assertFalse($json['has_google_click_id']);
@@ -419,6 +424,7 @@ class AttributionLookupTest extends TestCase
         $this->assertSame([60, 180, 300], array_column($json['events'], 'seconds_before_call'));
         $this->assertSame(['time_window', 'time_window', 'time_window'], array_column($json['events'], 'match_type'));
         $this->assertSame('phone_click', $json['events'][0]['type']);
+        $this->assertSame([false, false, false], array_column($json['events'], 'is_test'));
         $this->assertSame('phone_click', $json['events'][2]['type'], 'telefono_contactos se devuelve como tipo canonico');
 
         $keys = array_merge(array_diff(self::FOLIO_KEYS, ['ambiguous', 'candidates', 'message_at', 'message_to_event_seconds']), ['seconds_before_call', 'match_type']);
@@ -711,5 +717,235 @@ class AttributionLookupTest extends TestCase
         $this->assertSame('TEST-qsubmit-sess-q1', $json['event_id']);
         $this->assertTrue($json['ambiguous']);
         $this->assertSame(2, $json['candidates']);
+    }
+
+    // ---------------------------------------------------------------- filas de prueba (is_test) y aislamiento
+
+    /** Atribucion vacia: simula un contacto que no trae click id ni UTM propios. */
+    private const NO_ATTRIBUTION = ['gclid' => null, 'utm_source' => null, 'utm_medium' => null, 'utm_campaign' => null];
+
+    /** La ventana (llamadas) solo trae eventos REALES por defecto: una fila de laboratorio no desplaza a una llamada real. */
+    public function test_time_window_excludes_test_rows_unless_include_test_is_given(): void
+    {
+        $this->contact(['is_test' => true, 'type' => 'whatsapp_click', 'contact_folio' => 'MN7K4Q2', 'event_id' => 'win-t'], '2026-10-18 12:03:00');
+        $this->contact(['is_test' => false, 'type' => 'whatsapp_click', 'contact_folio' => 'MN8B3CD', 'event_id' => 'win-r'], '2026-10-18 12:01:00');
+        $q = 'type=whatsapp_click&from=2026-10-18T11:55:00Z&to=2026-10-18T12:05:00Z';
+
+        $default = $this->lookup($q)->assertOk()->json();
+        $this->assertSame(1, $default['count']);
+        $this->assertFalse($default['events'][0]['is_test']);
+
+        $only = $this->lookup($q . '&include_test=only')->assertOk()->json();
+        $this->assertSame(1, $only['count']);
+        $this->assertTrue($only['events'][0]['is_test']);
+
+        $this->assertSame(2, $this->lookup($q . '&include_test=1')->assertOk()->json()['count']);
+    }
+
+    public function test_is_test_is_exposed_in_folio_window_and_by_event_modes(): void
+    {
+        $row = $this->contact(['is_test' => true, 'type' => 'whatsapp_click'], '2026-10-18 12:00:00');
+
+        $byFolio = $this->lookup('folio=MN7K4Q2')->assertOk()->json();
+        $this->assertTrue($byFolio['is_test']);
+
+        $window = $this->lookup('type=whatsapp_click&from=2026-10-18T11:55:00Z&to=2026-10-18T12:05:00Z&include_test=1')->assertOk()->json();
+        $this->assertSame(1, $window['count']);
+        $this->assertTrue($window['events'][0]['is_test']);
+
+        $byEvent = app(AttributionLookupService::class)->byEvent($row->fresh());
+        $this->assertTrue($byEvent['is_test']);
+        $this->assertSame('MN7K4Q2', $byEvent['folio']);
+    }
+
+    public function test_by_event_returns_the_same_array_as_the_folio_mode(): void
+    {
+        $row = $this->contact(['meta' => ['placement' => 'flotante', 'click_id_at' => '2026-10-17T12:00:00.000Z']]);
+
+        $viaFolio = $this->lookup('folio=MN7K4Q2&message_at=2026-10-18T12:01:00Z')->assertOk()->json();
+        $viaEvent = app(AttributionLookupService::class)->byEvent($row->fresh(), Carbon::parse('2026-10-18T12:01:00Z'));
+
+        $this->assertSame($viaFolio, json_decode(json_encode($viaEvent), true));
+        $this->assertSame(60, $viaEvent['message_to_event_seconds']);
+    }
+
+    public function test_by_event_without_folio_is_not_ambiguous_and_has_one_candidate(): void
+    {
+        $row = $this->contact(['type' => 'phone_click', 'contact_folio' => null]);
+
+        $data = app(AttributionLookupService::class)->byEvent($row->fresh());
+
+        $this->assertNull($data['folio']);
+        $this->assertFalse($data['ambiguous']);
+        $this->assertSame(1, $data['candidates']);
+        $this->assertNull($data['message_at']);
+        $this->assertNull($data['message_to_event_seconds']);
+    }
+
+    public function test_by_event_counts_candidates_with_the_real_values_of_its_folio(): void
+    {
+        $a = $this->contact(['session_id' => 'sess-a', 'event_id' => 'TEST-a'], '2026-10-18 12:00:00');
+        $this->contact(['session_id' => 'sess-b', 'event_id' => 'TEST-b'], '2026-10-18 12:05:00');
+
+        $data = app(AttributionLookupService::class)->byEvent($a->fresh());
+
+        $this->assertSame('TEST-a', $data['event_id'], 'byEvent devuelve LA fila indicada, no la mas reciente del folio');
+        $this->assertTrue($data['ambiguous']);
+        $this->assertSame(2, $data['candidates']);
+    }
+
+    public function test_a_real_row_does_not_inherit_attribution_from_a_test_row_of_the_same_session(): void
+    {
+        $this->makeEvent(['type' => 'page_visit', 'session_id' => 'sess-x', 'gclid' => self::GCLID, 'utm_source' => 'google', 'is_test' => true], '2026-10-18 11:00:00');
+        $this->contact(['session_id' => 'sess-x'] + self::NO_ATTRIBUTION);
+
+        $json = $this->lookup('folio=MN7K4Q2')->assertOk()->json();
+
+        $this->assertFalse($json['is_test']);
+        $this->assertSame('none', $json['attribution_source']);
+        $this->assertNull($json['gclid']);
+        $this->assertFalse($json['has_google_click_id']);
+        $this->assertFalse($json['session_has_fresh_click']);
+    }
+
+    public function test_a_test_row_does_not_inherit_attribution_from_a_real_row_of_the_same_session(): void
+    {
+        $this->makeEvent(['type' => 'page_visit', 'session_id' => 'sess-x', 'gclid' => self::GCLID, 'utm_source' => 'google'], '2026-10-18 11:00:00');
+        $this->contact(['session_id' => 'sess-x', 'is_test' => true] + self::NO_ATTRIBUTION);
+
+        $json = $this->lookup('folio=MN7K4Q2')->assertOk()->json();
+
+        $this->assertTrue($json['is_test']);
+        $this->assertSame('none', $json['attribution_source']);
+        $this->assertNull($json['gclid']);
+    }
+
+    public function test_a_test_row_inherits_from_a_test_row_of_the_same_session(): void
+    {
+        $this->makeEvent([
+            'type' => 'page_visit', 'session_id' => 'sess-t', 'gclid' => self::GCLID, 'utm_source' => 'google', 'is_test' => true,
+            'meta' => ['click_id_at' => '2026-10-18T10:59:00.000Z'],
+        ], '2026-10-18 11:00:00');
+        $this->contact(['session_id' => 'sess-t', 'is_test' => true] + self::NO_ATTRIBUTION);
+
+        $json = $this->lookup('folio=MN7K4Q2')->assertOk()->json();
+
+        $this->assertTrue($json['is_test']);
+        $this->assertSame('session', $json['attribution_source']);
+        $this->assertSame(self::GCLID, $json['gclid']);
+        $this->assertTrue($json['session_has_fresh_click'], 'El page_visit de prueba si cuenta para una fila de prueba');
+    }
+
+    public function test_session_has_fresh_click_ignores_a_page_visit_of_the_other_kind(): void
+    {
+        // El contacto REAL trae su gclid y click_id_at, pero el unico page_visit previo de la sesion es de prueba.
+        $this->makeEvent(['type' => 'page_visit', 'session_id' => 'sess-k', 'gclid' => self::GCLID, 'utm_source' => 'google', 'is_test' => true], '2026-10-18 11:00:00');
+        $this->contact(['session_id' => 'sess-k', 'meta' => ['click_id_at' => '2026-10-18T10:57:00.000Z']]);
+
+        $this->assertFalse($this->lookup('folio=MN7K4Q2')->assertOk()->json('session_has_fresh_click'));
+    }
+
+    public function test_same_folio_in_a_test_row_and_a_real_row_is_not_ambiguous(): void
+    {
+        $this->contact(['session_id' => 'sess-real', 'event_id' => 'TEST-real'], '2026-10-18 12:00:00');
+        $this->contact(['session_id' => 'sess-test', 'event_id' => 'TEST-test', 'is_test' => true], '2026-10-18 12:05:00');
+
+        // Sin message_at gana la fila mas reciente (la de prueba); su universo de candidatos es solo el de prueba.
+        $latest = $this->lookup('folio=MN7K4Q2')->assertOk()->json();
+        $this->assertSame('TEST-test', $latest['event_id']);
+        $this->assertTrue($latest['is_test']);
+        $this->assertFalse($latest['ambiguous']);
+        $this->assertSame(1, $latest['candidates']);
+
+        // Con message_at cerca de la real: se devuelve la real y tampoco cuenta la de prueba.
+        $near = $this->lookup('folio=MN7K4Q2&message_at=' . urlencode('2026-10-18T12:00:10Z'))->assertOk()->json();
+        $this->assertSame('TEST-real', $near['event_id']);
+        $this->assertFalse($near['is_test']);
+        $this->assertFalse($near['ambiguous']);
+        $this->assertSame(1, $near['candidates']);
+
+        // Dos pruebas en sesiones distintas SI son ambiguas entre si.
+        $this->contact(['session_id' => 'sess-test2', 'event_id' => 'TEST-test2', 'is_test' => true], '2026-10-18 12:10:00');
+        $both = $this->lookup('folio=MN7K4Q2')->assertOk()->json();
+        $this->assertSame('TEST-test2', $both['event_id']);
+        $this->assertTrue($both['ambiguous']);
+        $this->assertSame(2, $both['candidates']);
+    }
+
+    // ---------------------------------------------------------------- respond() directo
+
+    /**
+     * respond() debe dar lo mismo que el endpoint HTTP (status y cuerpo) para folio, ventana y errores.
+     *
+     * @return array<string,array{0:array<string,mixed>,1:string}>
+     */
+    public static function respondParams(): array
+    {
+        return [
+            'folio ok' => [['folio' => 'MN7K4Q2'], 'folio=MN7K4Q2'],
+            'folio normalizado' => [['folio' => ' mn-7k4q2 '], 'folio=%20mn-7k4q2%20'],
+            'folio con message_at' => [['folio' => 'MN7K4Q2', 'message_at' => '2026-10-18T12:01:00Z'], 'folio=MN7K4Q2&message_at=2026-10-18T12:01:00Z'],
+            'message_at sin zona' => [['folio' => 'MN7K4Q2', 'message_at' => '2026-10-18T12:01:00'], 'folio=MN7K4Q2&message_at=2026-10-18T12:01:00'],
+            'folio inexistente' => [['folio' => 'MN999ZZ'], 'folio=MN999ZZ'],
+            'folio formato invalido' => [['folio' => 'MNAEIOU'], 'folio=MNAEIOU'],
+            'folio vacio' => [['folio' => ''], 'folio='],
+            'sin parametros' => [[], ''],
+            'ventana ok' => [['type' => 'whatsapp_click', 'from' => '2026-10-18T11:55:00Z', 'to' => '2026-10-18T12:05:00Z'], 'type=whatsapp_click&from=2026-10-18T11:55:00Z&to=2026-10-18T12:05:00Z'],
+            'ventana demasiado larga' => [['type' => 'phone_click', 'from' => '2026-10-18T12:00:00Z', 'to' => '2026-10-18T12:15:01Z'], 'type=phone_click&from=2026-10-18T12:00:00Z&to=2026-10-18T12:15:01Z'],
+            'ventana sin zona' => [['type' => 'phone_click', 'from' => '2026-10-18T12:00:00', 'to' => '2026-10-18T12:05:00'], 'type=phone_click&from=2026-10-18T12:00:00&to=2026-10-18T12:05:00'],
+            'ventana to antes de from' => [['type' => 'phone_click', 'from' => '2026-10-18T12:05:00Z', 'to' => '2026-10-18T12:00:00Z'], 'type=phone_click&from=2026-10-18T12:05:00Z&to=2026-10-18T12:00:00Z'],
+            'ventana sin type' => [['from' => '2026-10-18T12:00:00Z', 'to' => '2026-10-18T12:05:00Z'], 'from=2026-10-18T12:00:00Z&to=2026-10-18T12:05:00Z'],
+            'ventana sin from' => [['type' => 'phone_click', 'to' => '2026-10-18T12:05:00Z'], 'type=phone_click&to=2026-10-18T12:05:00Z'],
+            'type vacio con from' => [['type' => '', 'from' => '2026-10-18T12:00:00Z'], 'type=&from=2026-10-18T12:00:00Z'],
+        ];
+    }
+
+    #[DataProvider('respondParams')]
+    public function test_respond_directly_matches_the_http_endpoint(array $params, string $query): void
+    {
+        $this->contact();
+        $this->contact(['type' => 'phone_click', 'contact_folio' => null, 'event_id' => 'TEST-ph'], '2026-10-18 12:02:00');
+
+        $http = $this->lookup($query);
+        $direct = app(AttributionLookupService::class)->respond($params);
+
+        $this->assertSame($http->getStatusCode(), $direct['status'], $query);
+        $this->assertSame($http->json(), json_decode(json_encode($direct['body']), true), $query);
+    }
+
+    public function test_respond_trims_and_converts_empty_strings_like_the_middleware(): void
+    {
+        $this->contact();
+        $service = app(AttributionLookupService::class);
+
+        $this->assertSame(200, $service->respond(['folio' => "  MN7K4Q2\t"])['status']);
+        // Con el folio vacio no hay modo folio: cae en la ventana y falta type.
+        $this->assertSame(422, $service->respond(['folio' => '   ', 'from' => '2026-10-18T12:00:00Z'])['status']);
+        $this->assertSame(
+            ['status' => 'error', 'message' => 'Indica folio, o bien type + from + to.'],
+            $service->respond(['folio' => '   ', 'type' => '', 'from' => ' ', 'to' => ''])['body']
+        );
+        // message_at en blanco se ignora (no es error).
+        $this->assertSame(200, $service->respond(['folio' => 'MN7K4Q2', 'message_at' => '  '])['status']);
+        // Arrays no son folio ni type valido.
+        $this->assertSame(422, $service->respond(['folio' => ['MN7K4Q2']])['status']);
+        $this->assertSame(422, $service->respond(['type' => ['phone_click'], 'from' => '2026-10-18T12:00:00Z', 'to' => '2026-10-18T12:05:00Z'])['status']);
+    }
+
+    public function test_an_empty_window_is_200_with_count_zero_not_404(): void
+    {
+        $this->contact(['type' => 'phone_click', 'contact_folio' => null], '2026-10-18 09:00:00');
+
+        $response = $this->lookup('type=phone_click&from=2026-10-18T12:00:00Z&to=2026-10-18T12:05:00Z')->assertOk();
+
+        $this->assertSame(
+            ['type' => 'phone_click', 'from' => '2026-10-18T12:00:00Z', 'to' => '2026-10-18T12:05:00Z', 'count' => 0, 'events' => []],
+            $response->json()
+        );
+
+        $direct = app(AttributionLookupService::class)->respond(['type' => 'phone_click', 'from' => '2026-10-18T12:00:00Z', 'to' => '2026-10-18T12:05:00Z']);
+        $this->assertSame(200, $direct['status']);
+        $this->assertSame(0, $direct['body']['count']);
+        $this->assertSame([], $direct['body']['events']);
     }
 }

@@ -119,7 +119,7 @@ class HomeController extends Controller
      */
     public function empleos(){
         $cfg = config('empleos');
-        $numero = (string) config('contact.whatsapp.number');
+        $numero = \App\Support\Attribution\AttributionTestMode::whatsappNumber(); // en modo prueba: el de prueba
         $wa = fn (string $plantilla, array $vars = []) => 'https://wa.me/' . $numero . '?text='
             . rawurlencode(strtr($plantilla, $vars));
 

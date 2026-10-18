@@ -35,6 +35,7 @@ trait CreatesTrackConversionsTable
             '2026_10_08_120000_add_attribution_columns_to_track_conversions_table.php',
             '2026_10_08_130000_add_meta_to_track_conversions_table.php',
             '2026_10_19_100000_add_contact_folio_and_event_at_to_track_conversions_table.php',
+            '2026_10_20_100000_add_is_test_to_track_conversions_table.php',
         ] as $file) {
             (require database_path('migrations/' . $file))->up();
         }

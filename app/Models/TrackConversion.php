@@ -42,6 +42,9 @@ class TrackConversion extends Model
     /** Folio de contacto: "MN" + 5 caracteres del alfabeto sin vocales ni ambiguos (ver config/attribution.php). */
     public const FOLIO_REGEX = '/^MN[2-9BCDFGHJKMNPQRSTVWXYZ]{5}$/';
 
+    /** Prefijo de los gclid generados por el Laboratorio de atribucion (un gclid real de Google nunca empieza asi). */
+    public const TEST_GCLID_PREFIX = 'TEST_GCLID_';
+
     /** gclid valido: 20-255 caracteres URL-safe, sin prefijo gtm y no solo digitos (descarta basura de GTM/pruebas). */
     public const GCLID_REGEX = '/^[A-Za-z0-9_-]{20,255}$/';
 
@@ -65,6 +68,7 @@ class TrackConversion extends Model
         'session_id',
         'event_id',
         'contact_folio',
+        'is_test',
         'captured_at',
         'event_at',
         'meta',
@@ -73,8 +77,21 @@ class TrackConversion extends Model
     protected $casts = [
         'captured_at' => 'datetime',
         'event_at' => 'datetime',
+        'is_test' => 'boolean',
         'meta' => 'array',
     ];
+
+    /** Solo eventos reales (excluye los del Laboratorio de atribucion). */
+    public function scopeReal($query)
+    {
+        return $query->where($this->getTable() . '.is_test', false);
+    }
+
+    /** Solo eventos de prueba del Laboratorio de atribucion. */
+    public function scopeTest($query)
+    {
+        return $query->where($this->getTable() . '.is_test', true);
+    }
 
     /** Valida el formato de un gclid (ver GCLID_REGEX). Reglas compartidas por el controlador y la API. */
     public static function isValidGclid(?string $value): bool

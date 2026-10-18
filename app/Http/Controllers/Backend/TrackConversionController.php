@@ -7,6 +7,7 @@ use App\Models\TrackConversion;
 use App\Support\AdminTable\AdminTableExport;
 use App\Support\AdminTable\AdminTableRequest;
 use App\Support\AdminTable\Queries\TrackConversionTableQuery;
+use App\Support\Attribution\AttributionTestMode;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Maatwebsite\Excel\Excel as ExcelFormat;
 use Maatwebsite\Excel\Facades\Excel;
@@ -47,7 +48,8 @@ class TrackConversionController extends Controller
             default => now()->subDays(30)->startOfDay(),
         };
 
-        $base = fn () => TrackConversion::query()->when($since, fn ($q) => $q->where('created_at', '>=', $since));
+        // Solo eventos reales: los del Laboratorio de atribucion (is_test) no cuentan en ninguna metrica.
+        $base = fn () => TrackConversion::query()->where('is_test', false)->when($since, fn ($q) => $q->where('created_at', '>=', $since));
         $hasGoogleSql = "((gclid IS NOT NULL AND gclid != '') OR (gbraid IS NOT NULL AND gbraid != '') OR (wbraid IS NOT NULL AND wbraid != ''))";
         $isVisitSql = "type = '" . TrackConversion::VISIT_TYPE . "'";
         $nonConversionSql = "'" . implode("','", TrackConversion::nonConversionTypes()) . "'";
@@ -66,7 +68,7 @@ class TrackConversionController extends Controller
         $quoteStarted = (int) $base()->where('type', 'quote_start')->whereNotNull('session_id')->distinct()->count('session_id');
         $quoteSubmitted = (int) $base()->where('type', 'quote_submit')->whereNotNull('session_id')->distinct()->count('session_id');
         $quoteAbandoned = (int) $base()->where('type', 'quote_start')->whereNotNull('session_id')
-            ->whereNotIn('session_id', TrackConversion::query()->select('session_id')->where('type', 'quote_submit')->whereNotNull('session_id'))
+            ->whereNotIn('session_id', TrackConversion::query()->select('session_id')->where('is_test', false)->where('type', 'quote_submit')->whereNotNull('session_id'))
             ->distinct()->count('session_id');
 
         $byType = $base()
@@ -124,7 +126,8 @@ class TrackConversionController extends Controller
         $record = TrackConversion::findOrFail($id);
 
         $sessionEvents = $record->session_id
-            ? TrackConversion::where('session_id', $record->session_id)->orderBy('created_at')->orderBy('id')->limit(100)->get()
+            // Una sesion real solo ve eventos reales y una de prueba solo de prueba (nunca se mezclan).
+            ? TrackConversion::where('session_id', $record->session_id)->where('is_test', (bool) $record->is_test)->orderBy('created_at')->orderBy('id')->limit(100)->get()
             : collect();
 
         return view('admin-ui.track-conversion._details', compact('record', 'sessionEvents'));
@@ -184,6 +187,23 @@ class TrackConversionController extends Controller
         ]);
         if ($validator->fails()) {
             return response()->json(['success' => false, 'errors' => $validator->errors()], 422);
+        }
+
+        // Modo prueba del Laboratorio de atribucion: se decide SOLO en el servidor. El flag `test` del
+        // payload lo manda el navegador, pero solo cuenta si ademas hay una cookie de prueba valida
+        // (admin con acceso a 'site'). Un `test` sin cookie valida es trafico ajeno: 204 sin guardar.
+        $cookieOk = AttributionTestMode::active($request);
+        $flag = self::isTruthy($input['test'] ?? null);
+        if ($flag && !$cookieOk) {
+            return response()->noContent();
+        }
+        $isTest = $cookieOk && $flag;
+
+        // Respaldo: un gclid con el prefijo exacto de prueba (sensible a mayusculas; Google nunca emite
+        // uno asi) siempre se marca como prueba, aunque la cookie haya expirado entre la visita y el clic.
+        $rawGclid = $input['gclid'] ?? null;
+        if (is_string($rawGclid) && str_starts_with(trim($rawGclid), TrackConversion::TEST_GCLID_PREFIX)) {
+            $isTest = true;
         }
 
         $now = Carbon::now();
@@ -257,6 +277,11 @@ class TrackConversionController extends Controller
 
         $data['meta'] = $meta ?: null;
 
+        // is_test solo se incluye cuando es true: el default de la BD (0) cubre las filas reales.
+        if ($isTest) {
+            $data['is_test'] = true;
+        }
+
         $saved = false;
         try {
             if (!empty($data['event_id'])) {
@@ -302,6 +327,19 @@ class TrackConversionController extends Controller
         }
 
         return $input;
+    }
+
+    /** 1 / true / "1" / "true" (el flag `test` del payload); cualquier otra cosa es falso. */
+    private static function isTruthy(mixed $value): bool
+    {
+        if (is_bool($value)) {
+            return $value;
+        }
+        if (is_int($value)) {
+            return $value === 1;
+        }
+
+        return is_string($value) && in_array(strtolower(trim($value)), ['1', 'true'], true);
     }
 
     /** Solo la violacion de UNIQUE (MySQL 1062 / SQLite "UNIQUE constraint failed") cuenta como duplicado. */

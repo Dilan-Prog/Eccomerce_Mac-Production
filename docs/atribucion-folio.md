@@ -3,7 +3,7 @@
 Documento de operación para el dueño del negocio y para quien configure n8n.
 Rama: `feature/atribucion-folio`. Última revisión de las líneas de código citadas: 18 de octubre de 2026.
 
-> Estado: el backend, el JavaScript y este documento se construyeron en paralelo en la misma rama. Los nombres de campos, variables y rutas salen del diseño aprobado y del código ya presente (`config/attribution.php`, `AttributionApiTokenMiddleware`, modelo `TrackConversion`). Si algo del endpoint no coincide con lo que ves al probarlo, manda el código: la sección 3 se debe alinear con `AttributionLookupController` al integrar la rama.
+> Estado: el backend, el JavaScript y este documento se construyeron en paralelo en la misma rama. Los nombres de campos, variables y rutas salen del diseño aprobado y del código ya presente (`config/attribution.php`, `AttributionApiTokenMiddleware`, modelo `TrackConversion`). Si algo del endpoint no coincide con lo que ves al probarlo, manda el código: la sección 3 se debe alinear con `AttributionLookupService` (y `AttributionLookupController`) al integrar la rama. La sección 10 (Laboratorio de atribución, columna `is_test`) describe el diseño aprobado, que se implementó en paralelo; verifica nombres de pantallas y botones contra el admin al integrar.
 
 ---
 
@@ -70,9 +70,9 @@ Todas se leen desde `config/attribution.php` (nunca con `env()` directo en el c�
 | `ATTRIBUTION_FOLIO_ENABLED` | `false` | Interruptor maestro del folio en el navegador. Apagado, el JavaScript **no cambia ningún enlace ni agrega folio**; el registro de eventos sigue funcionando igual que antes. |
 | `ATTRIBUTION_FOLIO_PLACEMENTS` | `*` | Dónde se aplica el folio: `*` (todos los botones) o una lista separada por comas de ubicaciones (placements), por ejemplo `flotante` o `flotante,footer_oficina`. Sirve para un piloto gradual. Los nombres válidos están en la columna "placement sugerido" de la sección 5. |
 | `ATTRIBUTION_INVISIBLE_FOLIO` | `false` | Agrega al final del mensaje de WhatsApp una marca invisible con el folio (caracteres U+2060, U+200B, U+200C). **No activar hasta publicar el aviso de privacidad** (sección 7). |
-
 | `ATTRIBUTION_ORIGIN_CHECK` | `true` | Verificación de `Origin`/`Referer` en `POST /track-conversion`. Con `true` solo se guardan eventos enviados desde el propio sitio; `false` la apaga sin redeploy si algo falla (junto con `config:clear`). |
 | `ATTRIBUTION_ALLOWED_HOSTS` | vacío | Hosts extra permitidos, separados por comas y con comparación exacta (no por sufijo), además del host de `APP_URL` con y sin `www.`. |
+| `ATTRIBUTION_TEST_WHATSAPP_NUMBER` | vacío | Número de WhatsApp que abren los botones **solo en modo prueba** (Laboratorio de atribución, sección 10): la línea de la cuenta de prueba de Kommo. Solo dígitos, de 10 a 15, con lada de país (por ejemplo `528112345678`). Vacío o inválido = el botón abre `https://wa.me/?text=…` **sin número** (eliges el chat a mano); nunca se usa el número real de producción. No afecta a visitantes normales. |
 
 **Verificación de origen en `POST /track-conversion`.** El endpoint es público y sin CSRF, así que el middleware `tracking.origin` compara el host de la cabecera `Origin` (o, si no viene, del `Referer`) con el de `APP_URL` (con y sin `www.`) y con `ATTRIBUTION_ALLOWED_HOSTS`. Las páginas `/br/*` viven en el mismo dominio y quedan cubiertas. Solo en los entornos `local` y `testing` también se aceptan `localhost`, `127.0.0.1`, `::1`, `*.test` y `*.localhost` (y se ignora el puerto). Si no hay `Origin` ni `Referer`, o el host no coincide, responde **204 sin contenido y no guarda nada**, sin error visible: **si depurando ves un 204, significa "no guardado"** (revisa `APP_URL`, el `Origin` que manda el navegador y `ATTRIBUTION_ALLOWED_HOSTS`). Corre antes de los límites de frecuencia, así que el tráfico ajeno no gasta el cupo de los visitantes reales.
 
@@ -128,9 +128,9 @@ Solo lectura. Devuelve lo que el sitio sabe del contacto asociado a un folio (o 
 
 | Código | Cuándo | Cuerpo |
 |---|---|---|
-| 200 | Se encontró al menos un evento | JSON con los campos de abajo |
+| 200 | Modo folio: el folio existe. Modo hora: consulta válida, **haya o no eventos** (sin eventos devuelve `{"type":…,"from":…,"to":…,"count":0,"events":[]}`) | JSON con los campos de abajo |
 | 401 | Token ausente o incorrecto | `{"status":"error","message":"Token inválido o revocado."}` |
-| 404 | El folio no existe (o no hay eventos en la ventana pedida) | JSON de error |
+| 404 | Solo modo folio: el folio no existe o no tiene formato válido. La ventana de hora **sin eventos NO es 404** (es 200 con `count: 0`) | `{"status":"error","message":"Folio no encontrado."}` |
 | 422 | Parámetros inválidos: ni `folio` ni `type+from+to`; `from`/`to` sin zona horaria; ventana mayor a 15 minutos; `type` desconocido | JSON de error con el detalle |
 | 429 | Más de 120 solicitudes por minuto desde la misma IP | Respuesta estándar de Laravel; reintenta con calma |
 | 503 | `ATTRIBUTION_API_TOKEN` no está configurado o tiene menos de 32 caracteres (falla cerrado) | `{"status":"error","message":"Endpoint de atribución no configurado."}` |
@@ -142,7 +142,8 @@ GET /api/attribution/lookup?folio=MN7K4Q2
 GET /api/attribution/lookup?folio=MN7K4Q2&message_at=2026-11-05T15:03:40Z
 ```
 
-- `folio` se normaliza (mayúsculas y recorte de espacios) antes de buscar. Acepta también un folio de cotización `COT-…` (busca en `meta.folio`).
+- `folio` se normaliza antes de buscar: mayúsculas y sin espacios, guiones ni caracteres invisibles (`mn-7k4q2` equivale a `MN7K4Q2`). Un folio con formato inválido responde 404 sin consultar la base. Acepta también un folio de cotización `COT-…` (busca en `meta.folio`; este conserva sus guiones).
+- **Eventos de prueba:** el endpoint devuelve también las filas generadas desde el Laboratorio de atribución (sección 10), marcadas con `is_test: true`. Es a propósito, para poder probar n8n de punta a punta; **n8n debe ignorarlas** (sección 4.3).
 - `message_at` (opcional): hora a la que llegó el mensaje al CRM, ISO 8601 con zona (por ejemplo `2026-11-05T15:03:40Z` o `2026-11-05T09:03:40-06:00`). Si se manda, la respuesta incluye `message_to_event_seconds`.
 - **Cotización formal:** el navegador genera un folio MN al iniciar la cotización (`quote_start`) y lo manda también en `quote_submit`, junto con `meta.folio = COT-…`. Buscar por ese MN o por el `COT-` devuelve **la misma fila `quote_submit`**: entre las filas del folio (`quote_start`, `quote_submit`, `quote_dismiss`) el endpoint prefiere la de tipo `quote_submit`, y solo si no hay ninguna usa la regla de abajo. Varias filas de la misma sesión no cuentan como ambigüedad.
 - Si hay varias filas con ese folio: sin `message_at` devuelve la **más reciente**; con `message_at` devuelve la **más cercana** a esa hora. En ambos casos marca `ambiguous` y `candidates` (ver abajo). Un `message_at` sin zona horaria responde 422.
@@ -155,7 +156,7 @@ GET /api/attribution/lookup?type=phone_click&from=2026-11-05T15:00:00-06:00&to=2
 
 - `type`: tipo canónico: `whatsapp_click`, `phone_click` o `email_click`.
 - `from` y `to`: **con zona horaria obligatoria** (`Z` o `±hh:mm`). Una fecha sin zona responde 422. La ventana `to - from` no puede pasar de **15 minutos**.
-- Respuesta: `{ "type": "phone_click", "from": "…", "to": "…", "count": 2, "events": [ … ] }`. `events` trae como máximo 20 eventos de ese tipo dentro de la ventana, ordenados por cercanía a `to` (la hora de la llamada). Cada evento trae los mismos campos del modo folio más `match_type: "time_window"` y `seconds_before_call` (segundos entre el clic y `to`; positivo = el clic fue antes de la llamada). Sin eventos en la ventana responde 404.
+- Respuesta: `{ "type": "phone_click", "from": "…", "to": "…", "count": 2, "events": [ … ] }`. `events` trae como máximo 20 eventos de ese tipo dentro de la ventana, ordenados por cercanía a `to` (la hora de la llamada). Cada evento trae los mismos campos del modo folio más `match_type: "time_window"` y `seconds_before_call` (segundos entre el clic y `to`; positivo = el clic fue antes de la llamada). Sin eventos en la ventana **no es un error**: responde `200` con `{"type":"phone_click","from":"…","to":"…","count":0,"events":[]}`. En n8n evalúa `count`, no el código de respuesta. **Por defecto la ventana solo devuelve eventos reales** (`is_test = 0`): una fila del laboratorio cercana a una llamada real no debe desplazarla del tope de 20. Parámetro opcional `include_test`: `only` = solo pruebas (lo usa el laboratorio) y `1` = reales y de prueba; el modo folio siempre devuelve la fila del folio, sea real o de prueba (con `is_test`).
 - Es un cruce **probabilístico**: dos personas pudieron tocar "Llamar" en la misma ventana. Úsalo para análisis, y solo considera una coincidencia cuando `count` sea exactamente 1; no lo subas como conversión principal.
 
 ### Respuesta (modo folio), campo por campo
@@ -167,6 +168,7 @@ Ejemplo:
   "folio": "MN7K4Q2",
   "event_id": "e-lq3x9a-7f2k1m0p",
   "session_id": "5b1c2d3e-4f50-4a6b-8c7d-9e0f1a2b3c4d",
+  "is_test": false,
   "type": "whatsapp_click",
   "placement": "flotante",
   "event_at": "2026-11-05T15:02:41Z",
@@ -204,6 +206,7 @@ Ejemplo:
 | `folio` | texto | Folio consultado (`MN…` o `COT-…`), ya normalizado. |
 | `event_id` | texto | Identificador único del evento (el navegador lo genera; reenviarlo no duplica la fila). |
 | `session_id` | texto o null | Sesión del visitante (cambia tras 30 minutos de inactividad). Es null en las 4,332 filas históricas anteriores a la captura de sesión. |
+| `is_test` | booleano | `true` si el evento se generó desde el **modo prueba** del Laboratorio de atribución (sección 10); `false` en todo el tráfico real y en las filas históricas. Aparece en cada evento, tanto en modo folio como en modo hora. **n8n debe descartar los `is_test = true` antes de cualquier subida a Google Ads.** La decide el servidor al guardar (nunca el navegador por sí solo): cookie de modo prueba válida **más** `test: 1` en el payload, o un `gclid` que empieza exactamente con `TEST_GCLID_`. |
 | `type` | texto | Tipo canónico: `whatsapp_click`, `phone_click`, `email_click`, `quote_submit`… El tipo histórico del botón (`whatsapp_flotante`, etc.) queda en la base como `meta.legacy_type`. |
 | `placement` | texto o null | Dónde estaba el botón (`flotante`, `footer_oficina`, `producto`…). |
 | `event_at` | fecha UTC con `Z` | Hora del clic según el navegador, recortada a `[recepción − 7 días, recepción]`; si el navegador no la mandó, es la hora de recepción. |
@@ -215,7 +218,7 @@ Ejemplo:
 | `page_url` | texto o null | Página donde ocurrió el clic, **sin query ni fragmento**. |
 | `referrer_host` | texto o null | Solo el dominio de procedencia (`www.google.com`), nunca la URL completa. |
 | `product` | objeto | `{sku, name}` del producto que se veía al hacer clic; ambos pueden ser null. |
-| `attribution_source` | `event` / `session` / `none` | De dónde salió la atribución: `event` = el propio evento trae click id o UTM; `session` = el evento no trae, pero una fila anterior de la misma sesión sí; `none` = sin atribución (directo, orgánico, o dato perdido). |
+| `attribution_source` | `event` / `session` / `none` | De dónde salió la atribución: `event` = el propio evento trae click id o UTM; `session` = el evento no trae, pero una fila anterior de la misma sesión sí (solo se mira entre filas del mismo tipo de tráfico: una fila real nunca hereda atribución de una fila de prueba de la misma sesión, ni al revés); `none` = sin atribución (directo, orgánico, o dato perdido). |
 | `has_google_click_id` | booleano | Hay `gclid`, `gbraid` o `wbraid` válido. Es la condición mínima para subir a Google Ads. |
 | `google_click_id_type` | `gclid` / `gbraid` / `wbraid` / null | Cuál es. Se sube **uno solo** a Google Ads. |
 | `click_id_at` | fecha UTC o null | Momento en que se capturó ese click id. |
@@ -260,7 +263,9 @@ curl -i -H "Authorization: Bearer token-incorrecto" "$BASE/api/attribution/looku
 
 Prueba local de punta a punta (con `ATTRIBUTION_FOLIO_ENABLED=true` en tu `.env` local): abre
 `http://localhost/?gclid=TEST_GCLID_0123456789ABCDEF&utm_source=google&utm_medium=cpc&utm_campaign=prueba`,
-toca el botón de WhatsApp, copia el folio del mensaje y consulta con curl. El `gclid` de prueba debe tener **20 caracteres o más**; uno más corto (`TEST123`) se descarta por inválido y la consulta saldrá con `has_google_click_id: false`. Los eventos con `utm_campaign=prueba` o `gclid` que empieza con `test` se excluyen de las consultas SQL de la sección 6.
+toca el botón de WhatsApp, copia el folio del mensaje y consulta con curl. El `gclid` de prueba debe tener **20 caracteres o más**; uno más corto (`TEST123`) se descarta por inválido y la consulta saldrá con `has_google_click_id: false`. Un `gclid` que empieza exactamente con `TEST_GCLID_` queda marcado como `is_test` por el servidor aunque no haya modo prueba. Las consultas SQL de la sección 6 excluyen las filas `is_test = 1` (y, por compatibilidad con pruebas antiguas, `utm_campaign=prueba` y `gclid` que empieza con `test`).
+
+La forma recomendada de probar es el **Laboratorio de atribución** del admin (sección 10): activa el modo prueba solo en tu navegador, apaga GTM/GA4/Ads/Pixel/Sheets en él y marca las filas como `is_test`, sin afectar a visitantes reales.
 
 ---
 
@@ -326,7 +331,9 @@ El folio invisible solo existe si `ATTRIBUTION_INVISIBLE_FOLIO` está encendido.
 
 ### 4.2 Consultar el endpoint
 
-Nodo HTTP Request: método GET, URL `https://tu-dominio.com/api/attribution/lookup`, parámetros `folio` (y `message_at` con la hora del mensaje en ISO 8601 con zona), autenticación "Header Auth" con la credencial del token. Configura el nodo para que un 404 **no detenga** el flujo (es un resultado normal: folio inventado o que no llegó a registrarse) y trátalo como "sin atribución". **Nunca subas un resultado con `ambiguous=true`, y manda siempre `message_at`** (con él el endpoint elige el evento más cercano al mensaje y calcula `message_to_event_seconds`).
+Nodo HTTP Request: método GET, URL `https://tu-dominio.com/api/attribution/lookup`, parámetros `folio` (y `message_at` con la hora del mensaje en ISO 8601 con zona), autenticación "Header Auth" con la credencial del token. Configura el nodo para que un 404 **no detenga** el flujo (es un resultado normal: folio inventado o que no llegó a registrarse) y trátalo como "sin atribución". **Nunca subas un resultado con `ambiguous=true`, y manda siempre `message_at`** (con él el endpoint elige el evento más cercano al mensaje y calcula `message_to_event_seconds`). En el modo por hora, un `200` con `count: 0` también es "sin coincidencia", no un error.
+
+**Inmediatamente después de este nodo, y antes de cualquier rama que suba una conversión a Google Ads, agrega un nodo IF sobre `is_test`**: si `is_test = true`, el flujo termina (o registra "prueba ignorada") sin subir nada. Las filas de prueba salen en el endpoint a propósito, para que puedas verificar que n8n recibe y procesa el folio; lo que **no** deben hacer es llegar a Google Ads. En el modo por hora aplica el mismo IF a cada elemento de `events`.
 
 ### 4.3 Política recomendada para subir a Google Ads
 
@@ -334,6 +341,7 @@ Subir **solo si se cumplen todas**:
 
 | Condición | Por qué |
 |---|---|
+| `is_test = false` | Con `true` la fila salió del modo prueba del laboratorio (sección 10). Nunca se sube a Google Ads; se ignora con el nodo IF de 4.2. |
 | `has_google_click_id = true` | Sin `gclid`, `gbraid` o `wbraid` Google no puede atribuir. |
 | `click_age_days <= 30` | La cookie dura 90 días, pero un clic de hace 80 días rara vez explica el contacto de hoy. |
 | `touch_conflict = false` | Si después del anuncio el visitante volvió por otro canal, no se le acredita al anuncio. |
@@ -349,6 +357,7 @@ Otras reglas:
 - **No subir llamadas por cruce de hora como conversión principal.** Pueden guardarse como conversión secundaria o solo como dato de análisis.
 - Con el modo por hora, subir solo si hay **una única coincidencia** en la ventana (si hay varias, es ambiguo: no subir).
 - Los eventos con `attribution_source = none` o `click_channel = meta` no se suben a Google Ads.
+- Los eventos con `is_test = true` **nunca** se suben, ni se cuentan como lead atribuido, ni deduplican a un lead real: se ignoran antes de aplicar cualquier otra regla.
 - Guardar en una tabla de n8n (o en Kommo, en un campo del lead) lo que se hizo con cada folio: subido, descartado y motivo. Sin esto no se puede medir ni depurar.
 
 ### 4.4 Qué medir en n8n
@@ -359,7 +368,7 @@ El sitio no puede saber cuántos clientes de Kommo llegaron con folio; eso solo 
 |---|---|
 | Cobertura de folio | leads de Kommo cuyo mensaje trae folio ÷ leads de Kommo que vinieron del sitio web |
 | Atribuibles | de los anteriores, los que cumplen la política de 4.3 (click id válido, ≤30 días, sin conflicto, sin ambigüedad) ÷ leads con folio |
-| Descartados por motivo | conteo por: sin click id, click viejo, `touch_conflict`, `ambiguous`, folio no encontrado (404) |
+| Descartados por motivo | conteo por: sin click id, click viejo, `touch_conflict`, `ambiguous`, folio no encontrado (404). Las pruebas (`is_test = true`) se registran aparte y no entran en estos conteos |
 | Subidos a Google Ads | número de conversiones realmente cargadas, para comparar con lo que muestra la interfaz de Google Ads |
 
 La meta del proyecto es atribuir al menos el 90% de los clientes que vienen de anuncios sin atribuciones falsas. Ese número **depende de que el cliente conserve el texto con el folio** (puede borrarlo) y de las llamadas, que no llevan folio. Por eso se mide aquí y no en el sitio.
@@ -524,6 +533,8 @@ Sirve para responder: de los contactos que llegaron en el mes, ¿cuántos traen 
 
 Validada en la base local (MySQL 8.0.30). Cambia `@from` y `@to` por el mes que quieras **en hora de México (UTC-6)**. La tabla guarda las fechas en UTC, así que el mes de noviembre de 2026 empieza el 1 de noviembre a las 00:00 de México, que son las 06:00 UTC. Monterrey está en UTC-6 todo el año (México eliminó el horario de verano en 2022).
 
+Todas las consultas de esta sección excluyen las filas del Laboratorio de atribución con `is_test = 0` (en el cruce por sesión, `p.is_test = 0`). **Requieren haber corrido `php artisan migrate`**: sin la columna `is_test` fallan con "Unknown column". El filtro `is_test` se agregó después de validar la consulta en la base local; vuelve a ejecutarla una vez tras migrar.
+
 ```sql
 SET @from = '2026-11-01 06:00:00';   -- 1 nov 00:00 hora de México
 SET @to   = '2026-12-01 06:00:00';   -- 1 dic 00:00 hora de México
@@ -551,9 +562,10 @@ WITH ev AS (
   FROM track_conversions t
   WHERE t.created_at >= @from
     AND t.created_at <  @to
+    AND t.is_test = 0                                -- excluye las filas del Laboratorio de atribución
     AND ( t.type LIKE 'whatsapp%' OR t.type LIKE 'telefono%' OR t.type LIKE 'correo%'
           OR t.type IN ('phone_click', 'email_click', 'quote_submit') )
-    AND COALESCE(t.utm_campaign, '') <> 'prueba'     -- excluye pruebas
+    AND COALESCE(t.utm_campaign, '') <> 'prueba'     -- excluye pruebas antiguas (anteriores a is_test)
     AND COALESCE(t.gclid, '')        NOT LIKE 'test%'
 ),
 cls AS (
@@ -569,6 +581,7 @@ cls AS (
         FROM track_conversions p
         WHERE p.session_id = ev.session_id
           AND p.id < ev.id
+          AND p.is_test = 0           -- igual que ev (ya filtrado a 0): real no hereda de prueba
           AND (
             COALESCE(
               ( p.gclid REGEXP '^[A-Za-z0-9_-]{20,255}$'
@@ -628,6 +641,7 @@ SELECT
 FROM track_conversions t
 WHERE t.type = 'page_visit'
   AND t.created_at >= @from AND t.created_at < @to
+  AND t.is_test = 0
   AND t.gclid REGEXP '^[A-Za-z0-9_-]{20,255}$'
   AND t.gclid NOT LIKE 'gtm%'
   AND t.gclid NOT REGEXP '^[0-9]+$'
@@ -656,6 +670,7 @@ SELECT
   MAX(created_at)            AS ultima
 FROM track_conversions
 WHERE gclid IS NOT NULL AND gclid <> ''
+  AND is_test = 0
   AND NOT ( gclid REGEXP '^[A-Za-z0-9_-]{20,255}$'
             AND gclid NOT LIKE 'gtm%'
             AND gclid NOT REGEXP '^[0-9]+$' )
@@ -666,6 +681,7 @@ ORDER BY filas DESC;
 SELECT LEFT(gclid, 20) AS ejemplo, CHAR_LENGTH(gclid) AS largo, COUNT(*) AS filas
 FROM track_conversions
 WHERE gclid IS NOT NULL AND gclid <> ''
+  AND is_test = 0
   AND NOT ( gclid REGEXP '^[A-Za-z0-9_-]{20,255}$'
             AND gclid NOT LIKE 'gtm%'
             AND gclid NOT REGEXP '^[0-9]+$' )
@@ -681,6 +697,7 @@ SELECT LEFT(JSON_UNQUOTE(JSON_EXTRACT(meta, '$.click_id_rejected_val')), 20) AS 
        COUNT(*) AS filas
 FROM track_conversions
 WHERE JSON_EXTRACT(meta, '$.click_id_rejected') = 1
+  AND is_test = 0
 GROUP BY 1
 ORDER BY filas DESC
 LIMIT 25;
@@ -783,7 +800,7 @@ El diseño es aditivo: `POST /track-conversion` sigue aceptando el payload viejo
 **Fase 1. Desplegar con el folio apagado** (en este orden)
 
 1. [ ] **Desplegar** el código con `ATTRIBUTION_FOLIO_ENABLED=false` (o sin la variable: el valor por defecto es `false`).
-2. [ ] **`php artisan migrate`** (agrega `contact_folio`, `event_at` y dos índices; no toca datos existentes).
+2. [ ] **`php artisan migrate`** (agrega `contact_folio`, `event_at` y dos índices, y `is_test` —boolean, no nulo, default 0— con el índice `(is_test, id)`, migración `2026_10_20_100000_add_is_test_to_track_conversions_table.php`; no toca datos existentes: todas las filas históricas quedan con `is_test = 0`). Hazlo **antes** de que el código nuevo reciba tráfico: el admin, el endpoint y las consultas SQL de la sección 6 usan `is_test`.
 3. [ ] **`php artisan config:clear`** (y `config:cache` si se usa).
 4. [ ] **Configurar `ATTRIBUTION_API_TOKEN`** en el `.env` del servidor (mínimo 32 caracteres; sección 2) y volver a correr `php artisan config:clear`. El mismo valor se guarda en la credencial de n8n.
 5. [ ] **Verificar `APP_URL`**: debe ser el dominio público real del sitio (por ejemplo `https://www.macdelnorte.com`). La verificación de origen de `/track-conversion` corre **siempre**, aunque el folio esté apagado: con `APP_URL=http://localhost` en producción todo el tráfico real recibiría `204` y no se guardaría ningún evento, **sin ningún aviso visible**. Si el sitio responde también en otro dominio (otro alias), agrégalo en `ATTRIBUTION_ALLOWED_HOSTS`.
@@ -796,7 +813,7 @@ El diseño es aditivo: `POST /track-conversion` sigue aceptando el payload viejo
 9. [ ] **Verificar que el número de WhatsApp es el número conectado a Kommo.** El mensaje con folio se abre en `wa.me/{config('contact.whatsapp.number')}` (hoy `528135825559`, el 81 3582 5559): ese número debe ser **exactamente** el que está conectado a Kommo, o los mensajes con folio llegarán a un chat que Kommo no ve y n8n nunca recibirá el folio. Confirmar también que `https://wa.link/f28njw` apunta a ese mismo número.
 10. [ ] **Encender solo el botón flotante**: en `.env` poner `ATTRIBUTION_FOLIO_ENABLED=true` y `ATTRIBUTION_FOLIO_PLACEMENTS=flotante`; `php artisan config:clear`. Es el único placement; el resto de los botones no cambia. (La cotización formal usa el placement `cotizacion`; queda apagada mientras no esté en la lista.)
 11. [ ] Probar en un teléfono real (Android y iPhone): el botón flotante abre WhatsApp con "Folio: MN…" en el mensaje, el mismo folio aparece en la base y el endpoint lo devuelve. En Kommo debe verse el mensaje con el folio.
-12. [ ] Probar el flujo completo con n8n en modo de prueba, **sin subir nada a Google Ads todavía**.
+12. [ ] Probar el flujo completo con n8n en modo de prueba, **sin subir nada a Google Ads todavía**. La forma segura es el **Laboratorio de atribución** (sección 10): con `ATTRIBUTION_TEST_WHATSAPP_NUMBER` apuntando a la cuenta de prueba de Kommo y el modo prueba activado, las filas salen con `is_test: true`. **Antes de esto, agrega en n8n el nodo IF que ignora `is_test = true` antes de cualquier subida a Google Ads** (sección 4.2).
 
 **Fase 3. Medir una semana y ampliar**
 
@@ -813,13 +830,14 @@ El diseño es aditivo: `POST /track-conversion` sigue aceptando el payload viejo
 
 **Si después de desplegar dejan de aparecer eventos nuevos** (la causa más probable es `APP_URL` o un dominio alterno): pon temporalmente `ATTRIBUTION_ORIGIN_CHECK=false` y `php artisan config:clear` para volver a guardar todo, corrige `APP_URL` / `ATTRIBUTION_ALLOWED_HOSTS` y vuelve a encenderlo. Un `204` en `POST /track-conversion` significa "recibido pero no guardado" por la verificación de origen.
 
-Con el flag apagado, el JavaScript no cambia ningún `href` ni agrega folio, pero el registro de eventos continúa. No hace falta revertir la migración (las columnas nuevas son nulas e inofensivas); no ejecutes `migrate:rollback` salvo que sea indispensable.
+Con el flag apagado, el JavaScript no cambia ningún `href` ni agrega folio, pero el registro de eventos continúa. No hace falta revertir las migraciones (las columnas nuevas son nulas o con default 0, e inofensivas); no ejecutes `migrate:rollback` salvo que sea indispensable.
 
 ### Cambios de métrica a anunciar al equipo
 
 - **Los botones de las páginas autónomas** (`catalogo`, `categorias`, `categoria-productos`) que abren WhatsApp dejan de contar como `quote_start` y pasan a `whatsapp_click`. Los conteos mensuales de "inicio de cotización" bajarán y los de WhatsApp subirán en esa misma cantidad.
 - **El `type` de los eventos nuevos pierde granularidad**: en la base queda el tipo canónico (`whatsapp_click`, `phone_click`, `email_click`) y el lugar del botón pasa a `meta.placement`; el tipo histórico del botón queda en `meta.legacy_type`. Los filtros por prefijo (`whatsapp%`, `telefono%`, `correo%`) siguen funcionando con datos viejos y nuevos. Google Tag Manager y Google Sheets **siguen recibiendo el valor viejo** (`data-type`), así que lo que ya dependía de él no cambia.
 - Los eventos nuevos traen `contact_folio` y `event_at`; las filas históricas no se reescriben.
+- **Los eventos de prueba (`is_test = 1`) no cuentan** en el resumen, la tabla, las pestañas ni la exportación del módulo de conversiones del admin, ni en las consultas SQL de la sección 6. Tras `php artisan migrate` todas las filas históricas quedan con `is_test = 0` (cuentan como reales); las pruebas antiguas hechas a mano con `utm_campaign=prueba` o `gclid` `test…` siguen excluidas solo de las consultas SQL, no del admin. Si el conteo del admin y el de SQL difieren por poco, es la causa más probable. Las pruebas del laboratorio solo se ven en la sección "Eventos de prueba recientes" del propio laboratorio.
 - Los valores de `gclid` con formato inválido (`gtm_…`, solo dígitos, cortos) ya no se guardan en `gclid`: quedan como null y anotados en `meta`. La cantidad de "visitas con gclid" puede bajar respecto al histórico por esta limpieza, no por menos tráfico.
 
 ---
@@ -840,6 +858,136 @@ Con el flag apagado, el JavaScript no cambia ningún `href` ni agrega folio, per
 
 ---
 
+## 10. Cómo probar desde el laboratorio
+
+### 10.1 Objetivo
+
+Recorrer el flujo completo (visita de anuncio con `gclid` → clic en WhatsApp → fila en la base → consulta del endpoint → mensaje real a Kommo → n8n) **desde el panel de administración**, sin tocar a los visitantes reales, sin ensuciar las métricas y sin que nada llegue a Google Ads, GA4 ni Meta.
+
+El laboratorio vive en **Admin > Administrar Sitio Web > "Laboratorio de atribución"** (`/admin/attribution-lab`).
+
+### 10.2 Qué hace y qué NO hace el modo prueba
+
+El modo prueba se activa con una cookie propia, `mdn_attr_test`, que solo emite el panel de administración. Es **por navegador**: el resto del mundo ve el sitio exactamente igual que siempre.
+
+| Característica | Detalle |
+|---|---|
+| Cookie | `mdn_attr_test`: cifrada, `HttpOnly`, `SameSite=Lax`, vigencia de **120 minutos** (config `attribution.test_mode.ttl_minutes`). En producción lleva el dominio `.macdelnorte.com` (cubre `macdelnorte.com` y `www.`); en local y en `.test` es de host exacto. Es `Secure` si la conexión es HTTPS o si en producción `APP_URL` empieza con `https://`. Su contenido (`{u, e, n, s}`) lleva además una **firma HMAC** ligada a `APP_KEY`: aunque en URLs sin ruta (404) el cifrado de cookies de Laravel no corra, un valor forjado sin la firma no activa el modo prueba. Si cambias `APP_KEY`, las cookies de prueba vigentes dejan de valer (basta con volver a activar el modo). |
+| Validación | Cada uso la revalida: que no haya expirado y que el usuario que la emitió **siga siendo administrador con acceso al módulo `site`**. Una cookie corrupta, vencida o de un usuario sin permiso se trata como si no existiera. |
+| Comportamiento del sitio | En ese navegador el folio se comporta como si `ATTRIBUTION_FOLIO_ENABLED=true` y `ATTRIBUTION_FOLIO_PLACEMENTS=*`, **aunque en el servidor estén apagados**. Los botones de WhatsApp abren `https://wa.me/{ATTRIBUTION_TEST_WHATSAPP_NUMBER}?text=…` (o `https://wa.me/?text=…` sin número, si no hay uno de prueba válido). |
+| Analítica | **No carga** GTM, GA4, Google Ads, el Píxel de Meta ni el webhook de Google Sheets; en su lugar se ponen funciones vacías (`dataLayer`, `gtag`, `fbq`) para que el resto del JavaScript no falle. |
+| Banda | Una etiqueta fija "Modo prueba de atribución activo" indica que ese navegador está en modo prueba. No bloquea clics. |
+| Atribución previa | Al entrar al sitio por primera vez después de activar, la página **borra** la atribución guardada en ese navegador (`mdn_attr` en cookie y `localStorage`, claves antiguas `gclid`/`utm_*`/`landing_page` y `mdn_visit_sent`), para que la prueba no herede un `gclid` real tuyo. Al desactivar, vuelve a limpiar. Consecuencia: **pierdes la atribución real que ese navegador tuviera**. |
+| Qué marca como prueba | `POST /track-conversion` decide `is_test` en el servidor: cookie de modo prueba válida **y** `test: 1` en el payload. `test: 1` sin cookie válida responde `204` y no guarda nada; cookie sin `test: 1` guarda una fila **real**; y, como respaldo, un `gclid` que empieza exactamente con `TEST_GCLID_` fuerza `is_test` aunque no haya cookie. |
+| Aislamiento | Las filas de prueba no cuentan en el resumen, la tabla, las pestañas ni la exportación del admin, ni en las consultas SQL de la sección 6. Una fila real nunca hereda atribución de una fila de prueba de la misma sesión, ni al revés. |
+| Cuenta de WhatsApp | El número de prueba pertenece a la cuenta de prueba de Kommo (**"test2mac"**), no al CRM real. |
+
+**Lo que el modo prueba NO hace:**
+
+- **No apaga todo lo de terceros.** reCAPTCHA, las fuentes y las librerías de CDN siguen cargando (no son analítica).
+- **No desvía `tel:` ni `mailto:`.** Un clic en un teléfono o un correo usa la línea o la dirección reales. En modo prueba, no los toques.
+- **El probador "como n8n" no es n8n.** Llama a la misma lógica que el endpoint pero **en el servidor, directamente**: no ejercita el token `Bearer`, ni el límite de 120 solicitudes por minuto, ni la cabecera `Cache-Control: no-store` de la respuesta. Para comprobar eso usa el `curl` de la sección 3 (el laboratorio genera uno con "Copiar como curl").
+- **No prueba teléfonos móviles.** La cookie se emite al navegador donde estás logueado en el admin; no existe (todavía) un enlace o QR para activar el modo en un celular.
+- **No sustituye** la prueba final con un WhatsApp real a la cuenta de prueba de Kommo (pasos 7 y 8).
+
+### 10.3 Antes de empezar
+
+1. `php artisan migrate` ya corrió (agrega `is_test`; sección 8, paso 2).
+2. Tu usuario es administrador con acceso al módulo **Administrar Sitio Web** (`site`). Para consultar filas **reales** en el probador necesitas además el módulo de **Ads** (`ads`).
+3. En el `.env` del entorno donde pruebes: `ATTRIBUTION_TEST_WHATSAPP_NUMBER` con el número de la cuenta de prueba (solo dígitos, con lada de país, de 10 a 15) y, si quieres consultar el endpoint con `curl`, `ATTRIBUTION_API_TOKEN`. Después, `php artisan config:clear`. El panel de estado del laboratorio avisa si falta el número de prueba, si es inválido, si falta el token o si `ATTRIBUTION_INVISIBLE_FOLIO` está encendido.
+4. Tienes a la mano un teléfono con WhatsApp **distinto** del número de prueba, y acceso a la cuenta de prueba de Kommo (y a n8n) para los pasos 7 y 8.
+
+### 10.4 Guía paso a paso
+
+1. **Activar el modo prueba.** En el laboratorio, "Activar modo prueba". El panel de estado cambia a activo y la cookie queda puesta por 120 minutos. Para salir antes está "Desactivar modo prueba" (paso 11).
+2. **Comprobar la banda y "Verificar sitio público".** Abre el sitio en **este mismo navegador**: debe verse la banda "Modo prueba de atribución activo". Vuelve al laboratorio y pulsa "Verificar sitio público": comprueba que la página pública trae la marca de modo prueba y **no** trae GTM. Si falla, ve a 10.8 antes de seguir.
+3. **Simular la visita de un anuncio.** En el generador de visita escribe un `gclid` que empiece con `TEST_GCLID_` (por ejemplo `TEST_GCLID_0123456789ABCDEF`; el generador valida que tenga el largo mínimo) y, si quieres, `gbraid`/`wbraid` (10 caracteres o más) y UTM (`utm_source=google`, `utm_medium=cpc`, `utm_campaign=…`). Opcionalmente elige un producto con el buscador (desde 2 letras) para aterrizar en su página. Pulsa **"Abrir en pestaña nueva"**. El generador no ofrece copiar la URL a propósito (ver el aviso de 10.6).
+4. **Tocar un botón de WhatsApp.** En la pestaña abierta (con la banda visible) toca el botón flotante u otro de WhatsApp. Se abre `wa.me` con el **número de prueba** (o sin número) y un mensaje del tipo "Hola, me interesa: …. Folio: MN7K4Q2". **Todavía no envíes nada.** Revisa en la barra de dirección que el número sea el de prueba (10.6).
+5. **Ver la fila.** Vuelve al laboratorio: en "Eventos de prueba recientes" aparece la fila nueva (se actualiza sola mientras la pestaña está visible; fechas en UTC y en hora de México). Ábrela para ver el JSON completo del evento tal como lo devolvería el endpoint, incluyendo `is_test: true`, el `gclid`, `has_google_click_id` y `attribution_source`. Normalmente verás también la fila `page_visit` de la visita simulada.
+6. **Consultar el endpoint.** En el probador "como n8n" elige **folio** (pega el folio del mensaje) o **ventana de tiempo** (tipo, `from` y `to` con zona y máximo 15 minutos, como en la sección 3). Debe devolver el mismo evento, con `is_test: true`. Con "Copiar como curl" obtienes el comando listo (con `$TOKEN` literal: pega el token en tu terminal, nunca en el panel) para repetirlo contra el servidor real y sí ejercitar token y límite. Para folios reales (`is_test: false`) el probador exige acceso al módulo `ads`.
+7. **Enviar el WhatsApp al número de prueba.** Desde tu teléfono (distinto del de prueba) envía el mensaje tal como se prellenó, **sin borrar el folio**, al número de la cuenta de prueba.
+8. **Verificar Kommo y n8n.** Confirma que el mensaje aparece en la cuenta de prueba de Kommo ("test2mac") con el folio. En n8n comprueba, en la ejecución: (a) que el nodo de extracción obtuvo `MN…`; (b) que la consulta al endpoint devolvió el evento con `is_test: true`; y (c) que el nodo IF de 4.2 **desvió** el caso y **no** llegó a la rama de subida a Google Ads. Si el flujo sube algo con `is_test = true`, es un error que se debe corregir antes de seguir.
+9. **Simulador de mensaje entrante (opcional).** Pega en el simulador un texto como el que llegaría de Kommo (con el folio dentro, en minúsculas, con espacios o guiones, con caracteres invisibles…). Muestra dos resultados: lo que extrae la **regex exacta** (la base de 4.1, que exige mayúsculas y el folio pegado) y lo que extrae la **tolerante** (acepta `MN-7K4Q2`, `MN 7K4Q2`, `MN.7K4Q2`, quita invisibles y no es sensible a mayúsculas). Si solo la tolerante lo encuentra, el laboratorio avisa: tu nodo de n8n debe ser el tolerante (el Code de 4.1), o ese mensaje se perdería.
+10. **Borrar los eventos de prueba.** "Borrar mis eventos de prueba" pide confirmación y ejecuta un borrado fijo: **elimina todas las filas con `is_test = 1`** (la tabla no distingue qué usuario las generó) y nunca toca filas reales. No acepta ids ni filtros.
+11. **Desactivar el modo prueba.** "Desactivar modo prueba": olvida la cookie y, en la siguiente visita, la página limpia la atribución de prueba. Recarga el sitio en ese navegador y confirma que ya no hay banda y que los botones vuelven a su comportamiento de siempre. La cookie también expira sola a los 120 minutos.
+
+### 10.5 Referencia
+
+**Variable de entorno**
+
+| Variable | Qué hace en el laboratorio |
+|---|---|
+| `ATTRIBUTION_TEST_WHATSAPP_NUMBER` | Número que abren los botones de WhatsApp en modo prueba (solo dígitos, 10 a 15). Vacío o inválido = `wa.me/?text=` sin número; el panel lo avisa. Ver la tabla de la sección 2. |
+| `ATTRIBUTION_API_TOKEN` | El laboratorio **nunca** lo muestra ni lo envía al navegador; solo avisa si falta. Para `curl`. |
+
+Duración (120 minutos) y nombre de la cookie (`mdn_attr_test`) se cambian en `config/attribution.php` (`test_mode`), no en el `.env`.
+
+**Rutas del panel** (todas bajo `/admin`, nombres `admin.attribution-lab.*`)
+
+| Método | Ruta | Para qué |
+|---|---|---|
+| GET | `/admin/attribution-lab` | Página del laboratorio |
+| GET | `/admin/attribution-lab/status` | Tarjetas de estado y advertencias |
+| GET | `/admin/attribution-lab/events` | Últimos 50 eventos de prueba (acepta `?after_id=` para actualizar) |
+| GET | `/admin/attribution-lab/events/{id}` | JSON de un evento de prueba |
+| GET | `/admin/attribution-lab/products-search` | Buscador de productos del generador (desde 2 caracteres, máximo 15) |
+| POST | `/admin/attribution-lab/lookup` | Probador "como n8n" (folio o ventana) |
+| POST | `/admin/attribution-lab/extract` | Simulador de mensaje entrante |
+| POST | `/admin/attribution-lab/activate` | Activa el modo prueba (emite la cookie) |
+| POST | `/admin/attribution-lab/deactivate` | Desactiva el modo prueba |
+| DELETE | `/admin/attribution-lab/tests` | Borra todas las filas `is_test = 1` |
+
+Activar, desactivar y borrar solo funcionan por `POST`/`DELETE` con el token CSRF del panel; no hay enlaces `GET` que cambien el estado.
+
+**Permisos**
+
+| Acción | Requiere |
+|---|---|
+| Entrar al laboratorio y ver el estado | Administrador con acceso al módulo `site` |
+| Activar / desactivar el modo prueba | Lo mismo |
+| Ver y consultar eventos de prueba, simular mensajes | Lo mismo |
+| Consultar un folio o ventana con filas **reales** en el probador | Además, acceso al módulo `ads` (sin él, el probador solo devuelve filas `is_test`) |
+| Borrar eventos de prueba | Módulo `site`; solo borra filas `is_test = 1` |
+
+### 10.6 Checklist manual: números reales que aún podrían abrirse en modo prueba
+
+El modo prueba cambia el número de los botones que pasan por el sistema de folio y de los enlaces que se imprimen desde el servidor con `AttributionTestMode::whatsappNumber()` (la página de contacto y las vacantes de `/empleos`). Quedan **enlaces que no se pueden garantizar por código** y hay que comprobar a mano, **antes de enviar cualquier mensaje**, que el chat que se abre es el de prueba o está vacío:
+
+- [ ] **Botón flotante y botones de WhatsApp de México** (`wa.link` → `wa.me`): comprobar que la URL abierta usa el número de prueba o `wa.me/?text=` sin número.
+- [ ] **Páginas `/br/*`**: usan `config('brasil.whatsapp')` (`BR_WHATSAPP_URL`). El sistema de folio solo reescribe los `wa.link`/`wa.me` que coinciden con la URL o el número configurados; si la URL de Brasil es distinta, el botón podría abrir el número real. Probar un botón de `/br/*` en modo prueba y verificar el destino.
+- [ ] **`V/layouts/chat-personal.blade.php`**: su `@include` está comentado en `master.blade.php`; si alguien lo reactiva, trae `wa.link`, `tel:` y `mailto:` reales (sección 5.9). Confirmar que sigue comentado y, si no, si pasa por el delegado de `mdn-events.js`.
+- [ ] **`V/layouts/chatbot-assistan.blade.php`**: ninguna vista lo incluye hoy (sección 5.9); confirmar que sigue así.
+- [ ] **Bloque comentado de `master.blade.php`** (1258-1534, enlaces viejos con `wa.link` y `tel:`): sigue entre comentarios Blade `{{-- … --}}`.
+- [ ] **`tel:` y `mailto:`** en todas las páginas: el modo prueba no los desvía. Un toque llama o escribe a la línea real. No los uses durante la prueba.
+- [ ] **Cualquier `wa.link` distinto de `f28njw`** o enlace de WhatsApp nuevo que alguien agregue: no se reescribe (solo se reescriben los `wa.link`/`wa.me` que coinciden con la URL o el número configurados) y abriría el número real.
+
+Y dos avisos importantes:
+
+- **La URL de la visita simulada NO debe abrirse en otro navegador, ventana de incógnito, perfil o teléfono.** Ahí no hay cookie de modo prueba, así que la página cargaría GTM, GA4, Google Ads y el Píxel con ese `gclid` falso, y mandaría datos de prueba a esas plataformas (aunque la fila se guarde como prueba por el prefijo `TEST_GCLID_`). Por eso el generador solo ofrece "Abrir en pestaña nueva" y no copiar la URL. No la pegues en chats ni correos.
+- **Nunca envíes el mensaje si el chat abierto no es el de prueba.** Si abre el número de producción, cierra el chat sin enviar.
+
+### 10.7 Caché y CDN
+
+- Las respuestas de las páginas públicas que se sirven **en modo prueba** llevan `Cache-Control: private, no-store`, para que ningún proxy las guarde y las sirva a otros visitantes.
+- Hoy ni Laravel ni el servidor cachean el HTML ni `/track-conversion`. Pero si un CDN o el hosting **sí** cachean HTML y no respetan `no-store`, podrían servir la versión de prueba (sin analítica) a todos los visitantes, o la normal a quien está probando. "Verificar sitio público" (paso 2) detecta lo segundo desde tu navegador. Si añades un CDN con caché de HTML, repite esa verificación en producción y evita que cachee respuestas de la cookie `mdn_attr_test`.
+- Si pruebas en producción, confirma antes que `APP_URL` es el dominio público real (sección 8, paso 5); si no, ni la cookie ni los eventos funcionarán.
+
+### 10.8 Solución de problemas
+
+| Síntoma | Causa probable y qué hacer |
+|---|---|
+| Activé el modo prueba pero **no aparece la banda** | **La cookie no se fijó o no llega al sitio público.** Revisa: (1) el **dominio**: en local, `localhost` y `127.0.0.1` son sitios distintos; entra al admin y al sitio por el mismo host. En producción la cookie usa `.macdelnorte.com`: si el sitio o el admin responden desde otro dominio, no se comparte. (2) **HTTP vs `Secure`**: en producción con `APP_URL=https://…` la cookie es `Secure` y el navegador no la envía por `http://`. (3) **`APP_URL`** incorrecto. (4) Se venció (120 minutos) o tu usuario ya no tiene acceso a `site`. (5) Una extensión o el modo del navegador bloquea cookies. (6) Hiciste el cambio en el `.env` y no corriste `php artisan config:clear`. En las herramientas del navegador (Aplicación > Cookies) debe existir `mdn_attr_test` con `HttpOnly`. |
+| La banda aparece pero **no llegan filas** | Un `204` en `POST /track-conversion` significa "no guardado": revisa la verificación de origen (`APP_URL`, `ATTRIBUTION_ALLOWED_HOSTS`, sección 2) o que el JavaScript mande `test: 1` (recarga forzada: una versión antigua en caché no lo manda). |
+| La fila llega como **real**, no de prueba | Se guardó sin `test: 1` (JavaScript antiguo en caché, o la página no es la de modo prueba). Recarga con Ctrl+F5 y repite. Bórrala en el módulo de conversiones si hace falta. |
+| El botón abre `wa.me/?text=…` **sin número** | Es lo esperado cuando `ATTRIBUTION_TEST_WHATSAPP_NUMBER` está vacío o inválido (el panel lo avisa). Defínelo con solo dígitos, de 10 a 15, y corre `php artisan config:clear`. |
+| El botón abre el **número real** | Es un enlace que no pasa por el folio (checklist 10.6). No envíes; anota cuál es. |
+| "Verificar sitio público" falla o aún carga GTM | Una caché (CDN, hosting, `php artisan view:cache` desactualizado) sirve una versión anterior de la página. Purga la caché y vuelve a verificar. |
+| El `.env` cambió pero el sitio actúa como antes | Con `config:cache` activo el `.env` no se relee: `php artisan config:clear` (y `config:cache` si se usa). |
+| El probador devuelve 404 o `count: 0` | El folio o la ventana no corresponden a una fila de prueba (el probador sin acceso a `ads` solo ve `is_test`); revisa el folio en "Eventos de prueba recientes" y que `from`/`to` lleven zona horaria y no pasen de 15 minutos. |
+| Perdí mi atribución en ese navegador | Es esperado: activar y desactivar el modo prueba limpia `mdn_attr` y el `localStorage` de atribución de ese navegador (10.2). |
+
+---
+
 ## Archivos relevantes
 
 | Archivo | Para qué |
@@ -853,3 +1001,12 @@ Con el flag apagado, el JavaScript no cambia ningún `href` ni agrega folio, per
 | `public/frontend/js/mdn-events.js` | Rastrea los enlaces sin la clase `track-conversion` |
 | `resources/views/frontend/layouts/master.blade.php` | Listener de `a.track-conversion` (líneas 1034-1119) |
 | `database/migrations/2026_10_19_100000_add_contact_folio_and_event_at_to_track_conversions_table.php` | Columnas `contact_folio` y `event_at` |
+| `database/migrations/2026_10_20_100000_add_is_test_to_track_conversions_table.php` | Columna `is_test` (boolean, default 0) e índice `(is_test, id)`; requiere `php artisan migrate` |
+| `app/Support/Attribution/AttributionLookupService.php` | Lógica del endpoint (folio y ventana) y `is_test` en la respuesta |
+| `app/Support/Attribution/AttributionTestMode.php` | Cookie `mdn_attr_test`: validación, emisión, dominio y número de WhatsApp de prueba |
+| `app/Support/Attribution/FolioExtractor.php` | Extracción del folio (regex exacta y tolerante) para el simulador del laboratorio |
+| `app/Http/Controllers/Backend/AttributionLabController.php` | Laboratorio de atribución del admin (estado, eventos, probador, simulador, activar/desactivar, borrar pruebas) |
+| `resources/views/admin-ui/attribution-lab/index.blade.php` y `public/admin-ui/js/attribution-lab/lab.js` | Pantalla y JavaScript del laboratorio |
+| `resources/views/frontend/partials/analytics-tags.blade.php` | Etiquetas de analítica (GTM, GA4, Ads, Pixel); en modo prueba se sustituyen por funciones vacías |
+| `app/Support/AdminTable/Queries/TrackConversionTableQuery.php` y `TrackConversionTestTableQuery.php` | Tabla del admin: la primera excluye `is_test`; la segunda lista solo pruebas |
+| `routes/admin.php` | Rutas `attribution-lab/*` bajo `/admin` |

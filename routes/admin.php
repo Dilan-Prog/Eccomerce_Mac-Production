@@ -2,6 +2,7 @@
 /** Admin Panel Routes */
 
 use App\Http\Controllers\Backend\AdminController;
+use App\Http\Controllers\Backend\AttributionLabController;
 use App\Http\Controllers\Backend\BankAccountController;
 use App\Http\Controllers\Backend\BrandController;
 use App\Http\Controllers\Backend\CategoryController;
@@ -263,6 +264,19 @@ Route::get('track-conversion/table-data', [TrackConversionController::class, 'ta
 Route::get('track-conversion/export', [TrackConversionController::class, 'export'])->name('track-conversion.export');
 Route::get('track-conversion/summary', [TrackConversionController::class, 'summary'])->name('track-conversion.summary');
 Route::get('track-conversion/{id}/details-fragment', [TrackConversionController::class, 'detailsFragment'])->whereNumber('id')->name('track-conversion.details-fragment');
+
+/**Laboratorio de atribución (modo prueba del sitio público + probador del endpoint de n8n). Módulo 'site'. */
+Route::get('attribution-lab', [AttributionLabController::class, 'index'])->name('attribution-lab.index');
+Route::get('attribution-lab/status', [AttributionLabController::class, 'status'])->name('attribution-lab.status');
+Route::get('attribution-lab/events', [AttributionLabController::class, 'events'])->name('attribution-lab.events');
+Route::get('attribution-lab/products-search', [AttributionLabController::class, 'productsSearch'])->name('attribution-lab.products-search');
+// Estáticas antes que {id}; whereNumber evita que "status"/"events" caigan en el parámetro.
+Route::get('attribution-lab/events/{id}', [AttributionLabController::class, 'event'])->whereNumber('id')->name('attribution-lab.event');
+Route::post('attribution-lab/lookup', [AttributionLabController::class, 'lookup'])->name('attribution-lab.lookup');
+Route::post('attribution-lab/extract', [AttributionLabController::class, 'extract'])->name('attribution-lab.extract');
+Route::post('attribution-lab/activate', [AttributionLabController::class, 'activate'])->name('attribution-lab.activate');
+Route::post('attribution-lab/deactivate', [AttributionLabController::class, 'deactivate'])->name('attribution-lab.deactivate');
+Route::delete('attribution-lab/tests', [AttributionLabController::class, 'destroyTests'])->name('attribution-lab.destroy-tests');
 
 
 /**ProductImageGallery route */

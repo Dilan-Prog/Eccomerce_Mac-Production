@@ -1,5 +1,25 @@
 {{-- Captura de atribución (gclid/gbraid/wbraid/fbclid/UTM/referrer/sesión) + registro "page_visit" en Google Sheets.
-     Incluir dentro de <head>: @include('frontend.partials.attribution-capture') --}}
+     Incluir dentro de <head>: @include('frontend.partials.attribution-capture')
+
+     Modo prueba de atribución (Laboratorio del admin; AttributionTestMode::payload() = cookie de prueba válida):
+     imprime window.MDN_TEST_MODE = "<nonce>" ANTES de la captura. mdn-test-mode.js (bootClear) borra la atribución
+     guardada cuando cambia el nonce (o cuando hay un marcador de prueba y la visita ya no es de prueba), para que
+     la atribución de prueba y la real no se hereden. En modo prueba no se envía nada a Google Sheets. --}}
+@php
+    $mdnTestPayload = \App\Support\Attribution\AttributionTestMode::payload();
+@endphp
+@if($mdnTestPayload)
+<script>window.MDN_TEST_MODE = @json($mdnTestPayload['n']);</script>
+@endif
+@php $mdnTestModeJs = asset('frontend/js/mdn-test-mode.js') . '?v=' . @filemtime(public_path('frontend/js/mdn-test-mode.js')); @endphp
+@if($mdnTestPayload)
+<script src="{{ $mdnTestModeJs }}"></script>
+@else
+{{-- Visita normal: mdn-test-mode.js solo se carga si quedo el marcador de una sesion de prueba en este navegador (para limpiarlo);
+     el visitante comun no hace ninguna peticion extra ni se bloquea el render. --}}
+<script>try { if (localStorage.getItem('mdn_test_boot')) { document.write('<script src="{{ $mdnTestModeJs }}"><\/script>'); } } catch (e) {}</script>
+@endif
+<script>try { window.MDNTestMode && window.MDNTestMode.bootClear(window.MDN_TEST_MODE || null); } catch (e) {}</script>
 <script src="{{ asset('frontend/js/attribution.js') }}?v={{ @filemtime(public_path('frontend/js/attribution.js')) }}"></script>
 <script>
 (function() {
@@ -29,6 +49,7 @@
                     page_url: window.location.href,
                     event_id: visitKey
                 });
+                if (window.MDN_TEST_MODE) visitPayload.test = 1;
                 fetch('{{ route('track.conversion') }}', {
                     method: 'POST',
                     headers: {
@@ -51,7 +72,7 @@
         const params = new URLSearchParams(window.location.search);
         const googleSheetsWebhook = 'https://script.google.com/macros/s/AKfycbwU_alwJ8RczaMMaRWUCcBD2Pc9exMGsG5vWGX-J7-h5BQajHC43VR3Ufk3QiGeQtZF/exec';
 
-        if (params.has('gclid') || params.has('utm_source')) {
+        if (!window.MDN_TEST_MODE && (params.has('gclid') || params.has('utm_source'))) {
             fetch(googleSheetsWebhook, {
                 method: 'POST',
                 mode: 'no-cors',

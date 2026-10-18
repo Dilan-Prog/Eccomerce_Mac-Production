@@ -16,7 +16,9 @@ class TrackConversionTableQuery extends AdminTableQuery
 {
     public function baseQuery(): Builder
     {
-        return TrackConversion::query();
+        // Solo eventos reales: los de prueba del Laboratorio de atribucion no aparecen aqui
+        // (ni en pestañas, busqueda ni exportacion; todo parte de esta consulta base).
+        return TrackConversion::query()->where('is_test', false);
     }
 
     public function columns(): array

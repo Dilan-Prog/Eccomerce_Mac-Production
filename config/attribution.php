@@ -95,4 +95,17 @@ return [
         ],
     ],
 
+    /*
+    | Modo prueba (Laboratorio de atribucion del admin). Una cookie cifrada y HttpOnly, emitida solo
+    | desde el panel por un admin con el modulo 'site', hace que el sitio publico de ESE navegador
+    | se comporte como folio_enabled=true y placements='*', sin cargar GTM/GA4/Ads/Pixel/Sheets, y
+    | que los eventos se guarden con is_test=1. whatsapp_number: numero (solo digitos, 10-15) que
+    | abren los botones en modo prueba (cuenta de prueba de Kommo); vacio = wa.me/?text= sin numero.
+    */
+    'test_mode' => [
+        'cookie' => 'mdn_attr_test',
+        'ttl_minutes' => 120,
+        'whatsapp_number' => env('ATTRIBUTION_TEST_WHATSAPP_NUMBER'),
+    ],
+
 ];

@@ -449,7 +449,7 @@
             </div>
             <div class="contact-info-text-mdn">
               <div class="contact-info-label-mdn">WhatsApp Business</div>
-              <div class="contact-info-value-mdn"><a href="https://wa.me/{{ config('contact.whatsapp.number') }}" class="track-conversion" data-type="whatsapp_contacto_business">{{ config('contact.whatsapp.display') }}</a></div>
+              <div class="contact-info-value-mdn"><a href="https://wa.me/{{ \App\Support\Attribution\AttributionTestMode::whatsappNumber() }}" class="track-conversion" data-type="whatsapp_contacto_business">{{ config('contact.whatsapp.display') }}</a></div>
             </div>
           </div>
           <div class="contact-info-item-mdn">

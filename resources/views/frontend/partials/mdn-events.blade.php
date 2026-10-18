@@ -3,17 +3,27 @@
 
      El folio de contacto (MN + 5 caracteres en el mensaje de WhatsApp / asunto del correo) lo controla
      config/attribution.php: con ATTRIBUTION_FOLIO_ENABLED=false (por defecto) mdn-contact.js queda inerte
-     y ningún enlace cambia. --}}
+     y ningún enlace cambia.
+
+     Modo prueba de atribución (Laboratorio del admin; AttributionTestMode::payload() = cookie de prueba válida):
+     el folio queda ENCENDIDO en todos los placements y el número de WhatsApp pasa a ser el de prueba
+     (ATTRIBUTION_TEST_WHATSAPP_NUMBER; vacío = https://wa.me/?text=... sin número, nunca la línea real), se
+     imprime window.MDN_TEST_MODE y una pill fija "Modo prueba de atribución activo". Fuera de modo prueba
+     el HTML es el de siempre. --}}
 @php
+    $mdnTestPayload = \App\Support\Attribution\AttributionTestMode::payload();
+    $mdnTestMode = $mdnTestPayload !== null;
     $attr = config('attribution', []);
     $tpl = $attr['templates'] ?? [];
     $folioCfg = [
-        'enabled' => (bool) ($attr['folio_enabled'] ?? false),
-        'placements' => (string) ($attr['folio_placements'] ?? '*'),
+        'enabled' => $mdnTestMode ? true : (bool) ($attr['folio_enabled'] ?? false),
+        'placements' => $mdnTestMode ? '*' : (string) ($attr['folio_placements'] ?? '*'),
         'invisible' => (bool) ($attr['invisible_folio'] ?? false),
         'whatsapp' => [
             'url' => (string) config('contact.whatsapp.url'),
-            'number' => (string) config('contact.whatsapp.number'),
+            'number' => $mdnTestMode
+                ? \App\Support\Attribution\AttributionTestMode::whatsappNumber()
+                : (string) config('contact.whatsapp.number'),
         ],
         'templates' => [
             'es' => [
@@ -30,7 +40,20 @@
             'pt' => $tpl['pt']['mail_subject'] ?? 'Cotação web - Código {folio}',
         ],
     ];
+    // Solo en modo prueba: mdn-contact.js acepta entonces whatsapp.number vacío (wa.me/?text=…, sin número).
+    if ($mdnTestMode) {
+        $folioCfg['testMode'] = true;
+    }
 @endphp
+@if($mdnTestMode)
+<script>
+    window.MDN_TEST_MODE = @json($mdnTestPayload['n']);
+    (function () {
+        function show() { window.MDNTestMode && window.MDNTestMode.banner(document); }
+        if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', show); else show();
+    })();
+</script>
+@endif
 <script>
     window.MDNEventsConfig = {
         url: @json(route('track.conversion')),

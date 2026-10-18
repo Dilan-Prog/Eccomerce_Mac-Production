@@ -119,6 +119,9 @@
         meta: clean(Object.assign({}, attrMeta, meta))
       });
       if (extra && extra.contact_folio) payload.contact_folio = extra.contact_folio;
+      // Modo prueba de atribucion (window.MDN_TEST_MODE lo imprime el servidor con la cookie de prueba valida):
+      // el backend guarda el evento como is_test. Sin modo prueba el payload es el de siempre.
+      if (root.MDN_TEST_MODE) payload.test = 1;
 
       root.fetch(cfg.url, {
         method: 'POST',

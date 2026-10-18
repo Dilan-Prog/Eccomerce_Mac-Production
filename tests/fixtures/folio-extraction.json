@@ -1,0 +1,282 @@
+[
+    {
+        "name": "limpio_en_frase",
+        "text": "Hola, me interesa: DC1010. Folio: MN7K4Q2",
+        "exact_n8n": "MN7K4Q2",
+        "tolerant": "MN7K4Q2",
+        "source": "visible"
+    },
+    {
+        "name": "solo_el_folio",
+        "text": "MN7K4Q2",
+        "exact_n8n": "MN7K4Q2",
+        "tolerant": "MN7K4Q2",
+        "source": "visible"
+    },
+    {
+        "name": "entre_signos_de_puntuacion",
+        "text": "Mi folio (MN7K4Q2).",
+        "exact_n8n": "MN7K4Q2",
+        "tolerant": "MN7K4Q2",
+        "source": "visible"
+    },
+    {
+        "name": "portugues",
+        "text": "Ol\u00e1, tenho interesse em: Controlador DC1010. C\u00f3digo: MN7K4Q2",
+        "exact_n8n": "MN7K4Q2",
+        "tolerant": "MN7K4Q2",
+        "source": "visible"
+    },
+    {
+        "name": "invisibles_solo_en_los_bordes",
+        "text": "\u2060MN7K4Q2\u2060",
+        "exact_n8n": "MN7K4Q2",
+        "tolerant": "MN7K4Q2",
+        "source": "visible"
+    },
+    {
+        "name": "con_salto_de_linea_alrededor",
+        "text": "Hola\nMN7K4Q2\nGracias",
+        "exact_n8n": "MN7K4Q2",
+        "tolerant": "MN7K4Q2",
+        "source": "visible"
+    },
+    {
+        "name": "dos_folios_exacto_toma_el_primero_tolerante_el_ultimo",
+        "text": "Folio MN7K4Q2 ... y luego MN3FGH8",
+        "exact_n8n": "MN7K4Q2",
+        "tolerant": "MN3FGH8",
+        "source": "visible"
+    },
+    {
+        "name": "guion",
+        "text": "Folio: MN-7K4Q2",
+        "exact_n8n": null,
+        "tolerant": "MN7K4Q2",
+        "source": "visible"
+    },
+    {
+        "name": "espacio",
+        "text": "HOLA MN 7K4Q2",
+        "exact_n8n": null,
+        "tolerant": "MN7K4Q2",
+        "source": "visible"
+    },
+    {
+        "name": "minusculas_con_espacio",
+        "text": "mn 7k4q2",
+        "exact_n8n": null,
+        "tolerant": "MN7K4Q2",
+        "source": "visible"
+    },
+    {
+        "name": "minusculas_pegado",
+        "text": "folio: mn7k4q2",
+        "exact_n8n": null,
+        "tolerant": "MN7K4Q2",
+        "source": "visible"
+    },
+    {
+        "name": "mixto_mayusculas_minusculas",
+        "text": "Mn7k4Q2",
+        "exact_n8n": null,
+        "tolerant": "MN7K4Q2",
+        "source": "visible"
+    },
+    {
+        "name": "salto_de_linea_entre_mn_y_codigo",
+        "text": "MN\n7K4Q2",
+        "exact_n8n": null,
+        "tolerant": "MN7K4Q2",
+        "source": "visible"
+    },
+    {
+        "name": "espacio_duro_nbsp",
+        "text": "MN\u00a07K4Q2",
+        "exact_n8n": null,
+        "tolerant": "MN7K4Q2",
+        "source": "visible"
+    },
+    {
+        "name": "u2060_intercalado",
+        "text": "MN\u20607K4Q2",
+        "exact_n8n": null,
+        "tolerant": "MN7K4Q2",
+        "source": "visible"
+    },
+    {
+        "name": "u200b_y_u200c_intercalados",
+        "text": "M\u200bN7K\u200c4Q2",
+        "exact_n8n": null,
+        "tolerant": "MN7K4Q2",
+        "source": "visible"
+    },
+    {
+        "name": "u200d_y_feff_intercalados",
+        "text": "MN7\u200dK4\ufeffQ2",
+        "exact_n8n": null,
+        "tolerant": "MN7K4Q2",
+        "source": "visible"
+    },
+    {
+        "name": "invisibles_entre_mn_y_guion",
+        "text": "MN\u200b-\u200c7K4Q2",
+        "exact_n8n": null,
+        "tolerant": "MN7K4Q2",
+        "source": "visible"
+    },
+    {
+        "name": "guion_bajo_antes_exacto_falla_por_word_boundary",
+        "text": "ref_MN7K4Q2",
+        "exact_n8n": null,
+        "tolerant": "MN7K4Q2",
+        "source": "visible"
+    },
+    {
+        "name": "dos_folios_exacto_toma_el_primero_tolerante_el_ultimo_cita_previa",
+        "text": "Antes MN3FGH8 y ahora mn 7k4q2",
+        "exact_n8n": "MN3FGH8",
+        "tolerant": "MN7K4Q2",
+        "source": "visible"
+    },
+    {
+        "name": "dos_folios_el_primero_sucio_el_segundo_limpio",
+        "text": "MN-7K4Q2 y luego MN3FGH8",
+        "exact_n8n": "MN3FGH8",
+        "tolerant": "MN3FGH8",
+        "source": "visible"
+    },
+    {
+        "name": "riesgo_falso_positivo_mn_pesos_y_cinco_digitos",
+        "text": "Pago 100 MN 23456",
+        "exact_n8n": null,
+        "tolerant": "MN23456",
+        "source": "visible"
+    },
+    {
+        "name": "folio_invisible",
+        "text": "Hola, quiero m\u00e1s informaci\u00f3n.\u2060\u200b\u200c\u200b\u200b\u200c\u200c\u200b\u200c\u200b\u200c\u200b\u200b\u200c\u200c\u200c\u200b\u200b\u200b\u200c\u200c\u200b\u200c\u200c\u200c\u200b\u200c\u200b\u200b\u200c\u200b\u200c\u200c\u200b\u200b\u200c\u200c\u200b\u200c\u200b\u200b\u200b\u200c\u200b\u200c\u200b\u200b\u200b\u200c\u200b\u200b\u200c\u200c\u200b\u200b\u200c\u200b\u2060",
+        "exact_n8n": null,
+        "tolerant": "MN7K4Q2",
+        "source": "invisible"
+    },
+    {
+        "name": "folio_invisible_con_texto_despues",
+        "text": "Hola\u2060\u200b\u200c\u200b\u200b\u200c\u200c\u200b\u200c\u200b\u200c\u200b\u200b\u200c\u200c\u200c\u200b\u200b\u200b\u200c\u200c\u200b\u200b\u200c\u200c\u200b\u200c\u200b\u200b\u200b\u200c\u200c\u200b\u200b\u200c\u200b\u200b\u200b\u200c\u200c\u200c\u200b\u200c\u200b\u200b\u200c\u200b\u200b\u200b\u200b\u200b\u200c\u200c\u200c\u200b\u200b\u200b\u2060 gracias",
+        "exact_n8n": null,
+        "tolerant": "MN3FGH8",
+        "source": "invisible"
+    },
+    {
+        "name": "visible_gana_al_invisible",
+        "text": "Folio: MN7K4Q2\u2060\u200b\u200c\u200b\u200b\u200c\u200c\u200b\u200c\u200b\u200c\u200b\u200b\u200c\u200c\u200c\u200b\u200b\u200b\u200c\u200c\u200b\u200b\u200c\u200c\u200b\u200c\u200b\u200b\u200b\u200c\u200c\u200b\u200b\u200c\u200b\u200b\u200b\u200c\u200c\u200c\u200b\u200c\u200b\u200b\u200c\u200b\u200b\u200b\u200b\u200b\u200c\u200c\u200c\u200b\u200b\u200b\u2060",
+        "exact_n8n": "MN7K4Q2",
+        "tolerant": "MN7K4Q2",
+        "source": "visible"
+    },
+    {
+        "name": "invisible_que_no_es_un_folio",
+        "text": "Hola\u2060\u200b\u200c\u200b\u200b\u200c\u200b\u200b\u200b\u200b\u200c\u200b\u200b\u200c\u200c\u200c\u200c\u200b\u200c\u200b\u200b\u200c\u200c\u200b\u200b\u200b\u200c\u200b\u200b\u200b\u200b\u200b\u200c\u200b\u200b\u200c\u200c\u200b\u200b\u200b\u200c\u200b\u200b\u200c\u200c\u200b\u200b\u200c\u200b\u200b\u200b\u200c\u200c\u200b\u200b\u200c\u200c\u2060",
+        "exact_n8n": null,
+        "tolerant": null,
+        "source": null
+    },
+    {
+        "name": "invisible_truncado_no_es_un_byte_completo",
+        "text": "Hola\u2060\u200b\u200c\u200b\u2060",
+        "exact_n8n": null,
+        "tolerant": null,
+        "source": null
+    },
+    {
+        "name": "pegado_a_letras_antes",
+        "text": "XMN7K4Q2",
+        "exact_n8n": null,
+        "tolerant": null,
+        "source": null
+    },
+    {
+        "name": "pegado_a_digito_antes",
+        "text": "1MN7K4Q2",
+        "exact_n8n": null,
+        "tolerant": null,
+        "source": null
+    },
+    {
+        "name": "pegado_a_letra_despues",
+        "text": "MN7K4Q2X",
+        "exact_n8n": null,
+        "tolerant": null,
+        "source": null
+    },
+    {
+        "name": "seis_caracteres_en_el_codigo",
+        "text": "MN7K4Q23",
+        "exact_n8n": null,
+        "tolerant": null,
+        "source": null
+    },
+    {
+        "name": "cuatro_caracteres_en_el_codigo",
+        "text": "MN7K4Q",
+        "exact_n8n": null,
+        "tolerant": null,
+        "source": null
+    },
+    {
+        "name": "alfabeto_invalido_vocal",
+        "text": "MNA1234",
+        "exact_n8n": null,
+        "tolerant": null,
+        "source": null
+    },
+    {
+        "name": "alfabeto_invalido_cero_y_uno",
+        "text": "MN0O1I2",
+        "exact_n8n": null,
+        "tolerant": null,
+        "source": null
+    },
+    {
+        "name": "prefijo_distinto",
+        "text": "MX7K4Q2",
+        "exact_n8n": null,
+        "tolerant": null,
+        "source": null
+    },
+    {
+        "name": "monto_y_mn_sin_codigo",
+        "text": "$23456 MN",
+        "exact_n8n": null,
+        "tolerant": null,
+        "source": null
+    },
+    {
+        "name": "dos_espacios_no_se_colapsan",
+        "text": "MN  7K4Q2",
+        "exact_n8n": null,
+        "tolerant": null,
+        "source": null
+    },
+    {
+        "name": "vacio",
+        "text": "",
+        "exact_n8n": null,
+        "tolerant": null,
+        "source": null
+    },
+    {
+        "name": "solo_espacios",
+        "text": "  \n ",
+        "exact_n8n": null,
+        "tolerant": null,
+        "source": null
+    },
+    {
+        "name": "solo_invisibles",
+        "text": "\u2060\u200b\u200c\u2060",
+        "exact_n8n": null,
+        "tolerant": null,
+        "source": null
+    }
+]

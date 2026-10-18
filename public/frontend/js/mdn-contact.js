@@ -95,7 +95,12 @@
         next.enabled = toBool(c.enabled);
         next.invisible = toBool(c.invisible);
         next.placements = normalizePlacements(c.placements);
-        if (isObj(c.whatsapp)) mergeStrings(next.whatsapp, c.whatsapp, ['url', 'number']);
+        if (isObj(c.whatsapp)) {
+          mergeStrings(next.whatsapp, c.whatsapp, ['url', 'number']);
+          // Modo prueba de atribucion (lo imprime el servidor): un numero vacio es VALIDO y significa
+          // "sin numero" (wa.me/?text=...); si no, mergeStrings lo ignoraria y quedaria el numero real por defecto.
+          if (toBool(c.testMode) && typeof c.whatsapp.number === 'string') next.whatsapp.number = c.whatsapp.number;
+        }
         if (isObj(c.templates)) {
           var langs = ['es', 'pt'];
           for (var i = 0; i < langs.length; i++) {

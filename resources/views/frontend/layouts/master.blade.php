@@ -895,58 +895,12 @@
 
 
     <!-- <link rel="stylesheet" href="css/rtl.css"> -->
-    <!-- Google Ads -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=AW-16512201966"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'AW-16512201966');
-    </script>
-    @stack('Google-Ads')
-
-    <!-- Google Tag Manager -->
-    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-    })(window,document,'script','dataLayer','GTM-PX9LXWGR');</script>
-    <!-- End Google Tag Manager -->
-
-    <!-- Google Analytics (GA4) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-K8M2ZT5HYK"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'G-K8M2ZT5HYK');
-    </script>
-    <!-- End Google Analytics -->
-
-    <!-- Meta Pixel Code -->
-    <script>
-    !function(f,b,e,v,n,t,s)
-    {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-    n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-    n.queue=[];t=b.createElement(e);t.async=!0;
-    t.src=v;s=b.getElementsByTagName(e)[0];
-    s.parentNode.insertBefore(t,s)}(window, document,'script',
-    'https://connect.facebook.net/en_US/fbevents.js');
-    fbq('init', '1912650302805252');
-    fbq('track', 'PageView');
-    </script>
-    <noscript><img height="1" width="1" style="display:none"
-    src="https://www.facebook.com/tr?id=1912650302805252&ev=PageView&noscript=1"
-    /></noscript>
-    <!-- End Meta Pixel Code -->
+    {{-- Google Ads, GTM, GA4 y Meta Pixel: ver partials/analytics-tags (en modo prueba de atribución solo imprime un stub) --}}
+    @include('frontend.partials.analytics-tags')
 
 </head>
 <body>
-    <!-- Google Tag Manager (noscript) -->
-    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-PX9LXWGR"
-    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-    <!-- End Google Tag Manager (noscript) -->
+    @include('frontend.partials.analytics-tags', ['part' => 'body'])
         @section('chrome_top')
         <!--header sticky wrapper-->
         <div class="sticky-wrapper">
@@ -1045,12 +999,16 @@
                 fecha: new Date().toLocaleString('sv-SE', { timeZone: 'America/Mexico_City' })
             };
 
-            fetch(googleSheetsWebhook, {
-                method: 'POST',
-                mode: 'no-cors',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            }).catch(err => console.warn('No se pudo guardar la conversión en Sheets:', err));
+            // Modo prueba de atribución (window.MDN_TEST_MODE, solo lo imprime el servidor con la cookie de
+            // prueba válida): nada va a Google Sheets; el POST a /track-conversion sigue (con test: 1).
+            if (!window.MDN_TEST_MODE) {
+                fetch(googleSheetsWebhook, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                }).catch(err => console.warn('No se pudo guardar la conversión en Sheets:', err));
+            }
 
             // Payload al backend: atribución completa (MDNAttribution) con fallback a localStorage
             const attr = (window.MDNAttribution && typeof window.MDNAttribution.get === 'function')
@@ -1104,6 +1062,7 @@
             if (window.MDNAttribution && typeof window.MDNAttribution.newEventId === 'function') {
                 backendPayload.event_id = window.MDNAttribution.newEventId();
             }
+            if (window.MDN_TEST_MODE) backendPayload.test = 1;
 
             fetch('{{ route('track.conversion') }}', {
                 method: 'POST',
