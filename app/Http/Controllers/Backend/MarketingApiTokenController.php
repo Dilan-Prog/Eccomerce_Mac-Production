@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Backend;
 
 use App\Http\Controllers\Controller;
+use App\Http\Middleware\AttributionApiTokenMiddleware;
 use App\Models\MarketingApiToken;
 use App\Support\AdminTable\AdminTableRequest;
 use App\Support\AdminTable\Queries\MarketingApiTokenTableQuery;
@@ -30,7 +31,16 @@ class MarketingApiTokenController extends Controller
 
     public function index()
     {
-        return view('admin-ui.marketing-tokens.index');
+        // Datos informativos del endpoint de atribucion (Google Ads) para pegarlo en n8n. NUNCA incluye el token.
+        $attributionToken = (string) config('attribution.api_token');
+        $attribution = [
+            'lookup_url' => url('/api/attribution/lookup'),
+            'token_configured' => $attributionToken !== '',
+            'token_length_ok' => strlen($attributionToken) >= AttributionApiTokenMiddleware::MIN_TOKEN_LENGTH,
+            'min_length' => AttributionApiTokenMiddleware::MIN_TOKEN_LENGTH,
+        ];
+
+        return view('admin-ui.marketing-tokens.index', compact('attribution'));
     }
 
     /** JSON data source for the custom admin table. */
