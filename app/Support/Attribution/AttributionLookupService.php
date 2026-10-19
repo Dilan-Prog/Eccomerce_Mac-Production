@@ -5,6 +5,8 @@ namespace App\Support\Attribution;
 use App\Models\TrackConversion;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 /**
  * Logica de GET /api/attribution/lookup: encuentra el evento de contacto (por folio o por hora),
@@ -39,7 +41,19 @@ class AttributionLookupService
 
         $folioParam = $params['folio'] ?? null;
         if (is_string($folioParam) && trim($folioParam) !== '') {
-            return $this->respondByFolio($params, $this->normalizeFolio($folioParam));
+            $folio = $this->normalizeFolio($folioParam);
+
+            // Tolerancia: si n8n manda el mensaje o el folio con comillas / "Folio: " / saltos de linea, el
+            // valor normalizado no tiene la forma MN+5 y antes daba 404 aunque el folio existiera. Se intenta
+            // extraer el folio valido que contenga (el mismo extractor que el simulador del laboratorio).
+            if (!str_starts_with($folio, 'COT-') && preg_match(TrackConversion::FOLIO_REGEX, $folio) !== 1) {
+                $found = FolioExtractor::extract($folioParam)['tolerant'] ?? null;
+                if (is_string($found) && preg_match(TrackConversion::FOLIO_REGEX, $found) === 1) {
+                    $folio = $found;
+                }
+            }
+
+            return $this->respondByFolio($params, $folio);
         }
 
         if (($params['type'] ?? null) !== null || ($params['from'] ?? null) !== null || ($params['to'] ?? null) !== null) {
@@ -372,6 +386,8 @@ class AttributionLookupService
         // Formato invalido: 404 sin consultar la BD (ni un COT- absurdamente largo).
         $isCot = str_starts_with($folio, 'COT-');
         if ($isCot ? strlen($folio) > 64 : preg_match(TrackConversion::FOLIO_REGEX, $folio) !== 1) {
+            $this->logMiss('formato_invalido', $folio, $params);
+
             return $this->fail('Folio no encontrado.', 404);
         }
 
@@ -385,10 +401,42 @@ class AttributionLookupService
 
         $data = $this->byFolio($folio, $messageAt);
         if ($data === null) {
+            $this->logMiss('no_encontrado', $folio, $params);
+
             return $this->fail('Folio no encontrado.', 404);
         }
 
         return ['status' => 200, 'body' => $data];
+    }
+
+    /**
+     * Diagnostico de un 404 por folio (solo corre en la rama de fallo, ya detras de auth y throttle).
+     * Registra lo que de verdad llego (en hex, delata comillas, saltos de linea e invisibles), el valor
+     * normalizado y que base/tabla ve la aplicacion, para distinguir una peticion mal armada de una base
+     * distinta. NUNCA registra tokens ni cabeceras. Un fallo del propio log no debe afectar la respuesta.
+     *
+     * @param  array<string,mixed> $params
+     */
+    private function logMiss(string $reason, string $folio, array $params): void
+    {
+        try {
+            $context = [
+                'reason' => $reason,
+                'normalized' => mb_substr($folio, 0, 80),
+                'raw_hex' => bin2hex(mb_substr((string) ($params['folio'] ?? ''), 0, 80)),
+            ];
+            if ($reason === 'no_encontrado') {
+                $context += [
+                    'db' => DB::connection()->getDatabaseName(),
+                    'rows_total' => TrackConversion::query()->count(),
+                    'max_id' => TrackConversion::query()->max('id'),
+                    'rows_like' => TrackConversion::query()->where('contact_folio', 'like', '%' . substr($folio, 2) . '%')->count(),
+                ];
+            }
+            Log::warning('attribution.lookup.folio_' . $reason, $context);
+        } catch (\Throwable $e) {
+            // Sin efecto en la respuesta.
+        }
     }
 
     /**
