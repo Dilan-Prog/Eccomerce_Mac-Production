@@ -281,7 +281,73 @@
     return 'info';
   }
 
+  /**
+   * Deja solo los digitos de un telefono escrito "a mano": quita espacios (incluido NBSP),
+   * +, guiones, parentesis y puntos. Cualquier otro caracter (letras, simbolos) se CONSERVA a
+   * proposito para que la validacion lo rechace en vez de aceptar un numero adulterado en silencio.
+   */
+  function normalizePhoneDigits(value) {
+    return String(value == null ? '' : value).replace(/[\s +\-().]/g, '');
+  }
+
+  var MAX_URL_LEN = 500;
+
+  /** Error de la URL del webhook de n8n ('' si es valida o esta vacia). Sin depender de la clase URL. */
+  function n8nUrlError(raw, allowHttp) {
+    var url = String(raw == null ? '' : raw).trim();
+    if (url === '') return '';
+    if (url.length > MAX_URL_LEN) return 'La URL no puede pasar de ' + MAX_URL_LEN + ' caracteres.';
+    if (/\s/.test(url)) return 'La URL no puede llevar espacios.';
+    var m = /^([A-Za-z][A-Za-z0-9+.\-]*):\/\/([^\/?#]*)/.exec(url);
+    if (!m) return 'Escribe una URL completa, por ejemplo https://tu-n8n.com/webhook/…';
+    var scheme = m[1].toLowerCase();
+    if (scheme !== 'https' && !(allowHttp && scheme === 'http')) {
+      return allowHttp ? 'La URL debe empezar con http:// o https://.' : 'La URL debe empezar con https://.';
+    }
+    var authority = m[2];
+    if (authority.indexOf('@') !== -1) return 'La URL no puede llevar usuario ni contraseña.';
+    var host = authority.replace(/:\d*$/, '');
+    if (host === '') return 'La URL no tiene dominio.';
+    return '';
+  }
+
+  /**
+   * Misma validacion que el servidor, para avisar antes de enviar:
+   *  - test_whatsapp_number: vacio, o de 10 a 15 digitos (se normaliza con normalizePhoneDigits).
+   *  - n8n_url: vacia, o https (http solo con allowHttp) sin usuario/contrasena y de 500 caracteres o menos.
+   * Devuelve {ok, errors, values}; `values` son los valores ya normalizados, listos para enviar.
+   */
+  function validateSettings(input, opts) {
+    input = input || {};
+    var allowHttp = !!(opts && opts.allowHttp);
+    var errors = {};
+    var number = normalizePhoneDigits(input.test_whatsapp_number);
+    var url = String(input.n8n_url == null ? '' : input.n8n_url).trim();
+
+    if (number !== '' && !/^[0-9]{10,15}$/.test(number)) {
+      errors.test_whatsapp_number = 'Escribe solo dígitos, con lada de país: entre 10 y 15 (ej. 5215512345678).';
+    }
+    var urlErr = n8nUrlError(url, allowHttp);
+    if (urlErr) errors.n8n_url = urlErr;
+
+    return {
+      ok: Object.keys(errors).length === 0,
+      errors: errors,
+      values: { test_whatsapp_number: number, n8n_url: url }
+    };
+  }
+
+  /** Texto de la fuente del numero de prueba (status.data.settings.test_whatsapp_source). */
+  function describeSource(source) {
+    if (source === 'db') return 'Guardado en el panel';
+    if (source === 'env') return 'Tomado del .env';
+    return 'Sin configurar';
+  }
+
   var pure = {
+    normalizePhoneDigits: normalizePhoneDigits,
+    validateSettings: validateSettings,
+    describeSource: describeSource,
     normalizeText: normalizeText,
     extractFolio: extractFolio,
     extractFolioExact: extractFolioExact,
@@ -435,6 +501,7 @@
 
       state.testActive = !!tm.active;
       updateTestModeUi();
+      applySettings(s.settings, false);
     }
 
     async function loadStatus() {
@@ -517,6 +584,168 @@
           text: 'No se pudo leer el sitio desde esta página (¿otro dominio?). Ábrelo y revisa el código fuente a mano.' }));
       } finally {
         setBusy(btn, false);
+      }
+    }
+
+    /* ---------- 2b. Ajustes de prueba (numero de WhatsApp y webhook de n8n) ---------- */
+
+    var SETTING_FIELDS = {
+      test_whatsapp_number: { input: 'lab-set-whatsapp', error: 'lab-set-whatsapp-error' },
+      n8n_url: { input: 'lab-set-n8n', error: 'lab-set-n8n-error' }
+    };
+
+    // Lo ultimo que se escribio desde el servidor en cada campo: distingue "lo que el usuario
+    // esta editando" de "lo que ya estaba guardado" para no pisar su escritura al refrescar.
+    var settingsState = { filled: { test_whatsapp_number: '', n8n_url: '' }, n8nSaved: '' };
+
+    /** Quita la URL del webhook de un mensaje: puede llevar un token en la ruta. */
+    function redactN8nUrl(msg, onlySaved) {
+      var out = String(msg == null ? '' : msg);
+      var url = settingsState.n8nSaved;
+      if (url) out = out.split(url).join('[URL de n8n]');
+      // Los mensajes del servidor no deben mostrar ninguna URL; el extracto de la respuesta de n8n
+      // solo pierde la URL guardada (puede traer otras legitimas, como lookup_url).
+      return onlySaved ? out : out.replace(/https?:\/\/[^\s"'<>]+/gi, '[URL]');
+    }
+
+    function fieldDirty(key) {
+      return $(SETTING_FIELDS[key].input).value !== settingsState.filled[key];
+    }
+
+    function fillSettingField(key, value, force) {
+      var el = $(SETTING_FIELDS[key].input);
+      var v = value == null ? '' : String(value);
+      var editing = doc.activeElement === el || fieldDirty(key);
+      if (force || !editing) el.value = v;
+      settingsState.filled[key] = v;
+    }
+
+    function setFieldError(key, message) {
+      var f = SETTING_FIELDS[key];
+      var errEl = $(f.error);
+      var input = $(f.input);
+      errEl.textContent = message || '';
+      show(errEl, !!message);
+      input.classList.toggle('lab-input-invalid', !!message);
+      if (message) input.setAttribute('aria-invalid', 'true');
+      else input.removeAttribute('aria-invalid');
+    }
+
+    function showSettingErrors(errors) {
+      errors = errors || {};
+      Object.keys(SETTING_FIELDS).forEach(function (k) { setFieldError(k, errors[k] ? String(errors[k]) : ''); });
+    }
+
+    function renderWhatsappSource(s) {
+      var el = $('lab-set-whatsapp-source');
+      var src = s.test_whatsapp_source;
+      var eff = s.test_whatsapp_number ? String(s.test_whatsapp_number) : '';
+      var line = 'Fuente actual: ' + describeSource(src);
+      if (eff) line += ' · número efectivo: ' + eff;
+      else line += ' · los botones abren WhatsApp sin número';
+      el.textContent = line;
+    }
+
+    function updateN8nButton() {
+      var hasSaved = !!settingsState.n8nSaved;
+      $('lab-n8n-test').disabled = !hasSaved;
+      var hint = $('lab-n8n-test-hint');
+      if (!hasSaved) {
+        hint.textContent = 'Guarda primero una URL de n8n para poder enviar el mensaje de prueba.';
+        show(hint, true);
+      } else if (fieldDirty('n8n_url')) {
+        hint.textContent = 'Tienes cambios sin guardar: el envío usa la URL ya guardada.';
+        show(hint, true);
+      } else {
+        show(hint, false);
+      }
+    }
+
+    /** Rellena los campos con status.data.settings; solo pisa lo que el usuario no esta editando (o con force). */
+    function applySettings(s, force) {
+      if (!s || typeof s !== 'object') return;
+      fillSettingField('test_whatsapp_number', s.test_whatsapp_db, force);
+      fillSettingField('n8n_url', s.n8n_url, force);
+      settingsState.n8nSaved = s.n8n_url ? String(s.n8n_url) : '';
+      renderWhatsappSource(s);
+      updateN8nButton();
+    }
+
+    async function saveSettings() {
+      var btn = $('lab-settings-save');
+      var v = validateSettings({
+        test_whatsapp_number: $('lab-set-whatsapp').value,
+        n8n_url: $('lab-set-n8n').value
+      }, { allowHttp: false });
+      showSettingErrors(v.errors);
+      if (!v.ok) {
+        if (AU.toast) AU.toast.error('Revisa los campos marcados.');
+        return;
+      }
+      setBusy(btn, true);
+      try {
+        var data = await AU.request(routes.settings, { method: 'POST', body: v.values });
+        if (data && data.status === 'success') {
+          showSettingErrors({});
+          if (data.settings) applySettings(data.settings, true);
+          if (AU.toast) AU.toast.success(redactN8nUrl(data.message) || 'Ajustes guardados');
+          await loadStatus();
+        } else {
+          toastErr({ message: redactN8nUrl(data && data.message) }, 'No se pudieron guardar los ajustes');
+        }
+      } catch (e) {
+        if (e && e.status === 422 && e.data && e.data.errors) showSettingErrors(e.data.errors);
+        toastErr({ message: redactN8nUrl((e && e.data && e.data.message) || (e && e.message)) }, 'No se pudieron guardar los ajustes');
+      } finally {
+        setBusy(btn, false);
+      }
+    }
+
+    function sentLine(label, value) {
+      return h('div', {}, [h('span', { class: 'lab-sim-label', text: label + ' ' }), h('code', { class: 'au-mono', text: text(value) })]);
+    }
+
+    function renderN8nResult(box, r) {
+      clear(box);
+      if (!r || typeof r !== 'object') return;
+      var ok = r.status === 'success';
+      var hasHttp = r.http_status != null && r.http_status !== '';
+      if (hasHttp || r.elapsed_ms != null) {
+        var head = h('div', { class: 'lab-result-head' }, [
+          hasHttp ? badge(badgeForHttp(r.http_status), 'HTTP ' + text(r.http_status)) : null,
+          r.elapsed_ms != null ? h('span', { class: 'lab-result-meta', text: r.elapsed_ms + ' ms' }) : null
+        ]);
+        box.appendChild(head);
+      }
+      var msg = redactN8nUrl(r.message) || (ok ? 'n8n recibió el mensaje de prueba.' : 'No se pudo enviar el mensaje de prueba.');
+      box.appendChild(h('div', { class: 'lab-alert ' + (ok ? 'lab-alert-success' : 'lab-alert-critical'), role: ok ? 'status' : 'alert' }, [h('span', { text: msg })]));
+      if (r.sent && typeof r.sent === 'object') {
+        box.appendChild(h('div', { class: 'lab-n8n-sent' }, [sentLine('Folio enviado:', r.sent.folio), sentLine('Texto enviado:', r.sent.text)]));
+      }
+      if (hasHttp) {
+        var excerpt = r.response_excerpt == null || r.response_excerpt === '' ? '(respuesta vacía)' : redactN8nUrl(r.response_excerpt, true);
+        box.appendChild(h('div', { class: 'lab-sim-subtitle', text: 'Respuesta de n8n' }));
+        box.appendChild(h('pre', { class: 'au-json', text: excerpt }));
+      }
+    }
+
+    async function sendN8nTest() {
+      var btn = $('lab-n8n-test');
+      var box = $('lab-n8n-result');
+      setBusy(btn, true);
+      clear(box);
+      box.appendChild(h('p', { class: 'au-help-text', text: 'Enviando mensaje de prueba…' }));
+      try {
+        var data = await AU.request(routes.n8nTest, { method: 'POST' });
+        renderN8nResult(box, data);
+      } catch (e) {
+        if (e && e.data && typeof e.data === 'object' && e.data.status) {
+          renderN8nResult(box, e.data); // 422 con el mismo cuerpo que el exito
+        } else {
+          renderN8nResult(box, { status: 'error', message: (e && e.message) || 'No se pudo enviar el mensaje de prueba.' });
+        }
+      } finally {
+        updateN8nButton(); // vuelve a habilitar solo si hay URL guardada
       }
     }
 
@@ -922,6 +1151,18 @@
       $('lab-btn-activate').addEventListener('click', function () { toggleTestMode(routes.activate, this); });
       $('lab-btn-deactivate').addEventListener('click', function () { toggleTestMode(routes.deactivate, this); });
       $('lab-btn-verify').addEventListener('click', verifySite);
+      $('lab-settings-save').addEventListener('click', saveSettings);
+      $('lab-n8n-test').addEventListener('click', sendN8nTest);
+      Object.keys(SETTING_FIELDS).forEach(function (key) {
+        var el = $(SETTING_FIELDS[key].input);
+        el.addEventListener('input', function () {
+          if (el.classList.contains('lab-input-invalid')) setFieldError(key, '');
+          if (key === 'n8n_url') updateN8nButton();
+        });
+        el.addEventListener('keydown', function (e) {
+          if (e.key === 'Enter') { e.preventDefault(); saveSettings(); }
+        });
+      });
       $('lab-status-refresh').addEventListener('click', loadStatus);
 
       $('lab-dest').addEventListener('change', onDestChange);

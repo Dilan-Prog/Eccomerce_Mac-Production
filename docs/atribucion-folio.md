@@ -72,7 +72,7 @@ Todas se leen desde `config/attribution.php` (nunca con `env()` directo en el c�
 | `ATTRIBUTION_INVISIBLE_FOLIO` | `false` | Agrega al final del mensaje de WhatsApp una marca invisible con el folio (caracteres U+2060, U+200B, U+200C). **No activar hasta publicar el aviso de privacidad** (sección 7). |
 | `ATTRIBUTION_ORIGIN_CHECK` | `true` | Verificación de `Origin`/`Referer` en `POST /track-conversion`. Con `true` solo se guardan eventos enviados desde el propio sitio; `false` la apaga sin redeploy si algo falla (junto con `config:clear`). |
 | `ATTRIBUTION_ALLOWED_HOSTS` | vacío | Hosts extra permitidos, separados por comas y con comparación exacta (no por sufijo), además del host de `APP_URL` con y sin `www.`. |
-| `ATTRIBUTION_TEST_WHATSAPP_NUMBER` | vacío | Número de WhatsApp que abren los botones **solo en modo prueba** (Laboratorio de atribución, sección 10): la línea de la cuenta de prueba de Kommo. Solo dígitos, de 10 a 15, con lada de país (por ejemplo `528112345678`). Vacío o inválido = el botón abre `https://wa.me/?text=…` **sin número** (eliges el chat a mano); nunca se usa el número real de producción. No afecta a visitantes normales. |
+| `ATTRIBUTION_TEST_WHATSAPP_NUMBER` | vacío | (Respaldo: el número guardado desde el panel, en Laboratorio de atribución > Ajustes de prueba, tiene prioridad sobre esta variable.) Número de WhatsApp que abren los botones **solo en modo prueba** (Laboratorio de atribución, sección 10): la línea de la cuenta de prueba de Kommo. Solo dígitos, de 10 a 15, con lada de país (por ejemplo `528112345678`). Vacío o inválido = el botón abre `https://wa.me/?text=…` **sin número** (eliges el chat a mano); nunca se usa el número real de producción. No afecta a visitantes normales. |
 
 **Verificación de origen en `POST /track-conversion`.** El endpoint es público y sin CSRF, así que el middleware `tracking.origin` compara el host de la cabecera `Origin` (o, si no viene, del `Referer`) con el de `APP_URL` (con y sin `www.`) y con `ATTRIBUTION_ALLOWED_HOSTS`. Las páginas `/br/*` viven en el mismo dominio y quedan cubiertas. Solo en los entornos `local` y `testing` también se aceptan `localhost`, `127.0.0.1`, `::1`, `*.test` y `*.localhost` (y se ignora el puerto). Si no hay `Origin` ni `Referer`, o el host no coincide, responde **204 sin contenido y no guarda nada**, sin error visible: **si depurando ves un 204, significa "no guardado"** (revisa `APP_URL`, el `Origin` que manda el navegador y `ATTRIBUTION_ALLOWED_HOSTS`). Corre antes de los límites de frecuencia, así que el tráfico ajeno no gasta el cupo de los visitantes reales.
 
@@ -800,7 +800,7 @@ El diseño es aditivo: `POST /track-conversion` sigue aceptando el payload viejo
 **Fase 1. Desplegar con el folio apagado** (en este orden)
 
 1. [ ] **Desplegar** el código con `ATTRIBUTION_FOLIO_ENABLED=false` (o sin la variable: el valor por defecto es `false`).
-2. [ ] **`php artisan migrate`** (agrega `contact_folio`, `event_at` y dos índices, y `is_test` —boolean, no nulo, default 0— con el índice `(is_test, id)`, migración `2026_10_20_100000_add_is_test_to_track_conversions_table.php`; no toca datos existentes: todas las filas históricas quedan con `is_test = 0`). Hazlo **antes** de que el código nuevo reciba tráfico: el admin, el endpoint y las consultas SQL de la sección 6 usan `is_test`.
+2. [ ] **`php artisan migrate`** (agrega `contact_folio`, `event_at` y dos índices, y `is_test` —boolean, no nulo, default 0— con el índice `(is_test, id)`, migración `2026_10_20_100000_add_is_test_to_track_conversions_table.php`; no toca datos existentes: todas las filas históricas quedan con `is_test = 0`). Esa misma ejecución crea la tabla `attribution_lab_settings` (migración `2026_10_21_100000_create_attribution_lab_settings_table.php`), donde el laboratorio guarda el número de WhatsApp de prueba y la URL del webhook de n8n; sin ella, el panel muestra un aviso al intentar guardar ajustes pero el resto sigue funcionando. Hazlo **antes** de que el código nuevo reciba tráfico: el admin, el endpoint y las consultas SQL de la sección 6 usan `is_test`.
 3. [ ] **`php artisan config:clear`** (y `config:cache` si se usa).
 4. [ ] **Configurar `ATTRIBUTION_API_TOKEN`** en el `.env` del servidor (mínimo 32 caracteres; sección 2) y volver a correr `php artisan config:clear`. El mismo valor se guarda en la credencial de n8n.
 5. [ ] **Verificar `APP_URL`**: debe ser el dominio público real del sitio (por ejemplo `https://www.macdelnorte.com`). La verificación de origen de `/track-conversion` corre **siempre**, aunque el folio esté apagado: con `APP_URL=http://localhost` en producción todo el tráfico real recibiría `204` y no se guardaría ningún evento, **sin ningún aviso visible**. Si el sitio responde también en otro dominio (otro alias), agrégalo en `ATTRIBUTION_ALLOWED_HOSTS`.
@@ -813,7 +813,7 @@ El diseño es aditivo: `POST /track-conversion` sigue aceptando el payload viejo
 9. [ ] **Verificar que el número de WhatsApp es el número conectado a Kommo.** El mensaje con folio se abre en `wa.me/{config('contact.whatsapp.number')}` (hoy `528135825559`, el 81 3582 5559): ese número debe ser **exactamente** el que está conectado a Kommo, o los mensajes con folio llegarán a un chat que Kommo no ve y n8n nunca recibirá el folio. Confirmar también que `https://wa.link/f28njw` apunta a ese mismo número.
 10. [ ] **Encender solo el botón flotante**: en `.env` poner `ATTRIBUTION_FOLIO_ENABLED=true` y `ATTRIBUTION_FOLIO_PLACEMENTS=flotante`; `php artisan config:clear`. Es el único placement; el resto de los botones no cambia. (La cotización formal usa el placement `cotizacion`; queda apagada mientras no esté en la lista.)
 11. [ ] Probar en un teléfono real (Android y iPhone): el botón flotante abre WhatsApp con "Folio: MN…" en el mensaje, el mismo folio aparece en la base y el endpoint lo devuelve. En Kommo debe verse el mensaje con el folio.
-12. [ ] Probar el flujo completo con n8n en modo de prueba, **sin subir nada a Google Ads todavía**. La forma segura es el **Laboratorio de atribución** (sección 10): con `ATTRIBUTION_TEST_WHATSAPP_NUMBER` apuntando a la cuenta de prueba de Kommo y el modo prueba activado, las filas salen con `is_test: true`. **Antes de esto, agrega en n8n el nodo IF que ignora `is_test = true` antes de cualquier subida a Google Ads** (sección 4.2).
+12. [ ] Probar el flujo completo con n8n en modo de prueba, **sin subir nada a Google Ads todavía**. La forma segura es el **Laboratorio de atribución** (sección 10): con el número de la cuenta de prueba de Kommo guardado en el panel (Ajustes de prueba; o en `ATTRIBUTION_TEST_WHATSAPP_NUMBER` como respaldo) y el modo prueba activado, las filas salen con `is_test: true`. **Antes de esto, agrega en n8n el nodo IF que ignora `is_test = true` antes de cualquier subida a Google Ads** (sección 4.2).
 
 **Fase 3. Medir una semana y ampliar**
 
@@ -874,7 +874,7 @@ El modo prueba se activa con una cookie propia, `mdn_attr_test`, que solo emite 
 |---|---|
 | Cookie | `mdn_attr_test`: cifrada, `HttpOnly`, `SameSite=Lax`, vigencia de **120 minutos** (config `attribution.test_mode.ttl_minutes`). En producción lleva el dominio `.macdelnorte.com` (cubre `macdelnorte.com` y `www.`); en local y en `.test` es de host exacto. Es `Secure` si la conexión es HTTPS o si en producción `APP_URL` empieza con `https://`. Su contenido (`{u, e, n, s}`) lleva además una **firma HMAC** ligada a `APP_KEY`: aunque en URLs sin ruta (404) el cifrado de cookies de Laravel no corra, un valor forjado sin la firma no activa el modo prueba. Si cambias `APP_KEY`, las cookies de prueba vigentes dejan de valer (basta con volver a activar el modo). |
 | Validación | Cada uso la revalida: que no haya expirado y que el usuario que la emitió **siga siendo administrador con acceso al módulo `site`**. Una cookie corrupta, vencida o de un usuario sin permiso se trata como si no existiera. |
-| Comportamiento del sitio | En ese navegador el folio se comporta como si `ATTRIBUTION_FOLIO_ENABLED=true` y `ATTRIBUTION_FOLIO_PLACEMENTS=*`, **aunque en el servidor estén apagados**. Los botones de WhatsApp abren `https://wa.me/{ATTRIBUTION_TEST_WHATSAPP_NUMBER}?text=…` (o `https://wa.me/?text=…` sin número, si no hay uno de prueba válido). |
+| Comportamiento del sitio | En ese navegador el folio se comporta como si `ATTRIBUTION_FOLIO_ENABLED=true` y `ATTRIBUTION_FOLIO_PLACEMENTS=*`, **aunque en el servidor estén apagados**. Los botones de WhatsApp abren `https://wa.me/{número de prueba}?text=…` (o `https://wa.me/?text=…` sin número, si no hay uno de prueba válido). El número de prueba sale del panel ("Ajustes de prueba", guardado en la base de datos) y, si ahí está vacío, de `ATTRIBUTION_TEST_WHATSAPP_NUMBER` del `.env`. |
 | Analítica | **No carga** GTM, GA4, Google Ads, el Píxel de Meta ni el webhook de Google Sheets; en su lugar se ponen funciones vacías (`dataLayer`, `gtag`, `fbq`) para que el resto del JavaScript no falle. |
 | Banda | Una etiqueta fija "Modo prueba de atribución activo" indica que ese navegador está en modo prueba. No bloquea clics. |
 | Atribución previa | Al entrar al sitio por primera vez después de activar, la página **borra** la atribución guardada en ese navegador (`mdn_attr` en cookie y `localStorage`, claves antiguas `gclid`/`utm_*`/`landing_page` y `mdn_visit_sent`), para que la prueba no herede un `gclid` real tuyo. Al desactivar, vuelve a limpiar. Consecuencia: **pierdes la atribución real que ese navegador tuviera**. |
@@ -894,7 +894,7 @@ El modo prueba se activa con una cookie propia, `mdn_attr_test`, que solo emite 
 
 1. `php artisan migrate` ya corrió (agrega `is_test`; sección 8, paso 2).
 2. Tu usuario es administrador con acceso al módulo **Administrar Sitio Web** (`site`). Para consultar filas **reales** en el probador necesitas además el módulo de **Ads** (`ads`).
-3. En el `.env` del entorno donde pruebes: `ATTRIBUTION_TEST_WHATSAPP_NUMBER` con el número de la cuenta de prueba (solo dígitos, con lada de país, de 10 a 15) y, si quieres consultar el endpoint con `curl`, `ATTRIBUTION_API_TOKEN`. Después, `php artisan config:clear`. El panel de estado del laboratorio avisa si falta el número de prueba, si es inválido, si falta el token o si `ATTRIBUTION_INVISIBLE_FOLIO` está encendido.
+3. **Ajustes de prueba, desde el panel** (sin tocar el `.env` ni correr `config:clear`): en el laboratorio, sección 2 "Modo prueba" > "Ajustes de prueba", escribe el **número de WhatsApp de prueba** (cuenta de prueba de Kommo: solo dígitos, con lada de país, de 10 a 15; los espacios, `+`, guiones y paréntesis se limpian solos) y la **URL del webhook de n8n para pruebas** (https, pública), y pulsa "Guardar ajustes". Se guardan en la base de datos y valen de inmediato. El número del panel tiene prioridad; `ATTRIBUTION_TEST_WHATSAPP_NUMBER` del `.env` queda solo como **respaldo** cuando el panel no tiene uno (el panel indica la fuente: "Guardado en el panel", "Tomado del .env" o "Sin configurar"). Para consultar el endpoint con `curl` sigue haciendo falta `ATTRIBUTION_API_TOKEN` en el `.env` (y `php artisan config:clear` si cambias el `.env`). El panel de estado del laboratorio avisa si falta el número de prueba, si es inválido, si falta el token o si `ATTRIBUTION_INVISIBLE_FOLIO` está encendido.
 4. Tienes a la mano un teléfono con WhatsApp **distinto** del número de prueba, y acceso a la cuenta de prueba de Kommo (y a n8n) para los pasos 7 y 8.
 
 ### 10.4 Guía paso a paso
@@ -907,6 +907,7 @@ El modo prueba se activa con una cookie propia, `mdn_attr_test`, que solo emite 
 6. **Consultar el endpoint.** En el probador "como n8n" elige **folio** (pega el folio del mensaje) o **ventana de tiempo** (tipo, `from` y `to` con zona y máximo 15 minutos, como en la sección 3). Debe devolver el mismo evento, con `is_test: true`. Con "Copiar como curl" obtienes el comando listo (con `$TOKEN` literal: pega el token en tu terminal, nunca en el panel) para repetirlo contra el servidor real y sí ejercitar token y límite. Para folios reales (`is_test: false`) el probador exige acceso al módulo `ads`.
 7. **Enviar el WhatsApp al número de prueba.** Desde tu teléfono (distinto del de prueba) envía el mensaje tal como se prellenó, **sin borrar el folio**, al número de la cuenta de prueba.
 8. **Verificar Kommo y n8n.** Confirma que el mensaje aparece en la cuenta de prueba de Kommo ("test2mac") con el folio. En n8n comprueba, en la ejecución: (a) que el nodo de extracción obtuvo `MN…`; (b) que la consulta al endpoint devolvió el evento con `is_test: true`; y (c) que el nodo IF de 4.2 **desvió** el caso y **no** llegó a la rama de subida a Google Ads. Si el flujo sube algo con `is_test = true`, es un error que se debe corregir antes de seguir.
+   - **Atajo sin WhatsApp: "Enviar mensaje de prueba a n8n".** Con la URL del webhook de n8n guardada en "Ajustes de prueba" (10.3, punto 3), este botón (sección 2 del laboratorio) hace que **el servidor** mande a n8n un mensaje simulado con el folio de **tu último evento de prueba** (necesitas al menos uno: pasos 3 a 5). Sirve para depurar n8n sin enviar un WhatsApp real. El panel muestra el código HTTP, el tiempo en milisegundos, el folio y el texto enviados y el extracto de la respuesta de n8n; si falla, un aviso en rojo con el motivo. Ver el payload en 10.5. No sustituye la prueba con un WhatsApp real a Kommo (pasos 7 y 8): no pasa por Kommo.
 9. **Simulador de mensaje entrante (opcional).** Pega en el simulador un texto como el que llegaría de Kommo (con el folio dentro, en minúsculas, con espacios o guiones, con caracteres invisibles…). Muestra dos resultados: lo que extrae la **regex exacta** (la base de 4.1, que exige mayúsculas y el folio pegado) y lo que extrae la **tolerante** (acepta `MN-7K4Q2`, `MN 7K4Q2`, `MN.7K4Q2`, quita invisibles y no es sensible a mayúsculas). Si solo la tolerante lo encuentra, el laboratorio avisa: tu nodo de n8n debe ser el tolerante (el Code de 4.1), o ese mensaje se perdería.
 10. **Borrar los eventos de prueba.** "Borrar mis eventos de prueba" pide confirmación y ejecuta un borrado fijo: **elimina todas las filas con `is_test = 1`** (la tabla no distingue qué usuario las generó) y nunca toca filas reales. No acepta ids ni filtros.
 11. **Desactivar el modo prueba.** "Desactivar modo prueba": olvida la cookie y, en la siguiente visita, la página limpia la atribución de prueba. Recarga el sitio en ese navegador y confirma que ya no hay banda y que los botones vuelven a su comportamiento de siempre. La cookie también expira sola a los 120 minutos.
@@ -917,10 +918,32 @@ El modo prueba se activa con una cookie propia, `mdn_attr_test`, que solo emite 
 
 | Variable | Qué hace en el laboratorio |
 |---|---|
-| `ATTRIBUTION_TEST_WHATSAPP_NUMBER` | Número que abren los botones de WhatsApp en modo prueba (solo dígitos, 10 a 15). Vacío o inválido = `wa.me/?text=` sin número; el panel lo avisa. Ver la tabla de la sección 2. |
+| `ATTRIBUTION_TEST_WHATSAPP_NUMBER` | **Respaldo** del número que abren los botones de WhatsApp en modo prueba (solo dígitos, 10 a 15): solo se usa si el panel no tiene uno guardado. Vacío o inválido en ambos = `wa.me/?text=` sin número; el panel lo avisa. Ver la tabla de la sección 2. |
 | `ATTRIBUTION_API_TOKEN` | El laboratorio **nunca** lo muestra ni lo envía al navegador; solo avisa si falta. Para `curl`. |
 
 Duración (120 minutos) y nombre de la cookie (`mdn_attr_test`) se cambian en `config/attribution.php` (`test_mode`), no en el `.env`.
+
+**Ajustes de prueba (se guardan en la base de datos, se editan en el laboratorio)**
+
+| Ajuste | Qué hace | Reglas |
+|---|---|---|
+| Número de WhatsApp de prueba | Número que abren los botones de WhatsApp en modo prueba (cuenta de prueba de Kommo). Tiene prioridad sobre `ATTRIBUTION_TEST_WHATSAPP_NUMBER`. | Vacío (= usar el `.env` si lo hay; si no, `wa.me/?text=` sin número) o de 10 a 15 dígitos. El panel quita espacios, `+`, guiones, paréntesis y puntos antes de guardar. |
+| URL del webhook de n8n (para pruebas) | Destino del botón "Enviar mensaje de prueba a n8n". No se usa en el sitio público ni con visitantes reales. | Vacía (= borrar) o `https://` pública, sin usuario ni contraseña, de 500 caracteres o menos. Puede llevar un token en la ruta: el panel la muestra solo en su campo, nunca en avisos ni en el resultado del envío. |
+
+Guardar con un campo vacío lo borra de la base. El panel valida en el navegador con las mismas reglas del servidor y, si el servidor rechaza algo, marca el campo bajo su cuadro de texto.
+
+**Payload del mensaje de prueba a n8n.** "Enviar mensaje de prueba a n8n" hace un `POST` JSON desde el servidor a la URL guardada, con estos campos:
+
+| Campo | Contenido |
+|---|---|
+| `source` | Origen del envío: marca que identifica que lo manda el laboratorio, no Kommo. |
+| `is_test` | Siempre `true`. El flujo de n8n debe tratarlo como prueba y **no** subir nada a Google Ads. |
+| `folio` | Folio (`MN…`) de tu último evento de prueba. |
+| `text` | Mensaje simulado, como el que llegaría de WhatsApp, con el folio dentro. |
+| `message_at` | Hora del mensaje simulado (ISO 8601). |
+| `lookup_url` | URL del endpoint de consulta (`/api/attribution/lookup`) ya apuntando a ese folio, para que n8n lo consulte igual que con un mensaje real. |
+
+La respuesta del panel incluye `http_status`, `elapsed_ms`, un extracto de la respuesta de n8n (`response_excerpt`) y lo enviado (`sent.folio`, `sent.text`).
 
 **Rutas del panel** (todas bajo `/admin`, nombres `admin.attribution-lab.*`)
 
@@ -935,6 +958,8 @@ Duración (120 minutos) y nombre de la cookie (`mdn_attr_test`) se cambian en `c
 | POST | `/admin/attribution-lab/extract` | Simulador de mensaje entrante |
 | POST | `/admin/attribution-lab/activate` | Activa el modo prueba (emite la cookie) |
 | POST | `/admin/attribution-lab/deactivate` | Desactiva el modo prueba |
+| POST | `/admin/attribution-lab/settings` | Guarda los ajustes de prueba (`test_whatsapp_number`, `n8n_url`; vacío = borrar). Error de validación: `422` con `errors` por campo |
+| POST | `/admin/attribution-lab/n8n-test` | Envía el mensaje de prueba a la URL de n8n guardada (sin cuerpo) |
 | DELETE | `/admin/attribution-lab/tests` | Borra todas las filas `is_test = 1` |
 
 Activar, desactivar y borrar solo funcionan por `POST`/`DELETE` con el token CSRF del panel; no hay enlaces `GET` que cambien el estado.
@@ -945,6 +970,7 @@ Activar, desactivar y borrar solo funcionan por `POST`/`DELETE` con el token CSR
 |---|---|
 | Entrar al laboratorio y ver el estado | Administrador con acceso al módulo `site` |
 | Activar / desactivar el modo prueba | Lo mismo |
+| Guardar los ajustes de prueba y enviar el mensaje de prueba a n8n | Lo mismo |
 | Ver y consultar eventos de prueba, simular mensajes | Lo mismo |
 | Consultar un folio o ventana con filas **reales** en el probador | Además, acceso al módulo `ads` (sin él, el probador solo devuelve filas `is_test`) |
 | Borrar eventos de prueba | Módulo `site`; solo borra filas `is_test = 1` |
@@ -979,7 +1005,9 @@ Y dos avisos importantes:
 | Activé el modo prueba pero **no aparece la banda** | **La cookie no se fijó o no llega al sitio público.** Revisa: (1) el **dominio**: en local, `localhost` y `127.0.0.1` son sitios distintos; entra al admin y al sitio por el mismo host. En producción la cookie usa `.macdelnorte.com`: si el sitio o el admin responden desde otro dominio, no se comparte. (2) **HTTP vs `Secure`**: en producción con `APP_URL=https://…` la cookie es `Secure` y el navegador no la envía por `http://`. (3) **`APP_URL`** incorrecto. (4) Se venció (120 minutos) o tu usuario ya no tiene acceso a `site`. (5) Una extensión o el modo del navegador bloquea cookies. (6) Hiciste el cambio en el `.env` y no corriste `php artisan config:clear`. En las herramientas del navegador (Aplicación > Cookies) debe existir `mdn_attr_test` con `HttpOnly`. |
 | La banda aparece pero **no llegan filas** | Un `204` en `POST /track-conversion` significa "no guardado": revisa la verificación de origen (`APP_URL`, `ATTRIBUTION_ALLOWED_HOSTS`, sección 2) o que el JavaScript mande `test: 1` (recarga forzada: una versión antigua en caché no lo manda). |
 | La fila llega como **real**, no de prueba | Se guardó sin `test: 1` (JavaScript antiguo en caché, o la página no es la de modo prueba). Recarga con Ctrl+F5 y repite. Bórrala en el módulo de conversiones si hace falta. |
-| El botón abre `wa.me/?text=…` **sin número** | Es lo esperado cuando `ATTRIBUTION_TEST_WHATSAPP_NUMBER` está vacío o inválido (el panel lo avisa). Defínelo con solo dígitos, de 10 a 15, y corre `php artisan config:clear`. |
+| El botón abre `wa.me/?text=…` **sin número** | Es lo esperado cuando no hay número de prueba válido ni en el panel ni en `ATTRIBUTION_TEST_WHATSAPP_NUMBER` (el panel lo avisa y muestra la fuente actual). Escríbelo en "Ajustes de prueba" (solo dígitos, de 10 a 15) y guarda: no requiere `config:clear`. Si lo defines en el `.env`, sí corre `php artisan config:clear`. |
+| "Enviar mensaje de prueba a n8n" está **deshabilitado** | No hay una URL de n8n **guardada**. Escríbela en "Ajustes de prueba" y pulsa "Guardar ajustes" (el botón envía la URL guardada, no la que está a medio escribir). |
+| El envío a n8n responde error o `HTTP 4xx/5xx` | Mira el código y el extracto de la respuesta del panel: 404 suele ser un workflow inactivo o una URL de prueba (`/webhook-test/`) que ya se usó; 5xx es un fallo dentro del workflow. Sin código HTTP (tiempo agotado o no se pudo conectar): revisa que la URL sea https y pública. |
 | El botón abre el **número real** | Es un enlace que no pasa por el folio (checklist 10.6). No envíes; anota cuál es. |
 | "Verificar sitio público" falla o aún carga GTM | Una caché (CDN, hosting, `php artisan view:cache` desactualizado) sirve una versión anterior de la página. Purga la caché y vuelve a verificar. |
 | El `.env` cambió pero el sitio actúa como antes | Con `config:cache` activo el `.env` no se relee: `php artisan config:clear` (y `config:cache` si se usa). |

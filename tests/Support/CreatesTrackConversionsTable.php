@@ -36,6 +36,8 @@ trait CreatesTrackConversionsTable
             '2026_10_08_130000_add_meta_to_track_conversions_table.php',
             '2026_10_19_100000_add_contact_folio_and_event_at_to_track_conversions_table.php',
             '2026_10_20_100000_add_is_test_to_track_conversions_table.php',
+            // Ajustes del laboratorio (numero de prueba / URL de n8n): sin ella el numero cae al .env.
+            '2026_10_21_100000_create_attribution_lab_settings_table.php',
         ] as $file) {
             (require database_path('migrations/' . $file))->up();
         }

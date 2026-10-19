@@ -89,6 +89,9 @@
         .admin-ui-v2 .lab-sim-value { overflow-wrap: anywhere; }
         .admin-ui-v2 .lab-sim-none { color: var(--au-text-subdued); }
         .admin-ui-v2 .lab-sim-subtitle { font-weight: 700; margin-top: var(--au-space-4); }
+        .admin-ui-v2 .lab-n8n-sent { font-size: var(--au-fs-sm); margin-top: var(--au-space-3); display: flex; flex-direction: column; gap: var(--au-space-1); }
+        .admin-ui-v2 .lab-n8n-sent code { overflow-wrap: anywhere; white-space: pre-wrap; }
+        .admin-ui-v2 .au-input.lab-input-invalid { border-color: var(--au-critical); }
         .admin-ui-v2 .lab-fixed-tz { height: 38px; display: flex; align-items: center; font-size: var(--au-fs-sm); color: var(--au-text-subdued); }
 
         @media (max-width: 640px) {
@@ -137,6 +140,33 @@
                 <button type="button" class="au-btn" id="lab-btn-verify"><i class="fas fa-shield-alt"></i> Verificar sitio público</button>
             </div>
             <div id="lab-verify-result" aria-live="polite"></div>
+
+            {{-- Ajustes de prueba: se guardan en la base de datos (no en el .env) --}}
+            <h3 class="lab-subtitle" id="lab-h-settings">Ajustes de prueba</h3>
+            <p class="lab-intro">
+                Se guardan en el panel (base de datos), no en el <code class="au-mono">.env</code>. Solo se usan en modo prueba y en este laboratorio.
+            </p>
+            <div class="lab-form-grid lab-settings-grid">
+                <div class="au-field">
+                    <label class="au-label" for="lab-set-whatsapp">Número de WhatsApp de prueba (cuenta de prueba de Kommo)</label>
+                    <input type="tel" class="au-input au-mono" id="lab-set-whatsapp" inputmode="tel" autocomplete="off" spellcheck="false" placeholder="5215512345678" aria-describedby="lab-set-whatsapp-help lab-set-whatsapp-source lab-set-whatsapp-error">
+                    <div class="au-help-text" id="lab-set-whatsapp-help">Solo dígitos con lada de país, ej. 5215512345678. Es el número al que abren los botones de WhatsApp en modo prueba. Vacío = abre WhatsApp sin número y tú eliges el chat.</div>
+                    <div class="au-help-text" id="lab-set-whatsapp-source" aria-live="polite"></div>
+                    <div class="au-help-text lab-error lab-hidden" id="lab-set-whatsapp-error" role="alert"></div>
+                </div>
+                <div class="au-field">
+                    <label class="au-label" for="lab-set-n8n">URL del webhook de n8n (para pruebas)</label>
+                    <input type="url" class="au-input au-mono" id="lab-set-n8n" inputmode="url" autocomplete="off" spellcheck="false" placeholder="https://…" aria-describedby="lab-set-n8n-help lab-set-n8n-error">
+                    <div class="au-help-text" id="lab-set-n8n-help">Webhook de n8n al que el botón de prueba manda un mensaje simulado con el folio de tu último evento de prueba. Debe ser https y pública. No se usa en el sitio ni con visitantes reales.</div>
+                    <div class="au-help-text lab-error lab-hidden" id="lab-set-n8n-error" role="alert"></div>
+                </div>
+            </div>
+            <div class="lab-actions">
+                <button type="button" class="au-btn au-btn-primary" id="lab-settings-save"><i class="fas fa-save"></i> Guardar ajustes</button>
+                <button type="button" class="au-btn" id="lab-n8n-test" disabled><i class="fas fa-paper-plane"></i> Enviar mensaje de prueba a n8n</button>
+            </div>
+            <div class="au-help-text lab-hidden" id="lab-n8n-test-hint" style="margin-top:var(--au-space-2)">Guarda primero una URL de n8n para poder enviar el mensaje de prueba.</div>
+            <div id="lab-n8n-result" aria-live="polite"></div>
         </div>
     </section>
 

@@ -3,10 +3,12 @@
 namespace Tests\Unit;
 
 use App\Http\Middleware\NoStoreInAttributionTestMode;
+use App\Models\AttributionLabSetting;
 use App\Models\User;
 use App\Support\Attribution\AttributionTestMode;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use Symfony\Component\HttpFoundation\Cookie as SymfonyCookie;
 use Tests\Support\CreatesTrackConversionsTable;
 use Tests\Support\InteractsWithAttributionTestMode;
@@ -257,6 +259,82 @@ class AttributionTestModeTest extends TestCase
         // con numero invalido: tambien vacio
         config(['attribution.test_mode.whatsapp_number' => '123']);
         $this->assertSame('', AttributionTestMode::whatsappNumber($this->requestWithCookie($this->cookieJson($user))));
+    }
+
+    // ---- numero guardado en la BD (panel) ------------------------------------------------------------
+
+    public function test_db_number_takes_precedence_over_env_and_reports_its_source(): void
+    {
+        config(['attribution.test_mode.whatsapp_number' => '528100000009']);
+        $this->assertSame('env', AttributionTestMode::configuredNumberSource());
+        $this->assertSame('528100000009', AttributionTestMode::configuredNumber());
+
+        AttributionLabSetting::put(AttributionLabSetting::KEY_TEST_WHATSAPP, '528112345678');
+        $this->assertSame('db', AttributionTestMode::configuredNumberSource());
+        $this->assertSame('528112345678', AttributionTestMode::configuredNumber());
+        $this->assertFalse(AttributionTestMode::configuredNumberInvalid());
+
+        // Borrar el valor de la BD devuelve el control al .env.
+        AttributionLabSetting::put(AttributionLabSetting::KEY_TEST_WHATSAPP, null);
+        $this->assertSame('env', AttributionTestMode::configuredNumberSource());
+        $this->assertSame('528100000009', AttributionTestMode::configuredNumber());
+
+        config(['attribution.test_mode.whatsapp_number' => '']);
+        $this->assertSame('none', AttributionTestMode::configuredNumberSource());
+        $this->assertSame('', AttributionTestMode::configuredNumber());
+        $this->assertFalse(AttributionTestMode::configuredNumberInvalid());
+    }
+
+    public function test_invalid_db_number_does_not_fall_back_to_env(): void
+    {
+        config(['attribution.test_mode.whatsapp_number' => '528100000009']);
+        // Se inserta directo: el controlador nunca guardaria un valor invalido.
+        AttributionLabSetting::put(AttributionLabSetting::KEY_TEST_WHATSAPP, '12345');
+
+        $this->assertSame('', AttributionTestMode::configuredNumber());
+        $this->assertTrue(AttributionTestMode::configuredNumberInvalid());
+        $this->assertSame('db', AttributionTestMode::configuredNumberSource());
+
+        $on = $this->requestWithCookie($this->cookieJson($this->admin()));
+        $this->assertSame('', AttributionTestMode::whatsappNumber($on));
+    }
+
+    public function test_whatsapp_number_in_test_mode_uses_db_value_but_production_number_outside(): void
+    {
+        config(['contact.whatsapp.number' => '528100000001', 'attribution.test_mode.whatsapp_number' => '528100000009']);
+        AttributionLabSetting::put(AttributionLabSetting::KEY_TEST_WHATSAPP, '528112345678');
+
+        $this->assertSame('528112345678', AttributionTestMode::whatsappNumber($this->requestWithCookie($this->cookieJson($this->admin()))));
+        $this->assertSame('528100000001', AttributionTestMode::whatsappNumber($this->requestWithCookie(null)));
+    }
+
+    public function test_missing_settings_table_falls_back_to_env_without_breaking(): void
+    {
+        Schema::drop('attribution_lab_settings');
+        config(['attribution.test_mode.whatsapp_number' => '528100000009']);
+
+        $this->assertSame('528100000009', AttributionTestMode::configuredNumber());
+        $this->assertSame('env', AttributionTestMode::configuredNumberSource());
+        $this->assertSame('fallback', AttributionLabSetting::get('cualquiera', 'fallback'));
+
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('php artisan migrate');
+        AttributionLabSetting::put(AttributionLabSetting::KEY_TEST_WHATSAPP, '528112345678');
+    }
+
+    public function test_setting_model_get_and_put_semantics(): void
+    {
+        $this->assertNull(AttributionLabSetting::get('k'));
+        $this->assertSame('d', AttributionLabSetting::get('k', 'd'));
+
+        AttributionLabSetting::put('k', 'uno');
+        AttributionLabSetting::put('k', 'dos'); // actualiza, no duplica
+        $this->assertSame('dos', AttributionLabSetting::get('k'));
+        $this->assertSame(1, AttributionLabSetting::where('key', 'k')->count());
+
+        AttributionLabSetting::put('k', '');
+        $this->assertSame(0, AttributionLabSetting::where('key', 'k')->count());
+        $this->assertNull(AttributionLabSetting::get('k'));
     }
 
     // ---- middleware ---------------------------------------------------------------------------------

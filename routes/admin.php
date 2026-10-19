@@ -276,6 +276,8 @@ Route::post('attribution-lab/lookup', [AttributionLabController::class, 'lookup'
 Route::post('attribution-lab/extract', [AttributionLabController::class, 'extract'])->name('attribution-lab.extract');
 Route::post('attribution-lab/activate', [AttributionLabController::class, 'activate'])->name('attribution-lab.activate');
 Route::post('attribution-lab/deactivate', [AttributionLabController::class, 'deactivate'])->name('attribution-lab.deactivate');
+Route::post('attribution-lab/settings', [AttributionLabController::class, 'settings'])->name('attribution-lab.settings');
+Route::post('attribution-lab/n8n-test', [AttributionLabController::class, 'n8nTest'])->name('attribution-lab.n8n-test');
 Route::delete('attribution-lab/tests', [AttributionLabController::class, 'destroyTests'])->name('attribution-lab.destroy-tests');
 
 

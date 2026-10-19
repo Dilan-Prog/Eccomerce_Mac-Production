@@ -2,6 +2,7 @@
 
 namespace App\Support\Attribution;
 
+use App\Models\AttributionLabSetting;
 use App\Models\User;
 use Illuminate\Cookie\CookieValuePrefix;
 use Illuminate\Http\Request;
@@ -137,20 +138,51 @@ class AttributionTestMode
         return app()->environment('production') && str_starts_with((string) config('app.url'), 'https://');
     }
 
-    /** Numero de prueba valido (solo digitos, 10-15) o '' si no esta configurado / es invalido. */
-    public static function configuredNumber(): string
+    /**
+     * Fuente y valor crudo del numero de prueba: el guardado en la BD desde el panel (clave
+     * test_whatsapp_number) manda sobre el .env; solo si la BD no tiene nada se usa el .env.
+     * Un valor de BD no vacio pero invalido NO cae al .env (se trata como invalido).
+     *
+     * @return array{0:'db'|'env'|'none', 1:string}
+     */
+    private static function resolveNumber(): array
     {
-        $digits = preg_replace('/\D+/', '', (string) config('attribution.test_mode.whatsapp_number'));
+        $db = trim((string) AttributionLabSetting::get(AttributionLabSetting::KEY_TEST_WHATSAPP, ''));
+        if ($db !== '') {
+            return ['db', $db];
+        }
+
+        $env = trim((string) config('attribution.test_mode.whatsapp_number'));
+
+        return $env !== '' ? ['env', $env] : ['none', ''];
+    }
+
+    /** Normaliza a solo digitos y valida 10-15; '' si no es valido. */
+    private static function validDigits(string $raw): string
+    {
+        $digits = preg_replace('/\D+/', '', $raw);
 
         return ($digits !== '' && strlen($digits) >= 10 && strlen($digits) <= 15) ? $digits : '';
     }
 
-    /** True si hay algo configurado en el .env pero no es un numero valido. */
+    /** Numero de prueba valido (solo digitos, 10-15) o '' si no esta configurado / es invalido. */
+    public static function configuredNumber(): string
+    {
+        return self::validDigits(self::resolveNumber()[1]);
+    }
+
+    /** True si hay algo configurado (BD o .env) pero no es un numero valido. */
     public static function configuredNumberInvalid(): bool
     {
-        $raw = trim((string) config('attribution.test_mode.whatsapp_number'));
+        [, $raw] = self::resolveNumber();
 
-        return $raw !== '' && self::configuredNumber() === '';
+        return $raw !== '' && self::validDigits($raw) === '';
+    }
+
+    /** De donde sale el numero de prueba: 'db' (panel), 'env' (.env) o 'none' (nada configurado). */
+    public static function configuredNumberSource(): string
+    {
+        return self::resolveNumber()[0];
     }
 
     /**

@@ -377,3 +377,82 @@ test('badgeForHttp y badgeForLevel', () => {
   assert.equal(lab.badgeForLevel('info'), 'info');
   assert.equal(lab.badgeForLevel(undefined), 'info');
 });
+
+/* ---------------------------------------------------------------- *
+ * Ajustes de prueba (numero de WhatsApp y webhook de n8n)
+ * ---------------------------------------------------------------- */
+
+test('normalizePhoneDigits: quita espacios, +, guiones, parentesis y puntos', () => {
+  assert.equal(lab.normalizePhoneDigits('+52 1 (55) 1234-5678'), '5215512345678');
+  assert.equal(lab.normalizePhoneDigits('  55.1234.5678 '), '5512345678');
+  assert.equal(lab.normalizePhoneDigits('52 1551234 5678'), '5215512345678'); // NBSP incluido
+  assert.equal(lab.normalizePhoneDigits(''), '');
+  assert.equal(lab.normalizePhoneDigits(null), '');
+  assert.equal(lab.normalizePhoneDigits(undefined), '');
+  assert.equal(lab.normalizePhoneDigits(5215512345678), '5215512345678');
+  // Lo que no es separador se conserva para que la validacion lo rechace.
+  assert.equal(lab.normalizePhoneDigits('55-abc'), '55abc');
+});
+
+test('validateSettings: numero vacio o de 10 a 15 digitos', () => {
+  assert.equal(lab.validateSettings({ test_whatsapp_number: '', n8n_url: '' }).ok, true);
+  assert.equal(lab.validateSettings({}).ok, true);
+  const good = lab.validateSettings({ test_whatsapp_number: '+52 1 55 1234 5678' });
+  assert.equal(good.ok, true);
+  assert.equal(good.values.test_whatsapp_number, '5215512345678');
+  assert.equal(lab.validateSettings({ test_whatsapp_number: '5512345678' }).ok, true);      // 10
+  assert.equal(lab.validateSettings({ test_whatsapp_number: '123456789012345' }).ok, true); // 15
+  for (const bad of ['551234567', '1234567890123456', '55123abc78', '5512345678x', 'abc']) {
+    const r = lab.validateSettings({ test_whatsapp_number: bad });
+    assert.equal(r.ok, false, bad);
+    assert.ok(r.errors.test_whatsapp_number, bad);
+    assert.equal(r.errors.n8n_url, undefined);
+  }
+});
+
+test('validateSettings: URL de n8n vacia o https sin credenciales y de 500 caracteres o menos', () => {
+  const ok = (url, opts) => lab.validateSettings({ n8n_url: url }, opts).ok;
+  assert.equal(ok(''), true);
+  assert.equal(ok('   '), true);
+  assert.equal(ok('https://n8n.example.com/webhook/abc-123'), true);
+  assert.equal(ok('https://n8n.example.com:5678/webhook/abc?x=1#y'), true);
+  assert.equal(ok('HTTPS://N8N.EXAMPLE.COM/webhook'), true);
+  assert.equal(ok('https://[2001:db8::1]:443/webhook'), true);
+  // http solo con allowHttp
+  assert.equal(ok('http://n8n.example.com/webhook'), false);
+  assert.equal(ok('http://n8n.example.com/webhook', { allowHttp: false }), false);
+  assert.equal(ok('http://n8n.example.com/webhook', { allowHttp: true }), true);
+  // esquemas y formas invalidas
+  assert.equal(ok('ftp://n8n.example.com/webhook', { allowHttp: true }), false);
+  assert.equal(ok('javascript://x'), false);
+  assert.equal(ok('n8n.example.com/webhook'), false);
+  assert.equal(ok('https://'), false);
+  assert.equal(ok('https:///webhook'), false);
+  assert.equal(ok('https://:443/webhook'), false);
+  assert.equal(ok('https://n8n.example.com/web hook'), false);
+  // credenciales en la URL
+  assert.equal(ok('https://user@n8n.example.com/webhook'), false);
+  assert.equal(ok('https://user:pass@n8n.example.com/webhook'), false);
+  // un @ en la ruta o el query no son credenciales
+  assert.equal(ok('https://n8n.example.com/webhook/a@b'), true);
+  // largo
+  const base = 'https://n8n.example.com/';
+  assert.equal(ok(base + 'a'.repeat(500 - base.length)), true);
+  assert.equal(ok(base + 'a'.repeat(501 - base.length)), false);
+});
+
+test('validateSettings: recorta la URL y reporta los dos errores a la vez', () => {
+  const okRes = lab.validateSettings({ test_whatsapp_number: '5512345678', n8n_url: '  https://n8n.example.com/webhook/x  ' });
+  assert.deepEqual(plain(okRes.values), { test_whatsapp_number: '5512345678', n8n_url: 'https://n8n.example.com/webhook/x' });
+  const both = lab.validateSettings({ test_whatsapp_number: '123', n8n_url: 'http://x.test/a' });
+  assert.equal(both.ok, false);
+  assert.deepEqual(Object.keys(both.errors).sort(), ['n8n_url', 'test_whatsapp_number']);
+});
+
+test('describeSource: textos de la fuente del numero de prueba', () => {
+  assert.equal(lab.describeSource('db'), 'Guardado en el panel');
+  assert.equal(lab.describeSource('env'), 'Tomado del .env');
+  assert.equal(lab.describeSource('none'), 'Sin configurar');
+  assert.equal(lab.describeSource(undefined), 'Sin configurar');
+  assert.equal(lab.describeSource('otra'), 'Sin configurar');
+});

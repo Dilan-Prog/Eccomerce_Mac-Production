@@ -106,6 +106,11 @@ return [
         'cookie' => 'mdn_attr_test',
         'ttl_minutes' => 120,
         'whatsapp_number' => env('ATTRIBUTION_TEST_WHATSAPP_NUMBER'),
+        // Respaldo del .env; el valor guardado desde el panel (tabla attribution_lab_settings) manda sobre este.
+
+        // Solo local/testing: permite que el boton "probar n8n" apunte a una IP privada/loopback (n8n en
+        // la red local). En cualquier otro entorno la guardia SSRF siempre exige IPs publicas.
+        'allow_private_n8n' => (bool) env('ATTRIBUTION_LAB_ALLOW_PRIVATE_N8N', false),
     ],
 
 ];

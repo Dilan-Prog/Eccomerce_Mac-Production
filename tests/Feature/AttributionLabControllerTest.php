@@ -108,6 +108,8 @@ class AttributionLabControllerTest extends TestCase
         $this->getJson($this->url('/status'))->assertUnauthorized();
         $this->get($this->url())->assertRedirect();
         $this->postJson($this->url('/activate'))->assertUnauthorized();
+        $this->postJson($this->url('/settings'), ['n8n_url' => 'https://93.184.216.34/x'])->assertUnauthorized();
+        $this->postJson($this->url('/n8n-test'))->assertUnauthorized();
         $this->deleteJson($this->url('/tests'))->assertUnauthorized();
     }
 
@@ -135,6 +137,8 @@ class AttributionLabControllerTest extends TestCase
         $this->postJson($this->url('/extract'), ['text' => 'MN7K4Q2'])->assertForbidden();
         $this->postJson($this->url('/activate'))->assertForbidden();
         $this->postJson($this->url('/deactivate'))->assertForbidden();
+        $this->postJson($this->url('/settings'), ['test_whatsapp_number' => '5218112345678'])->assertForbidden();
+        $this->postJson($this->url('/n8n-test'))->assertForbidden();
         $this->deleteJson($this->url('/tests'))->assertForbidden();
         $this->get($this->url())->assertForbidden();
 
@@ -153,7 +157,7 @@ class AttributionLabControllerTest extends TestCase
     {
         $this->actingAs($this->admin());
 
-        foreach (['/activate', '/deactivate', '/lookup', '/extract', '/tests'] as $path) {
+        foreach (['/activate', '/deactivate', '/lookup', '/extract', '/tests', '/settings', '/n8n-test'] as $path) {
             $this->get($this->url($path))->assertStatus(405);
         }
         $this->post($this->url('/tests'))->assertStatus(405);
@@ -176,7 +180,7 @@ class AttributionLabControllerTest extends TestCase
                 array_keys($lab)
             );
             $this->assertEqualsCanonicalizing(
-                ['status', 'events', 'event', 'lookup', 'extract', 'productsSearch', 'activate', 'deactivate', 'destroyTests'],
+                ['status', 'events', 'event', 'lookup', 'extract', 'productsSearch', 'activate', 'deactivate', 'destroyTests', 'settings', 'n8nTest'],
                 array_keys($lab['routes'])
             );
             $this->assertStringContainsString('__ID__', $lab['routes']['event']);
@@ -626,9 +630,15 @@ class AttributionLabControllerTest extends TestCase
 
         $data = $response->json('data');
         $this->assertEqualsCanonicalizing(
-            ['test_mode', 'folio', 'token', 'whatsapp', 'assets', 'last_event_at_mx', 'today', 'warnings'],
+            ['test_mode', 'folio', 'token', 'whatsapp', 'settings', 'assets', 'last_event_at_mx', 'today', 'warnings'],
             array_keys($data)
         );
+        $this->assertSame([
+            'test_whatsapp_number' => '5218100000000',
+            'test_whatsapp_source' => 'env',
+            'test_whatsapp_db' => '',
+            'n8n_url' => '',
+        ], $data['settings']);
         $this->assertSame(['active' => false, 'expires_at_mx' => null, 'minutes_left' => null], $data['test_mode']);
         $this->assertSame(['enabled' => true, 'placements' => '*', 'invisible' => false], $data['folio']);
         $this->assertSame(['configured' => true, 'length_ok' => true], $data['token']);
