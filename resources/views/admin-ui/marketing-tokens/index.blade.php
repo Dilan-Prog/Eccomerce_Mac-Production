@@ -21,7 +21,7 @@
     ])
 
     <div class="au-help-text" style="display:block;margin:-4px 0 16px;padding:10px 12px;background:var(--au-neutral-bg, #F5F7FA);border-radius:var(--au-radius-sm, 8px)">
-        Los tokens de abajo autentican las rutas <code>GET /api/marketing/*</code>. n8n debe mandar el header <code>Authorization: Bearer {key_id}.{secret}</code> con un token en estado Activo. Sistema aislado de los tokens de Aspel — ninguno funciona en las rutas del otro.
+        Los tokens de abajo se crean con un <strong>uso</strong>: los de <em>Email Marketing</em> autentican las rutas <code>/api/marketing/*</code> y los de <em>Atribución Google Ads</em> autentican <code>GET /api/attribution/lookup</code>. n8n debe mandar el header <code>Authorization: Bearer {key_id}.{secret}</code> con un token en estado Activo del uso que corresponda; ninguno funciona en las rutas del otro uso. Sistema aislado de los tokens de Aspel — ninguno funciona en las rutas del otro.
     </div>
 
     @isset($attribution)
@@ -33,18 +33,20 @@
         <section class="au-card" style="margin:0 0 16px" aria-labelledby="attribution-api-title">
             <div class="au-card-header">
                 <h2 class="au-card-title" id="attribution-api-title">API de atribución (Google Ads)</h2>
-                @if(!$attribution['token_configured'])
-                    <span class="au-badge au-badge-critical">Token no configurado</span>
-                @elseif(!$attribution['token_length_ok'])
-                    <span class="au-badge au-badge-warning">Token demasiado corto</span>
-                @else
+                {{-- Configurado = token válido en el .env O al menos un token activo con uso Atribución (solo conteo). --}}
+                @if(($attribution['db_tokens_active'] ?? 0) > 0 || ($attribution['token_configured'] && $attribution['token_length_ok']))
                     <span class="au-badge au-badge-success">Token configurado</span>
+                @elseif(!$attribution['token_configured'])
+                    <span class="au-badge au-badge-critical">Token no configurado</span>
+                @else
+                    <span class="au-badge au-badge-warning">Token demasiado corto</span>
                 @endif
             </div>
             <div class="au-card-body">
                 <p class="au-help-text" style="margin:0 0 12px">
                     Para que n8n recupere de qué anuncio vino un contacto, pega esta URL en el nodo <strong>HTTP Request</strong> (método <code>GET</code>) que consulta el sitio.
-                    Esta API <strong>no usa los tokens de esta tabla</strong>: usa su propio token, <code>ATTRIBUTION_API_TOKEN</code> del <code>.env</code> del servidor (mínimo {{ $attribution['min_length'] }} caracteres).
+                    Crea un token con <strong>+ Crear Nuevo</strong> eligiendo el uso <em>Atribución Google Ads</em>; se muestra una sola vez para copiarlo. Pégalo en n8n como <code>Authorization: Bearer &lt;key_id&gt;.&lt;secret&gt;</code>.
+                    (Respaldo: <code>ATTRIBUTION_API_TOKEN</code> del <code>.env</code>, mínimo {{ $attribution['min_length'] }} caracteres.)
                 </p>
 
                 @foreach([
@@ -64,7 +66,7 @@
                 <div class="au-field" style="margin-bottom:10px">
                     <label class="au-label">Encabezado de autenticación</label>
                     <div style="display:flex;gap:8px;align-items:center">
-                        <input type="text" class="au-input" readonly value="Authorization: Bearer &lt;ATTRIBUTION_API_TOKEN&gt;" style="font-family:monospace;font-size:12px" onclick="this.select()">
+                        <input type="text" class="au-input" readonly value="Authorization: Bearer &lt;key_id&gt;.&lt;secret&gt;" style="font-family:monospace;font-size:12px" onclick="this.select()">
                     </div>
                 </div>
 

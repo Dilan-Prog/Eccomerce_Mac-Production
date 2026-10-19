@@ -6,6 +6,7 @@ use App\Models\MarketingApiToken;
 use App\Support\AdminTable\AdminTableQuery;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Schema;
 
 class MarketingApiTokenTableQuery extends AdminTableQuery
 {
@@ -28,6 +29,15 @@ class MarketingApiTokenTableQuery extends AdminTableQuery
                 'label' => 'Key ID',
                 'type' => 'mono',
                 'searchable' => true,
+            ],
+            [
+                'key' => 'scope',
+                'label' => 'Uso',
+                'type' => 'badge',
+                'render' => fn (Model $row) => [
+                    'label' => $row->useLabel(),
+                    'tone' => $row->scope === MarketingApiToken::SCOPE_ATTRIBUTION ? 'warning' : 'info',
+                ],
             ],
             [
                 'key' => 'secret_last_four',
@@ -61,11 +71,20 @@ class MarketingApiTokenTableQuery extends AdminTableQuery
 
     public function filters(): array
     {
-        return [
+        $filters = [
             ['key' => 'todos', 'label' => 'Todos', 'apply' => fn (Builder $q) => $q],
             ['key' => 'activos', 'label' => 'Activo', 'apply' => fn (Builder $q) => $q->where('status', 1)],
             ['key' => 'revocados', 'label' => 'Revocado', 'apply' => fn (Builder $q) => $q->where('status', 0)],
         ];
+
+        // Los filtros por uso solo existen si la columna `scope` ya está migrada: el listado calcula el
+        // conteo de TODOS los filtros en cada carga y, sin la columna, se caería (500) antes de migrar.
+        if (Schema::hasColumn('marketing_api_tokens', 'scope')) {
+            $filters[] = ['key' => 'marketing', 'label' => 'Email Marketing', 'apply' => fn (Builder $q) => $q->forUse(MarketingApiToken::SCOPE_MARKETING)];
+            $filters[] = ['key' => 'atribucion', 'label' => 'Atribución', 'apply' => fn (Builder $q) => $q->forUse(MarketingApiToken::SCOPE_ATTRIBUTION)];
+        }
+
+        return $filters;
     }
 
     public function rowActions(Model $row): array

@@ -9,11 +9,15 @@ use App\Support\AdminTable\AdminTableRequest;
 use App\Support\AdminTable\Queries\MarketingApiTokenTableQuery;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 
 /**
  * CRUD de los tokens que autentican las rutas GET /api/marketing/* (ver
- * App\Http\Middleware\MarketingApiTokenMiddleware). Calco de
+ * App\Http\Middleware\MarketingApiTokenMiddleware) y, con uso "attribution",
+ * GET /api/attribution/lookup (ver AttributionApiTokenMiddleware). El uso
+ * (`scope`) aísla ambos: un token de un uso no autentica las rutas del otro. Calco de
  * AspelApiTokenController pero para un universo de tokens aislado
  * (marketing_api_tokens, prefijo "mk_") — n8n consume estas rutas para leer
  * clientes/plantillas de correo, nunca las de Aspel. Sin export/bulk
@@ -38,6 +42,8 @@ class MarketingApiTokenController extends Controller
             'token_configured' => $attributionToken !== '',
             'token_length_ok' => strlen($attributionToken) >= AttributionApiTokenMiddleware::MIN_TOKEN_LENGTH,
             'min_length' => AttributionApiTokenMiddleware::MIN_TOKEN_LENGTH,
+            // Solo un conteo de tokens activos con uso "Atribución Google Ads" creados en esta tabla.
+            'db_tokens_active' => MarketingApiToken::activeAttributionCount(),
         ];
 
         return view('admin-ui.marketing-tokens.index', compact('attribution'));
@@ -75,13 +81,30 @@ class MarketingApiTokenController extends Controller
     {
         $request->validate([
             'name' => ['required', 'max:200'],
+            // Sin `scope` (clientes viejos) = marketing, como antes.
+            'scope' => ['nullable', Rule::in(array_keys(MarketingApiToken::useLabels()))],
         ]);
+
+        $scope = $request->input('scope') ?: MarketingApiToken::SCOPE_MARKETING;
+
+        // Antes de migrar no existe la columna: un token de atribución no se podría distinguir del de
+        // marketing y autenticaría las rutas equivocadas, así que se rechaza (el de marketing sigue igual).
+        $hasScopeColumn = Schema::hasColumn('marketing_api_tokens', 'scope');
+        if ($scope !== MarketingApiToken::SCOPE_MARKETING && !$hasScopeColumn) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Falta correr la migración que agrega el uso del token (php artisan migrate).',
+            ], 422);
+        }
 
         $keyId = 'mk_' . Str::random(16);
         $secret = Str::random(40);
 
         $token = new MarketingApiToken();
         $token->name = $request->name;
+        if ($hasScopeColumn) {
+            $token->scope = $scope;
+        }
         $token->key_id = $keyId;
         $token->secret_hash = Hash::make($secret);
         $token->secret_last_four = substr($secret, -4);
@@ -95,15 +118,32 @@ class MarketingApiTokenController extends Controller
         ]);
     }
 
-    /** Solo permite renombrar y activar/revocar — el valor del token nunca se edita aquí, ver regenerate(). */
+    /**
+     * Permite renombrar, activar/revocar y cambiar el uso — el valor del token nunca se edita aquí, ver
+     * regenerate(). Cambiar el uso deja de autenticar de inmediato las rutas del uso anterior.
+     */
     public function update(Request $request, string $id)
     {
         $request->validate([
             'name' => ['required', 'max:200'],
             'status' => ['required'],
+            // Opcional: si no viene, el uso no cambia.
+            'scope' => ['nullable', Rule::in(array_keys(MarketingApiToken::useLabels()))],
         ]);
 
         $token = MarketingApiToken::findOrFail($id);
+        $scope = $request->input('scope');
+
+        if ($scope && $scope !== ($token->scope ?: MarketingApiToken::SCOPE_MARKETING)) {
+            if (!Schema::hasColumn('marketing_api_tokens', 'scope')) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Falta correr la migración que agrega el uso del token (php artisan migrate).',
+                ], 422);
+            }
+            $token->scope = $scope;
+        }
+
         $token->name = $request->name;
         $token->status = $request->status;
         $token->save();

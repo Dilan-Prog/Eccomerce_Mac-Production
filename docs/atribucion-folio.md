@@ -66,7 +66,7 @@ Todas se leen desde `config/attribution.php` (nunca con `env()` directo en el c�
 
 | Variable | Valor por defecto | Qué hace |
 |---|---|---|
-| `ATTRIBUTION_API_TOKEN` | vacío | Token Bearer del endpoint `GET /api/attribution/lookup`. **Vacío, o de menos de 32 caracteres = endpoint cerrado**: responde 503 a todos. Es independiente del token de marketing y del de Aspel. |
+| `ATTRIBUTION_API_TOKEN` | vacío | **Respaldo** del token Bearer del endpoint `GET /api/attribution/lookup` (lo normal es crear el token desde el panel: ver "Cómo crear el token"). Vacío, o de menos de 32 caracteres, este respaldo no existe; si además no hay ningún token activo de atribución creado en el panel = endpoint cerrado: responde 503 a todos. Es independiente del token de marketing y del de Aspel. |
 | `ATTRIBUTION_FOLIO_ENABLED` | `false` | Interruptor maestro del folio en el navegador. Apagado, el JavaScript **no cambia ningún enlace ni agrega folio**; el registro de eventos sigue funcionando igual que antes. |
 | `ATTRIBUTION_FOLIO_PLACEMENTS` | `*` | Dónde se aplica el folio: `*` (todos los botones) o una lista separada por comas de ubicaciones (placements), por ejemplo `flotante` o `flotante,footer_oficina`. Sirve para un piloto gradual. Los nombres válidos están en la columna "placement sugerido" de la sección 5. |
 | `ATTRIBUTION_INVISIBLE_FOLIO` | `false` | Agrega al final del mensaje de WhatsApp una marca invisible con el folio (caracteres U+2060, U+200B, U+200C). **No activar hasta publicar el aviso de privacidad** (sección 7). |
@@ -78,9 +78,23 @@ Todas se leen desde `config/attribution.php` (nunca con `env()` directo en el c�
 
 Importante: `ATTRIBUTION_FOLIO_ENABLED` se evalúa con el valor que tenga el `.env` cuando se carga la configuración; si en producción se usa `config:cache`, el cambio no surte efecto hasta limpiar o regenerar el caché (ver abajo).
 
-### Cómo generar el token
+### Cómo crear el token (desde el panel, recomendado)
 
-En cualquier terminal con PHP:
+1. Entra a **Marketing > Integración** (`/admin/marketing-tokens`) y pulsa **+ Crear Nuevo**.
+2. Escribe un nombre (por ejemplo "n8n Google Ads") y en **Uso del token** elige **Atribución Google Ads (/api/attribution/lookup)**. El otro uso, *Email Marketing*, es el de siempre (`/api/marketing/*`) y es el valor por defecto.
+3. Al guardar se muestra el valor completo, con el formato `<key_id>.<secret>`, **una sola vez**: cópialo con el botón de copiar. Después solo se ve el `key_id` y los últimos 4 caracteres del secreto; si lo pierdes, usa **Regenerar** (el valor anterior deja de servir al instante) o crea otro.
+4. En n8n guarda el valor como credencial (tipo "Header Auth": nombre `Authorization`, valor `Bearer <key_id>.<secret>`).
+
+Reglas:
+
+- **Aislamiento por uso.** Un token de *Email Marketing* **no** abre `/api/attribution/*` y uno de *Atribución Google Ads* **no** abre `/api/marketing/*` (responden 401). Los tokens que ya existían quedan como *Email Marketing* y siguen funcionando igual.
+- Se pueden tener varios tokens de atribución activos (uno por flujo o por ambiente) y revocarlos por separado en **Editar** (interruptor de estado); la tabla muestra el uso de cada uno y su último uso.
+- La tarjeta "API de atribución (Google Ads)" de esa misma página y el panel de estado del laboratorio muestran "Token configurado" si hay al menos un token activo de atribución **o** un token válido en el `.env`. Solo cuentan tokens, nunca se muestran valores.
+- Requiere la migración `2026_10_22_100000_add_scope_to_marketing_api_tokens_table.php` (`php artisan migrate`; agrega la columna `scope`, default `marketing`, sin tocar los tokens existentes). Si el código se despliega antes de migrar, el endpoint y el correo siguen funcionando como antes (el endpoint solo con el `.env`) y el panel rechaza crear tokens de atribución hasta migrar.
+
+### Respaldo: token en el `.env`
+
+Sigue funcionando como antes y no necesita migración. En cualquier terminal con PHP:
 
 ```bash
 php -r "echo bin2hex(random_bytes(32));"
@@ -105,12 +119,16 @@ En n8n guarda el token como credencial (tipo "Header Auth": nombre `Authorizatio
 
 ### Rotación del token
 
+**Token del panel:** en **Marketing > Integración** pulsa **Regenerar** en la fila del token, copia el valor nuevo (se muestra una sola vez) y actualiza la credencial de n8n. No hay periodo de gracia: el valor anterior deja de servir al instante. Para revocar, edita el token y apaga su estado (o bórralo); no hace falta `config:clear` porque no depende del `.env`.
+
+**Token del `.env` (respaldo):**
+
 1. Genera un token nuevo con el mismo comando.
 2. Edita `ATTRIBUTION_API_TOKEN` en el `.env` de producción.
 3. Ejecuta `php artisan config:clear` (y `config:cache` si lo usas).
 4. Actualiza la credencial en n8n.
 
-No hay periodo de gracia: el token viejo deja de servir en cuanto se limpia el caché, así que haz los pasos 3 y 4 seguidos. Para revocar de emergencia basta con dejar la variable vacía (el endpoint responde 503 a todos).
+No hay periodo de gracia: el token viejo deja de servir en cuanto se limpia el caché, así que haz los pasos 3 y 4 seguidos. Para revocar de emergencia el token del `.env` basta con dejar la variable vacía; si no queda ningún token activo de atribución en el panel, el endpoint responde 503 a todos (si quedan, solo esos entran).
 
 ---
 
@@ -120,7 +138,7 @@ Solo lectura. Devuelve lo que el sitio sabe del contacto asociado a un folio (o 
 
 ### Autenticación y límites
 
-- Cabecera obligatoria: `Authorization: Bearer <ATTRIBUTION_API_TOKEN>`. Solo por cabecera; el token en la URL no se acepta (quedaría en logs e historial).
+- Cabecera obligatoria: `Authorization: Bearer <key_id>.<secret>` (token creado en Marketing > Integración con uso "Atribución Google Ads") o, como respaldo, `Authorization: Bearer <ATTRIBUTION_API_TOKEN>`. Solo por cabecera; el token en la URL no se acepta (quedaría en logs e historial).
 - Comparación en tiempo constante. Las respuestas del endpoint llevan `Cache-Control: no-store` (el 429 del limitador sale antes y no trae datos).
 - Límite de 120 solicitudes por minuto por IP, que se evalúa **antes** de revisar el token (también frena a quien pruebe tokens a ciegas).
 
@@ -129,11 +147,11 @@ Solo lectura. Devuelve lo que el sitio sabe del contacto asociado a un folio (o 
 | Código | Cuándo | Cuerpo |
 |---|---|---|
 | 200 | Modo folio: el folio existe. Modo hora: consulta válida, **haya o no eventos** (sin eventos devuelve `{"type":…,"from":…,"to":…,"count":0,"events":[]}`) | JSON con los campos de abajo |
-| 401 | Token ausente o incorrecto | `{"status":"error","message":"Token inválido o revocado."}` |
+| 401 | Token ausente, incorrecto, revocado o de otro uso (p. ej. uno de Email Marketing) | `{"status":"error","message":"Token inválido o revocado."}` |
 | 404 | Solo modo folio: el folio no existe o no tiene formato válido. La ventana de hora **sin eventos NO es 404** (es 200 con `count: 0`) | `{"status":"error","message":"Folio no encontrado."}` |
 | 422 | Parámetros inválidos: ni `folio` ni `type+from+to`; `from`/`to` sin zona horaria; ventana mayor a 15 minutos; `type` desconocido | JSON de error con el detalle |
 | 429 | Más de 120 solicitudes por minuto desde la misma IP | Respuesta estándar de Laravel; reintenta con calma |
-| 503 | `ATTRIBUTION_API_TOKEN` no está configurado o tiene menos de 32 caracteres (falla cerrado) | `{"status":"error","message":"Endpoint de atribución no configurado."}` |
+| 503 | No existe ninguna credencial posible: ni token activo de atribución en el panel, ni `ATTRIBUTION_API_TOKEN` válido (de 32 caracteres o más) en el `.env` (falla cerrado) | `{"status":"error","message":"Endpoint de atribución no configurado."}` |
 
 ### Modo 1: por folio (el normal)
 
@@ -802,11 +820,11 @@ El diseño es aditivo: `POST /track-conversion` sigue aceptando el payload viejo
 1. [ ] **Desplegar** el código con `ATTRIBUTION_FOLIO_ENABLED=false` (o sin la variable: el valor por defecto es `false`).
 2. [ ] **`php artisan migrate`** (agrega `contact_folio`, `event_at` y dos índices, y `is_test` —boolean, no nulo, default 0— con el índice `(is_test, id)`, migración `2026_10_20_100000_add_is_test_to_track_conversions_table.php`; no toca datos existentes: todas las filas históricas quedan con `is_test = 0`). Esa misma ejecución crea la tabla `attribution_lab_settings` (migración `2026_10_21_100000_create_attribution_lab_settings_table.php`), donde el laboratorio guarda el número de WhatsApp de prueba y la URL del webhook de n8n; sin ella, el panel muestra un aviso al intentar guardar ajustes pero el resto sigue funcionando. Hazlo **antes** de que el código nuevo reciba tráfico: el admin, el endpoint y las consultas SQL de la sección 6 usan `is_test`.
 3. [ ] **`php artisan config:clear`** (y `config:cache` si se usa).
-4. [ ] **Configurar `ATTRIBUTION_API_TOKEN`** en el `.env` del servidor (mínimo 32 caracteres; sección 2) y volver a correr `php artisan config:clear`. El mismo valor se guarda en la credencial de n8n.
+4. [ ] **Crear el token de atribución**: en Marketing > Integración, **+ Crear Nuevo** con uso "Atribución Google Ads" (sección 2; requiere haber corrido `php artisan migrate`, que incluye `2026_10_22_100000_add_scope_to_marketing_api_tokens_table.php`), copiar el valor `<key_id>.<secret>` y guardarlo en la credencial de n8n. Alternativa/respaldo: `ATTRIBUTION_API_TOKEN` en el `.env` del servidor (mínimo 32 caracteres) y `php artisan config:clear`.
 5. [ ] **Verificar `APP_URL`**: debe ser el dominio público real del sitio (por ejemplo `https://www.macdelnorte.com`). La verificación de origen de `/track-conversion` corre **siempre**, aunque el folio esté apagado: con `APP_URL=http://localhost` en producción todo el tráfico real recibiría `204` y no se guardaría ningún evento, **sin ningún aviso visible**. Si el sitio responde también en otro dominio (otro alias), agrégalo en `ATTRIBUTION_ALLOWED_HOSTS`.
 6. [ ] **Verificar que nada cambió en los enlaces**: abrir el sitio, inspeccionar el botón flotante y el del detalle de producto; el `href` sigue siendo `https://wa.link/f28njw` y el clic abre WhatsApp sin mensaje nuevo.
 7. [ ] **Verificar que los eventos siguen llegando**: tocar un botón y confirmar la fila nueva en el panel de administración (módulo de conversiones). Si no aparece nada, revisar el punto 5 (`APP_URL`) antes que cualquier otra cosa.
-8. [ ] **Probar el endpoint**: sin token configurado debe dar 503; con el token y `config:clear`, un folio inexistente debe dar 404, un token malo 401 y un token de menos de 32 caracteres 503.
+8. [ ] **Probar el endpoint**: sin ningún token (ni de panel ni en el `.env`) debe dar 503; con el token, un folio inexistente debe dar 404 y un token malo 401 (si usas el `.env`, recuerda `config:clear`; un `.env` de menos de 32 caracteres cuenta como no configurado). Comprueba también que un token de Email Marketing da 401 en este endpoint.
 
 **Fase 2. Verificar el número y encender solo el botón flotante**
 
@@ -894,7 +912,7 @@ El modo prueba se activa con una cookie propia, `mdn_attr_test`, que solo emite 
 
 1. `php artisan migrate` ya corrió (agrega `is_test`; sección 8, paso 2).
 2. Tu usuario es administrador con acceso al módulo **Administrar Sitio Web** (`site`). Para consultar filas **reales** en el probador necesitas además el módulo de **Ads** (`ads`).
-3. **Ajustes de prueba, desde el panel** (sin tocar el `.env` ni correr `config:clear`): en el laboratorio, sección 2 "Modo prueba" > "Ajustes de prueba", escribe el **número de WhatsApp de prueba** (cuenta de prueba de Kommo: solo dígitos, con lada de país, de 10 a 15; los espacios, `+`, guiones y paréntesis se limpian solos) y la **URL del webhook de n8n para pruebas** (https, pública), y pulsa "Guardar ajustes". Se guardan en la base de datos y valen de inmediato. El número del panel tiene prioridad; `ATTRIBUTION_TEST_WHATSAPP_NUMBER` del `.env` queda solo como **respaldo** cuando el panel no tiene uno (el panel indica la fuente: "Guardado en el panel", "Tomado del .env" o "Sin configurar"). Para consultar el endpoint con `curl` sigue haciendo falta `ATTRIBUTION_API_TOKEN` en el `.env` (y `php artisan config:clear` si cambias el `.env`). El panel de estado del laboratorio avisa si falta el número de prueba, si es inválido, si falta el token o si `ATTRIBUTION_INVISIBLE_FOLIO` está encendido.
+3. **Ajustes de prueba, desde el panel** (sin tocar el `.env` ni correr `config:clear`): en el laboratorio, sección 2 "Modo prueba" > "Ajustes de prueba", escribe el **número de WhatsApp de prueba** (cuenta de prueba de Kommo: solo dígitos, con lada de país, de 10 a 15; los espacios, `+`, guiones y paréntesis se limpian solos) y la **URL del webhook de n8n para pruebas** (https, pública), y pulsa "Guardar ajustes". Se guardan en la base de datos y valen de inmediato. El número del panel tiene prioridad; `ATTRIBUTION_TEST_WHATSAPP_NUMBER` del `.env` queda solo como **respaldo** cuando el panel no tiene uno (el panel indica la fuente: "Guardado en el panel", "Tomado del .env" o "Sin configurar"). Para consultar el endpoint con `curl` hace falta un token de atribución (creado en Marketing > Integración con uso "Atribución Google Ads", o `ATTRIBUTION_API_TOKEN` en el `.env` con `php artisan config:clear` si lo cambias). El panel de estado del laboratorio avisa si falta el número de prueba, si es inválido, si falta el token o si `ATTRIBUTION_INVISIBLE_FOLIO` está encendido.
 4. Tienes a la mano un teléfono con WhatsApp **distinto** del número de prueba, y acceso a la cuenta de prueba de Kommo (y a n8n) para los pasos 7 y 8.
 
 ### 10.4 Guía paso a paso
@@ -919,7 +937,7 @@ El modo prueba se activa con una cookie propia, `mdn_attr_test`, que solo emite 
 | Variable | Qué hace en el laboratorio |
 |---|---|
 | `ATTRIBUTION_TEST_WHATSAPP_NUMBER` | **Respaldo** del número que abren los botones de WhatsApp en modo prueba (solo dígitos, 10 a 15): solo se usa si el panel no tiene uno guardado. Vacío o inválido en ambos = `wa.me/?text=` sin número; el panel lo avisa. Ver la tabla de la sección 2. |
-| `ATTRIBUTION_API_TOKEN` | El laboratorio **nunca** lo muestra ni lo envía al navegador; solo avisa si falta. Para `curl`. |
+| `ATTRIBUTION_API_TOKEN` | Respaldo del token de la API. El laboratorio **nunca** lo muestra ni lo envía al navegador (ni el de los tokens del panel); solo avisa si no hay ninguno válido (ni en el `.env` ni activo en Marketing > Integración). Para `curl`. |
 
 Duración (120 minutos) y nombre de la cookie (`mdn_attr_test`) se cambian en `config/attribution.php` (`test_mode`), no en el `.env`.
 

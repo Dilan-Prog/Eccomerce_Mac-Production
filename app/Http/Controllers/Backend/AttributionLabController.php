@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Backend;
 use App\Http\Controllers\Controller;
 use App\Http\Middleware\AttributionApiTokenMiddleware;
 use App\Models\AttributionLabSetting;
+use App\Models\MarketingApiToken;
 use App\Models\Product;
 use App\Models\TrackConversion;
 use App\Support\Attribution\AttributionLookupService;
@@ -83,6 +84,8 @@ class AttributionLabController extends Controller
         $payload = AttributionTestMode::payload($request);
 
         $tokenLength = strlen((string) config('attribution.api_token'));
+        // Tokens activos con uso "Atribución Google Ads" creados en Marketing > Integración (solo conteo).
+        $dbTokens = MarketingApiToken::activeAttributionCount();
         $productionNumber = trim((string) config('contact.whatsapp.number'));
         $testNumber = AttributionTestMode::configuredNumber();
         $testNumberInvalid = AttributionTestMode::configuredNumberInvalid();
@@ -94,10 +97,15 @@ class AttributionLabController extends Controller
         if ($productionNumber === '') {
             $warnings[] = ['level' => 'danger', 'message' => 'El número de WhatsApp de producción (contact.whatsapp.number) no está definido: los enlaces de WhatsApp no tendrán a dónde apuntar.'];
         }
-        if ($tokenLength === 0) {
-            $warnings[] = ['level' => 'danger', 'message' => 'ATTRIBUTION_API_TOKEN no está configurado: el endpoint de n8n responde 503.'];
-        } elseif ($tokenLength < AttributionApiTokenMiddleware::MIN_TOKEN_LENGTH) {
-            $warnings[] = ['level' => 'danger', 'message' => 'ATTRIBUTION_API_TOKEN es demasiado corto: el endpoint de n8n lo trata como no configurado (503).'];
+        if ($dbTokens === 0) {
+            // Sin token de panel, el unico acceso posible es el .env.
+            if ($tokenLength === 0) {
+                $warnings[] = ['level' => 'danger', 'message' => 'No hay token de atribución: crea uno en Marketing > Integración (uso "Atribución Google Ads") o define ATTRIBUTION_API_TOKEN. Mientras tanto el endpoint de n8n responde 503.'];
+            } elseif ($tokenLength < AttributionApiTokenMiddleware::MIN_TOKEN_LENGTH) {
+                $warnings[] = ['level' => 'danger', 'message' => 'ATTRIBUTION_API_TOKEN es demasiado corto: el endpoint de n8n lo trata como no configurado (503). Crea un token en Marketing > Integración (uso "Atribución Google Ads") o corrígelo.'];
+            }
+        } elseif ($tokenLength > 0 && $tokenLength < AttributionApiTokenMiddleware::MIN_TOKEN_LENGTH) {
+            $warnings[] = ['level' => 'warning', 'message' => 'ATTRIBUTION_API_TOKEN es demasiado corto y se ignora: el endpoint de n8n solo acepta los tokens creados en el panel.'];
         }
         if ($invisible) {
             $warnings[] = ['level' => 'warning', 'message' => 'El folio invisible está encendido. Debe permanecer apagado hasta que el aviso de privacidad lo cubra.'];
@@ -127,8 +135,10 @@ class AttributionLabController extends Controller
                     'invisible' => $invisible,
                 ],
                 'token' => [
-                    'configured' => $tokenLength > 0,
-                    'length_ok' => $tokenLength >= AttributionApiTokenMiddleware::MIN_TOKEN_LENGTH,
+                    // Hay token si el .env tiene uno (aunque sea corto) o hay un token activo de panel.
+                    'configured' => $tokenLength > 0 || $dbTokens > 0,
+                    // "Adecuado" = .env valido (>= 32) o al menos un token activo de panel.
+                    'length_ok' => $tokenLength >= AttributionApiTokenMiddleware::MIN_TOKEN_LENGTH || $dbTokens > 0,
                 ],
                 'whatsapp' => [
                     'production_number' => $productionNumber,
