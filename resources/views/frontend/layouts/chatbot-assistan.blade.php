@@ -59,7 +59,7 @@ function chatbotOption(option) {
     } else if(option === 'soporte') {
         botMsg.innerHTML = '¿Qué tipo de soporte necesitas?<br><button onclick="chatbotSoporte(\'garantía\')">Garantía</button> <button onclick="chatbotSoporte(\'envío\')">Envío</button>';
     } else if(option === 'contacto') {
-        botMsg.innerHTML = 'Puedes contactarnos por <a href="mailto:soporte@tusitio.com" style="color:#007bff;">correo</a> o por <a href="https://wa.link/f28njw" target="_blank" style="color:#007bff;">WhatsApp</a>.';
+        botMsg.innerHTML = 'Puedes contactarnos por <a href="mailto:soporte@tusitio.com" style="color:#007bff;">correo</a> o por <a href="https://wa.me/528135825559" target="_blank" style="color:#007bff;">WhatsApp</a>.';
     }
     messages.appendChild(botMsg);
     messages.scrollTop = messages.scrollHeight;

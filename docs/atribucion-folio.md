@@ -402,6 +402,8 @@ grep -rnE "contact\.whatsapp\.url|contact\.whatsapp\.number|wa\.link|wa\.me|api\
   resources/views public/js public/frontend/js --include=*.php --include=*.js | grep -v "\.min\.js"
 ```
 
+> **Actualización (octubre 2026): los botones de WhatsApp ahora apuntan directo a `https://wa.me/528135825559`.** `config('contact.whatsapp.url')` (y el valor por defecto de `BR_WHATSAPP_URL`) pasó de `https://wa.link/f28njw` a `https://wa.me/528135825559`; como todas las vistas leen esa configuración, no se editó ninguna vista de producto ni de catálogo. Así el botón funciona aunque el JavaScript del folio no se ejecute (abre el chat sin texto). Con el folio encendido, `mdn-contact.js` agrega `?text=…Folio: MN…` al hacer clic; reconoce `wa.me/<número del sitio>` y, por compatibilidad con páginas en caché y correos viejos, también el `wa.link/f28njw` histórico. En modo prueba, el número real viaja en la configuración como `whatsapp.productionNumber` para que esos enlaces se reescriban al número de prueba (o a `wa.me/?text=`) y nunca abran la línea real. `ATTRIBUTION_TEST_WHATSAPP_NUMBER` y el número guardado en el panel solo se usan con la cookie de modo prueba válida; sin ella el número es siempre `config('contact.whatsapp.number')`. Los hrefs que figuran abajo con `wa.link` son los históricos. Se pierde la analítica de clics de `wa.link` (riesgo 6, sección 9) y hay que confirmar que ningún disparador de GTM dependa de que la URL del clic contenga `wa.link`.
+
 ### Cómo leer la tabla
 
 - Prefijos: `V/` = `resources/views/frontend/`; `JS/` = `public/js/`; `FJS/` = `public/frontend/js/`. El resto de las rutas se escribe completa.

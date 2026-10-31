@@ -21,6 +21,8 @@
         'invisible' => (bool) ($attr['invisible_folio'] ?? false),
         'whatsapp' => [
             'url' => (string) config('contact.whatsapp.url'),
+            // Numero real del sitio: los enlaces impresos como wa.me/<numero> lo llevan; en modo prueba se reescriben al de prueba.
+            'productionNumber' => (string) config('contact.whatsapp.number'),
             'number' => $mdnTestMode
                 ? \App\Support\Attribution\AttributionTestMode::whatsappNumber()
                 : (string) config('contact.whatsapp.number'),

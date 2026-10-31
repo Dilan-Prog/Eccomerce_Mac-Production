@@ -17,7 +17,7 @@ return [
 
     // Mismo enlace corto que usa el resto del sitio. Si se abre una linea
     // dedicada para Brasil, cambiar solo aqui.
-    'whatsapp' => env('BR_WHATSAPP_URL', 'https://wa.link/f28njw'),
+    'whatsapp' => env('BR_WHATSAPP_URL', 'https://wa.me/528135825559'),
 
     'email' => env('BR_CONTACT_EMAIL', 'ventas1@macdelnorte.com'),
 

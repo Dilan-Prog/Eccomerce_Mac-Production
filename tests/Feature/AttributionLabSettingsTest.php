@@ -308,7 +308,9 @@ class AttributionLabSettingsTest extends TestCase
         $folio = json_decode($m[1], true, 512, JSON_THROW_ON_ERROR);
         $this->assertSame('528112345678', $folio['whatsapp']['number']);
         $this->assertStringNotContainsString('528100000009', $html);
-        $this->assertStringNotContainsString('528100000001', $html);
+        // El numero real solo viaja como productionNumber (para reescribir los wa.me/<real> al de prueba).
+        $this->assertSame('528100000001', $folio['whatsapp']['productionNumber']);
+        $this->assertSame(1, substr_count($html, '528100000001'));
 
         // Fuera del modo prueba sigue el numero real.
         $this->app->instance('request', Request::create('/', 'GET'));

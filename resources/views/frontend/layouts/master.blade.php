@@ -1298,7 +1298,7 @@
                     label: 'whatsapp_flotante',
                     recaptcha_token: token
                 });
-                window.open('https://wa.link/f28njw', '_blank');
+                window.open('https://wa.me/528135825559', '_blank');
             });
         });
 
@@ -1312,7 +1312,7 @@
                     label: 'whatsapp_producto',
                     recaptcha_token: token
                 });
-                window.open('https://wa.link/f28njw', '_blank');
+                window.open('https://wa.me/528135825559', '_blank');
             });
         });
 
@@ -1454,9 +1454,9 @@ const googleSheetsWebhook = 'https://script.google.com/macros/s/AKfycbwU_alwJ8Rc
 
 // Define URLs para cada tipo de botón (según tu data-type)
 const urlMap = {
-  'whatsapp': 'https://wa.link/f28njw',
-  'whatsapp_flotante': 'https://wa.link/f28njw',
-  'whatsapp_producto': 'https://wa.link/f28njw',
+  'whatsapp': 'https://wa.me/528135825559',
+  'whatsapp_flotante': 'https://wa.me/528135825559',
+  'whatsapp_producto': 'https://wa.me/528135825559',
   'telefono': 'tel:8124738768'
 };
 

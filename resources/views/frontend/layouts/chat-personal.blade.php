@@ -152,7 +152,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     </div>\
                 </div>');
                 addOptions([
-                    { label: 'Whatsapp', value: 'whatsapp', href: 'https://wa.link/f28njw' },
+                    { label: 'Whatsapp', value: 'whatsapp', href: 'https://wa.me/528135825559' },
                     { label: 'Correo', value: 'correo', href: 'mailto:product.manager@macdelnorte.com' },
                     { label: 'Llamada', value: 'llamada', href: 'tel:8124738768' }
                 ]);
@@ -166,7 +166,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     </div>\
                 </div>');
                 addOptions([
-                    { label: 'Whatsapp', value: 'whatsapp', href: 'https://wa.link/f28njw' },
+                    { label: 'Whatsapp', value: 'whatsapp', href: 'https://wa.me/528135825559' },
                     { label: 'Correo', value: 'correo', href: 'mailto:product.manager@macdelnorte.com' },
                     { label: 'Llamada', value: 'llamada', href: 'tel:8124738768' }
                 ]);
@@ -179,7 +179,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     </div>\
                 </div>');
                 addOptions([
-                    { label: 'Whatsapp', value: 'whatsapp', href: 'https://wa.link/f28njw' },
+                    { label: 'Whatsapp', value: 'whatsapp', href: 'https://wa.me/528135825559' },
                     { label: 'Correo', value: 'correo', href: 'mailto:product.manager@macdelnorte.com' },
                     { label: 'Llamada', value: 'llamada', href: 'tel:8124738768' }
                 ]);

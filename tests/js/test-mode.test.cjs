@@ -255,6 +255,91 @@ describe('mdn-contact en modo prueba', () => {
   });
 });
 
+/* ---------------- enlaces impresos como wa.me/<numero real> (config contact.whatsapp.url = wa.me) ---------------- */
+
+describe('mdn-contact con enlaces wa.me del numero real', () => {
+  const WA_ME = 'https://wa.me/' + REAL;
+  const prodCfg = (extra) => Object.assign({
+    enabled: true, placements: '*',
+    whatsapp: { url: WA_ME, number: REAL, productionNumber: REAL }
+  }, extra || {});
+
+  test('produccion: wa.me/<numero real> sin texto recibe ?text=...Folio: MN... al numero real', () => {
+    const C = contact();
+    C.configure(prodCfg());
+    const a = H.anchor({ href: WA_ME, 'data-type': 'whatsapp_flotante' });
+    const r = C.prepare(a, { lang: 'es' });
+    assert.ok(r.href.startsWith(WA_ME + '?text='), r.href);
+    assert.match(decodeURIComponent(r.href), /Folio: MN[2-9BCDFGHJKMNPQRSTVWXYZ]{5}$/);
+    assert.equal(a.getAttribute('data-mdn-orig-href'), WA_ME);
+  });
+
+  test('produccion: si ya trae ?text= solo se le agrega el folio al final', () => {
+    const C = contact();
+    C.configure(prodCfg());
+    const a = H.anchor({ href: WA_ME + '?text=' + encodeURIComponent('Hola, me interesa el DC1010'), 'data-type': 'whatsapp' });
+    const r = C.prepare(a, { lang: 'es' });
+    assert.match(decodeURIComponent(r.href), /^https:\/\/wa\.me\/528135825559\?text=Hola, me interesa el DC1010 Folio: MN[2-9BCDFGHJKMNPQRSTVWXYZ]{5}$/);
+  });
+
+  test('con la bandera apagada no cambia ningun enlace (el boton funciona sin folio)', () => {
+    const C = contact();
+    C.configure(prodCfg({ enabled: false }));
+    const a = H.anchor({ href: WA_ME, 'data-type': 'whatsapp_flotante' });
+    const r = C.prepare(a, { lang: 'es' });
+    assert.equal(a.getAttribute('href'), WA_ME);
+    assert.ok(!r || !r.href || r.href === WA_ME || r.folio == null);
+  });
+
+  test('un wa.me de OTRO numero no se toca', () => {
+    const C = contact();
+    C.configure(prodCfg());
+    const other = 'https://wa.me/5215599999999';
+    const a = H.anchor({ href: other, 'data-type': 'whatsapp_otro' });
+    C.prepare(a, { lang: 'es' });
+    assert.equal(a.getAttribute('href'), other);
+  });
+
+  test('MODO PRUEBA: el enlace impreso con el numero REAL se reescribe al numero de prueba (nunca abre la linea real)', () => {
+    const C = contact();
+    C.configure({
+      enabled: true, placements: '*', testMode: true,
+      whatsapp: { url: WA_ME, number: TEST_NUMBER, productionNumber: REAL }
+    });
+    const a = H.anchor({ href: WA_ME, 'data-type': 'whatsapp_flotante' });
+    const r = C.prepare(a, { lang: 'es' });
+    assert.ok(r.href.startsWith('https://wa.me/' + TEST_NUMBER + '?text='), r.href);
+    assert.ok(!r.href.includes(REAL));
+  });
+
+  test('MODO PRUEBA sin numero de prueba: wa.me/<real> pasa a wa.me/?text= (sin numero)', () => {
+    const C = contact();
+    C.configure({
+      enabled: true, placements: '*', testMode: true,
+      whatsapp: { url: WA_ME, number: '', productionNumber: REAL }
+    });
+    const a = H.anchor({ href: WA_ME, 'data-type': 'whatsapp_footer_oficina' });
+    const r = C.prepare(a, { lang: 'es' });
+    assert.ok(r.href.startsWith('https://wa.me/?text='), r.href);
+    assert.ok(!r.href.includes(REAL));
+  });
+
+  test('wa.link historico sigue reconociendose (config vieja con slug)', () => {
+    const C = contact();
+    C.configure({ enabled: true, placements: '*', whatsapp: { url: WA_LINK, number: REAL, productionNumber: REAL } });
+    const a = H.anchor({ href: WA_LINK, 'data-type': 'whatsapp_hero' });
+    assert.ok(C.prepare(a, { lang: 'es' }).href.startsWith('https://wa.me/' + REAL + '?text='));
+  });
+
+  test('api.whatsapp.com/send?phone=<real> tambien cuenta como el WhatsApp del sitio en modo prueba', () => {
+    const C = contact();
+    C.configure({ enabled: true, placements: '*', testMode: true, whatsapp: { url: WA_ME, number: TEST_NUMBER, productionNumber: REAL } });
+    const a = H.anchor({ href: 'https://api.whatsapp.com/send?phone=' + REAL, 'data-type': 'whatsapp' });
+    const r = C.prepare(a, { lang: 'es' });
+    assert.ok(r.href.startsWith('https://wa.me/' + TEST_NUMBER + '?text='), r.href);
+  });
+});
+
 /* ---------------- mdn-events con MDN_TEST_MODE ---------------- */
 
 const LANDMARKS = ['header', 'footer', 'nav', 'aside', 'main', 'section', 'article'];

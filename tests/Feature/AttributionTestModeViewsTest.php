@@ -206,7 +206,10 @@ class AttributionTestModeViewsTest extends TestCase
         $this->assertArrayHasKey('templates', $folio);
         $this->assertArrayHasKey('mail', $folio);
         $this->assertArrayHasKey('invisible', $folio);
-        $this->assertStringNotContainsString(self::REAL_NUMBER, $html);
+        // El numero REAL solo aparece como productionNumber: es lo que permite reescribir al de prueba los enlaces
+        // impresos como wa.me/<numero real>; nunca como el numero al que se abre.
+        $this->assertSame(self::REAL_NUMBER, $folio['whatsapp']['productionNumber']);
+        $this->assertSame(1, substr_count($html, self::REAL_NUMBER));
         $this->assertStringContainsString('window.MDN_TEST_MODE = "nonce-ev-3"', $html);
         $this->assertStringContainsString('MDNTestMode.banner(document)', $html);
     }
@@ -220,7 +223,10 @@ class AttributionTestModeViewsTest extends TestCase
 
         $this->assertSame('', $folio['whatsapp']['number']);
         $this->assertTrue($folio['testMode']);
-        $this->assertStringNotContainsString(self::REAL_NUMBER, $html);
+        // El numero REAL solo aparece como productionNumber: es lo que permite reescribir al de prueba los enlaces
+        // impresos como wa.me/<numero real>; nunca como el numero al que se abre.
+        $this->assertSame(self::REAL_NUMBER, $folio['whatsapp']['productionNumber']);
+        $this->assertSame(1, substr_count($html, self::REAL_NUMBER));
     }
 
     public function test_mdn_events_in_normal_mode_matches_the_config(): void
@@ -232,6 +238,7 @@ class AttributionTestModeViewsTest extends TestCase
         $this->assertFalse($folio['enabled']);
         $this->assertSame('footer_oficina', $folio['placements']);
         $this->assertSame(self::REAL_NUMBER, $folio['whatsapp']['number']);
+        $this->assertSame(self::REAL_NUMBER, $folio['whatsapp']['productionNumber']);
         $this->assertSame('https://wa.link/f28njw', $folio['whatsapp']['url']);
         $this->assertArrayNotHasKey('testMode', $folio);
         $this->assertStringNotContainsString('MDN_TEST_MODE', $html);

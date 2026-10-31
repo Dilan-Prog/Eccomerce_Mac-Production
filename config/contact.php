@@ -19,8 +19,10 @@
 return [
 
     'whatsapp' => [
-        // Enlace que abren TODOS los botones de WhatsApp (el acortador wa.link/f28njw apunta al 81 3582 5559).
-        'url' => 'https://wa.link/f28njw',
+        // Enlace que abren TODOS los botones de WhatsApp: directo a wa.me con el numero de abajo. Asi el boton
+        // funciona aunque el JS del folio no se ejecute (el folio se agrega al ?text= en el clic, ver mdn-contact.js).
+        // Antes era el acortador https://wa.link/f28njw (apunta al mismo 81 3582 5559).
+        'url' => 'https://wa.me/528135825559',
 
         // Número en formato internacional sin "+" ni espacios (para construir wa.me y mensajes).
         'number' => '528135825559',

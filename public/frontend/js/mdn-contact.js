@@ -29,12 +29,15 @@
   var BIT0 = '\u200b';          // ZERO WIDTH SPACE
   var BIT1 = '\u200c';          // ZERO WIDTH NON-JOINER
 
+  // Slug del acortador historico del sitio (https://wa.link/f28njw -> el mismo numero).
+  var LEGACY_WA_LINK_SLUG = 'f28njw';
+
   function defaultConfig() {
     return {
       enabled: false,
       placements: '*',
       invisible: false,
-      whatsapp: { url: 'https://wa.link/f28njw', number: '528135825559' },
+      whatsapp: { url: 'https://wa.me/528135825559', number: '528135825559', productionNumber: '528135825559' },
       templates: {
         es: {
           product: 'Hola, me interesa: {producto}. Folio: {folio}',
@@ -96,7 +99,7 @@
         next.invisible = toBool(c.invisible);
         next.placements = normalizePlacements(c.placements);
         if (isObj(c.whatsapp)) {
-          mergeStrings(next.whatsapp, c.whatsapp, ['url', 'number']);
+          mergeStrings(next.whatsapp, c.whatsapp, ['url', 'number', 'productionNumber']);
           // Modo prueba de atribucion (lo imprime el servidor): un numero vacio es VALIDO y significa
           // "sin numero" (wa.me/?text=...); si no, mergeStrings lo ignoraria y quedaria el numero real por defecto.
           if (toBool(c.testMode) && typeof c.whatsapp.number === 'string') next.whatsapp.number = c.whatsapp.number;
@@ -315,7 +318,18 @@
   function configuredTarget() {
     var u = str(cfg.whatsapp && cfg.whatsapp.url).trim();
     var m = /^(?:https?:)?\/\/(?:www\.)?wa\.link\/([^\/?#]+)/i.exec(u);
-    return { slug: m ? m[1] : '', number: digits(cfg.whatsapp && cfg.whatsapp.number) };
+    // `number` es al que se abre (en modo prueba, el de prueba); `productionNumber` es el que llevan los enlaces
+    // impresos por el servidor (wa.me/<numero real>) y tambien cuenta como "el WhatsApp del sitio", para que en
+    // modo prueba esos enlaces SE REESCRIBAN al numero de prueba en vez de abrir la linea real.
+    var number = digits(cfg.whatsapp && cfg.whatsapp.number);
+    var production = digits(cfg.whatsapp && cfg.whatsapp.productionNumber);
+    var numbers = [];
+    if (number) numbers.push(number);
+    if (production && production !== number) numbers.push(production);
+    // Migracion wa.link -> wa.me: si el sitio ya usa wa.me, el acortador historico sigue contando como el WhatsApp del
+    // sitio (paginas en cache, correos y enlaces viejos con wa.link/f28njw siguen recibiendo el folio).
+    var slug = m ? m[1] : (/^(?:https?:)?\/\/(?:www\.)?wa\.me\//i.test(u) ? LEGACY_WA_LINK_SLUG : '');
+    return { slug: slug, number: number, numbers: numbers };
   }
 
   // true si el enlace de WhatsApp apunta al destino configurado.
@@ -331,11 +345,11 @@
     }
     if (host === 'wa.me') {
       var n = /^(?:https?:)?\/\/(?:www\.)?wa\.me\/\+?([0-9]+)(?=[\/?#]|$)/i.exec(h);
-      return !!(n && t.number && n[1] === t.number);
+      return !!(n && t.numbers.indexOf(n[1]) !== -1);
     }
     // api.whatsapp.com / web.whatsapp.com / whatsapp://  -> por el parametro phone
     var phone = digits(queryParam(h, 'phone'));
-    return !!(phone && t.number && phone === t.number);
+    return !!(phone && t.numbers.indexOf(phone) !== -1);
   }
 
   function classify(anchor) {
