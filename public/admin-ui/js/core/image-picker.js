@@ -40,7 +40,7 @@ window.AU = window.AU || {};
         <div class="au-picker-toolbar">
           <div class="au-picker-search">
             <i class="fas fa-search"></i>
-            <input type="text" placeholder="Buscar en la galería..." data-au-picker-search>
+            <input type="text" placeholder="Buscar por producto, marca, modelo, SKU o nombre de archivo..." data-au-picker-search>
           </div>
           <select class="au-select" data-au-picker-folder style="width:auto"></select>
           <button type="button" class="au-btn au-btn-primary" data-au-picker-upload>
@@ -110,6 +110,25 @@ window.AU = window.AU || {};
     }
   }
 
+  // `cells.size` es texto o { value, subtext } (con el SKU) segun la fila; el selector solo necesita el texto.
+  function sizeText(size) {
+    if (size && typeof size === "object") return String(size.value || "");
+    return String(size || "");
+  }
+
+  // Producto al que pertenece la imagen (lo manda el servidor en cells.product): permite reconocerla sin
+  // abrir el archivo, y buscar por producto / marca / modelo / SKU.
+  function productTitle(row) {
+    const p = row.cells && row.cells.product;
+    return p && p.name ? String(p.name) : "";
+  }
+
+  function productSubtitle(row) {
+    const p = row.cells && row.cells.product;
+    if (!p) return "";
+    return [p.sku ? "SKU " + p.sku : "", p.model || "", p.brand || ""].filter(Boolean).join(" · ");
+  }
+
   function renderFolderOptions(filters) {
     const select = overlay.querySelector("[data-au-picker-folder]");
     select.innerHTML = filters
@@ -136,8 +155,8 @@ window.AU = window.AU || {};
         <button type="button" class="au-picker-item ${isSelected ? "is-selected" : ""}" data-au-picker-pick="${AU.escapeHtml(row.row_id)}">
           <span class="au-picker-item-thumb" style="background-image:url('${AU.escapeHtml(file.url)}')"></span>
           <span class="au-picker-item-meta">
-            <span class="au-picker-item-name">${AU.escapeHtml(file.name)}</span>
-            <span class="au-picker-item-sub">${AU.escapeHtml(row.cells.folder ? row.cells.folder.label : "")} · ${AU.escapeHtml(row.cells.size || "")}</span>
+            <span class="au-picker-item-name">${AU.escapeHtml(productTitle(row) || file.name)}</span>
+            <span class="au-picker-item-sub">${AU.escapeHtml(productSubtitle(row) || (row.cells.folder ? row.cells.folder.label : "") + " · " + (sizeText(row.cells.size)))}</span>
           </span>
           <span class="au-picker-item-check">&check;</span>
         </button>`;

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Product;
 use App\Models\ProductImageGallery;
 use App\Services\DuplicateImages\FilesystemUploadsScanner;
+use App\Support\MediaLibrary\ProductImageSearch;
 use App\Support\UploadPath;
 use App\Traits\ImageUploadTrait;
 use Illuminate\Http\Request;
@@ -57,9 +58,14 @@ class MediaLibraryController extends Controller
             ? $files->filter(fn ($f) => $f['folder'] === $activeFilter)
             : $files;
 
-        if ($search = $request->input('search')) {
+        // La busqueda acepta el nombre del archivo O datos del producto al que pertenece la imagen (nombre, SKU,
+        // modelo, marca): ver ProductImageSearch. Asi el selector de imagenes del formulario de producto encuentra
+        // la foto por lo que el equipo conoce, no por el nombre del archivo.
+        $productHits = [];
+        if ($search = trim((string) $request->input('search'))) {
             $needle = strtolower($search);
-            $rows = $rows->filter(fn ($f) => str_contains(strtolower($f['name']), $needle));
+            $productHits = app(ProductImageSearch::class)->match($search);
+            $rows = $rows->filter(fn ($f) => str_contains(strtolower($f['name']), $needle) || isset($productHits[$f['path']]));
         }
 
         $sort = in_array($request->input('sort'), ['name', 'modified'], true) ? $request->input('sort') : 'modified';
@@ -82,7 +88,7 @@ class MediaLibraryController extends Controller
         $thumbProductIdByUrl = Product::whereIn('thumb_image', $fullUrls)->pluck('id', 'thumb_image');
 
         $productIds = $galleryProductIdByPath->values()->merge($thumbProductIdByUrl->values())->unique();
-        $skuById = Product::whereIn('id', $productIds)->pluck('sku', 'id');
+        $productsById = Product::with('brand:id,name')->whereIn('id', $productIds)->get(['id', 'name', 'sku', 'productModel', 'brand_id'])->keyBy('id');
 
         // "Also used elsewhere" warning shown in the Borrar confirm dialog —
         // purely informational (deletion still proceeds if confirmed), see
@@ -92,11 +98,19 @@ class MediaLibraryController extends Controller
         $usedInByPath = app(\App\Services\DuplicateImages\ImageReferenceRegistry::class)->findReferencesToMany($physicalPaths);
 
         return response()->json([
-            'rows' => $paged->map(function ($f) use ($galleryProductIdByPath, $thumbProductIdByUrl, $skuById, $usedInByPath) {
+            'rows' => $paged->map(function ($f) use ($galleryProductIdByPath, $thumbProductIdByUrl, $productsById, $productHits, $usedInByPath) {
                 $rowId = $this->encodePath($f['path']);
 
                 $productId = $galleryProductIdByPath[$f['path']] ?? $thumbProductIdByUrl[asset($f['path'])] ?? null;
-                $sku = $productId ? ($skuById[$productId] ?? null) : null;
+                $linked = $productId ? ($productsById[$productId] ?? null) : null;
+                $sku = $linked?->sku;
+                // Producto de la imagen (para mostrarlo en el selector): el que encontro la busqueda, o el vinculado.
+                $productInfo = $productHits[$f['path']] ?? ($linked ? [
+                    'name' => $linked->name,
+                    'sku' => $linked->sku,
+                    'brand' => $linked->brand?->name,
+                    'model' => $linked->productModel,
+                ] : null);
 
                 $borrarAction = [
                     'label' => 'Borrar',
@@ -118,6 +132,7 @@ class MediaLibraryController extends Controller
                     'cells' => [
                         'thumbnail' => ['url' => asset($f['path'])],
                         'name' => $f['name'],
+                        'product' => $productInfo,
                         'folder' => ['label' => ucfirst($f['folder']), 'tone' => 'info'],
                         'size' => $sku ? ['value' => $this->formatBytes($f['size']), 'subtext' => "SKU: {$sku}"] : $this->formatBytes($f['size']),
                         'modified' => date('c', $f['modified']),
