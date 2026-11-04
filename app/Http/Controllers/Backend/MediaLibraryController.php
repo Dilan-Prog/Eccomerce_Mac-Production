@@ -65,7 +65,13 @@ class MediaLibraryController extends Controller
         if ($search = trim((string) $request->input('search'))) {
             $needle = strtolower($search);
             $productHits = app(ProductImageSearch::class)->match($search);
-            $rows = $rows->filter(fn ($f) => str_contains(strtolower($f['name']), $needle) || isset($productHits[$f['path']]));
+            // Por nombre de archivo: dentro de la carpeta elegida (como siempre). Por producto: en TODAS las carpetas, porque las
+            // fotos de producto no viven solo en uploads/product (las mas viejas estan en uploads/media_*.webp u otras
+            // carpetas) y el selector del formulario abre con el filtro 'product': con filtro de carpeta no se veria la foto
+            // de un producto que SI coincide con lo que se busca.
+            $byName = $rows->filter(fn ($f) => str_contains(strtolower($f['name']), $needle));
+            $byProduct = $files->filter(fn ($f) => isset($productHits[$f['path']]));
+            $rows = $byName->concat($byProduct)->unique('path')->values();
         }
 
         $sort = in_array($request->input('sort'), ['name', 'modified'], true) ? $request->input('sort') : 'modified';

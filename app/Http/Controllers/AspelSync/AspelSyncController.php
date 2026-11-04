@@ -9,6 +9,7 @@ use App\Support\AdminTable\AdminTableRequest;
 use App\Support\AdminTable\Queries\AspelSyncTableQuery;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Excel as ExcelFormat;
 use Maatwebsite\Excel\Facades\Excel;
@@ -32,6 +33,9 @@ class AspelSyncController extends Controller
     public function sync(Request $request)
     {
         $items = $request->input('items', []);
+        if (!is_array($items)) {
+            $items = []; // items no es una lista: se deja vacio y la validacion responde 422 (antes: error 500 en el foreach)
+        }
         $flat = [];
         foreach ($items as $item) {
             if (is_array($item) && isset($item[0]) && is_array($item[0])) {
@@ -42,85 +46,27 @@ class AspelSyncController extends Controller
         }
         $request->merge(['items' => $flat]);
 
-        $request->validate([
-            'items' => 'required|array',
-            'items.*.cve_art' => 'required|string|max:50',
-            'items.*.descr' => 'nullable|string|max:255',
-            'items.*.lin_prod' => 'nullable|string|max:50',
-            'items.*.con_serie' => 'nullable|string|size:1',
-            'items.*.uni_med' => 'nullable|string|max:50',
-            'items.*.uni_emp' => 'nullable|numeric',
-            'items.*.ctrl_alm' => 'nullable|string|max:50',
-            'items.*.tiem_surt' => 'nullable|numeric',
-            'items.*.stock_min' => 'nullable|numeric',
-            'items.*.stock_max' => 'nullable|numeric',
-            'items.*.exist' => 'nullable|numeric',
-            'items.*.pend_surt' => 'nullable|numeric',
-            'items.*.apart' => 'nullable|numeric',
-            'items.*.comp_x_rec' => 'nullable|numeric',
-            'items.*.tip_costeo' => 'nullable|string|size:1',
-            'items.*.num_mon' => 'nullable|string|max:10',
-            'items.*.costo_prom' => 'nullable|numeric',
-            'items.*.ult_costo' => 'nullable|numeric',
-            'items.*.fch_ultcom' => 'nullable|date_format:Y-m-d H:i:s',
-            'items.*.fch_ultvta' => 'nullable|date_format:Y-m-d H:i:s',
-            'items.*.cve_obs' => 'nullable|string|max:50',
-            'items.*.tipo_ele' => 'nullable|string|size:1',
-            'items.*.uni_alt' => 'nullable|string|max:50',
-            'items.*.fac_conv' => 'nullable|numeric',
-            'items.*.con_lote' => 'nullable|string|size:1',
-            'items.*.con_pedimento' => 'nullable|string|size:1',
-            'items.*.peso' => 'nullable|numeric',
-            'items.*.volumen' => 'nullable|numeric',
-            'items.*.cve_esqimpu' => 'nullable|string|max:50',
-            'items.*.cve_bita' => 'nullable|string|max:50',
-            'items.*.cuent_cont' => 'nullable|string|max:50',
-            'items.*.cve_prodserv' => 'nullable|string|max:50',
-            'items.*.cve_unidad' => 'nullable|string|max:50',
-            'items.*.vtas_anl_c' => 'nullable|numeric',
-            'items.*.vtas_anl_m' => 'nullable|numeric',
-            'items.*.comp_anl_c' => 'nullable|numeric',
-            'items.*.comp_anl_m' => 'nullable|numeric',
-            'items.*.prefijo' => 'nullable|string|max:50',
-            'items.*.talla' => 'nullable|string|max:50',
-            'items.*.color' => 'nullable|string|max:50',
-            'items.*.cve_imagen' => 'nullable|string|max:255',
-            'items.*.campo_libre_modelo' => 'nullable|string|max:25',
-            'items.*.blk_cst_ext' => 'nullable|string|size:1',
-            'items.*.status' => 'nullable|string|size:1',
-            'items.*.man_ieps' => 'nullable|string|size:1',
-            'items.*.apl_man_imp' => 'nullable|integer',
-            'items.*.cuota_ieps' => 'nullable|numeric',
-            'items.*.apl_man_ieps' => 'nullable|string|size:1',
-            'items.*.uuid' => 'nullable|string|max:50',
-            'items.*.version_sinc' => 'nullable|date_format:Y-m-d H:i:s',
-            'items.*.version_sinc_fecha_img' => 'nullable|date_format:Y-m-d H:i:s',
-            'items.*.edo_publ_ml' => 'nullable|string|max:50',
-            'items.*.cve_publ_ml' => 'nullable|string|max:50',
-            'items.*.condicion_ml' => 'nullable|string|max:50',
-            'items.*.tipo_publ_ml' => 'nullable|string|max:50',
-            'items.*.categ_ml' => 'nullable|string|max:255',
-            'items.*.cve_cate_ml' => 'nullable|string|max:50',
-            'items.*.titulo_ml' => 'nullable|string|max:255',
-            'items.*.modo_envio_ml' => 'nullable|string|max:50',
-            'items.*.envio_ml' => 'nullable|string|size:1',
-            'items.*.largo_ml' => 'nullable|numeric',
-            'items.*.alto_ml' => 'nullable|numeric',
-            'items.*.ancho_ml' => 'nullable|numeric',
-            'items.*.campos_categ_ml' => 'nullable|json',
-            'items.*.disponible_publ' => 'nullable|string|size:1',
-            'items.*.last_update_ml' => 'nullable|date_format:Y-m-d H:i:s',
-            'items.*.f_crea_ml' => 'nullable|date_format:Y-m-d H:i:s',
-            'items.*.imagen_ml' => 'nullable|string|max:255',
-            'items.*.en_catalogo' => 'nullable|string|max:50',
-            'items.*.id_catalogo' => 'nullable|string|max:50',
-            'items.*.mat_peli' => 'nullable|string|size:1',
-        ]);
+        // Solo se valida la ESTRUCTURA del request (items debe ser una lista). Cada producto se valida por separado
+        // dentro del ciclo: un producto con un dato invalido se rechaza y se reporta, pero NO tumba el lote completo.
+        $request->validate(['items' => 'required|array']);
+        $rules = $this->itemRules();
 
         $synced = 0;
         $errors = [];
 
+        $rejected = 0;
+
         foreach ($request->items as $index => $item) {
+            // Validacion POR REGISTRO: un producto invalido se salta y se reporta; los demas siguen.
+            $validator = is_array($item) ? Validator::make($item, $rules) : null;
+            if (!$validator || $validator->fails()) {
+                $rejected++;
+                $sku = is_array($item) ? ($item['cve_art'] ?? '?') : '?';
+                $detail = $validator ? implode(' | ', array_slice($validator->errors()->all(), 0, 3)) : 'el registro no es un objeto';
+                $errors[] = "Item {$index} (SKU: {$sku}): datos invalidos: " . $detail;
+                continue;
+            }
+
             try {
                 AspelSync::updateOrCreate(
                     ['cve_art' => $item['cve_art']],
@@ -209,12 +155,101 @@ class AspelSyncController extends Controller
             }
         }
 
-        return response()->json([
+        if ($rejected > 0) {
+            Log::warning('Aspel sync: registros rechazados por validacion', ['rejected' => $rejected, 'total' => count($request->items), 'muestra' => array_slice($errors, 0, 5)]);
+        }
+
+        $payload = [
             'status' => $errors ? 'PARTIAL' : 'OK',
             'synced' => $synced,
             'total' => count($request->items),
+            'rejected' => $rejected,
             'errors' => $errors
-        ]);
+        ];
+
+        // Si NINGUN registro se pudo guardar porque todos eran invalidos, se mantiene el 422 de siempre (el script
+        // de Aspel lo ve como falla). Cualquier otro caso (incluido PARTIAL) responde 200 como antes.
+        $status = ($synced === 0 && $rejected > 0 && $rejected === count($request->items)) ? 422 : 200;
+
+        return response()->json($payload, $status);
+    }
+
+    /** Reglas de validacion de UN producto del lote (antes eran 'items.*.campo' sobre todo el request). */
+    private function itemRules(): array
+    {
+        return [
+            'cve_art' => 'required|string|max:50',
+            'descr' => 'nullable|string|max:255',
+            'lin_prod' => 'nullable|string|max:50',
+            'con_serie' => 'nullable|string|size:1',
+            'uni_med' => 'nullable|string|max:50',
+            'uni_emp' => 'nullable|numeric',
+            'ctrl_alm' => 'nullable|string|max:50',
+            'tiem_surt' => 'nullable|numeric',
+            'stock_min' => 'nullable|numeric',
+            'stock_max' => 'nullable|numeric',
+            'exist' => 'nullable|numeric',
+            'pend_surt' => 'nullable|numeric',
+            'apart' => 'nullable|numeric',
+            'comp_x_rec' => 'nullable|numeric',
+            'tip_costeo' => 'nullable|string|size:1',
+            'num_mon' => 'nullable|string|max:10',
+            'costo_prom' => 'nullable|numeric',
+            'ult_costo' => 'nullable|numeric',
+            'fch_ultcom' => 'nullable|date_format:Y-m-d H:i:s',
+            'fch_ultvta' => 'nullable|date_format:Y-m-d H:i:s',
+            'cve_obs' => 'nullable|string|max:50',
+            'tipo_ele' => 'nullable|string|size:1',
+            'uni_alt' => 'nullable|string|max:50',
+            'fac_conv' => 'nullable|numeric',
+            'con_lote' => 'nullable|string|size:1',
+            'con_pedimento' => 'nullable|string|size:1',
+            'peso' => 'nullable|numeric',
+            'volumen' => 'nullable|numeric',
+            'cve_esqimpu' => 'nullable|string|max:50',
+            'cve_bita' => 'nullable|string|max:50',
+            'cuent_cont' => 'nullable|string|max:50',
+            'cve_prodserv' => 'nullable|string|max:50',
+            'cve_unidad' => 'nullable|string|max:50',
+            'vtas_anl_c' => 'nullable|numeric',
+            'vtas_anl_m' => 'nullable|numeric',
+            'comp_anl_c' => 'nullable|numeric',
+            'comp_anl_m' => 'nullable|numeric',
+            'prefijo' => 'nullable|string|max:50',
+            'talla' => 'nullable|string|max:50',
+            'color' => 'nullable|string|max:50',
+            'cve_imagen' => 'nullable|string|max:255',
+            'campo_libre_modelo' => 'nullable|string|max:25',
+            'blk_cst_ext' => 'nullable|string|size:1',
+            'status' => 'nullable|string|size:1',
+            'man_ieps' => 'nullable|string|size:1',
+            'apl_man_imp' => 'nullable|integer',
+            'cuota_ieps' => 'nullable|numeric',
+            'apl_man_ieps' => 'nullable|string|size:1',
+            'uuid' => 'nullable|string|max:50',
+            'version_sinc' => 'nullable|date_format:Y-m-d H:i:s',
+            'version_sinc_fecha_img' => 'nullable|date_format:Y-m-d H:i:s',
+            'edo_publ_ml' => 'nullable|string|max:50',
+            'cve_publ_ml' => 'nullable|string|max:50',
+            'condicion_ml' => 'nullable|string|max:50',
+            'tipo_publ_ml' => 'nullable|string|max:50',
+            'categ_ml' => 'nullable|string|max:255',
+            'cve_cate_ml' => 'nullable|string|max:50',
+            'titulo_ml' => 'nullable|string|max:255',
+            'modo_envio_ml' => 'nullable|string|max:50',
+            'envio_ml' => 'nullable|string|size:1',
+            'largo_ml' => 'nullable|numeric',
+            'alto_ml' => 'nullable|numeric',
+            'ancho_ml' => 'nullable|numeric',
+            'campos_categ_ml' => 'nullable|json',
+            'disponible_publ' => 'nullable|string|size:1',
+            'last_update_ml' => 'nullable|date_format:Y-m-d H:i:s',
+            'f_crea_ml' => 'nullable|date_format:Y-m-d H:i:s',
+            'imagen_ml' => 'nullable|string|max:255',
+            'en_catalogo' => 'nullable|string|max:50',
+            'id_catalogo' => 'nullable|string|max:50',
+            'mat_peli' => 'nullable|string|size:1',
+        ];
     }
 
     public function index()

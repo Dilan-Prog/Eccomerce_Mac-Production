@@ -206,6 +206,36 @@ class MediaLibraryProductSearchTest extends TestCase
         $this->assertSame([], $this->names($this->actingAs($admin)->getJson($url . 'no-existe-xyz')->assertOk()));
     }
 
+    /**
+     * El selector de imagenes del formulario de producto abre con el filtro de carpeta 'product', pero las fotos de producto
+     * viejas viven en otras carpetas (p. ej. uploads/media_*.webp). Una coincidencia POR PRODUCTO se muestra aunque la imagen
+     * este fuera de la carpeta elegida; una coincidencia solo por nombre de archivo sigue respetando la carpeta.
+     */
+    public function test_product_matches_are_found_even_when_the_image_is_outside_the_selected_folder(): void
+    {
+        $b = $this->brand('Honeywell');
+        $outside = $this->file('media_66c113.control-dc1010.webp');       // carpeta distinta de 'product'
+        $this->product(['name' => 'Control DC1010', 'sku' => 'AL1-0355', 'productModel' => 'DC1010', 'brand_id' => $b, 'thumb_image' => asset($outside)]);
+        $folleto = $this->file('dc-folleto.webp');                         // sin producto, solo por nombre de archivo
+        $admin = $this->admin();
+
+        $url = '/admin/media-library/data?filter=product&per_page=60&search=';
+
+        $byProduct = $this->actingAs($admin)->getJson($url . 'dc1010')->assertOk();
+        $this->assertContains(basename($outside), $this->names($byProduct), 'la foto de un producto que coincide debe salir aunque este fuera de la carpeta');
+
+        $byModel = $this->actingAs($admin)->getJson($url . rawurlencode('AL1-0355'))->assertOk();
+        $this->assertContains(basename($outside), $this->names($byModel));
+
+        // Solo por nombre de archivo (sin producto): sigue limitado a la carpeta elegida.
+        $byName = $this->actingAs($admin)->getJson($url . 'dc-folleto')->assertOk();
+        $this->assertNotContains(basename($folleto), $this->names($byName));
+
+        // Sin duplicados cuando coincide por nombre Y por producto.
+        $both = $this->actingAs($admin)->getJson('/admin/media-library/data?filter=todas&per_page=60&search=dc1010')->assertOk();
+        $this->assertSame(1, count(array_keys($this->names($both), basename($outside))));
+    }
+
     public function test_data_endpoint_exposes_the_product_of_each_image_for_the_picker(): void
     {
         $b = $this->brand('Honeywell');
