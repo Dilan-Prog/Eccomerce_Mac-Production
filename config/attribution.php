@@ -28,10 +28,12 @@ return [
     'api_token' => env('ATTRIBUTION_API_TOKEN'),
 
     /*
-    | Interruptor maestro del folio en el navegador. Apagado (false) el JS no cambia ningun enlace
-    | ni agrega folio; el rastreo de eventos sigue funcionando igual.
+    | Interruptor maestro del folio en el navegador. ENCENDIDO por defecto (true): los botones de
+    | WhatsApp y correo llevan el folio MN+5 y se guarda en track_conversions.contact_folio.
+    | Para apagarlo: ATTRIBUTION_FOLIO_ENABLED=false en el .env (el JS no cambia ningun enlace ni
+    | agrega folio; el rastreo de eventos sigue funcionando igual).
     */
-    'folio_enabled' => (bool) env('ATTRIBUTION_FOLIO_ENABLED', false),
+    'folio_enabled' => (bool) env('ATTRIBUTION_FOLIO_ENABLED', true),
 
     /*
     | Donde se aplica el folio: '*' (todos los botones) o una lista separada por comas de
