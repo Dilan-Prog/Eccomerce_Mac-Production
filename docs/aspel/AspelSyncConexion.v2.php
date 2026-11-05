@@ -148,6 +148,14 @@ function logLine(array $cfg, $level, $message)
     @file_put_contents($file, $line, FILE_APPEND | LOCK_EX);
 }
 
+/** Avance en pantalla (solo consola): sin esto el script parece "colgado" hasta el final. */
+function progress($message)
+{
+    if (php_sapi_name() === 'cli') {
+        echo '[' . date('H:i:s') . '] ' . $message . PHP_EOL;
+    }
+}
+
 /** json_encode que no pierde un lote entero por un solo registro con texto invalido. */
 function encodeBatch(array $batch, &$dropped)
 {
@@ -220,15 +228,23 @@ function sendAll(array $cfg, $label, $url, array $items, $batchSize, $dryRun, &$
 
     $batches = array_chunk($items, max(1, $batchSize));
     $stats['batches'] = count($batches);
+    $consecutiveFails = 0;
     foreach ($batches as $i => $batch) {
         $n = $i + 1;
         $res = postBatch($cfg, $url, $batch, $stats['dropped']);
+        progress("{$label} lote {$n}/" . count($batches) . ($res['ok'] ? ' OK' : ' FALLO: ' . $res['error']));
         if (!$res['ok']) {
             $stats['failed_batches'][] = "lote {$n}/" . count($batches) . ': ' . $res['error'];
             logLine($cfg, 'ERROR', "{$label} lote {$n}/" . count($batches) . ' fallo: ' . $res['error']);
             // Token o permisos mal: seguir mandando lotes no sirve de nada.
             if (in_array($res['http'], [401, 403], true)) break;
+            // Sitio inalcanzable (IP bloqueada, sin internet): 3 lotes seguidos fallando = parar, no esperar horas.
+            if (++$consecutiveFails >= 3) {
+                $stats['failed_batches'][] = 'ABORTADO: 3 lotes seguidos fallaron; no se intentan los lotes restantes (' . (count($batches) - $n) . ').';
+                break;
+            }
         } else {
+            $consecutiveFails = 0;
             $stats['sent'] += count($batch);
             $b = $res['body'];
             if (is_array($b)) {
@@ -294,6 +310,7 @@ try {
         $rows = isset($data['inve']) ? $data['inve'] : [];
         $precioRows = isset($data['precios']) ? $data['precios'] : [];
     } else {
+        progress('Conectando a Firebird...');
         $dsn = 'firebird:dbname=localhost:' . $CONFIG['fb_database'] . ';charset=UTF8';
         $pdo = new PDO($dsn, $CONFIG['fb_user'], $CONFIG['fb_password'], [
             PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
@@ -308,10 +325,14 @@ try {
             // MODELO = campo libre 3 de INVE_CLIB01 (unido por CVE_PROD = CVE_ART)
             $sql = 'SELECT ' . implode(', ', $cols) . ', c.CAMPLIB3 AS CAMPO_LIBRE_MODELO '
                  . 'FROM INVE01 i LEFT JOIN INVE_CLIB01 c ON c.CVE_PROD = i.CVE_ART';
+            progress('Leyendo INVE01...');
             $rows = $pdo->query($sql)->fetchAll();
+            progress('INVE01: ' . count($rows) . ' filas leidas');
         }
         if ($doPrecios) {
+            progress('Leyendo PRECIO_X_PROD01...');
             $precioRows = $pdo->query('SELECT CVE_ART, CVE_PRECIO, PRECIO FROM PRECIO_X_PROD01')->fetchAll();
+            progress('PRECIO_X_PROD01: ' . count($precioRows) . ' filas leidas');
         }
     }
 
