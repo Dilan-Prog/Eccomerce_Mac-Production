@@ -85,6 +85,9 @@ Route::post('/track-conversion', [TrackConversionController::class, 'store'])
     ->middleware(['tracking.origin', 'throttle:tracking-ip', 'throttle:tracking-session'])
     ->name('track.conversion');
 
+// Formularios publicos (asociados, calibracion y puesta en marcha, medicion, cotizacion): guarda en web_leads y avisa. CSRF activo (@csrf en los formularios).
+Route::post('solicitudes-web', [\App\Http\Controllers\Frontend\WebLeadController::class, 'store'])->name('web-leads.store')->middleware('throttle:web-leads');
+
 // Sirve /uploads/{path} desde UploadPath::base() cuando el archivo ya no
 // existe físicamente en public/uploads (ver app/Support/UploadPath.php).
 // Debe quedar fuera de cualquier grupo con middleware de auth: son los

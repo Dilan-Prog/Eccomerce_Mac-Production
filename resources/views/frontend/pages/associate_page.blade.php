@@ -71,96 +71,105 @@
               <div class="row ">
                 <!-- Formulario -->
                 <div class="col-md-12 d-flex align-items-center justify-content-center m-0 p-0" id="associate-form">
-                  <form class="row g-3 m-5" action="https://formsubmit.co/dilanp270105@gmail.com" method="POST" style="font-family: 'Montserrat', sans-serif;">
+                  <form class="row g-3 m-5" id="web-lead-form" action="{{ route('web-leads.store') }}" method="POST" style="font-family: 'Montserrat', sans-serif;">
+@include('frontend.partials.web-lead-alert', ['formType' => 'asociado'])
                       <h2 style="font-weight: 800;">Llenar Formulario</h2>
                       <div class="row">
                           <div class="col-md-6">
                               <label for="inputNombre" class="form-label">Nombre</label>
-                              <input type="text" class="form-control" id="inputNombre" placeholder="Nombre" aria-label="First name" name="name" required pattern="[A-Za-z]+" maxlength="30" >
+                              <input type="text" class="form-control" id="inputNombre" placeholder="Nombre" aria-label="First name" name="first_name" value="{{ old('first_name') }}" required pattern="[\p{L}' .\-]+" maxlength="30" >
+                              @error('first_name')<div class="text-danger small">{{ $message }}</div>@enderror
                               <div class="invalid-feedback">
                                   El nombre no puede estar en blanco.
                               </div>
                           </div>
                           <div class="col-md-6">
                               <label for="inputAddress2" class="form-label">Apellidos</label>
-                            <input type="text" class="form-control" placeholder="Apellidos" aria-label="Last name" name="Apellido" pattern="[A-Za-z]+" required >
+                            <input type="text" class="form-control" placeholder="Apellidos" aria-label="Last name" name="last_name" value="{{ old('last_name') }}" pattern="[\p{L}' .\-]+" required >
+                            @error('last_name')<div class="text-danger small">{{ $message }}</div>@enderror
                           </div>
 
                       </div>
                       <div class="col-md-6">
                         <label for="inputEmail4" class="form-label">Email</label>
-                        <input type="email" class="form-control" id="inputEmail4" placeholder="example@gmail.com" name="email" required>
+                        <input type="email" class="form-control" id="inputEmail4" placeholder="example@gmail.com" name="email" value="{{ old('email') }}" required>
+                        @error('email')<div class="text-danger small">{{ $message }}</div>@enderror
                       </div>
                       <div class="col-md-6">
                         <label for="telefono" class="form-label">N&uacute;mero de telefono</label>
-                        <input type="tel" class="form-control" id="inputAddress" placeholder="Telefono" name="Telefono" required  pattern="[0-9]{10}" title="Ingrese un número de teléfono válido">
+                        <input type="tel" class="form-control" id="inputAddress" placeholder="Telefono" name="phone" value="{{ old('phone') }}" required  pattern="[0-9+\s\-\(\)]{10,20}" title="Ingrese un número de teléfono válido (10 dígitos)">
+                        @error('phone')<div class="text-danger small">{{ $message }}</div>@enderror
                       </div>
                       <div class="col-md-4">
                           <label for="inputCity" class="form-label">Empresa</label>
-                          <input type="text" class="form-control" id="inputCity" placeholder="Nombre Empresa" required name="Ciudad" required>
+                          <input type="text" class="form-control" id="inputCity" placeholder="Nombre Empresa" required name="company" value="{{ old('company') }}">
+                          @error('company')<div class="text-danger small">{{ $message }}</div>@enderror
                         </div>
 
                       <div class="col-md-4">
                         <label for="inputCity" class="form-label">Ciudad</label>
-                        <input type="text" class="form-control" id="inputCity" placeholder="Ciudad Juarez" name="Ciudad" required>
+                        <input type="text" class="form-control" id="inputCity" placeholder="Ciudad Juarez" name="city" value="{{ old('city') }}" required>
+                        @error('city')<div class="text-danger small">{{ $message }}</div>@enderror
                       </div>
                       <div class="col-md-4">
                           <label for="inputState" class="form-label">Estado</label>
-                          <select id="inputState" class="form-select" name="Estado" required>
-                            <option selected disabled value="" >Seleccionar..</option>
-                              <option>Aguascalientes</option>
-                              <option>Baja California</option>
-                              <option>Baja California Sur</option>
-                              <option>Campeche</option>
-                              <option>Chiapas</option>
-                              <option>Chihuahua</option>
-                              <option>Coahuila</option>
-                              <option>Colima</option>
-                              <option>Durango</option>
-                              <option>Estado de M&eacute;xico</option>
-                              <option>Guanajuato</option>
-                              <option>Guerrero</option>
-                              <option>Hidalgo</option>
-                              <option>Jalisco</option>
-                              <option>Michoac&aacute;n</option>
-                              <option>Morelos</option>
-                              <option>Nayarit</option>
-                              <option>Nuevo Le&oacute;n</option>
-                              <option>Oaxaca</option>
-                              <option>Puebla</option>
-                              <option>Quer&eacute;taro</option>
-                              <option>Quintana Roo</option>
-                              <option>San Luis Potos&iacute;</option>
-                              <option>Sinaloa</option>
-                              <option>Sonora</option>
-                              <option>Tabasco</option>
-                              <option>Tamaulipas</option>
-                              <option>Tlaxcala</option>
-                              <option>Veracruz</option>
-                              <option>Yucat&aacute;n</option>
-                              <option>Zacatecas</option>
+                          <select id="inputState" class="form-select" name="state" required>
+                            <option @selected(! old('state')) disabled value="" >Seleccionar..</option>
+                              <option @selected(old('state') === 'Aguascalientes')>Aguascalientes</option>
+                              <option @selected(old('state') === 'Baja California')>Baja California</option>
+                              <option @selected(old('state') === 'Baja California Sur')>Baja California Sur</option>
+                              <option @selected(old('state') === 'Campeche')>Campeche</option>
+                              <option @selected(old('state') === 'Chiapas')>Chiapas</option>
+                              <option @selected(old('state') === 'Chihuahua')>Chihuahua</option>
+                              <option @selected(old('state') === 'Coahuila')>Coahuila</option>
+                              <option @selected(old('state') === 'Colima')>Colima</option>
+                              <option @selected(old('state') === 'Durango')>Durango</option>
+                              <option @selected(old('state') === 'Estado de México')>Estado de M&eacute;xico</option>
+                              <option @selected(old('state') === 'Guanajuato')>Guanajuato</option>
+                              <option @selected(old('state') === 'Guerrero')>Guerrero</option>
+                              <option @selected(old('state') === 'Hidalgo')>Hidalgo</option>
+                              <option @selected(old('state') === 'Jalisco')>Jalisco</option>
+                              <option @selected(old('state') === 'Michoacán')>Michoac&aacute;n</option>
+                              <option @selected(old('state') === 'Morelos')>Morelos</option>
+                              <option @selected(old('state') === 'Nayarit')>Nayarit</option>
+                              <option @selected(old('state') === 'Nuevo León')>Nuevo Le&oacute;n</option>
+                              <option @selected(old('state') === 'Oaxaca')>Oaxaca</option>
+                              <option @selected(old('state') === 'Puebla')>Puebla</option>
+                              <option @selected(old('state') === 'Querétaro')>Quer&eacute;taro</option>
+                              <option @selected(old('state') === 'Quintana Roo')>Quintana Roo</option>
+                              <option @selected(old('state') === 'San Luis Potosí')>San Luis Potos&iacute;</option>
+                              <option @selected(old('state') === 'Sinaloa')>Sinaloa</option>
+                              <option @selected(old('state') === 'Sonora')>Sonora</option>
+                              <option @selected(old('state') === 'Tabasco')>Tabasco</option>
+                              <option @selected(old('state') === 'Tamaulipas')>Tamaulipas</option>
+                              <option @selected(old('state') === 'Tlaxcala')>Tlaxcala</option>
+                              <option @selected(old('state') === 'Veracruz')>Veracruz</option>
+                              <option @selected(old('state') === 'Yucatán')>Yucat&aacute;n</option>
+                              <option @selected(old('state') === 'Zacatecas')>Zacatecas</option>
                           </select>
+                          @error('state')<div class="text-danger small">{{ $message }}</div>@enderror
                       </div>
 
                       <div class="col-md-12">
                           <label for="inputOperation" class="form-label">Operaci&oacute;n</label>
-                          <select id="inputOperation" class="form-select" name="Operacion" required>
+                          <select id="inputOperation" class="form-select" name="operation" required>
                               <option selected>Asociado/Renvendedor</option>
                           </select>
+                          @error('operation')<div class="text-danger small">{{ $message }}</div>@enderror
                       </div>
 
                       <div class="col-12 form-floating">
-                          <textarea class="form-control" placeholder="Leave a comment here" id="floatingTextarea2" style="height: 100px" name="Mensaje"></textarea>
+                          <textarea class="form-control" placeholder="Leave a comment here" id="floatingTextarea2" style="height: 100px" name="message">{{ old('message') }}</textarea>
                           <label for="floatingTextarea2">Mensaje</label>
+                          @error('message')<div class="text-danger small">{{ $message }}</div>@enderror
                         </div>
 
 
 
                       <div class="col-12">
                         <button type="submit" class="btn btn-dark w-100" >Enviar solicitud</button>
-                        <input type="hidden" name="_next" value="http://127.0.0.1:8000/cotizar"><!--Cambiar url-->
-                        <input type="hidden" name="_captcha" value="false">
                       </div>
+@include('frontend.partials.web-lead-fields', ['formType' => 'asociado'])
                     </form>
                 </div>
               </div>

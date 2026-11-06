@@ -30,6 +30,7 @@ use App\Http\Controllers\Backend\ProductVariantItemController;
 use App\Http\Controllers\Backend\SettingController;
 use App\Http\Controllers\Backend\StripeSettingController;
 use App\Http\Controllers\Backend\TrackConversionController;
+use App\Http\Controllers\Backend\WebLeadController;
 use App\Http\Controllers\Backend\TransactionController;
 use App\Http\Controllers\Backend\TransferController;
 use App\Http\Controllers\Backend\AdminCotizacionController;
@@ -279,6 +280,16 @@ Route::post('attribution-lab/deactivate', [AttributionLabController::class, 'dea
 Route::post('attribution-lab/settings', [AttributionLabController::class, 'settings'])->name('attribution-lab.settings');
 Route::post('attribution-lab/n8n-test', [AttributionLabController::class, 'n8nTest'])->name('attribution-lab.n8n-test');
 Route::delete('attribution-lab/tests', [AttributionLabController::class, 'destroyTests'])->name('attribution-lab.destroy-tests');
+
+/**Solicitudes web (formularios publicos: asociados, calibracion y puesta en marcha, medicion, cotizacion). Módulo 'site'. */
+Route::get('web-leads', [WebLeadController::class, 'index'])->name('web-leads.index');
+// Estáticas antes que {id}; whereNumber evita que "table-data" caiga en el parámetro.
+Route::get('web-leads/table-data', [WebLeadController::class, 'tableData'])->name('web-leads.table-data');
+Route::post('web-leads/settings', [WebLeadController::class, 'saveSettings'])->name('web-leads.settings');
+Route::get('web-leads/{id}', [WebLeadController::class, 'show'])->whereNumber('id')->name('web-leads.show');
+Route::patch('web-leads/{id}/status', [WebLeadController::class, 'updateStatus'])->whereNumber('id')->name('web-leads.update-status');
+Route::post('web-leads/{id}/resend', [WebLeadController::class, 'resend'])->whereNumber('id')->name('web-leads.resend');
+Route::delete('web-leads/{id}', [WebLeadController::class, 'destroy'])->whereNumber('id')->name('web-leads.destroy');
 
 
 /**ProductImageGallery route */

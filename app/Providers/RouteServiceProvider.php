@@ -73,6 +73,12 @@ class RouteServiceProvider extends ServiceProvider
             return Limit::perMinute(120)->by('attribution-api:' . $request->ip());
         });
 
+        // POST /solicitudes-web (formularios publicos -> web_leads): maximo config('webleads.throttle_per_minute')
+        // envios por minuto por IP (anti-spam; ver tambien honeypot y tiempo minimo en StoreWebLeadRequest).
+        RateLimiter::for('web-leads', function (Request $request) {
+            return Limit::perMinute(max(1, (int) config('webleads.throttle_per_minute', 5)))->by('web-leads:' . $request->ip());
+        });
+
         $this->routes(function () {
             Route::middleware('api')
                 ->prefix('api')

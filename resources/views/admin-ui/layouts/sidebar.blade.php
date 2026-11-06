@@ -192,7 +192,7 @@
         @endif
 
         @php
-            $siteActive = setActive(['admin.slider.*', 'admin.media-library.*', 'admin.attribution-lab.*']);
+            $siteActive = setActive(['admin.slider.*', 'admin.media-library.*', 'admin.attribution-lab.*', 'admin.web-leads.*']);
         @endphp
         @if ($__auUser->canAccessModule('site'))
         <div class="au-nav-item has-submenu {{ $siteActive ? 'is-active is-open' : '' }}" data-nav-key="site">
@@ -206,6 +206,7 @@
                     <a href="{{ route('admin.media-library.index') }}" class="au-nav-link">Biblioteca de Medios</a>
                 @endif
                 <a href="{{ route('admin.attribution-lab.index') }}" class="au-nav-link">Laboratorio de atribución</a>
+                <a href="{{ route('admin.web-leads.index') }}" class="au-nav-link">Solicitudes web</a>
             </div>
         </div>
         @endif
