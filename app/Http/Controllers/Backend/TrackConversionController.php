@@ -8,6 +8,7 @@ use App\Support\AdminTable\AdminTableExport;
 use App\Support\AdminTable\AdminTableRequest;
 use App\Support\AdminTable\Queries\TrackConversionTableQuery;
 use App\Support\Attribution\AttributionTestMode;
+use App\Support\Tracking\TrackingPeriod;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Maatwebsite\Excel\Excel as ExcelFormat;
 use Maatwebsite\Excel\Facades\Excel;
@@ -39,17 +40,16 @@ class TrackConversionController extends Controller
      */
     public function summary(Request $request)
     {
-        $range = (string) $request->input('range', '30');
-        $since = match ($range) {
-            'today' => now()->startOfDay(),
-            '7' => now()->subDays(7)->startOfDay(),
-            '90' => now()->subDays(90)->startOfDay(),
-            'all' => null,
-            default => now()->subDays(30)->startOfDay(),
-        };
+        // Periodo: today | 7 | 30 | 90 | this_month | last_month | month (+month=YYYY-MM) | custom (+from/to) | all.
+        $period = TrackingPeriod::fromRequest($request);
+        $range = $period->range;
+        $since = $period->from;
+        $until = $period->to;
 
         // Solo eventos reales: los del Laboratorio de atribucion (is_test) no cuentan en ninguna metrica.
-        $base = fn () => TrackConversion::query()->where('is_test', false)->when($since, fn ($q) => $q->where('created_at', '>=', $since));
+        $base = fn () => TrackConversion::query()->where('is_test', false)
+            ->when($since, fn ($q) => $q->where('created_at', '>=', $since))
+            ->when($until, fn ($q) => $q->where('created_at', '<=', $until));
         $hasGoogleSql = "((gclid IS NOT NULL AND gclid != '') OR (gbraid IS NOT NULL AND gbraid != '') OR (wbraid IS NOT NULL AND wbraid != ''))";
         $isVisitSql = "type = '" . TrackConversion::VISIT_TYPE . "'";
         $nonConversionSql = "'" . implode("','", TrackConversion::nonConversionTypes()) . "'";
@@ -100,6 +100,7 @@ class TrackConversionController extends Controller
 
         return response()->json([
             'range' => $range,
+            'period' => $period->toArray(),
             'totals' => [
                 'visits' => $visits,
                 'conversions' => $conversions,
@@ -136,7 +137,9 @@ class TrackConversionController extends Controller
     /** JSON data source for the custom admin table (replaces TrackConversionDataTable). */
     public function tableData(Request $request, TrackConversionTableQuery $table)
     {
-        return response()->json($table->paginate(AdminTableRequest::fromRequest($request)));
+        $period = $request->has('range') ? TrackingPeriod::fromRequest($request) : null;
+
+        return response()->json($table->forPeriod($period?->from, $period?->to)->paginate(AdminTableRequest::fromRequest($request)));
     }
 
     /**
@@ -146,6 +149,8 @@ class TrackConversionController extends Controller
     public function export(Request $request, TrackConversionTableQuery $table)
     {
         $adminRequest = AdminTableRequest::fromRequest($request);
+        $period = $request->has('range') ? TrackingPeriod::fromRequest($request) : null;
+        $table->forPeriod($period?->from, $period?->to);
         $headings = $table->exportHeadings();
         $rows = $table->exportRows($adminRequest)->map(fn ($row) => $table->exportRow($row))->all();
         $format = $request->input('format', 'xlsx');

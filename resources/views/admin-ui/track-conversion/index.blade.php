@@ -15,18 +15,31 @@
     <div class="au-card" style="margin-bottom:16px">
         <div class="au-card-header" style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
             <div class="au-card-title">Resumen</div>
-            <div class="au-flex" style="gap:8px;align-items:center">
+            <div class="au-flex" style="gap:8px;align-items:center;flex-wrap:wrap">
                 <label for="tc-range" class="au-help-text" style="margin:0">Periodo</label>
                 <select id="tc-range" class="au-select" style="width:auto">
                     <option value="today">Hoy</option>
                     <option value="7">Últimos 7 días</option>
                     <option value="30" selected>Últimos 30 días</option>
                     <option value="90">Últimos 90 días</option>
+                    <option value="this_month">Este mes</option>
+                    <option value="last_month">Mes pasado</option>
+                    <option value="month">Elegir un mes…</option>
+                    <option value="custom">Rango de fechas…</option>
                     <option value="all">Todo el historial</option>
                 </select>
+                <input type="month" id="tc-month" class="au-input" style="width:auto;display:none" aria-label="Mes"
+                       value="{{ now()->format('Y-m') }}" max="{{ now()->format('Y-m') }}">
+                <span id="tc-custom" class="au-flex" style="display:none;gap:6px;align-items:center;flex-wrap:wrap">
+                    <input type="date" id="tc-from" class="au-input" style="width:auto" aria-label="Desde" max="{{ now()->format('Y-m-d') }}">
+                    <span class="au-help-text" style="margin:0">a</span>
+                    <input type="date" id="tc-to" class="au-input" style="width:auto" aria-label="Hasta" max="{{ now()->format('Y-m-d') }}">
+                    <button type="button" class="au-btn au-btn-sm au-btn-primary" id="tc-apply">Aplicar</button>
+                </span>
             </div>
         </div>
         <div class="au-card-body">
+            <div class="au-help-text" id="tc-period-label" style="margin-bottom:10px" role="status"></div>
             <div id="tc-summary-error" class="au-help-text" style="display:none;color:var(--au-critical)"></div>
 
             <div class="au-stat-grid" id="tc-stats">
@@ -99,7 +112,7 @@
     <script src="{{ asset('admin-ui/js/table/column-visibility.js') }}"></script>
     <script src="{{ asset('admin-ui/js/table/admin-table.js') }}"></script>
     <script>
-        new AU.AdminTable({
+        const tcTable = new AU.AdminTable({
             el: '#track-conversion-table',
             endpoint: '{{ route('admin.track-conversion.table-data') }}',
             exportEndpoint: '{{ route('admin.track-conversion.export') }}',
@@ -114,7 +127,41 @@
             const num = (n) => Number(n || 0).toLocaleString('es-MX');
             const summaryUrl = '{{ route('admin.track-conversion.summary') }}';
             const select = document.getElementById('tc-range');
+            const monthInput = document.getElementById('tc-month');
+            const customBox = document.getElementById('tc-custom');
+            const fromInput = document.getElementById('tc-from');
+            const toInput = document.getElementById('tc-to');
+            const applyBtn = document.getElementById('tc-apply');
+            const periodLabel = document.getElementById('tc-period-label');
             const errorBox = document.getElementById('tc-summary-error');
+
+            // Periodo elegido -> query string. Lo usan el resumen, la tabla y la exportacion, para que siempre coincidan.
+            function periodQuery() {
+                let q = 'range=' + encodeURIComponent(select.value);
+                if (select.value === 'month') q += '&month=' + encodeURIComponent(monthInput.value);
+                if (select.value === 'custom') {
+                    if (fromInput.value) q += '&from=' + encodeURIComponent(fromInput.value);
+                    if (toInput.value) q += '&to=' + encodeURIComponent(toInput.value);
+                }
+                return q;
+            }
+
+            const fmtDay = (iso) => { const p = String(iso || '').split('-'); return p.length === 3 ? p[2] + '/' + p[1] + '/' + p[0] : ''; };
+            function describePeriod(p) {
+                if (!p || (!p.from && !p.to)) return 'Mostrando todo el historial.';
+                if (p.from && p.to) return 'Mostrando del ' + fmtDay(p.from) + ' al ' + fmtDay(p.to) + '.';
+                if (p.from) return 'Mostrando desde el ' + fmtDay(p.from) + ' hasta hoy.';
+                return 'Mostrando hasta el ' + fmtDay(p.to) + '.';
+            }
+
+            // La tabla de abajo (pestañas, busqueda, paginas) y su exportacion usan el mismo periodo del resumen.
+            const baseBuildQuery = tcTable.buildQuery.bind(tcTable);
+            tcTable.buildQuery = function () { return baseBuildQuery() + '&' + periodQuery(); };
+
+            function refreshTable() {
+                tcTable.state.page = 1;
+                tcTable.fetchData();
+            }
 
             function fillRows(id, rows, cols, emptyCols) {
                 const tbody = document.getElementById(id);
@@ -147,7 +194,8 @@
             async function load() {
                 errorBox.style.display = 'none';
                 try {
-                    const data = await AU.request(summaryUrl + '?range=' + encodeURIComponent(select.value));
+                    const data = await AU.request(summaryUrl + '?' + periodQuery());
+                    periodLabel.textContent = describePeriod(data.period);
                     const t = data.totals;
                     const set = (k, v) => { const el = document.querySelector('[data-stat="' + k + '"]'); if (el) el.textContent = v; };
                     set('visits', num(t.visits));
@@ -171,8 +219,32 @@
                 }
             }
 
-            select.addEventListener('change', load);
+            function applyPeriod() {
+                load();
+                refreshTable();
+            }
+
+            select.addEventListener('change', () => {
+                monthInput.style.display = select.value === 'month' ? '' : 'none';
+                customBox.style.display = select.value === 'custom' ? 'inline-flex' : 'none';
+                // "Rango de fechas" espera a que el usuario pulse Aplicar; los demas se aplican al elegirlos.
+                if (select.value !== 'custom') applyPeriod();
+            });
+            monthInput.addEventListener('change', () => { if (monthInput.value) applyPeriod(); });
+            applyBtn.addEventListener('click', () => {
+                if (!fromInput.value && !toInput.value) {
+                    AU.toast.error('Elige al menos una fecha (desde o hasta).');
+                    return;
+                }
+                if (fromInput.value && toInput.value && fromInput.value > toInput.value) {
+                    AU.toast.error('La fecha "desde" no puede ser posterior a "hasta".');
+                    return;
+                }
+                applyPeriod();
+            });
+
             load();
+            refreshTable(); // la tabla se pinto al cargar sin periodo: se repinta con el periodo por defecto (30 dias), igual que el resumen
         })();
     </script>
 @endpush

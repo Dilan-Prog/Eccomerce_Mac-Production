@@ -4,6 +4,7 @@ namespace App\Support\AdminTable\Queries;
 
 use App\Models\TrackConversion;
 use App\Support\AdminTable\AdminTableQuery;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 
 /**
@@ -14,11 +15,29 @@ use Illuminate\Database\Eloquent\Builder;
  */
 class TrackConversionTableQuery extends AdminTableQuery
 {
+    private ?Carbon $periodFrom = null;
+    private ?Carbon $periodTo = null;
+
+    /**
+     * Acota la tabla (pestañas con sus contadores, busqueda y exportacion) a un periodo por created_at.
+     * Sin llamarlo, no hay limite de fechas (comportamiento anterior).
+     */
+    public function forPeriod(?Carbon $from, ?Carbon $to): static
+    {
+        $this->periodFrom = $from;
+        $this->periodTo = $to;
+
+        return $this;
+    }
+
     public function baseQuery(): Builder
     {
         // Solo eventos reales: los de prueba del Laboratorio de atribucion no aparecen aqui
         // (ni en pestañas, busqueda ni exportacion; todo parte de esta consulta base).
-        return TrackConversion::query()->where('is_test', false);
+        return TrackConversion::query()
+            ->where('is_test', false)
+            ->when($this->periodFrom, fn (Builder $q, Carbon $from) => $q->where('created_at', '>=', $from))
+            ->when($this->periodTo, fn (Builder $q, Carbon $to) => $q->where('created_at', '<=', $to));
     }
 
     public function columns(): array
