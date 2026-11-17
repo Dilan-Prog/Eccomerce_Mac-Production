@@ -13,6 +13,8 @@
       'heroImageAlt' => 'Tren de gas natural con válvulas Honeywell y regulador de presión en caldera industrial',
       'extraGallery' => [
         ['image' => 'frontend/images/servicios/calibracion-quemadores-tren-gas-valvulas.webp', 'alt' => 'Válvulas de seguridad y actuadores del tren de gas de un quemador industrial'],
+        ['image' => 'frontend/images/servicios/calibracion-quemadores-tren-gas-regulador-honeywell.jpg', 'alt' => 'Regulador de presión Honeywell y válvulas de gas en tren de quemador'],
+        ['image' => 'frontend/images/servicios/calibracion-quemadores-tren-gas-actuadores-honeywell.jpg', 'alt' => 'Actuadores Honeywell Fluid Power y regulador en tren de gas natural recién instalado'],
       ],
       'statValue1' => '+30', 'statLabel1' => 'años en el sector industrial',
       'statValue2' => '24 h', 'statLabel2' => 'respuesta en área metropolitana',

@@ -49,7 +49,8 @@
         align-items: center;
     }
     @media (min-width: 900px) {
-        .mdn-svc-hero-row { grid-template-columns: 1fr 1.35fr; }
+        /* La imagen ocupa un 10% mas de ancho que antes (era 1fr 1.35fr). */
+        .mdn-svc-hero-row { grid-template-columns: 1fr 1.72fr; }
     }
 </style>
 @endpush

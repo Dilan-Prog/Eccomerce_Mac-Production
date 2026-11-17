@@ -35,6 +35,13 @@
 @push('styles')
 <style>
     .mdn-cd-row { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr)); gap:48px; align-items:center; }
+    /* La imagen ocupa un 10% mas de ancho que el reparto 50/50 anterior. Se
+       distingue el lado porque las filas alternan con 'order': la columna
+       ancha tiene que ser la de la foto, no siempre la segunda. */
+    @media (min-width:900px) {
+      .mdn-cd-row--img-right { grid-template-columns:1fr 1.22fr; }
+      .mdn-cd-row--img-left  { grid-template-columns:1.22fr 1fr; }
+    }
     .mdn-cd-bullets { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:10px 20px; }
     .mdn-cd-steps { display:grid; grid-template-columns:repeat(auto-fit,minmax(170px,1fr)); gap:2px; }
     .mdn-cd-why { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,400px),1fr)); gap:48px; }
@@ -87,7 +94,7 @@
   @foreach ($services as $i => $s)
     @php $isBlue = $i % 2 === 0; @endphp
     <section id="{{ $s['id'] }}" style="padding:clamp(56px,7vw,96px) clamp(16px,4vw,32px);background:{{ $isBlue ? '#003E7E' : '#fff' }}">
-      <div class="mdn-cd-row" style="max-width:1160px;margin:0 auto">
+      <div class="mdn-cd-row {{ $isBlue ? 'mdn-cd-row--img-right' : 'mdn-cd-row--img-left' }}" style="max-width:1160px;margin:0 auto">
         <div style="display:flex;flex-direction:column;gap:20px;order:{{ $isBlue ? 0 : 1 }}">
           <div style="font-size:11px;font-weight:700;letter-spacing:.14em;color:{{ $isBlue ? '#9FC1F2' : '#003E7E' }};text-transform:uppercase">{{ $s['n'] }} · Servicio industrial · Monterrey, N.L.</div>
           <h2 style="margin:0;font-size:clamp(27px,3.4vw,38px);line-height:1.15;font-weight:800;letter-spacing:-.8px;color:{{ $isBlue ? '#fff' : '#16202B' }};text-wrap:balance">{{ $s['title'] }}</h2>

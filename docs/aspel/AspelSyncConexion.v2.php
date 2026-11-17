@@ -34,7 +34,7 @@ $CONFIG = [
     // Base de datos Aspel (Firebird)
     'fb_database' => getenv('ASPEL_FB_DATABASE') ?: 'C:\\ASPEL\\DATOS\\Sistemas Aspel\\SAE9.00\\Empresa01\\Datos\\SAE90EMPRE01.fdb',
     'fb_user'     => getenv('ASPEL_FB_USER') ?: 'SYSDBA',
-    'fb_password' => getenv('ASPEL_FB_PASSWORD') ?: 'PEGA_AQUI_LA_CONTRASENA_DE_FIREBIRD',
+    'fb_password' => getenv('ASPEL_FB_PASSWORD') ?: 'masterkey',
 
     // Sitio
     'api_base'    => getenv('ASPEL_API_BASE') ?: 'https://www.macdelnorte.com/api/aspel',
